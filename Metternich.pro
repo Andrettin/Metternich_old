@@ -35,5 +35,6 @@ HEADERS += \
     character.h \
     holding.h \
     holding_type.h \
+    landed_title.h \
     pch.h \
     province.h
