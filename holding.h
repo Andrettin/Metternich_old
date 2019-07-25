@@ -1,10 +1,17 @@
 #include <set>
+#include <string>
 
 class Building;
 class HoldingType;
 
 class Holding
 {
+public:
+	const std::string &GetName() const
+	{
+		return this->Name;
+	}
+
 	const HoldingType *GetType() const
 	{
 		return this->Type;
@@ -16,6 +23,7 @@ class Holding
 	}
 
 private:
+	std::string Name;
 	const HoldingType *Type = nullptr;
 	std::set<Building *> Buildings;
 };

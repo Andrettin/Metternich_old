@@ -32,6 +32,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     building.h \
+    character.h \
     holding.h \
     holding_type.h \
     pch.h \

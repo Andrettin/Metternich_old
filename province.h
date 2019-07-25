@@ -1,13 +1,20 @@
+#include <string>
 #include <vector>
 
-class County;
 class Culture;
 class Holding;
+class LandedTitle;
 class Religion;
 
 class Province
 {
-	County *GetCounty() const
+public:
+	const std::string &GetName() const
+	{
+		return this->Name;
+	}
+
+	LandedTitle *GetCounty() const
 	{
 		return this->County;
 	}
@@ -38,7 +45,8 @@ class Province
 	}
 
 private:
-	::County *County = nullptr;
+	std::string Name;
+	LandedTitle *County = nullptr;
 	const ::Culture *Culture = nullptr;
 	const ::Religion *Religion = nullptr;
 	Holding *CapitalHolding = nullptr;
