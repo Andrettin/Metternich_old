@@ -24,7 +24,7 @@ GSMLData GSMLData::ParseFile(const std::filesystem::path &filepath)
 		throw std::runtime_error("Failed to open file: " + filepath.string());
 	}
 
-	GSMLData file_gsml_data;
+	GSMLData file_gsml_data(filepath.stem().string());
 
 	std::string line;
 	int line_index = 1;

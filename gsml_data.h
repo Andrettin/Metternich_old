@@ -12,7 +12,7 @@
 class GSMLData
 {
 public:
-	GSMLData(const std::string tag = std::string()) : Tag(tag) {}
+	GSMLData(const std::string tag) : Tag(tag) {}
 
 	static GSMLData ParseFile(const std::filesystem::path &filepath);
 
