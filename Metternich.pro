@@ -14,6 +14,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         character.cpp \
+        csv_data.cpp \
         gsml_data.cpp \
         main.cpp \
         util.cpp
@@ -36,6 +37,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     building.h \
     character.h \
+    csv_data.h \
     data_element.h \
     gsml_data.h \
     gsml_operator.h \

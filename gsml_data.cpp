@@ -1,5 +1,3 @@
-#pragma once
-
 #include "gsml_data.h"
 
 #include "gsml_operator.h"
