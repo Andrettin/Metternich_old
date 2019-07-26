@@ -13,8 +13,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+        character.cpp \
         gsml_data.cpp \
-        main.cpp
+        main.cpp \
+        util.cpp
 
 RESOURCES += qml.qrc
 
@@ -41,4 +43,5 @@ HEADERS += \
     holding_type.h \
     landed_title.h \
     pch.h \
-    province.h
+    province.h \
+    util.h

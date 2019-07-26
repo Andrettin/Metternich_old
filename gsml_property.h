@@ -12,6 +12,21 @@ public:
 	{
 	}
 
+	const std::string &GetKey() const
+	{
+		return this->Key;
+	}
+
+	GSMLOperator GetOperator() const
+	{
+		return this->Operator;
+	}
+
+	const std::string &GetValue() const
+	{
+		return this->Value;
+	}
+
 private:
 	std::string Key;
 	GSMLOperator Operator;
