@@ -20,9 +20,9 @@ public:
 	*/
 	static inline T *Get(const KEY &identifier)
 	{
-		typename std::map<KEY, std::unique_ptr<T>>::const_iterator find_iterator = DataElement<T>::InstancesByIdentifier.find(identifier);
+		typename std::map<KEY, std::unique_ptr<T>>::const_iterator find_iterator = DataElement::InstancesByIdentifier.find(identifier);
 
-		if (find_iterator != DataElement<T>::InstancesByIdentifier.end()) {
+		if (find_iterator != DataElement::InstancesByIdentifier.end()) {
 			return find_iterator->second.get();
 		}
 
@@ -40,7 +40,7 @@ public:
 	*/
 	static inline const std::vector<T *> &GetAll()
 	{
-		return DataElement<T>::Instances;
+		return DataElement::Instances;
 	}
 
 	/**
@@ -58,9 +58,9 @@ public:
 			}
 		}
 
-		DataElement<T>::InstancesByIdentifier[identifier] = std::make_unique<T>(identifier);
-		T *instance = DataElement<T>::InstancesByIdentifier.find(identifier)->second.get();
-		DataElement<T>::Instances.push_back(instance);
+		DataElement::InstancesByIdentifier[identifier] = std::make_unique<T>(identifier);
+		T *instance = DataElement::InstancesByIdentifier.find(identifier)->second.get();
+		DataElement::Instances.push_back(instance);
 
 		return instance;
 	}
@@ -72,8 +72,8 @@ public:
 	*/
 	static inline void Remove(T *instance)
 	{
-		DataElement<T>::InstancesByIdentifier.erase(instance->GetIdentifier());
-		DataElement<T>::Instances.erase(std::remove(DataElement<T>::Instances.begin(), DataElement<T>::Instances.end(), instance), DataElement<T>::Instances.end());
+		DataElement::InstancesByIdentifier.erase(instance->GetIdentifier());
+		DataElement::Instances.erase(std::remove(DataElement::Instances.begin(), DataElement::Instances.end(), instance), DataElement::Instances.end());
 	}
 
 	/**
@@ -81,8 +81,8 @@ public:
 	*/
 	static inline void Clear()
 	{
-		DataElement<T>::Instances.clear();
-		DataElement<T>::InstancesByIdentifier.clear();
+		DataElement::Instances.clear();
+		DataElement::InstancesByIdentifier.clear();
 	}
 
 private:

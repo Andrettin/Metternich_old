@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QColor>
+
 #include <filesystem>
 #include <fstream>
 #include <map>

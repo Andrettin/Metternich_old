@@ -17,6 +17,7 @@ SOURCES += \
         csv_data.cpp \
         gsml_data.cpp \
         main.cpp \
+        province.cpp \
         util.cpp
 
 RESOURCES += qml.qrc

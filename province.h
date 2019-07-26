@@ -2,9 +2,12 @@
 
 #include "data_element.h"
 
+#include <QColor>
+
 #include <string>
 #include <vector>
 
+class CSVData;
 class Culture;
 class Holding;
 class LandedTitle;
@@ -16,6 +19,8 @@ public:
 	Province(const int identifier) : Identifier(identifier) {}
 
 	static constexpr const char *ClassIdentifier = "province";
+
+	static void ProcessDefinitions(const CSVData &csv_data);
 
 	int GetIdentifier() const
 	{
@@ -60,6 +65,7 @@ public:
 private:
 	int Identifier = -1;
 	std::string Name;
+	QColor Color; //color used to identify the province in the province map
 	LandedTitle *County = nullptr;
 	const ::Culture *Culture = nullptr;
 	const ::Religion *Religion = nullptr;
