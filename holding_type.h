@@ -8,6 +8,8 @@ class Building;
 class HoldingType
 {
 public:
+	static constexpr const char *ClassIdentifier = "holding_type";
+
 	const std::string &GetName() const
 	{
 		return this->Name;

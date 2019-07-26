@@ -16,6 +16,8 @@ class Character : public DataElement<Character, int>
 public:
 	Character(const int identifier) : Identifier(identifier) {}
 
+	static constexpr const char *ClassIdentifier = "character";
+
 	bool ProcessGSMLProperty(const GSMLProperty &property);
 
 	int GetIdentifier() const

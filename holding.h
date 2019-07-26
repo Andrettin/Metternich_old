@@ -9,6 +9,8 @@ class HoldingType;
 class Holding
 {
 public:
+	static constexpr const char *ClassIdentifier = "holding";
+
 	const std::string &GetName() const
 	{
 		return this->Name;

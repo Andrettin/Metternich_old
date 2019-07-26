@@ -15,6 +15,8 @@ class Province : public DataElement<Province, int>
 public:
 	Province(const int identifier) : Identifier(identifier) {}
 
+	static constexpr const char *ClassIdentifier = "province";
+
 	int GetIdentifier() const
 	{
 		return this->Identifier;
