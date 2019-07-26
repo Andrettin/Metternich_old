@@ -1,5 +1,7 @@
 #pragma once
 
+#include "data_element.h"
+
 #include <string>
 #include <vector>
 
@@ -8,9 +10,16 @@ class Holding;
 class LandedTitle;
 class Religion;
 
-class Province
+class Province : public DataElement<Province, int>
 {
 public:
+	Province(const int identifier) : Identifier(identifier) {}
+
+	int GetIdentifier() const
+	{
+		return this->Identifier;
+	}
+
 	const std::string &GetName() const
 	{
 		return this->Name;
@@ -47,6 +56,7 @@ public:
 	}
 
 private:
+	int Identifier = -1;
 	std::string Name;
 	LandedTitle *County = nullptr;
 	const ::Culture *Culture = nullptr;

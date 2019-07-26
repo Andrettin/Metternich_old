@@ -36,6 +36,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     building.h \
     character.h \
+    data_element.h \
     gsml_data.h \
     gsml_operator.h \
     gsml_property.h \

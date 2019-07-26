@@ -1,5 +1,7 @@
 #pragma once
 
+#include "data_element.h"
+
 #include <string>
 #include <vector>
 
@@ -9,14 +11,16 @@ class GSMLProperty;
 class LandedTitle;
 class Religion;
 
-class Character
+class Character : public DataElement<Character, int>
 {
 public:
+	Character(const int identifier) : Identifier(identifier) {}
+
 	bool ProcessGSMLProperty(const GSMLProperty &property);
 
-	int GetID() const
+	int GetIdentifier() const
 	{
-		return this->ID;
+		return this->Identifier;
 	}
 
 	const std::string &GetName() const
@@ -29,17 +33,17 @@ public:
 		return this->Female;
 	}
 
-	Dynasty *GetDynasty() const
+	const Dynasty *GetDynasty() const
 	{
 		return this->Dynasty;
 	}
 
-	Culture *GetCulture() const
+	const Culture *GetCulture() const
 	{
 		return this->Culture;
 	}
 
-	Religion *GetReligion() const
+	const Religion *GetReligion() const
 	{
 		return this->Religion;
 	}
@@ -55,12 +59,12 @@ public:
 	}
 
 private:
-	int ID = -1;
+	int Identifier = -1;
 	std::string Name;
 	bool Female = false;
-	::Dynasty *Dynasty = nullptr;
-	::Culture *Culture = nullptr;
-	::Religion *Religion = nullptr;
+	const ::Dynasty *Dynasty = nullptr;
+	const ::Culture *Culture = nullptr;
+	const ::Religion *Religion = nullptr;
 	LandedTitle *PrimaryTitle = nullptr;
 	std::vector<LandedTitle *> LandedTitles;
 	Character *Father = nullptr;
