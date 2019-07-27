@@ -1,10 +1,15 @@
+#include "landed_title.h"
 #include "province.h"
 
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
+#include <iostream>
+#include <stdexcept>
+
 static void LoadDatabase()
 {
+	LandedTitle::LoadDatabase();
 	Province::LoadDatabase();
 }
 
@@ -14,7 +19,11 @@ int main(int argc, char *argv[])
 
 	QGuiApplication app(argc, argv);
 
-	LoadDatabase();
+	try {
+		LoadDatabase();
+	} catch (const std::exception &exception) {
+		std::cerr << exception.what() << '\n';
+	}
 
 	QQmlApplicationEngine engine;
 	const QUrl url(QStringLiteral("qrc:/main.qml"));
