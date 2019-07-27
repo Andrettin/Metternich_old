@@ -150,6 +150,12 @@ void GSMLData::ParseTokens(const std::vector<std::string> &tokens, GSMLData **cu
 	GSMLOperator property_operator = GSMLOperator::None;
 	std::string value;
 	for (const std::string &token : tokens) {
+		if (!key.empty() && property_operator == GSMLOperator::None && token != "=" && token != "+=" && token != "-=") {
+			//if the previously-given key isn't empty and no operator has been provided before or now, then the key was actually a value, part of a simple collection of values
+			(*current_gsml_data)->Values.push_back(key);
+			key.clear();
+		}
+
 		if (key.empty()) {
 			if (token == "}") { //closes current tag
 				if ((*current_gsml_data) == nullptr) {

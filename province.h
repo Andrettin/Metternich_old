@@ -13,16 +13,18 @@ class Holding;
 class LandedTitle;
 class Religion;
 
-class Province : public DataElement<Province, int>
+class Province : public DataElement<Province>
 {
 public:
-	Province(const int identifier) : Identifier(identifier) {}
+	Province(const std::string identifier) : Identifier(identifier) {}
 
 	static constexpr const char *ClassIdentifier = "province";
+	static constexpr const char *DatabaseFolder = "provinces";
 
-	static void ProcessDefinitions(const CSVData &csv_data);
+	bool ProcessGSMLProperty(const GSMLProperty &property);
+	bool ProcessGSMLData(const GSMLData &data);
 
-	int GetIdentifier() const
+	const std::string &GetIdentifier() const
 	{
 		return this->Identifier;
 	}
@@ -63,7 +65,7 @@ public:
 	}
 
 private:
-	int Identifier = -1;
+	std::string Identifier;
 	std::string Name;
 	QColor Color; //color used to identify the province in the province map
 	LandedTitle *County = nullptr;

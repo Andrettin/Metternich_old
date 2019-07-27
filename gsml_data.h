@@ -21,8 +21,36 @@ private:
 	static bool ParseEscapedCharacter(std::string &current_string, const char c);
 	static void ParseTokens(const std::vector<std::string> &tokens, GSMLData **current_gsml_data);
 
+public:
+	const std::string &GetTag() const
+	{
+		return this->Tag;
+	}
+
+	const GSMLData *GetParent() const
+	{
+		return this->Parent;
+	}
+
+	const std::vector<GSMLData> &GetChildren() const
+	{
+		return this->Children;
+	}
+
+	const std::vector<GSMLProperty> &GetProperties() const
+	{
+		return this->Properties;
+	}
+
+	const std::vector<std::string> &GetValues() const
+	{
+		return this->Values;
+	}
+
+private:
 	std::string Tag;
 	GSMLData *Parent = nullptr;
 	std::vector<GSMLData> Children;
 	std::vector<GSMLProperty> Properties;
+	std::vector<std::string> Values; //values directly attached to the GSML data scope, used for e.g. name arrays
 };

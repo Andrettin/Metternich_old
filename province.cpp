@@ -1,30 +1,55 @@
 #include "province.h"
 
-#include "csv_data.h"
+#include "gsml_data.h"
 
-void Province::ProcessDefinitions(const CSVData &csv_data)
+/**
+**	@brief	Process a GSML property
+**
+**	@param	property	The property
+**
+**	@return	True if the property key is valid (and the operator is valid for it), or false otherwise
+*/
+bool Province::ProcessGSMLProperty(const GSMLProperty &property)
 {
-	for (const std::vector<std::string> &line_values : csv_data.GetValues()) {
-		if (line_values.empty()) {
-			continue;
+	const std::string &key = property.GetKey();
+	const GSMLOperator gsml_operator = property.GetOperator();
+	const std::string &value = property.GetValue();
+
+	if (key == "name") {
+		if (gsml_operator == GSMLOperator::Assignment) {
+			this->Name = value;
 		}
-
-		const int province_id = std::stoi(line_values.at(0));
-		Province *province = Province::Add(province_id);
-
-		if (line_values.size() < 4) {
-			continue;
-		}
-
-		const int red = std::stoi(line_values.at(1));
-		const int green = std::stoi(line_values.at(2));
-		const int blue = std::stoi(line_values.at(3));
-		province->Color.setRgb(red, green, blue);
-
-		if (line_values.size() < 5) {
-			continue;
-		}
-
-		province->Name = line_values.at(4);
+	} else {
+		return false;
 	}
+
+	return true;
+}
+
+/**
+**	@brief	Process GSML data
+**
+**	@param	data	The data
+**
+**	@return	True if the data tag is valid, or false otherwise
+*/
+bool Province::ProcessGSMLData(const GSMLData &data)
+{
+	const std::string &tag = data.GetTag();
+	const std::vector<std::string> &values = data.GetValues();
+
+	if (tag == "color") {
+		if (values.size() != 3) {
+			throw std::runtime_error("The \"color\" field for provinces needs to contain exactly three values!");
+		}
+
+		const int red = std::stoi(values.at(0));
+		const int green = std::stoi(values.at(1));
+		const int blue = std::stoi(values.at(2));
+		this->Color.setRgb(red, green, blue);
+	} else {
+		return false;
+	}
+
+	return true;
 }

@@ -1,5 +1,8 @@
 #pragma once
 
+#include "gsml_data.h"
+
+#include <filesystem>
 #include <map>
 #include <memory>
 #include <stdexcept>
@@ -83,6 +86,48 @@ public:
 	{
 		DataElement::Instances.clear();
 		DataElement::InstancesByIdentifier.clear();
+	}
+
+	/**
+	**	@brief	Load the database for the data element class
+	*/
+	static inline void LoadDatabase()
+	{
+		std::filesystem::path database_path("./data/common/" + std::string(T::DatabaseFolder));
+
+		if (!std::filesystem::exists(database_path)) {
+			return;
+		}
+
+		std::filesystem::recursive_directory_iterator dir_iterator(database_path);
+
+		for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
+			if (!dir_entry.is_regular_file()) {
+				continue;
+			}
+
+			GSMLData gsml_data = GSMLData::ParseFile(dir_entry.path());
+			for (const GSMLData &data_entry : gsml_data.GetChildren()) {
+				T *instance = nullptr;
+				if constexpr (std::is_same_v<KEY, int>) {
+					instance = T::Add(std::stoi(data_entry.GetTag()));
+				} else {
+					instance = T::Add(data_entry.GetTag());
+				}
+
+				for (const GSMLProperty &property : data_entry.GetProperties()) {
+					if (!instance->ProcessGSMLProperty(property)) {
+						throw std::runtime_error("Invalid " + std::string(T::ClassIdentifier) + " property: \"" + property.GetKey() + "\".");
+					}
+				}
+
+				for (const GSMLData &child_data : data_entry.GetChildren()) {
+					if (!instance->ProcessGSMLData(child_data)) {
+						throw std::runtime_error("Invalid " + std::string(T::ClassIdentifier) + " field: \"" + child_data.GetTag() + "\".");
+					}
+				}
+			}
+		}
 	}
 
 private:
