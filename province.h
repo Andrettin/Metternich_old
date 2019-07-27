@@ -25,11 +25,6 @@ public:
 	virtual bool ProcessGSMLProperty(const GSMLProperty &property) override;
 	virtual bool ProcessGSMLScope(const GSMLData &scope) override;
 
-	const std::string &GetName() const
-	{
-		return this->Name;
-	}
-
 	LandedTitle *GetCounty() const
 	{
 		return this->County;
@@ -61,7 +56,6 @@ public:
 	}
 
 private:
-	std::string Name;
 	QColor Color; //color used to identify the province in the province map
 	LandedTitle *County = nullptr;
 	const ::Culture *Culture = nullptr;

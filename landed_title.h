@@ -15,17 +15,11 @@ public:
 	static constexpr const char *ClassIdentifier = "landed_title";
 	static constexpr const char *DatabaseFolder = "landed_titles";
 
-	const std::string &GetName() const
-	{
-		return this->Name;
-	}
-
 	Character *GetOwner() const
 	{
 		return this->Owner;
 	}
 
 private:
-	std::string Name;
 	Character *Owner = nullptr;
 };

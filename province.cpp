@@ -2,6 +2,7 @@
 
 #include "database/gsml_data.h"
 #include "database/gsml_property.h"
+#include "landed_title.h"
 
 /**
 **	@brief	Process a GSML property
@@ -16,9 +17,9 @@ bool Province::ProcessGSMLProperty(const GSMLProperty &property)
 	const GSMLOperator gsml_operator = property.GetOperator();
 	const std::string &value = property.GetValue();
 
-	if (key == "name") {
+	if (key == "county") {
 		if (gsml_operator == GSMLOperator::Assignment) {
-			this->Name = value;
+			this->County = LandedTitle::Get(value);
 		}
 	} else {
 		return false;
