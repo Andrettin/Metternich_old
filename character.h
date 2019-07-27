@@ -21,7 +21,7 @@ public:
 
 	virtual bool ProcessGSMLProperty(const GSMLProperty &property) override;
 
-	const std::string &GetName() const
+	virtual const std::string &GetName() const override
 	{
 		return this->Name;
 	}

@@ -21,6 +21,15 @@ public:
 		return this->Identifier;
 	}
 
+	virtual const std::string &GetName() const
+	{
+		if constexpr (std::is_same_v<IdentifierType, int>) {
+			return std::to_string(this->Identifier);
+		} else {
+			return this->Identifier;
+		}
+	}
+
 	virtual bool ProcessGSMLProperty(const GSMLProperty &) { return false; }
 	virtual bool ProcessGSMLScope(const GSMLData &) { return false; }
 
