@@ -1,6 +1,6 @@
 #include "character.h"
 
-#include "gsml_property.h"
+#include "database/gsml_property.h"
 #include "util.h"
 
 /**

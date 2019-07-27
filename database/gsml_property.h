@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gsml_operator.h"
+#include "database/gsml_operator.h"
 
 #include <string>
 #include <vector>

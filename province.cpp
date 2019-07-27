@@ -1,6 +1,7 @@
 #include "province.h"
 
-#include "gsml_data.h"
+#include "database/gsml_data.h"
+#include "database/gsml_property.h"
 
 /**
 **	@brief	Process a GSML property

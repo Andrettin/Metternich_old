@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gsml_property.h"
+#include "database/gsml_property.h"
 
 #include <filesystem>
 #include <string>
