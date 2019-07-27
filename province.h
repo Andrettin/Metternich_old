@@ -21,6 +21,9 @@ public:
 
 	static constexpr const char *ClassIdentifier = "province";
 	static constexpr const char *DatabaseFolder = "provinces";
+	static constexpr const char *Prefix = "p_";
+
+	static Province *Add(const std::string &identifier);
 
 	virtual bool ProcessGSMLProperty(const GSMLProperty &property) override;
 	virtual bool ProcessGSMLScope(const GSMLData &scope) override;

@@ -16,6 +16,7 @@ SOURCES += \
         character.cpp \
         database/csv_data.cpp \
         database/gsml_data.cpp \
+        landed_title.cpp \
         main.cpp \
         province.cpp \
         util.cpp

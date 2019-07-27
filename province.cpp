@@ -5,6 +5,22 @@
 #include "landed_title.h"
 
 /**
+**	@brief	Add a new instance of the class
+**
+**	@param	identifier	The instance's identifier
+**
+**	@return	The new instance
+*/
+Province *Province::Add(const std::string &identifier)
+{
+	if (identifier.substr(0, 2) != Province::Prefix) {
+		throw std::runtime_error("Invalid identifier for new province: \"" + identifier + "\". Province identifiers must begin with \"" + Province::Prefix + "\".");
+	}
+
+	return DataType<Province>::Add(identifier);
+}
+
+/**
 **	@brief	Process a GSML property
 **
 **	@param	property	The property
