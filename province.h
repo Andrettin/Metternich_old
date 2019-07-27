@@ -1,6 +1,7 @@
 #pragma once
 
-#include "data_element.h"
+#include "data_entry.h"
+#include "data_type.h"
 
 #include <QColor>
 
@@ -13,21 +14,16 @@ class Holding;
 class LandedTitle;
 class Religion;
 
-class Province : public DataElement<Province>
+class Province : public DataEntry<>, public DataType<Province>
 {
 public:
-	Province(const std::string identifier) : Identifier(identifier) {}
+	Province(const std::string &identifier) : DataEntry(identifier) {}
 
 	static constexpr const char *ClassIdentifier = "province";
 	static constexpr const char *DatabaseFolder = "provinces";
 
-	bool ProcessGSMLProperty(const GSMLProperty &property);
-	bool ProcessGSMLData(const GSMLData &data);
-
-	const std::string &GetIdentifier() const
-	{
-		return this->Identifier;
-	}
+	virtual bool ProcessGSMLProperty(const GSMLProperty &property) override;
+	virtual bool ProcessGSMLScope(const GSMLData &scope) override;
 
 	const std::string &GetName() const
 	{
@@ -65,7 +61,6 @@ public:
 	}
 
 private:
-	std::string Identifier;
 	std::string Name;
 	QColor Color; //color used to identify the province in the province map
 	LandedTitle *County = nullptr;

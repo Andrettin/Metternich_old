@@ -11,7 +11,7 @@
 #include <vector>
 
 template <typename T, typename KEY = std::string>
-class DataElement
+class DataType
 {
 public:
 	/**
@@ -23,9 +23,9 @@ public:
 	*/
 	static inline T *Get(const KEY &identifier)
 	{
-		typename std::map<KEY, std::unique_ptr<T>>::const_iterator find_iterator = DataElement::InstancesByIdentifier.find(identifier);
+		typename std::map<KEY, std::unique_ptr<T>>::const_iterator find_iterator = DataType::InstancesByIdentifier.find(identifier);
 
-		if (find_iterator != DataElement::InstancesByIdentifier.end()) {
+		if (find_iterator != DataType::InstancesByIdentifier.end()) {
 			return find_iterator->second.get();
 		}
 
@@ -43,7 +43,7 @@ public:
 	*/
 	static inline const std::vector<T *> &GetAll()
 	{
-		return DataElement::Instances;
+		return DataType::Instances;
 	}
 
 	/**
@@ -61,9 +61,9 @@ public:
 			}
 		}
 
-		DataElement::InstancesByIdentifier[identifier] = std::make_unique<T>(identifier);
-		T *instance = DataElement::InstancesByIdentifier.find(identifier)->second.get();
-		DataElement::Instances.push_back(instance);
+		DataType::InstancesByIdentifier[identifier] = std::make_unique<T>(identifier);
+		T *instance = DataType::InstancesByIdentifier.find(identifier)->second.get();
+		DataType::Instances.push_back(instance);
 
 		return instance;
 	}
@@ -75,8 +75,8 @@ public:
 	*/
 	static inline void Remove(T *instance)
 	{
-		DataElement::InstancesByIdentifier.erase(instance->GetIdentifier());
-		DataElement::Instances.erase(std::remove(DataElement::Instances.begin(), DataElement::Instances.end(), instance), DataElement::Instances.end());
+		DataType::InstancesByIdentifier.erase(instance->GetIdentifier());
+		DataType::Instances.erase(std::remove(DataType::Instances.begin(), DataType::Instances.end(), instance), DataType::Instances.end());
 	}
 
 	/**
@@ -84,8 +84,8 @@ public:
 	*/
 	static inline void Clear()
 	{
-		DataElement::Instances.clear();
-		DataElement::InstancesByIdentifier.clear();
+		DataType::Instances.clear();
+		DataType::InstancesByIdentifier.clear();
 	}
 
 	/**
@@ -122,7 +122,7 @@ public:
 				}
 
 				for (const GSMLData &child_data : data_entry.GetChildren()) {
-					if (!instance->ProcessGSMLData(child_data)) {
+					if (!instance->ProcessGSMLScope(child_data)) {
 						throw std::runtime_error("Invalid " + std::string(T::ClassIdentifier) + " field: \"" + child_data.GetTag() + "\".");
 					}
 				}

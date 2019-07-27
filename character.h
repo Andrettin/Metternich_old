@@ -1,6 +1,7 @@
 #pragma once
 
-#include "data_element.h"
+#include "data_entry.h"
+#include "data_type.h"
 
 #include <string>
 #include <vector>
@@ -11,19 +12,14 @@ class GSMLProperty;
 class LandedTitle;
 class Religion;
 
-class Character : public DataElement<Character, int>
+class Character : public DataEntry<int>, DataType<Character, int>
 {
 public:
-	Character(const int identifier) : Identifier(identifier) {}
+	Character(const int identifier) : DataEntry(identifier) {}
 
 	static constexpr const char *ClassIdentifier = "character";
 
-	bool ProcessGSMLProperty(const GSMLProperty &property);
-
-	int GetIdentifier() const
-	{
-		return this->Identifier;
-	}
+	virtual bool ProcessGSMLProperty(const GSMLProperty &property) override;
 
 	const std::string &GetName() const
 	{
@@ -61,7 +57,6 @@ public:
 	}
 
 private:
-	int Identifier = -1;
 	std::string Name;
 	bool Female = false;
 	const ::Dynasty *Dynasty = nullptr;

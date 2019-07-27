@@ -27,20 +27,20 @@ bool Province::ProcessGSMLProperty(const GSMLProperty &property)
 }
 
 /**
-**	@brief	Process GSML data
+**	@brief	Process GSML data scope
 **
-**	@param	data	The data
+**	@param	scope	The scope
 **
-**	@return	True if the data tag is valid, or false otherwise
+**	@return	True if the scope tag is valid, or false otherwise
 */
-bool Province::ProcessGSMLData(const GSMLData &data)
+bool Province::ProcessGSMLScope(const GSMLData &scope)
 {
-	const std::string &tag = data.GetTag();
-	const std::vector<std::string> &values = data.GetValues();
+	const std::string &tag = scope.GetTag();
+	const std::vector<std::string> &values = scope.GetValues();
 
 	if (tag == "color") {
 		if (values.size() != 3) {
-			throw std::runtime_error("The \"color\" field for provinces needs to contain exactly three values!");
+			throw std::runtime_error("The \"color\" scope for provinces needs to contain exactly three values!");
 		}
 
 		const int red = std::stoi(values.at(0));

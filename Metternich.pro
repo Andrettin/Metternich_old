@@ -39,7 +39,8 @@ HEADERS += \
     building.h \
     character.h \
     csv_data.h \
-    data_element.h \
+    data_entry.h \
+    data_type.h \
     gsml_data.h \
     gsml_operator.h \
     gsml_property.h \
