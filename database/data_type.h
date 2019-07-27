@@ -89,7 +89,7 @@ public:
 	}
 
 	/**
-	**	@brief	Load the database for the data element class
+	**	@brief	Load the database for the data type
 	*/
 	static inline void LoadDatabase()
 	{

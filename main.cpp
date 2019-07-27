@@ -1,3 +1,4 @@
+#include "defines.h"
 #include "landed_title.h"
 #include "province.h"
 
@@ -9,6 +10,7 @@
 
 static void LoadDatabase()
 {
+	Defines::Load();
 	LandedTitle::LoadDatabase();
 	Province::LoadDatabase();
 }

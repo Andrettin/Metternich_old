@@ -40,10 +40,6 @@ GSMLData GSMLData::ParseFile(const std::filesystem::path &filepath)
 		++line_index;
 	}
 
-	if (file_gsml_data.Children.empty()) {
-		throw std::runtime_error("Could not parse output for config file \"" + filepath.string() + "\".");
-	}
-
 	return file_gsml_data;
 }
 
