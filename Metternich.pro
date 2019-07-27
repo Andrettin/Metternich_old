@@ -16,8 +16,10 @@ SOURCES += \
         character.cpp \
         database/csv_data.cpp \
         database/gsml_data.cpp \
+        defines.cpp \
         landed_title.cpp \
         main.cpp \
+        metternich.cpp \
         province.cpp \
         util.cpp
 
@@ -45,9 +47,11 @@ HEADERS += \
     database/gsml_data.h \
     database/gsml_operator.h \
     database/gsml_property.h \
+    defines.h \
     holding.h \
     holding_type.h \
     landed_title.h \
+    metternich.h \
     pch.h \
     province.h \
     util.h

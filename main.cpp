@@ -1,9 +1,11 @@
 #include "defines.h"
 #include "landed_title.h"
+#include "metternich.h"
 #include "province.h"
 
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
 
 #include <iostream>
 #include <stdexcept>
@@ -28,6 +30,7 @@ int main(int argc, char *argv[])
 	}
 
 	QQmlApplicationEngine engine;
+	engine.rootContext()->setContextProperty("Metternich", Metternich::GetInstance());
 	const QUrl url(QStringLiteral("./main.qml"));
 	QObject::connect(&engine, &QQmlApplicationEngine::objectCreated, &app, [url](QObject *obj, const QUrl &objUrl) {
 		if (!obj && url == objUrl) {
