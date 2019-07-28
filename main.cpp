@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 	try {
 		LoadDatabase();
 		Map::Load();
-		translator.LoadLanguageTranslation("english");
+		translator.LoadLocale("english");
 	} catch (const std::exception &exception) {
 		std::cerr << exception.what() << '\n';
 	}

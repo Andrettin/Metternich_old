@@ -4,11 +4,11 @@
 
 #include <filesystem>
 
-void Translator::LoadLanguageTranslation(const std::string &language)
+void Translator::LoadLocale(const std::string &language)
 {
 	this->Translations.clear();
 
-	std::filesystem::path translation_path("./translations/" + language);
+	std::filesystem::path translation_path("./localization/" + language);
 
 	if (!std::filesystem::exists(translation_path)) {
 		return;

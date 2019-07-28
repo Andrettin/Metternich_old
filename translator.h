@@ -12,7 +12,7 @@ class Translator : public QTranslator
 	Q_OBJECT
 
 public:
-	void LoadLanguageTranslation(const std::string &language);
+	void LoadLocale(const std::string &language);
 
 	virtual QString translate(const char *context, const char *source_text, const char *disambiguation = nullptr, int n = -1) const override
 	{
