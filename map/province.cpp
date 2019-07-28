@@ -1,4 +1,4 @@
-#include "province.h"
+#include "map/province.h"
 
 #include "database/gsml_data.h"
 #include "database/gsml_property.h"

@@ -1,7 +1,7 @@
 #include "metternich.h"
 
 #include "defines.h"
-#include "province.h"
+#include "map/province.h"
 
 #include <QList>
 

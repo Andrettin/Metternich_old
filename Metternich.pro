@@ -19,9 +19,9 @@ SOURCES += \
         defines.cpp \
         landed_title.cpp \
         main.cpp \
-        map.cpp \
+        map/map.cpp \
+        map/province.cpp \
         metternich.cpp \
-        province.cpp \
         util.cpp
 
 RESOURCES += qml.qrc
@@ -40,7 +40,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    building.h \
     character.h \
     database/csv_data.h \
     database/data_entry.h \
@@ -49,11 +48,12 @@ HEADERS += \
     database/gsml_operator.h \
     database/gsml_property.h \
     defines.h \
-    holding.h \
-    holding_type.h \
+    holding/building.h \
+    holding/holding.h \
+    holding/holding_type.h \
     landed_title.h \
-    map.h \
+    map/map.h \
+    map/province.h \
     metternich.h \
     pch.h \
-    province.h \
     util.h

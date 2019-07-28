@@ -1,8 +1,8 @@
 #include "defines.h"
 #include "landed_title.h"
-#include "map.h"
+#include "map/map.h"
+#include "map/province.h"
 #include "metternich.h"
-#include "province.h"
 
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>

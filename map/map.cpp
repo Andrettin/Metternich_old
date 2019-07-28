@@ -1,6 +1,6 @@
-#include "map.h"
+#include "map/map.h"
 
-#include "province.h"
+#include "map/province.h"
 
 #include <QImage>
 #include <QRect>
