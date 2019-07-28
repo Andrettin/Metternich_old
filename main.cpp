@@ -1,5 +1,6 @@
 #include "defines.h"
 #include "landed_title.h"
+#include "map.h"
 #include "metternich.h"
 #include "province.h"
 
@@ -25,6 +26,7 @@ int main(int argc, char *argv[])
 
 	try {
 		LoadDatabase();
+		Map::Load();
 	} catch (const std::exception &exception) {
 		std::cerr << exception.what() << '\n';
 	}

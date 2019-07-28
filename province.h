@@ -4,7 +4,9 @@
 #include "database/data_type.h"
 
 #include <QColor>
+#include <QRect>
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -24,9 +26,24 @@ public:
 	static constexpr const char *Prefix = "p_";
 
 	static Province *Add(const std::string &identifier);
+	static Province *Get(const QRgb &rgb);
 
+private:
+	static inline std::map<QRgb, Province *> InstancesByRgb;
+
+public:
 	virtual bool ProcessGSMLProperty(const GSMLProperty &property) override;
 	virtual bool ProcessGSMLScope(const GSMLData &scope) override;
+
+	void SetRect(const QRect &rect)
+	{
+		this->Rect = rect;
+	}
+
+	const QRect &GetRect() const
+	{
+		return this->Rect;
+	}
 
 	LandedTitle *GetCounty() const
 	{
@@ -59,6 +76,7 @@ public:
 	}
 
 private:
+	QRect Rect; //the rectangle that the province occupies
 	QColor Color; //color used to identify the province in the province map
 	LandedTitle *County = nullptr;
 	const ::Culture *Culture = nullptr;

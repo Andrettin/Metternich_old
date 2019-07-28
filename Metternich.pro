@@ -19,6 +19,7 @@ SOURCES += \
         defines.cpp \
         landed_title.cpp \
         main.cpp \
+        map.cpp \
         metternich.cpp \
         province.cpp \
         util.cpp
@@ -51,6 +52,7 @@ HEADERS += \
     holding.h \
     holding_type.h \
     landed_title.h \
+    map.h \
     metternich.h \
     pch.h \
     province.h \

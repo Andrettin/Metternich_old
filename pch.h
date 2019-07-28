@@ -2,9 +2,13 @@
 
 #include <QColor>
 #include <QGuiApplication>
+#include <QImage>
 #include <QObject>
+#include <QPoint>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QRect>
+#include <QSize>
 #include <QString>
 
 #include <filesystem>

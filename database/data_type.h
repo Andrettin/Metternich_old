@@ -19,9 +19,11 @@ public:
 	**
 	**	@param	identifier	The instance's identifier
 	**
+	**	@param	should_find	Whether it is expected that an instance should be found (i.e. if none is, then it is an error).
+	**
 	**	@return	The instance if found, or null otherwise
 	*/
-	static inline T *Get(const KEY &identifier)
+	static inline T *Get(const KEY &identifier, const bool should_find = true)
 	{
 		typename std::map<KEY, std::unique_ptr<T>>::const_iterator find_iterator = DataType::InstancesByIdentifier.find(identifier);
 
@@ -29,11 +31,15 @@ public:
 			return find_iterator->second.get();
 		}
 
-		if constexpr (std::is_arithmetic_v<KEY>) {
-			throw std::runtime_error("Invalid \"" + std::string(T::ClassIdentifier) + "\" instance: \"" + std::to_string(identifier) + "\".");
-		} else {
-			throw std::runtime_error("Invalid \"" + std::string(T::ClassIdentifier) + "\" instance: \"" + identifier + "\".");
+		if (should_find) {
+			if constexpr (std::is_arithmetic_v<KEY>) {
+				throw std::runtime_error("Invalid \"" + std::string(T::ClassIdentifier) + "\" instance: \"" + std::to_string(identifier) + "\".");
+			} else {
+				throw std::runtime_error("Invalid \"" + std::string(T::ClassIdentifier) + "\" instance: \"" + identifier + "\".");
+			}
 		}
+
+		return nullptr;
 	}
 
 	/**

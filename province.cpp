@@ -5,6 +5,24 @@
 #include "landed_title.h"
 
 /**
+**	@brief	Get an instance of the class by the RGB value associated with it
+**
+**	@param	rgb	The instance's RGB
+**
+**	@return	The instance if found, or null otherwise
+*/
+Province *Province::Get(const QRgb &rgb)
+{
+	typename std::map<QRgb, Province *>::const_iterator find_iterator = Province::InstancesByRgb.find(rgb);
+
+	if (find_iterator != Province::InstancesByRgb.end()) {
+		return find_iterator->second;
+	}
+
+	return nullptr;
+}
+
+/**
 **	@brief	Add a new instance of the class
 **
 **	@param	identifier	The instance's identifier
@@ -65,6 +83,7 @@ bool Province::ProcessGSMLScope(const GSMLData &scope)
 		const int green = std::stoi(values.at(1));
 		const int blue = std::stoi(values.at(2));
 		this->Color.setRgb(red, green, blue);
+		Province::InstancesByRgb[this->Color.rgb()] = this;
 	} else {
 		return false;
 	}
