@@ -15,6 +15,7 @@
 #include <QRect>
 #include <QSize>
 #include <QString>
+#include <QTranslator>
 #include <QVariant>
 #include <QVector>
 

@@ -4,12 +4,14 @@
 #include "map/province.h"
 #include "map/province_image_provider.h"
 #include "metternich.h"
+#include "translator.h"
 
 #include "third_party/maskedmousearea/maskedmousearea.h"
 
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QTranslator>
 
 #include <iostream>
 #include <stdexcept>
@@ -27,12 +29,17 @@ int main(int argc, char *argv[])
 
 	QGuiApplication app(argc, argv);
 
+	Translator translator;
+
 	try {
 		LoadDatabase();
 		Map::Load();
+		translator.LoadLanguageTranslation("english");
 	} catch (const std::exception &exception) {
 		std::cerr << exception.what() << '\n';
 	}
+
+	app.installTranslator(&translator);
 
 	QQmlApplicationEngine engine;
 
