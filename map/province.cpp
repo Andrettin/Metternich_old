@@ -3,6 +3,7 @@
 #include "database/gsml_data.h"
 #include "database/gsml_property.h"
 #include "landed_title.h"
+#include "metternich.h"
 #include "map/map.h"
 #include "util.h"
 
@@ -208,9 +209,13 @@ void Province::SetSelected(const bool selected)
 	}
 
 	this->Selected = selected;
-	Province::SelectedProvince = this;
 
 	this->UpdateImage();
 
 	emit SelectedChanged();
+
+	if (selected) {
+		Province::SelectedProvince = this;
+		Metternich::GetInstance()->emit SelectedProvinceChanged();
+	}
 }

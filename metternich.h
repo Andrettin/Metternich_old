@@ -16,8 +16,9 @@ class Metternich : public QObject
 {
 	Q_OBJECT
 
-	Q_PROPERTY(QString assetImportPath READ GetAssetImportPath CONSTANT)
+	Q_PROPERTY(QString asset_import_path READ GetAssetImportPath CONSTANT)
 	Q_PROPERTY(QVariant provinces READ GetProvinces CONSTANT)
+	Q_PROPERTY(Province* selected_province READ GetSelectedProvince NOTIFY SelectedProvinceChanged)
 
 public:
 	static Metternich *GetInstance();
@@ -29,4 +30,8 @@ private:
 public:
 	QString GetAssetImportPath() const;
 	QVariant GetProvinces() const;
+	Province *GetSelectedProvince() const;
+
+signals:
+	void SelectedProvinceChanged();
 };

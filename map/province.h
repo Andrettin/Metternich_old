@@ -38,6 +38,11 @@ public:
 	static Province *Add(const std::string &identifier);
 	static Province *GetByRGB(const QRgb &rgb);
 
+	static Province *GetSelectedProvince()
+	{
+		return Province::SelectedProvince;
+	}
+
 private:
 	static inline std::map<QRgb, Province *> InstancesByRGB;
 	static inline Province *SelectedProvince = nullptr;

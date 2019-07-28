@@ -25,3 +25,8 @@ QVariant Metternich::GetProvinces() const
 	}
 	return QVariant::fromValue(province_list);
 }
+
+Province *Metternich::GetSelectedProvince() const
+{
+	return Province::GetSelectedProvince();
+}

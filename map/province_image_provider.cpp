@@ -4,7 +4,8 @@
 
 QImage ProvinceImageProvider::requestImage(const QString &id, QSize *size, const QSize &)
 {
-	const Province *province = Province::Get(id.toStdString());
+	std::string identifier = id.toStdString();
+	const Province *province = Province::Get(identifier);
 
 	if (size != nullptr) {
 		*size = province->GetImage().size();

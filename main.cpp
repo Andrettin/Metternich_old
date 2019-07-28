@@ -1,4 +1,5 @@
 #include "defines.h"
+#include "empty_image_provider.h"
 #include "landed_title.h"
 #include "map/map.h"
 #include "map/province.h"
@@ -48,6 +49,7 @@ int main(int argc, char *argv[])
 	qmlRegisterType<Province>();
 	engine.rootContext()->setContextProperty("Metternich", Metternich::GetInstance());
 	engine.addImageProvider(QLatin1String("provinces"), new ProvinceImageProvider);
+	engine.addImageProvider(QLatin1String("empty"), new EmptyImageProvider);
 
 	const QUrl url(QStringLiteral("./main.qml"));
 	QObject::connect(&engine, &QQmlApplicationEngine::objectCreated, &app, [url](QObject *obj, const QUrl &objUrl) {
