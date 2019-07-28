@@ -8,6 +8,7 @@
 #include <QRect>
 
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -21,8 +22,10 @@ class Province : public QObject, public DataEntry<>, public DataType<Province>
 {
 	Q_OBJECT
 
+	Q_PROPERTY(QString identifier READ GetIdentifierQString CONSTANT)
 	Q_PROPERTY(QColor color READ GetColor CONSTANT)
 	Q_PROPERTY(QRect rect READ GetRect CONSTANT)
+	Q_PROPERTY(QImage image READ GetImage NOTIFY ImageChanged)
 
 public:
 	Province(const std::string &identifier) : DataEntry(identifier) {}
@@ -32,23 +35,23 @@ public:
 	static constexpr const char *Prefix = "p_";
 
 	static Province *Add(const std::string &identifier);
-	static Province *Get(const QRgb &rgb);
+	static Province *GetByRGB(const QRgb &rgb);
 
 private:
-	static inline std::map<QRgb, Province *> InstancesByRgb;
+	static inline std::map<QRgb, Province *> InstancesByRGB;
 
 public:
 	virtual bool ProcessGSMLProperty(const GSMLProperty &property) override;
 	virtual bool ProcessGSMLScope(const GSMLData &scope) override;
 
+	QString GetIdentifierQString() const
+	{
+		return QString::fromStdString(this->GetIdentifier());
+	}
+
 	LandedTitle *GetCounty() const
 	{
 		return this->County;
-	}
-
-	void SetRect(const QRect &rect)
-	{
-		this->Rect = rect;
 	}
 
 	const QColor &GetColor() const
@@ -59,6 +62,13 @@ public:
 	const QRect &GetRect() const
 	{
 		return this->Rect;
+	}
+
+	void CreateImage(const std::set<int> &pixel_indexes);
+
+	const QImage &GetImage() const
+	{
+		return this->Image;
 	}
 
 	const Culture *GetCulture() const
@@ -86,10 +96,14 @@ public:
 		return this->MaxHoldings;
 	}
 
+signals:
+	void ImageChanged();
+
 private:
 	LandedTitle *County = nullptr;
 	QColor Color; //color used to identify the province in the province map
 	QRect Rect; //the rectangle that the province occupies
+	QImage Image; //the province's image to be drawn on-screen
 	const ::Culture *Culture = nullptr;
 	const ::Religion *Religion = nullptr;
 	Holding *CapitalHolding = nullptr;

@@ -1,13 +1,17 @@
 #pragma once
 
+#include "maskedmousearea/maskedmousearea.h"
+
 #include <QColor>
 #include <QGuiApplication>
 #include <QImage>
 #include <QList>
 #include <QObject>
+#include <QPainter>
 #include <QPoint>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QQuickImageProvider>
 #include <QRect>
 #include <QSize>
 #include <QString>

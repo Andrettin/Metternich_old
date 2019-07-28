@@ -2,7 +2,10 @@
 #include "landed_title.h"
 #include "map/map.h"
 #include "map/province.h"
+#include "map/province_image_provider.h"
 #include "metternich.h"
+
+#include "third_party/maskedmousearea/maskedmousearea.h"
 
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
@@ -33,8 +36,11 @@ int main(int argc, char *argv[])
 
 	QQmlApplicationEngine engine;
 
-	engine.rootContext()->setContextProperty("Metternich", Metternich::GetInstance());
+	qmlRegisterType<MaskedMouseArea>("MaskedMouseArea", 1, 0, "MaskedMouseArea");
+
 	qmlRegisterType<Province>();
+	engine.rootContext()->setContextProperty("Metternich", Metternich::GetInstance());
+	engine.addImageProvider(QLatin1String("provinces"), new ProvinceImageProvider);
 
 	const QUrl url(QStringLiteral("./main.qml"));
 	QObject::connect(&engine, &QQmlApplicationEngine::objectCreated, &app, [url](QObject *obj, const QUrl &objUrl) {

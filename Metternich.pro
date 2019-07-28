@@ -21,7 +21,9 @@ SOURCES += \
         main.cpp \
         map/map.cpp \
         map/province.cpp \
+        map/province_image_provider.cpp \
         metternich.cpp \
+        third_party/maskedmousearea/maskedmousearea.cpp \
         util.cpp
 
 RESOURCES += qml.qrc
@@ -31,6 +33,8 @@ QML_IMPORT_PATH =
 
 # Additional import path used to resolve QML modules just for Qt Quick Designer
 QML_DESIGNER_IMPORT_PATH =
+
+INCLUDEPATH += third_party
 
 PRECOMPILED_HEADER = pch.h
 
@@ -54,6 +58,8 @@ HEADERS += \
     landed_title.h \
     map/map.h \
     map/province.h \
+    map/province_image_provider.h \
     metternich.h \
     pch.h \
+    third_party/maskedmousearea/maskedmousearea.h \
     util.h
