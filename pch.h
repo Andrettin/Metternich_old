@@ -3,6 +3,7 @@
 #include <QColor>
 #include <QGuiApplication>
 #include <QImage>
+#include <QList>
 #include <QObject>
 #include <QPoint>
 #include <QQmlApplicationEngine>
@@ -10,6 +11,8 @@
 #include <QRect>
 #include <QSize>
 #include <QString>
+#include <QVariant>
+#include <QVector>
 
 #include <filesystem>
 #include <fstream>

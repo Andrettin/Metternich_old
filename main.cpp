@@ -32,7 +32,10 @@ int main(int argc, char *argv[])
 	}
 
 	QQmlApplicationEngine engine;
+
 	engine.rootContext()->setContextProperty("Metternich", Metternich::GetInstance());
+	qmlRegisterType<Province>();
+
 	const QUrl url(QStringLiteral("./main.qml"));
 	QObject::connect(&engine, &QQmlApplicationEngine::objectCreated, &app, [url](QObject *obj, const QUrl &objUrl) {
 		if (!obj && url == objUrl) {

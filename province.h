@@ -4,6 +4,7 @@
 #include "database/data_type.h"
 
 #include <QColor>
+#include <QObject>
 #include <QRect>
 
 #include <map>
@@ -16,8 +17,13 @@ class Holding;
 class LandedTitle;
 class Religion;
 
-class Province : public DataEntry<>, public DataType<Province>
+class Province : public QObject, public DataEntry<>, public DataType<Province>
 {
+	Q_OBJECT
+
+	Q_PROPERTY(QColor color READ GetColor CONSTANT)
+	Q_PROPERTY(QRect rect READ GetRect CONSTANT)
+
 public:
 	Province(const std::string &identifier) : DataEntry(identifier) {}
 
@@ -35,19 +41,24 @@ public:
 	virtual bool ProcessGSMLProperty(const GSMLProperty &property) override;
 	virtual bool ProcessGSMLScope(const GSMLData &scope) override;
 
+	LandedTitle *GetCounty() const
+	{
+		return this->County;
+	}
+
 	void SetRect(const QRect &rect)
 	{
 		this->Rect = rect;
 	}
 
+	const QColor &GetColor() const
+	{
+		return this->Color;
+	}
+
 	const QRect &GetRect() const
 	{
 		return this->Rect;
-	}
-
-	LandedTitle *GetCounty() const
-	{
-		return this->County;
 	}
 
 	const Culture *GetCulture() const
@@ -76,9 +87,9 @@ public:
 	}
 
 private:
-	QRect Rect; //the rectangle that the province occupies
-	QColor Color; //color used to identify the province in the province map
 	LandedTitle *County = nullptr;
+	QColor Color; //color used to identify the province in the province map
+	QRect Rect; //the rectangle that the province occupies
 	const ::Culture *Culture = nullptr;
 	const ::Religion *Religion = nullptr;
 	Holding *CapitalHolding = nullptr;
