@@ -3,6 +3,7 @@
 #include "province.h"
 
 #include <QImage>
+#include <QRect>
 
 #include <set>
 
