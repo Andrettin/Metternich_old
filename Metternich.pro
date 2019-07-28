@@ -24,8 +24,7 @@ SOURCES += \
         map/province_image_provider.cpp \
         metternich.cpp \
         third_party/maskedmousearea/maskedmousearea.cpp \
-        translator.cpp \
-        util.cpp
+        translator.cpp
 
 RESOURCES += qml.qrc
 

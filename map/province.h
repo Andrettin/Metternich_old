@@ -26,6 +26,7 @@ class Province : public QObject, public DataEntry<>, public DataType<Province>
 	Q_PROPERTY(QColor color READ GetColor CONSTANT)
 	Q_PROPERTY(QRect rect READ GetRect CONSTANT)
 	Q_PROPERTY(QImage image READ GetImage NOTIFY ImageChanged)
+	Q_PROPERTY(bool selected READ IsSelected WRITE SetSelected NOTIFY SelectedChanged)
 
 public:
 	Province(const std::string &identifier) : DataEntry(identifier) {}
@@ -39,6 +40,7 @@ public:
 
 private:
 	static inline std::map<QRgb, Province *> InstancesByRGB;
+	static inline Province *SelectedProvince = nullptr;
 
 public:
 	virtual bool ProcessGSMLProperty(const GSMLProperty &property) override;
@@ -65,6 +67,7 @@ public:
 	}
 
 	void CreateImage(const std::set<int> &pixel_indexes);
+	void UpdateImage();
 
 	const QImage &GetImage() const
 	{
@@ -96,8 +99,16 @@ public:
 		return this->MaxHoldings;
 	}
 
+	void SetSelected(const bool selected);
+
+	bool IsSelected() const
+	{
+		return this->Selected;
+	}
+
 signals:
 	void ImageChanged();
+	void SelectedChanged();
 
 private:
 	LandedTitle *County = nullptr;
@@ -109,4 +120,5 @@ private:
 	Holding *CapitalHolding = nullptr;
 	std::vector<Holding *> Holdings;
 	int MaxHoldings = 1;
+	bool Selected = false;
 };

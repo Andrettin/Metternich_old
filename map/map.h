@@ -9,16 +9,7 @@ class Map
 {
 public:
 	static void Load();
-
-	static size_t GetPixelIndex(const int x, const int y)
-	{
-		return static_cast<size_t>(x + y * Map::Size.width());
-	}
-
-	static QPoint GetPixelPosition(const int index)
-	{
-		return QPoint(index % Map::Size.width(), index / Map::Size.width());
-	}
+	static QPoint GetPixelPosition(const int index);
 
 private:
 	static void LoadProvinces();

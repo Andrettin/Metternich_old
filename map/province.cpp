@@ -4,6 +4,7 @@
 #include "database/gsml_property.h"
 #include "landed_title.h"
 #include "map/map.h"
+#include "util.h"
 
 #include <QPainter>
 
@@ -129,4 +130,87 @@ void Province::CreateImage(const std::set<int> &pixel_indexes)
 		QPoint pixel_pos = Map::GetPixelPosition(index) - this->Rect.topLeft();
 		this->Image.setPixelColor(pixel_pos, this->GetColor());
 	}
+}
+
+/**
+**	@brief	Update the province's image
+*/
+void Province::UpdateImage()
+{
+	const int pixel_count = this->Image.width() * this->Image.height();
+
+	QRgb *rgb_data = reinterpret_cast<QRgb *>(this->Image.bits());
+	for (int i = 0; i < pixel_count; ++i) {
+		QRgb &pixel_rgb = rgb_data[i];
+
+		const int pixel_alpha = qAlpha(pixel_rgb);
+		if (pixel_alpha == 0) {
+			continue; //only modify non-alpha pixels of the image, i.e. the pixels of the province itself
+		}
+
+		if (this->IsSelected()) {
+			//if the province is selected, and this pixel is adjacent to a pixel not belonging to this province, then highlight it
+			QPoint pixel_pos = IndexToPoint(i, this->Image.size());
+
+			//check if the pixel is adjacent to one not belonging to this province
+			bool border_pixel = false;
+
+			if (pixel_pos.x() == 0 || pixel_pos.y() == 0 || pixel_pos.x() == (this->Image.width() - 1) || pixel_pos.y() == (this->Image.height() - 1)) {
+				border_pixel = true;
+			} else {
+				for (int x_offset = -1; x_offset <= 1; ++x_offset) {
+					for (int y_offset = -1; y_offset <= 1; ++y_offset) {
+						if (x_offset == 0 && y_offset == 0) {
+							continue;
+						}
+
+						QPoint adjacent_pos = pixel_pos + QPoint(x_offset, y_offset);
+
+						const int adjacent_alpha = qAlpha(rgb_data[PointToIndex(adjacent_pos, this->Image.size())]);
+
+						if (adjacent_alpha == 0) {
+							border_pixel = true;
+							break;
+						}
+					}
+					if (border_pixel) {
+						break;
+					}
+				}
+			}
+
+
+			if (border_pixel) {
+				pixel_rgb = QColor(Qt::yellow).rgba(); //set border pixels to yellow if the province is selected
+				continue;
+			}
+		}
+
+		pixel_rgb = this->GetColor().rgba();
+	}
+
+	emit ImageChanged();
+}
+
+/**
+**	@brief	Sets whether the province is selected
+**
+**	@param	selected	Whether the province is being selected
+*/
+void Province::SetSelected(const bool selected)
+{
+	if (selected == this->IsSelected()) {
+		return;
+	}
+
+	if (selected && Province::SelectedProvince != nullptr) {
+		Province::SelectedProvince->SetSelected(false);
+	}
+
+	this->Selected = selected;
+	Province::SelectedProvince = this;
+
+	this->UpdateImage();
+
+	emit SelectedChanged();
 }

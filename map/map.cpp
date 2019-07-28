@@ -1,6 +1,7 @@
 #include "map/map.h"
 
 #include "map/province.h"
+#include "util.h"
 
 #include <QImage>
 #include <QRect>
@@ -11,6 +12,11 @@ void Map::Load()
 {
 	Map::LoadProvinces();
 	Map::LoadTerrain();
+}
+
+QPoint Map::GetPixelPosition(const int index)
+{
+	return IndexToPoint(index, Map::Size);
 }
 
 void Map::LoadProvinces()
