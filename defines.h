@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QDateTime>
+
 #include <string>
 
 class GSMLProperty;
@@ -18,6 +20,12 @@ public:
 		return Defines::AssetImportPath;
 	}
 
+	static const QDateTime &GetStartDate()
+	{
+		return Defines::StartDate;
+	}
+
 private:
 	static inline std::string AssetImportPath;
+	static inline QDateTime StartDate;
 };

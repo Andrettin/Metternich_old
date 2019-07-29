@@ -1,6 +1,7 @@
 #include "defines.h"
 
 #include "database/gsml_data.h"
+#include "history/history.h"
 
 /**
 **	@brief	Load the defines
@@ -38,6 +39,10 @@ bool Defines::ProcessGSMLProperty(const GSMLProperty &property)
 	if (key == "asset_import_path") {
 		if (gsml_operator == GSMLOperator::Assignment) {
 			Defines::AssetImportPath = value;
+		}
+	} else if (key == "start_date") {
+		if (gsml_operator == GSMLOperator::Assignment) {
+			Defines::StartDate = History::StringToDate(value);
 		}
 	} else {
 		return false;

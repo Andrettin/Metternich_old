@@ -3,6 +3,7 @@
 #include "maskedmousearea/maskedmousearea.h"
 
 #include <QColor>
+#include <QDateTime>
 #include <QGuiApplication>
 #include <QImage>
 #include <QList>
@@ -15,6 +16,7 @@
 #include <QRect>
 #include <QSize>
 #include <QString>
+#include <QTimeZone>
 #include <QTranslator>
 #include <QVariant>
 #include <QVector>

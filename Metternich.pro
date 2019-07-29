@@ -53,6 +53,7 @@ HEADERS += \
     database/gsml_property.h \
     defines.h \
     empty_image_provider.h \
+    history/history.h \
     holding/building.h \
     holding/holding.h \
     holding/holding_type.h \
