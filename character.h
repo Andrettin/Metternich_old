@@ -12,18 +12,31 @@ class GSMLProperty;
 class LandedTitle;
 class Religion;
 
-class Character : public DataEntry<int>, DataType<Character, int>
+class Character : public NumericDataEntry, DataType<Character, int>
 {
+	Q_OBJECT
+
+	Q_PROPERTY(QString name READ GetNameQString WRITE SetNameQString)
+	Q_PROPERTY(bool female MEMBER Female READ IsFemale)
+
 public:
-	Character(const int identifier) : DataEntry(identifier) {}
+	Character(const int identifier) : NumericDataEntry(identifier) {}
 
 	static constexpr const char *ClassIdentifier = "character";
 
-	virtual bool ProcessGSMLProperty(const GSMLProperty &property) override;
+	void SetNameQString(const QString &name)
+	{
+		this->Name = name.toStdString();
+	}
 
-	virtual const std::string &GetName() const override
+	const std::string &GetName() const
 	{
 		return this->Name;
+	}
+
+	QString GetNameQString() const
+	{
+		return QString::fromStdString(this->Name);
 	}
 
 	bool IsFemale() const

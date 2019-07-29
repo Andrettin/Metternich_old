@@ -1,38 +1,67 @@
 #pragma once
 
-#include "database/gsml_data.h"
+#include <QObject>
 
 #include <string>
 
 class GSMLData;
 class GSMLProperty;
 
-template <typename KEY = std::string>
-class DataEntry
+/**
+**	@brief	The base class for a de(serializable) and identifiable entry to the database
+*/
+class DataEntryBase : public QObject
 {
-public:
-	using IdentifierType = KEY;
+	Q_OBJECT
 
-	DataEntry(const IdentifierType &identifier) : Identifier(identifier) {}
+public:
+	virtual ~DataEntryBase() {}
+
+	void ProcessGSMLProperty(const GSMLProperty &property);
+	virtual void ProcessGSMLScope(const GSMLData &scope);
+};
+
+/**
+**	@brief	A de(serializable) and identifiable entry to the database
+*/
+class DataEntry : public DataEntryBase
+{
+	Q_OBJECT
+
+public:
+	DataEntry(const std::string &identifier) : Identifier(identifier) {}
 	virtual ~DataEntry() {}
 
-	const IdentifierType &GetIdentifier() const
+	const std::string &GetIdentifier() const
 	{
 		return this->Identifier;
 	}
 
-	virtual const std::string &GetName() const
+	const std::string &GetName() const
 	{
-		if constexpr (std::is_same_v<IdentifierType, int>) {
-			return std::to_string(this->Identifier);
-		} else {
-			return this->Identifier;
-		}
+		return this->Identifier;
 	}
 
-	virtual bool ProcessGSMLProperty(const GSMLProperty &) { return false; }
-	virtual bool ProcessGSMLScope(const GSMLData &) { return false; }
+private:
+	std::string Identifier;
+};
+
+/**
+**	@brief	An de(serializable) and identifiable entry to the database, using a number as its identifier
+*/
+class NumericDataEntry : public DataEntryBase
+{
+	Q_OBJECT
+
+public:
+	NumericDataEntry(const int identifier) : Identifier(identifier) {}
+	virtual ~NumericDataEntry() {}
+
+	int GetIdentifier() const
+	{
+		return this->Identifier;
+	}
 
 private:
-	IdentifierType Identifier;
+	int Identifier;
 };

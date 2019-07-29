@@ -23,7 +23,7 @@ public:
 	**
 	**	@return	The instance if found, or null otherwise
 	*/
-	static inline T *Get(const KEY &identifier, const bool should_find = true)
+	static T *Get(const KEY &identifier, const bool should_find = true)
 	{
 		typename std::map<KEY, std::unique_ptr<T>>::const_iterator find_iterator = DataType::InstancesByIdentifier.find(identifier);
 
@@ -47,7 +47,7 @@ public:
 	**
 	**	@return	All existing instances of the class
 	*/
-	static inline const std::vector<T *> &GetAll()
+	static const std::vector<T *> &GetAll()
 	{
 		return DataType::Instances;
 	}
@@ -59,7 +59,7 @@ public:
 	**
 	**	@return	The new instance
 	*/
-	static inline T *Add(const KEY &identifier)
+	static T *Add(const KEY &identifier)
 	{
 		if constexpr (std::is_same_v<KEY, std::string>) {
 			if (identifier.empty()) {
@@ -71,6 +71,12 @@ public:
 		T *instance = DataType::InstancesByIdentifier.find(identifier)->second.get();
 		DataType::Instances.push_back(instance);
 
+		if constexpr (std::is_same_v<KEY, int>) {
+			if (identifier > DataType::LastNumericIdentifier) {
+				DataType::LastNumericIdentifier = identifier;
+			}
+		}
+
 		return instance;
 	}
 
@@ -79,7 +85,7 @@ public:
 	**
 	**	@param	instance	The instance
 	*/
-	static inline void Remove(T *instance)
+	static void Remove(T *instance)
 	{
 		DataType::InstancesByIdentifier.erase(instance->GetIdentifier());
 		DataType::Instances.erase(std::remove(DataType::Instances.begin(), DataType::Instances.end(), instance), DataType::Instances.end());
@@ -88,7 +94,7 @@ public:
 	/**
 	**	@brief	Remove the existing class instances
 	*/
-	static inline void Clear()
+	static void Clear()
 	{
 		DataType::Instances.clear();
 		DataType::InstancesByIdentifier.clear();
@@ -97,7 +103,7 @@ public:
 	/**
 	**	@brief	Load the database for the data type
 	*/
-	static inline void LoadDatabase()
+	static void LoadDatabase()
 	{
 		std::filesystem::path database_path("./data/common/" + std::string(T::DatabaseFolder));
 
@@ -122,21 +128,23 @@ public:
 				}
 
 				for (const GSMLProperty &property : data_entry.GetProperties()) {
-					if (!instance->ProcessGSMLProperty(property)) {
-						throw std::runtime_error("Invalid " + std::string(T::ClassIdentifier) + " property: \"" + property.GetKey() + "\".");
-					}
+					instance->ProcessGSMLProperty(property);
 				}
 
 				for (const GSMLData &child_data : data_entry.GetChildren()) {
-					if (!instance->ProcessGSMLScope(child_data)) {
-						throw std::runtime_error("Invalid " + std::string(T::ClassIdentifier) + " field: \"" + child_data.GetTag() + "\".");
-					}
+					instance->ProcessGSMLScope(child_data);
 				}
 			}
 		}
 	}
 
+	static int GenerateNumericIdentifier()
+	{
+		return ++DataType::LastNumericIdentifier;
+	}
+
 private:
 	static inline std::vector<T *> Instances;
 	static inline std::map<KEY, std::unique_ptr<T>> InstancesByIdentifier;
+	static inline int LastNumericIdentifier = 1;
 };

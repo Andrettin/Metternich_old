@@ -44,37 +44,11 @@ Province *Province::Add(const std::string &identifier)
 }
 
 /**
-**	@brief	Process a GSML property
-**
-**	@param	property	The property
-**
-**	@return	True if the property key is valid (and the operator is valid for it), or false otherwise
-*/
-bool Province::ProcessGSMLProperty(const GSMLProperty &property)
-{
-	const std::string &key = property.GetKey();
-	const GSMLOperator gsml_operator = property.GetOperator();
-	const std::string &value = property.GetValue();
-
-	if (key == "county") {
-		if (gsml_operator == GSMLOperator::Assignment) {
-			this->County = LandedTitle::Get(value);
-		}
-	} else {
-		return false;
-	}
-
-	return true;
-}
-
-/**
 **	@brief	Process GSML data scope
 **
 **	@param	scope	The scope
-**
-**	@return	True if the scope tag is valid, or false otherwise
 */
-bool Province::ProcessGSMLScope(const GSMLData &scope)
+void Province::ProcessGSMLScope(const GSMLData &scope)
 {
 	const std::string &tag = scope.GetTag();
 	const std::vector<std::string> &values = scope.GetValues();
@@ -90,10 +64,8 @@ bool Province::ProcessGSMLScope(const GSMLData &scope)
 		this->Color.setRgb(red, green, blue);
 		Province::InstancesByRGB[this->Color.rgb()] = this;
 	} else {
-		return false;
+		DataEntryBase::ProcessGSMLScope(scope);
 	}
-
-	return true;
 }
 
 /**

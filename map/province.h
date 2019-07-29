@@ -18,11 +18,12 @@ class Holding;
 class LandedTitle;
 class Religion;
 
-class Province : public QObject, public DataEntry<>, public DataType<Province>
+class Province : public DataEntry, public DataType<Province>
 {
 	Q_OBJECT
 
 	Q_PROPERTY(QString identifier READ GetIdentifierQString CONSTANT)
+	Q_PROPERTY(LandedTitle* county MEMBER County READ GetCounty)
 	Q_PROPERTY(QColor color READ GetColor CONSTANT)
 	Q_PROPERTY(QRect rect READ GetRect CONSTANT)
 	Q_PROPERTY(QImage image READ GetImage NOTIFY ImageChanged)
@@ -48,8 +49,7 @@ private:
 	static inline Province *SelectedProvince = nullptr;
 
 public:
-	virtual bool ProcessGSMLProperty(const GSMLProperty &property) override;
-	virtual bool ProcessGSMLScope(const GSMLData &scope) override;
+	virtual void ProcessGSMLScope(const GSMLData &scope) override;
 
 	QString GetIdentifierQString() const
 	{

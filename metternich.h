@@ -22,7 +22,7 @@ class Metternich : public QObject
 
 public:
 	static Metternich *GetInstance();
-	
+
 private:
 	static inline std::unique_ptr<Metternich> Instance;
 	static inline std::once_flag OnceFlag;

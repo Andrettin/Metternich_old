@@ -7,8 +7,10 @@
 
 class Character;
 
-class LandedTitle : public DataEntry<>, public DataType<LandedTitle>
+class LandedTitle : public DataEntry, public DataType<LandedTitle>
 {
+	Q_OBJECT
+
 public:
 	LandedTitle(const std::string &identifier) : DataEntry(identifier) {}
 
