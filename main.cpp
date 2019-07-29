@@ -43,6 +43,7 @@ int main(int argc, char *argv[])
 
 		qmlRegisterType<MaskedMouseArea>("MaskedMouseArea", 1, 0, "MaskedMouseArea");
 
+		qmlRegisterType<LandedTitle>();
 		qmlRegisterType<Province>();
 		engine.rootContext()->setContextProperty("Metternich", Metternich::GetInstance());
 		engine.addImageProvider(QLatin1String("provinces"), new ProvinceImageProvider);

@@ -22,8 +22,7 @@ class Province : public DataEntry, public DataType<Province>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(QString identifier READ GetIdentifierQString CONSTANT)
-	Q_PROPERTY(LandedTitle* county MEMBER County READ GetCounty)
+	Q_PROPERTY(LandedTitle* county MEMBER County READ GetCounty NOTIFY CountyChanged)
 	Q_PROPERTY(QColor color READ GetColor CONSTANT)
 	Q_PROPERTY(QRect rect READ GetRect CONSTANT)
 	Q_PROPERTY(QImage image READ GetImage NOTIFY ImageChanged)
@@ -50,11 +49,6 @@ private:
 
 public:
 	virtual void ProcessGSMLScope(const GSMLData &scope) override;
-
-	QString GetIdentifierQString() const
-	{
-		return QString::fromStdString(this->GetIdentifier());
-	}
 
 	LandedTitle *GetCounty() const
 	{
@@ -112,6 +106,7 @@ public:
 	}
 
 signals:
+	void CountyChanged();
 	void ImageChanged();
 	void SelectedChanged();
 

@@ -28,6 +28,8 @@ class DataEntry : public DataEntryBase
 {
 	Q_OBJECT
 
+	Q_PROPERTY(QString identifier READ GetIdentifierQString CONSTANT)
+
 public:
 	DataEntry(const std::string &identifier) : Identifier(identifier) {}
 	virtual ~DataEntry() {}
@@ -35,6 +37,11 @@ public:
 	const std::string &GetIdentifier() const
 	{
 		return this->Identifier;
+	}
+
+	QString GetIdentifierQString() const
+	{
+		return QString::fromStdString(this->GetIdentifier());
 	}
 
 	const std::string &GetName() const
