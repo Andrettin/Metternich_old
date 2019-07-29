@@ -1,6 +1,7 @@
 #include "metternich.h"
 
 #include "defines.h"
+#include "game.h"
 #include "map/province.h"
 
 #include <QList>
@@ -10,6 +11,11 @@ Metternich *Metternich::GetInstance()
 	std::call_once(Metternich::OnceFlag, [](){ Metternich::Instance = std::make_unique<Metternich>(); });
 	
 	return Metternich::Instance.get();
+}
+
+Game *Metternich::GetGame() const
+{
+	return Game::GetInstance();
 }
 
 QString Metternich::GetAssetImportPath() const

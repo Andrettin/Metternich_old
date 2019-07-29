@@ -18,6 +18,7 @@ SOURCES += \
         database/data_entry.cpp \
         database/gsml_data.cpp \
         defines.cpp \
+        game.cpp \
         landed_title.cpp \
         main.cpp \
         map/map.cpp \
@@ -54,6 +55,8 @@ HEADERS += \
     database/gsml_property.h \
     defines.h \
     empty_image_provider.h \
+    game.h \
+    game_speed.h \
     history/history.h \
     holding/building.h \
     holding/holding.h \

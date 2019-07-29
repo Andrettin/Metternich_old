@@ -7,6 +7,7 @@
 #include <QGuiApplication>
 #include <QImage>
 #include <QList>
+#include <QLocale>
 #include <QObject>
 #include <QPainter>
 #include <QPoint>
@@ -16,11 +17,13 @@
 #include <QRect>
 #include <QSize>
 #include <QString>
+#include <QTimer>
 #include <QTimeZone>
 #include <QTranslator>
 #include <QVariant>
 #include <QVector>
 
+#include <chrono>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -30,5 +33,6 @@
 #include <set>
 #include <stdexcept>
 #include <string>
+#include <thread>
 #include <type_traits>
 #include <vector>

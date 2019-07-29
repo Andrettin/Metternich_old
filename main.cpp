@@ -1,5 +1,6 @@
 #include "defines.h"
 #include "empty_image_provider.h"
+#include "game.h"
 #include "landed_title.h"
 #include "map/map.h"
 #include "map/province.h"
@@ -39,10 +40,13 @@ int main(int argc, char *argv[])
 
 		app.installTranslator(&translator);
 
+		Game::GetInstance()->Start(Defines::GetStartDate());
+
 		QQmlApplicationEngine engine;
 
 		qmlRegisterType<MaskedMouseArea>("MaskedMouseArea", 1, 0, "MaskedMouseArea");
 
+		qmlRegisterType<Game>();
 		qmlRegisterType<LandedTitle>();
 		qmlRegisterType<Province>();
 		engine.rootContext()->setContextProperty("Metternich", Metternich::GetInstance());
