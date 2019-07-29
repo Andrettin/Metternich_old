@@ -104,7 +104,7 @@ public:
 		return this->MaxHoldings;
 	}
 
-	void SetSelected(const bool selected);
+	void SetSelected(const bool selected, const bool notify = true);
 
 	bool IsSelected() const
 	{

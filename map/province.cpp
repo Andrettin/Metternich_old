@@ -131,6 +131,8 @@ void Province::CreateImage(const std::set<int> &pixel_indexes)
 		QPoint pixel_pos = Map::GetPixelPosition(index) - this->Rect.topLeft();
 		this->Image.setPixelColor(pixel_pos, this->GetColor());
 	}
+
+	this->UpdateImage();
 }
 
 /**
@@ -197,25 +199,30 @@ void Province::UpdateImage()
 **	@brief	Sets whether the province is selected
 **
 **	@param	selected	Whether the province is being selected
+**
+**	@param	notify		Whether to emiot signals indicating the change
 */
-void Province::SetSelected(const bool selected)
+void Province::SetSelected(const bool selected, const bool notify)
 {
 	if (selected == this->IsSelected()) {
 		return;
 	}
 
-	if (selected && Province::SelectedProvince != nullptr) {
-		Province::SelectedProvince->SetSelected(false);
+	if (selected) {
+		if (Province::SelectedProvince != nullptr) {
+			Province::SelectedProvince->SetSelected(false, false);
+		}
+		Province::SelectedProvince = this;
+	} else {
+		Province::SelectedProvince = nullptr;
 	}
 
 	this->Selected = selected;
 
 	this->UpdateImage();
 
-	emit SelectedChanged();
-
-	if (selected) {
-		Province::SelectedProvince = this;
+	if (notify) {
+		emit SelectedChanged();
 		Metternich::GetInstance()->emit SelectedProvinceChanged();
 	}
 }
