@@ -28,7 +28,7 @@ QString Translator::translate(const char *context, const char *source_text, cons
 			}
 
 			for (const std::string &suffix : suffix_combinations) {
-				const auto &suffix_find_iterator = this->Translations.find(std::string(source_text) + "_" + suffix);
+				const auto &suffix_find_iterator = this->Translations.find(source_text + suffix);
 				if (suffix_find_iterator != this->Translations.end())  {
 					return QString::fromStdString(suffix_find_iterator->second);
 				}
