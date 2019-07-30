@@ -3,6 +3,8 @@
 #include <QTranslator>
 
 #include <map>
+#include <string>
+#include <vector>
 
 namespace Metternich {
 
@@ -16,19 +18,7 @@ class Translator : public QTranslator
 public:
 	void LoadLocale(const std::string &language);
 
-	virtual QString translate(const char *context, const char *source_text, const char *disambiguation = nullptr, int n = -1) const override
-	{
-		Q_UNUSED(context)
-		Q_UNUSED(disambiguation)
-		Q_UNUSED(n)
-
-		const auto &find_iterator = this->Translations.find(source_text);
-		if (find_iterator != this->Translations.end())  {
-			return QString::fromStdString(find_iterator->second);
-		}
-
-		return source_text;
-	}
+	virtual QString translate(const char *context, const char *source_text, const char *disambiguation = nullptr, int n = -1) const override;
 
 private:
 	void AddTranslation(const std::string &source_text, const std::string &translation)
