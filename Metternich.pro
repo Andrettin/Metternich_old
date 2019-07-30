@@ -18,6 +18,7 @@ SOURCES += \
         database/data_entry.cpp \
         database/gsml_data.cpp \
         defines.cpp \
+        engine_interface.cpp \
         game.cpp \
         history/history.cpp \
         landed_title.cpp \
@@ -25,7 +26,6 @@ SOURCES += \
         map/map.cpp \
         map/province.cpp \
         map/province_image_provider.cpp \
-        metternich.cpp \
         third_party/maskedmousearea/maskedmousearea.cpp \
         translator.cpp
 
@@ -57,6 +57,7 @@ HEADERS += \
     database/gsml_property.h \
     defines.h \
     empty_image_provider.h \
+    engine_interface.h \
     game.h \
     game_speed.h \
     history/history.h \
@@ -67,7 +68,6 @@ HEADERS += \
     map/map.h \
     map/province.h \
     map/province_image_provider.h \
-    metternich.h \
     pch.h \
     religion.h \
     third_party/maskedmousearea/maskedmousearea.h \

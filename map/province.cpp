@@ -2,8 +2,8 @@
 
 #include "database/gsml_data.h"
 #include "database/gsml_property.h"
+#include "engine_interface.h"
 #include "landed_title.h"
-#include "metternich.h"
 #include "map/map.h"
 #include "util.h"
 
