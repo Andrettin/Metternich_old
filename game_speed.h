@@ -1,5 +1,7 @@
 #pragma once
 
+namespace Metternich {
+
 enum class GameSpeed : int
 {
 	Slowest,
@@ -8,3 +10,5 @@ enum class GameSpeed : int
 	Fast,
 	Fastest
 };
+
+}

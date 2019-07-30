@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+namespace Metternich {
+
 /**
 **	@brief	Grand strategy markup language data
 */
@@ -47,6 +49,14 @@ public:
 		return this->Values;
 	}
 
+	void SortChildren()
+	{
+		//sort children by tag, alphabetically
+		std::sort(this->Children.begin(), this->Children.end(), [](GSMLData &a, GSMLData &b) {
+			return a.GetTag() < b.GetTag();
+		});
+	}
+
 private:
 	std::string Tag;
 	GSMLData *Parent = nullptr;
@@ -54,3 +64,5 @@ private:
 	std::vector<GSMLProperty> Properties;
 	std::vector<std::string> Values; //values directly attached to the GSML data scope, used for e.g. name arrays
 };
+
+}

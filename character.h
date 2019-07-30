@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+namespace Metternich {
+
 class Culture;
 class Dynasty;
 class GSMLProperty;
@@ -72,12 +74,14 @@ public:
 private:
 	std::string Name;
 	bool Female = false;
-	const ::Dynasty *Dynasty = nullptr;
-	const ::Culture *Culture = nullptr;
-	const ::Religion *Religion = nullptr;
+	const Metternich::Dynasty *Dynasty = nullptr;
+	const Metternich::Culture *Culture = nullptr;
+	const Metternich::Religion *Religion = nullptr;
 	LandedTitle *PrimaryTitle = nullptr;
 	std::vector<LandedTitle *> LandedTitles;
 	Character *Father = nullptr;
 	Character *Mother = nullptr;
 	std::vector<Character *> Children;
 };
+
+}

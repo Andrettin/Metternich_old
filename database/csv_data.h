@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+namespace Metternich {
+
 /**
 **	@brief	CSV data
 */
@@ -21,3 +23,5 @@ public:
 private:
 	std::vector<std::vector<std::string>> Values;
 };
+
+}

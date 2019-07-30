@@ -4,6 +4,8 @@
 
 #include <string>
 
+namespace Metternich {
+
 class GSMLProperty;
 
 /**
@@ -29,3 +31,5 @@ private:
 	static inline std::string AssetImportPath;
 	static inline QDateTime StartDate;
 };
+
+}

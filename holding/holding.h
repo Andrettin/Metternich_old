@@ -3,6 +3,8 @@
 #include <set>
 #include <string>
 
+namespace Metternich {
+
 class Building;
 class HoldingType;
 
@@ -31,3 +33,5 @@ private:
 	const HoldingType *Type = nullptr;
 	std::set<Building *> Buildings;
 };
+
+}

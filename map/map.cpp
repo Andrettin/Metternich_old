@@ -8,6 +8,8 @@
 
 #include <set>
 
+namespace Metternich {
+
 void Map::Load()
 {
 	Map::LoadProvinces();
@@ -46,4 +48,6 @@ void Map::LoadProvinces()
 void Map::LoadTerrain()
 {
 	QImage terrain_image("./map/terrain.png");
+}
+
 }

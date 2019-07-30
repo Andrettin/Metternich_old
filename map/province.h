@@ -12,6 +12,8 @@
 #include <string>
 #include <vector>
 
+namespace Metternich {
+
 class CSVData;
 class Culture;
 class Holding;
@@ -22,10 +24,12 @@ class Province : public DataEntry, public DataType<Province>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(LandedTitle* county MEMBER County READ GetCounty NOTIFY CountyChanged)
+	Q_PROPERTY(Metternich::LandedTitle* county MEMBER County READ GetCounty NOTIFY CountyChanged)
 	Q_PROPERTY(QColor color READ GetColor CONSTANT)
 	Q_PROPERTY(QRect rect READ GetRect CONSTANT)
 	Q_PROPERTY(QImage image READ GetImage NOTIFY ImageChanged)
+	Q_PROPERTY(Metternich::Culture* culture MEMBER Culture READ GetCulture NOTIFY CultureChanged)
+	Q_PROPERTY(Metternich::Religion* religion MEMBER Religion READ GetReligion NOTIFY ReligionChanged)
 	Q_PROPERTY(bool selected READ IsSelected WRITE SetSelected NOTIFY SelectedChanged)
 
 public:
@@ -73,12 +77,12 @@ public:
 		return this->Image;
 	}
 
-	const Culture *GetCulture() const
+	Metternich::Culture *GetCulture() const
 	{
 		return this->Culture;
 	}
 
-	const Religion *GetReligion() const
+	Metternich::Religion *GetReligion() const
 	{
 		return this->Religion;
 	}
@@ -108,6 +112,8 @@ public:
 signals:
 	void CountyChanged();
 	void ImageChanged();
+	void CultureChanged();
+	void ReligionChanged();
 	void SelectedChanged();
 
 private:
@@ -115,10 +121,12 @@ private:
 	QColor Color; //color used to identify the province in the province map
 	QRect Rect; //the rectangle that the province occupies
 	QImage Image; //the province's image to be drawn on-screen
-	const ::Culture *Culture = nullptr;
-	const ::Religion *Religion = nullptr;
+	Metternich::Culture *Culture = nullptr;
+	Metternich::Religion *Religion = nullptr;
 	Holding *CapitalHolding = nullptr;
 	std::vector<Holding *> Holdings;
 	int MaxHoldings = 1;
 	bool Selected = false;
 };
+
+}

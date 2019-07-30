@@ -9,6 +9,8 @@
 
 #include <QPainter>
 
+namespace Metternich {
+
 /**
 **	@brief	Get an instance of the class by the RGB value associated with it
 **
@@ -195,6 +197,8 @@ void Province::SetSelected(const bool selected, const bool notify)
 
 	if (notify) {
 		emit SelectedChanged();
-		Metternich::GetInstance()->emit SelectedProvinceChanged();
+		EngineInterface::GetInstance()->emit SelectedProvinceChanged();
 	}
+}
+
 }

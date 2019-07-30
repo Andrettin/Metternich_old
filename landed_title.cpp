@@ -1,5 +1,7 @@
 #include "landed_title.h"
 
+namespace Metternich {
+
 /**
 **	@brief	Add a new instance of the class
 **
@@ -15,4 +17,6 @@ LandedTitle *LandedTitle::Add(const std::string &identifier)
 	}
 
 	return DataType<LandedTitle>::Add(identifier);
+}
+
 }

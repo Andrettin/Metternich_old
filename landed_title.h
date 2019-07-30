@@ -7,6 +7,8 @@
 
 class Character;
 
+namespace Metternich {
+
 class LandedTitle : public DataEntry, public DataType<LandedTitle>
 {
 	Q_OBJECT
@@ -32,3 +34,5 @@ public:
 private:
 	Character *Owner = nullptr;
 };
+
+}

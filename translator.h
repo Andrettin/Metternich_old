@@ -4,6 +4,8 @@
 
 #include <map>
 
+namespace Metternich {
+
 /**
 **	@brief	Custom translator class
 */
@@ -37,3 +39,5 @@ private:
 private:
 	std::map<std::string, std::string> Translations;
 };
+
+}

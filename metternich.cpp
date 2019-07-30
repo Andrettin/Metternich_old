@@ -6,24 +6,26 @@
 
 #include <QList>
 
-Metternich *Metternich::GetInstance()
+namespace Metternich {
+
+EngineInterface *EngineInterface::GetInstance()
 {
-	std::call_once(Metternich::OnceFlag, [](){ Metternich::Instance = std::make_unique<Metternich>(); });
+	std::call_once(EngineInterface::OnceFlag, [](){ EngineInterface::Instance = std::make_unique<EngineInterface>(); });
 	
-	return Metternich::Instance.get();
+	return EngineInterface::Instance.get();
 }
 
-Game *Metternich::GetGame() const
+Game *EngineInterface::GetGame() const
 {
 	return Game::GetInstance();
 }
 
-QString Metternich::GetAssetImportPath() const
+QString EngineInterface::GetAssetImportPath() const
 {
 	return QString::fromStdString(Defines::GetAssetImportPath());
 }
 
-QVariant Metternich::GetProvinces() const
+QVariant EngineInterface::GetProvinces() const
 {
 	QObjectList province_list;
 	for (Province *province : Province::GetAll()) {
@@ -32,7 +34,9 @@ QVariant Metternich::GetProvinces() const
 	return QVariant::fromValue(province_list);
 }
 
-Province *Metternich::GetSelectedProvince() const
+Province *EngineInterface::GetSelectedProvince() const
 {
 	return Province::GetSelectedProvince();
+}
+
 }

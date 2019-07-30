@@ -4,6 +4,8 @@
 
 #include <filesystem>
 
+namespace Metternich {
+
 void Translator::LoadLocale(const std::string &language)
 {
 	this->Translations.clear();
@@ -31,4 +33,6 @@ void Translator::LoadLocale(const std::string &language)
 			this->AddTranslation(property.GetKey(), property.GetValue());
 		}
 	}
+}
+
 }

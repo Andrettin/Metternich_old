@@ -3,6 +3,8 @@
 #include "database/gsml_data.h"
 #include "history/history.h"
 
+namespace Metternich {
+
 /**
 **	@brief	Load the defines
 */
@@ -49,4 +51,6 @@ bool Defines::ProcessGSMLProperty(const GSMLProperty &property)
 	}
 
 	return true;
+}
+
 }

@@ -3,6 +3,8 @@
 #include <QPoint>
 #include <QSize>
 
+namespace Metternich {
+
 class Province;
 
 class Map
@@ -18,3 +20,5 @@ private:
 private:
 	static inline QSize Size = QSize(0, 0);
 };
+
+}

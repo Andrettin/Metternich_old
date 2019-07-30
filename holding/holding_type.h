@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+namespace Metternich {
+
 class Building;
 
 class HoldingType
@@ -24,3 +26,5 @@ private:
 	std::string Name;
 	std::vector<Building *> Buildings;
 };
+
+}

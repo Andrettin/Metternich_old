@@ -3,6 +3,8 @@
 #include <fstream>
 #include <stdexcept>
 
+namespace Metternich {
+
 /**
 **	@brief	Parse a CSV data file
 **
@@ -42,4 +44,6 @@ CSVData CSVData::ParseFile(const std::filesystem::path &filepath)
 	}
 
 	return csv_data;
+}
+
 }

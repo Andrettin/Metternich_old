@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+namespace Metternich {
+
 class GSMLProperty
 {
 public:
@@ -32,3 +34,5 @@ private:
 	GSMLOperator Operator;
 	std::string Value;
 };
+
+}

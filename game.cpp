@@ -1,8 +1,11 @@
 #include "game.h"
 
 #include "game_speed.h"
+#include "history/history.h"
 
 #include <chrono>
+
+namespace Metternich {
 
 Game *Game::GetInstance()
 {
@@ -13,6 +16,17 @@ Game *Game::GetInstance()
 
 Game::Game() : Speed(GameSpeed::Normal)
 {
+}
+
+void Game::Start(const QDateTime &start_date)
+{
+	this->CurrentDate = start_date;
+	emit CurrentDateChanged();
+
+	History::Load();
+
+	std::thread game_loop_thread(&Game::Run, this);
+	game_loop_thread.detach();
 }
 
 void Game::Run()
@@ -58,4 +72,6 @@ void Game::Run()
 			std::this_thread::sleep_for(tick_ms);
 		}
 	}
+}
+
 }

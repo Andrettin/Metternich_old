@@ -7,26 +7,28 @@
 #include <memory>
 #include <mutex>
 
+namespace Metternich {
+
 class Game;
 class Province;
 
 /**
 **	@brief	Interface for the engine, to be used in the context of QML
 */
-class Metternich : public QObject
+class EngineInterface : public QObject
 {
 	Q_OBJECT
 
-	Q_PROPERTY(Game* game READ GetGame CONSTANT)
+	Q_PROPERTY(Metternich::Game* game READ GetGame CONSTANT)
 	Q_PROPERTY(QString asset_import_path READ GetAssetImportPath CONSTANT)
 	Q_PROPERTY(QVariant provinces READ GetProvinces CONSTANT)
-	Q_PROPERTY(Province* selected_province READ GetSelectedProvince NOTIFY SelectedProvinceChanged)
+	Q_PROPERTY(Metternich::Province* selected_province READ GetSelectedProvince NOTIFY SelectedProvinceChanged)
 
 public:
-	static Metternich *GetInstance();
+	static EngineInterface *GetInstance();
 
 private:
-	static inline std::unique_ptr<Metternich> Instance;
+	static inline std::unique_ptr<EngineInterface> Instance;
 	static inline std::once_flag OnceFlag;
 
 public:
@@ -38,3 +40,5 @@ public:
 signals:
 	void SelectedProvinceChanged();
 };
+
+}

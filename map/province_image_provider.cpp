@@ -2,6 +2,8 @@
 
 #include "province.h"
 
+namespace Metternich {
+
 QImage ProvinceImageProvider::requestImage(const QString &id, QSize *size, const QSize &)
 {
 	std::string identifier = id.toStdString();
@@ -12,4 +14,6 @@ QImage ProvinceImageProvider::requestImage(const QString &id, QSize *size, const
 	}
 
 	return province->GetImage();
+}
+
 }

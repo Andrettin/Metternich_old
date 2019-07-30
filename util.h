@@ -5,6 +5,8 @@
 
 #include <string>
 
+namespace Metternich {
+
 inline bool StringToBool(const std::string &str)
 {
 	if (str == "true" || str == "yes" || str == "1") {
@@ -24,4 +26,6 @@ inline int PointToIndex(const QPoint &point, const QSize &size)
 inline QPoint IndexToPoint(const int index, const QSize &size)
 {
 	return QPoint(index % size.width(), index / size.width());
+}
+
 }

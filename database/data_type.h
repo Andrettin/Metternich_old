@@ -2,6 +2,9 @@
 
 #include "database/gsml_data.h"
 
+#include "game.h"
+#include "history/history.h"
+
 #include <filesystem>
 #include <map>
 #include <memory>
@@ -9,6 +12,8 @@
 #include <string>
 #include <type_traits>
 #include <vector>
+
+namespace Metternich {
 
 template <typename T, typename KEY = std::string>
 class DataType
@@ -143,8 +148,42 @@ public:
 		return ++DataType::LastNumericIdentifier;
 	}
 
+	/**
+	**	@brief	Load history for the instance
+	*/
+	void LoadHistory()
+	{
+		if constexpr (std::is_same_v<KEY, std::string>) {
+			std::filesystem::path history_file_path("./data/history/" + std::string(T::DatabaseFolder) + "/" + static_cast<T *>(this)->GetIdentifier() + ".txt");
+
+			if (!std::filesystem::exists(history_file_path)) {
+				return;
+			}
+
+			GSMLData gsml_data = GSMLData::ParseFile(history_file_path);
+
+			for (const GSMLProperty &property : gsml_data.GetProperties()) {
+				static_cast<T *>(this)->ProcessGSMLProperty(property); //properties outside of a date scope, to be applied regardless of start date
+			}
+
+			gsml_data.SortChildren();
+
+			for (const GSMLData &history_entry : gsml_data.GetChildren()) {
+				QDateTime date = History::StringToDate(history_entry.GetTag());
+
+				if (date <= Game::GetInstance()->GetCurrentDate()) {
+					for (const GSMLProperty &property : history_entry.GetProperties()) {
+						static_cast<T *>(this)->ProcessGSMLProperty(property);
+					}
+				}
+			}
+		}
+	}
+
 private:
 	static inline std::vector<T *> Instances;
 	static inline std::map<KEY, std::unique_ptr<T>> InstancesByIdentifier;
 	static inline int LastNumericIdentifier = 1;
 };
+
+}

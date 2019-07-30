@@ -1,3 +1,4 @@
+#include "culture.h"
 #include "defines.h"
 #include "empty_image_provider.h"
 #include "game.h"
@@ -6,6 +7,7 @@
 #include "map/province.h"
 #include "map/province_image_provider.h"
 #include "metternich.h"
+#include "religion.h"
 #include "translator.h"
 
 #include "third_party/maskedmousearea/maskedmousearea.h"
@@ -18,15 +20,23 @@
 #include <iostream>
 #include <stdexcept>
 
+namespace Metternich {
+
 static void LoadDatabase()
 {
 	Defines::Load();
+	Culture::LoadDatabase();
+	Religion::LoadDatabase();
 	LandedTitle::LoadDatabase();
 	Province::LoadDatabase();
 }
 
+}
+
 int main(int argc, char *argv[])
 {
+	using namespace Metternich;
+
 	try {
 		QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
@@ -46,10 +56,12 @@ int main(int argc, char *argv[])
 
 		qmlRegisterType<MaskedMouseArea>("MaskedMouseArea", 1, 0, "MaskedMouseArea");
 
+		qmlRegisterType<Culture>();
 		qmlRegisterType<Game>();
 		qmlRegisterType<LandedTitle>();
 		qmlRegisterType<Province>();
-		engine.rootContext()->setContextProperty("Metternich", Metternich::GetInstance());
+		qmlRegisterType<Religion>();
+		engine.rootContext()->setContextProperty("Metternich", EngineInterface::GetInstance());
 		engine.addImageProvider(QLatin1String("provinces"), new ProvinceImageProvider);
 		engine.addImageProvider(QLatin1String("empty"), new EmptyImageProvider);
 

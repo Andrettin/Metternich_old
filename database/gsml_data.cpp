@@ -5,6 +5,8 @@
 #include <fstream>
 #include <stdexcept>
 
+namespace Metternich {
+
 /**
 **	@brief	Parse a GSML data file
 **
@@ -202,4 +204,6 @@ void GSMLData::ParseTokens(const std::vector<std::string> &tokens, GSMLData **cu
 		key.clear();
 		property_operator = GSMLOperator::None;
 	}
+}
+
 }

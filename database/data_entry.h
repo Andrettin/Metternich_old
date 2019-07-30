@@ -4,6 +4,8 @@
 
 #include <string>
 
+namespace Metternich {
+
 class GSMLData;
 class GSMLProperty;
 
@@ -72,3 +74,5 @@ public:
 private:
 	int Identifier;
 };
+
+}

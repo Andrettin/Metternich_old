@@ -2,6 +2,8 @@
 
 #include <QQuickImageProvider>
 
+namespace Metternich {
+
 class EmptyImageProvider : public QQuickImageProvider
 {
 public:
@@ -14,3 +16,5 @@ public:
 		return image;
 	}
 };
+
+}

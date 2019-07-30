@@ -2,6 +2,8 @@
 
 #include <string>
 
+namespace Metternich {
+
 class Building
 {
 public:
@@ -15,3 +17,5 @@ public:
 private:
 	std::string Name;
 };
+
+}

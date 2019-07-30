@@ -5,11 +5,15 @@
 
 #include <string>
 
+namespace Metternich {
+
 class History
 {
 public:
 	static constexpr const char *DateFormat = "yyyy.M.d";
 	static constexpr const char *DateTimeFormat = "yyyy.M.d.H";
+
+	static void Load();
 
 	static inline QDateTime StringToDate(const std::string &date_str)
 	{
@@ -30,3 +34,5 @@ public:
 		return date;
 	}
 };
+
+}

@@ -19,6 +19,7 @@ SOURCES += \
         database/gsml_data.cpp \
         defines.cpp \
         game.cpp \
+        history/history.cpp \
         landed_title.cpp \
         main.cpp \
         map/map.cpp \
@@ -47,6 +48,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     character.h \
+    culture.h \
     database/csv_data.h \
     database/data_entry.h \
     database/data_type.h \
@@ -67,6 +69,7 @@ HEADERS += \
     map/province_image_provider.h \
     metternich.h \
     pch.h \
+    religion.h \
     third_party/maskedmousearea/maskedmousearea.h \
     translator.h \
     util.h

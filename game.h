@@ -8,6 +8,8 @@
 #include <mutex>
 #include <thread>
 
+namespace Metternich {
+
 enum class GameSpeed : int;
 
 /**
@@ -30,15 +32,7 @@ private:
 public:
 	Game();
 
-	void Start(const QDateTime &start_date)
-	{
-		this->CurrentDate = start_date;
-		emit CurrentDateChanged();
-
-		std::thread game_loop_thread(&Game::Run, this);
-		game_loop_thread.detach();
-	}
-
+	void Start(const QDateTime &start_date);
 	void Run();
 
 	const QDateTime &GetCurrentDate() const
@@ -59,3 +53,5 @@ private:
 	QDateTime CurrentDate;
 	GameSpeed Speed;
 };
+
+}

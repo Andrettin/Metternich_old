@@ -1,10 +1,14 @@
 #include "database/data_entry.h"
 
+#include "culture.h"
 #include "database/gsml_data.h"
 #include "database/gsml_operator.h"
 #include "database/gsml_property.h"
 #include "landed_title.h"
+#include "religion.h"
 #include "util.h"
+
+namespace Metternich {
 
 /**
 **	@brief	Process a GSML property
@@ -53,8 +57,12 @@ void DataEntryBase::ProcessGSMLProperty(const GSMLProperty &property)
 				throw std::runtime_error("Only the assignment operator is available for object reference properties.");
 			}
 
-			if (property.GetKey() == "county") {
+			if (property.GetKey() == "landed_title" || property.GetKey() == "barony" || property.GetKey() == "county" || property.GetKey() == "duchy" || property.GetKey() == "kingdom" || property.GetKey() == "empire") {
 				new_property_value = QVariant::fromValue(LandedTitle::Get(property.GetValue()));
+			} else if (property.GetKey() == "culture") {
+				new_property_value = QVariant::fromValue(Culture::Get(property.GetValue()));
+			} else if (property.GetKey() == "religion") {
+				new_property_value = QVariant::fromValue(Religion::Get(property.GetValue()));
 			} else {
 				throw std::runtime_error("Unknown type for object reference property \"" + std::string(property_name) + "\": \"" + property.GetKey() + "\".");
 			}
@@ -77,4 +85,6 @@ void DataEntryBase::ProcessGSMLScope(const GSMLData &scope)
 {
 	const QMetaObject *meta_object = this->metaObject();
 	throw std::runtime_error("Invalid " + std::string(meta_object->className()) + " field: \"" + scope.GetTag() + "\".");
+}
+
 }
