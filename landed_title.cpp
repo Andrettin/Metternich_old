@@ -1,5 +1,10 @@
 #include "landed_title.h"
 
+#include "character.h"
+#include "culture.h"
+#include "map/province.h"
+#include "translator.h"
+
 namespace Metternich {
 
 /**
@@ -17,6 +22,29 @@ LandedTitle *LandedTitle::Add(const std::string &identifier)
 	}
 
 	return DataType<LandedTitle>::Add(identifier);
+}
+
+/**
+**	@brief	Get the landed title's name
+**
+**	@return	The landed title's name
+*/
+std::string LandedTitle::GetName() const
+{
+	const Culture *culture = nullptr;
+
+	if (this->GetOwner() != nullptr) {
+		culture = this->GetOwner()->GetCulture();
+	} else if (this->GetProvince() != nullptr) {
+		culture = this->GetProvince()->GetCulture();
+	}
+
+	std::vector<std::string> suffixes;
+	if (culture != nullptr) {
+		suffixes.push_back(culture->GetIdentifier());
+	}
+
+	return Translator::GetInstance()->Translate(this->GetIdentifier(), suffixes);
 }
 
 }

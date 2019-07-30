@@ -1,15 +1,27 @@
 #include "map/province.h"
 
+#include "culture.h"
 #include "database/gsml_data.h"
 #include "database/gsml_property.h"
 #include "engine_interface.h"
 #include "landed_title.h"
 #include "map/map.h"
+#include "religion.h"
+#include "translator.h"
 #include "util.h"
 
 #include <QPainter>
 
 namespace Metternich {
+
+/**
+**	@brief	Constructor
+*/
+Province::Province(const std::string &identifier) : DataEntry(identifier)
+{
+	connect(this, &Province::CultureChanged, this, &DataEntryBase::NameChanged);
+	connect(this, &Province::ReligionChanged, this, &DataEntryBase::NameChanged);
+}
 
 /**
 **	@brief	Get an instance of the class by the RGB value associated with it
@@ -68,6 +80,27 @@ void Province::ProcessGSMLScope(const GSMLData &scope)
 	} else {
 		DataEntryBase::ProcessGSMLScope(scope);
 	}
+}
+
+/**
+**	@brief	Get the province's name
+**
+**	@return	The province's name
+*/
+std::string Province::GetName() const
+{
+	return Translator::GetInstance()->Translate(this->GetCounty()->GetIdentifier(), {this->GetCulture()->GetIdentifier(), this->GetReligion()->GetIdentifier()});
+}
+
+/**
+**	@brief	Get the province's county
+**
+**	@return	The province's county
+*/
+void Province::SetCounty(LandedTitle *county)
+{
+	this->County = county;
+	county->SetProvince(this);
 }
 
 /**

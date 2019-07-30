@@ -42,13 +42,13 @@ int main(int argc, char *argv[])
 
 		QGuiApplication app(argc, argv);
 
-		Translator translator;
+		Translator *translator = Translator::GetInstance();
 
 		LoadDatabase();
 		Map::Load();
-		translator.LoadLocale("english");
+		translator->LoadLocale("english");
 
-		app.installTranslator(&translator);
+		app.installTranslator(translator);
 
 		Game::GetInstance()->Start(Defines::GetStartDate());
 

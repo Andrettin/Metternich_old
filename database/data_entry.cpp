@@ -6,6 +6,7 @@
 #include "database/gsml_property.h"
 #include "landed_title.h"
 #include "religion.h"
+#include "translator.h"
 #include "util.h"
 
 namespace Metternich {
@@ -86,5 +87,11 @@ void DataEntryBase::ProcessGSMLScope(const GSMLData &scope)
 	const QMetaObject *meta_object = this->metaObject();
 	throw std::runtime_error("Invalid " + std::string(meta_object->className()) + " field: \"" + scope.GetTag() + "\".");
 }
+
+std::string DataEntry::GetName() const
+{
+	return Translator::GetInstance()->Translate(this->Identifier);
+}
+
 
 }

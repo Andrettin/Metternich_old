@@ -3,6 +3,8 @@
 #include <QTranslator>
 
 #include <map>
+#include <memory>
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -16,7 +18,15 @@ class Translator : public QTranslator
 	Q_OBJECT
 
 public:
+	static Translator *GetInstance();
+
+private:
+	static inline std::unique_ptr<Translator> Instance;
+	static inline std::once_flag OnceFlag;
+
+public:
 	void LoadLocale(const std::string &language);
+	std::string Translate(const std::string &source_text, const std::vector<std::string> &suffixes = std::vector<std::string>()) const;
 
 	virtual QString translate(const char *context, const char *source_text, const char *disambiguation = nullptr, int n = -1) const override;
 

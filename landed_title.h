@@ -5,9 +5,10 @@
 
 #include <string>
 
-class Character;
-
 namespace Metternich {
+
+class Character;
+class Province;
 
 class LandedTitle : public DataEntry, public DataType<LandedTitle>
 {
@@ -26,13 +27,26 @@ public:
 
 	static LandedTitle *Add(const std::string &identifier);
 
+	virtual std::string GetName() const override;
+
 	Character *GetOwner() const
 	{
 		return this->Owner;
 	}
 
+	Province *GetProvince() const
+	{
+		return this->Province;
+	}
+
+	void SetProvince(Province *province)
+	{
+		this->Province = province;
+	}
+
 private:
 	Character *Owner = nullptr;
+	Province *Province = nullptr;
 };
 
 }

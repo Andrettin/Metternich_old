@@ -26,19 +26,14 @@ public:
 
 	static constexpr const char *ClassIdentifier = "character";
 
-	void SetNameQString(const QString &name)
-	{
-		this->Name = name.toStdString();
-	}
-
-	const std::string &GetName() const
+	virtual std::string GetName() const override
 	{
 		return this->Name;
 	}
 
-	QString GetNameQString() const
+	void SetNameQString(const QString &name)
 	{
-		return QString::fromStdString(this->Name);
+		this->Name = name.toStdString();
 	}
 
 	bool IsFemale() const

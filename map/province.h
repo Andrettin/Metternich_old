@@ -24,7 +24,7 @@ class Province : public DataEntry, public DataType<Province>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(Metternich::LandedTitle* county MEMBER County READ GetCounty NOTIFY CountyChanged)
+	Q_PROPERTY(Metternich::LandedTitle* county READ GetCounty WRITE SetCounty)
 	Q_PROPERTY(QColor color READ GetColor CONSTANT)
 	Q_PROPERTY(QRect rect READ GetRect CONSTANT)
 	Q_PROPERTY(QImage image READ GetImage NOTIFY ImageChanged)
@@ -33,7 +33,7 @@ class Province : public DataEntry, public DataType<Province>
 	Q_PROPERTY(bool selected READ IsSelected WRITE SetSelected NOTIFY SelectedChanged)
 
 public:
-	Province(const std::string &identifier) : DataEntry(identifier) {}
+	Province(const std::string &identifier);
 
 	static constexpr const char *ClassIdentifier = "province";
 	static constexpr const char *DatabaseFolder = "provinces";
@@ -54,10 +54,14 @@ private:
 public:
 	virtual void ProcessGSMLScope(const GSMLData &scope) override;
 
+	virtual std::string GetName() const override;
+
 	LandedTitle *GetCounty() const
 	{
 		return this->County;
 	}
+
+	void SetCounty(LandedTitle *county);
 
 	const QColor &GetColor() const
 	{
@@ -102,15 +106,14 @@ public:
 		return this->MaxHoldings;
 	}
 
-	void SetSelected(const bool selected, const bool notify = true);
-
 	bool IsSelected() const
 	{
 		return this->Selected;
 	}
 
+	void SetSelected(const bool selected, const bool notify = true);
+
 signals:
-	void CountyChanged();
 	void ImageChanged();
 	void CultureChanged();
 	void ReligionChanged();

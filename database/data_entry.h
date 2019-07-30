@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <QString>
 
 #include <string>
 
@@ -16,11 +17,23 @@ class DataEntryBase : public QObject
 {
 	Q_OBJECT
 
+	Q_PROPERTY(QString name READ GetNameQString NOTIFY NameChanged)
+
 public:
 	virtual ~DataEntryBase() {}
 
 	void ProcessGSMLProperty(const GSMLProperty &property);
 	virtual void ProcessGSMLScope(const GSMLData &scope);
+
+	virtual std::string GetName() const = 0;
+
+	QString GetNameQString() const
+	{
+		return QString::fromStdString(this->GetName());
+	}
+
+signals:
+	void NameChanged();
 };
 
 /**
@@ -34,7 +47,7 @@ class DataEntry : public DataEntryBase
 
 public:
 	DataEntry(const std::string &identifier) : Identifier(identifier) {}
-	virtual ~DataEntry() {}
+	virtual ~DataEntry() override {}
 
 	const std::string &GetIdentifier() const
 	{
@@ -46,10 +59,7 @@ public:
 		return QString::fromStdString(this->GetIdentifier());
 	}
 
-	const std::string &GetName() const
-	{
-		return this->Identifier;
-	}
+	virtual std::string GetName() const override;
 
 private:
 	std::string Identifier;
