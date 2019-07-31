@@ -155,6 +155,8 @@ void Province::UpdateImage()
 		province_color = realm->GetColor();
 	}
 
+	QColor border_color = QColor(province_color.red() / 2, province_color.green() / 2, province_color.blue() / 2);
+
 	const int pixel_count = this->Image.width() * this->Image.height();
 
 	QRgb *rgb_data = reinterpret_cast<QRgb *>(this->Image.bits());
@@ -166,42 +168,43 @@ void Province::UpdateImage()
 			continue; //only modify non-alpha pixels of the image, i.e. the pixels of the province itself
 		}
 
-		if (this->IsSelected()) {
-			//if the province is selected, and this pixel is adjacent to a pixel not belonging to this province, then highlight it
-			QPoint pixel_pos = IndexToPoint(i, this->Image.size());
+		QPoint pixel_pos = IndexToPoint(i, this->Image.size());
 
-			//check if the pixel is adjacent to one not belonging to this province
-			bool border_pixel = false;
+		//check if the pixel is adjacent to one not belonging to this province
+		bool border_pixel = false;
 
-			if (pixel_pos.x() == 0 || pixel_pos.y() == 0 || pixel_pos.x() == (this->Image.width() - 1) || pixel_pos.y() == (this->Image.height() - 1)) {
-				border_pixel = true;
-			} else {
-				for (int x_offset = -1; x_offset <= 1; ++x_offset) {
-					for (int y_offset = -1; y_offset <= 1; ++y_offset) {
-						if (x_offset == 0 && y_offset == 0) {
-							continue;
-						}
-
-						QPoint adjacent_pos = pixel_pos + QPoint(x_offset, y_offset);
-
-						const int adjacent_alpha = qAlpha(rgb_data[PointToIndex(adjacent_pos, this->Image.size())]);
-
-						if (adjacent_alpha == 0) {
-							border_pixel = true;
-							break;
-						}
+		if (pixel_pos.x() == 0 || pixel_pos.y() == 0 || pixel_pos.x() == (this->Image.width() - 1) || pixel_pos.y() == (this->Image.height() - 1)) {
+			border_pixel = true;
+		} else {
+			for (int x_offset = -1; x_offset <= 1; ++x_offset) {
+				for (int y_offset = -1; y_offset <= 1; ++y_offset) {
+					if (x_offset == 0 && y_offset == 0) {
+						continue;
 					}
-					if (border_pixel) {
+
+					QPoint adjacent_pos = pixel_pos + QPoint(x_offset, y_offset);
+
+					const int adjacent_alpha = qAlpha(rgb_data[PointToIndex(adjacent_pos, this->Image.size())]);
+
+					if (adjacent_alpha == 0) {
+						border_pixel = true;
 						break;
 					}
 				}
+				if (border_pixel) {
+					break;
+				}
 			}
+		}
 
-
-			if (border_pixel) {
+		if (border_pixel) {
+			if (this->IsSelected()) {
+				//if the province is selected, and this pixel is adjacent to a pixel not belonging to this province, then highlight it
 				pixel_rgb = QColor(Qt::yellow).rgba(); //set border pixels to yellow if the province is selected
-				continue;
+			} else {
+				pixel_rgb = border_color.rgba();
 			}
+			continue;
 		}
 
 		pixel_rgb = province_color.rgba();
