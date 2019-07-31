@@ -14,7 +14,7 @@ class GSMLProperty;
 class LandedTitle;
 class Religion;
 
-class Character : public NumericDataEntry, DataType<Character, int>
+class Character : public NumericDataEntry, public DataType<Character, int>
 {
 	Q_OBJECT
 
