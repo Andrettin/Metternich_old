@@ -9,6 +9,7 @@ namespace Metternich {
 
 class Character;
 class Province;
+enum class LandedTitleTier : int;
 
 class LandedTitle : public DataEntry, public DataType<LandedTitle>
 {
@@ -31,6 +32,11 @@ public:
 
 	virtual std::string GetName() const override;
 
+	LandedTitleTier GetTier() const
+	{
+		return this->Tier;
+	}
+
 	Character *GetHolder() const
 	{
 		return this->Holder;
@@ -50,6 +56,7 @@ signals:
 	void HolderChanged();
 
 private:
+	LandedTitleTier Tier;
 	Character *Holder = nullptr;
 	Province *Province = nullptr;
 };

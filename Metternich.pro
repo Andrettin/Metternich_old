@@ -65,6 +65,7 @@ HEADERS += \
     holding/holding.h \
     holding/holding_type.h \
     landed_title.h \
+    landed_title_tier.h \
     map/map.h \
     map/province.h \
     map/province_image_provider.h \

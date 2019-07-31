@@ -2,6 +2,7 @@
 
 #include "character.h"
 #include "culture.h"
+#include "landed_title_tier.h"
 #include "map/province.h"
 #include "translator.h"
 
@@ -16,12 +17,26 @@ namespace Metternich {
 */
 LandedTitle *LandedTitle::Add(const std::string &identifier)
 {
+	LandedTitle *title = DataType<LandedTitle>::Add(identifier);
+
 	std::string identifier_prefix = identifier.substr(0, 2);
-	if (identifier_prefix != LandedTitle::BaronyPrefix && identifier_prefix != LandedTitle::CountyPrefix && identifier_prefix != LandedTitle::DuchyPrefix && identifier_prefix != LandedTitle::KingdomPrefix && identifier_prefix != LandedTitle::EmpirePrefix) {
+
+	//set the title's tier depending on the prefix of its identifier
+	if (identifier_prefix == LandedTitle::BaronyPrefix) {
+		title->Tier = LandedTitleTier::Barony;
+	} else if (identifier_prefix == LandedTitle::CountyPrefix) {
+		title->Tier = LandedTitleTier::County;
+	} else if (identifier_prefix == LandedTitle::DuchyPrefix) {
+		title->Tier = LandedTitleTier::Duchy;
+	} else if (identifier_prefix == LandedTitle::KingdomPrefix) {
+		title->Tier = LandedTitleTier::Kingdom;
+	} else if (identifier_prefix == LandedTitle::EmpirePrefix) {
+		title->Tier = LandedTitleTier::Empire;
+	} else {
 		throw std::runtime_error("Invalid identifier for new landed title: \"" + identifier + "\". Landed title identifiers must begin with one of the \"" + LandedTitle::BaronyPrefix + "\", \"" + LandedTitle::CountyPrefix + "\", \"" + LandedTitle::DuchyPrefix + "\", \"" + LandedTitle::KingdomPrefix + "\" or \"" + LandedTitle::EmpirePrefix + "\" prefixes, depending on the title's tier.");
 	}
 
-	return DataType<LandedTitle>::Add(identifier);
+	return title;
 }
 
 /**
