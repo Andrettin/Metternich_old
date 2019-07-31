@@ -109,7 +109,7 @@ void DataEntryBase::LoadHistory(GSMLData &gsml_data)
 
 		if (date <= Game::GetInstance()->GetCurrentDate()) {
 			for (const GSMLProperty &property : history_entry.GetProperties()) {
-				this->ProcessGSMLProperty(property);
+				this->ProcessGSMLHistoryProperty(property, date);
 			}
 		}
 	}
@@ -119,6 +119,5 @@ std::string DataEntry::GetName() const
 {
 	return Translator::GetInstance()->Translate(this->Identifier);
 }
-
 
 }

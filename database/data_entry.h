@@ -24,6 +24,13 @@ public:
 
 	void ProcessGSMLProperty(const GSMLProperty &property);
 	virtual void ProcessGSMLScope(const GSMLData &scope);
+
+	virtual void ProcessGSMLHistoryProperty(const GSMLProperty &property, const QDateTime &date)
+	{
+		Q_UNUSED(date);
+		this->ProcessGSMLProperty(property);
+	}
+
 	void LoadHistory(GSMLData &gsml_data);
 
 	virtual std::string GetName() const = 0;
