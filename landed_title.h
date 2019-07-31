@@ -3,6 +3,8 @@
 #include "database/data_entry.h"
 #include "database/data_type.h"
 
+#include <QColor>
+
 #include <string>
 
 namespace Metternich {
@@ -31,8 +33,14 @@ public:
 	static LandedTitle *Add(const std::string &identifier);
 
 	virtual void ProcessGSMLHistoryProperty(const GSMLProperty &property, const QDateTime &date) override;
+	virtual void ProcessGSMLScope(const GSMLData &scope) override;
 
 	virtual std::string GetName() const override;
+
+	const QColor &GetColor() const
+	{
+		return this->Color;
+	}
 
 	LandedTitleTier GetTier() const
 	{
@@ -60,6 +68,7 @@ signals:
 	void HolderChanged();
 
 private:
+	QColor Color;
 	LandedTitleTier Tier;
 	Character *Holder = nullptr;
 	Province *Province = nullptr;
