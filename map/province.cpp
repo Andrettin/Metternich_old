@@ -149,6 +149,12 @@ void Province::CreateImage(const std::set<int> &pixel_indexes)
 */
 void Province::UpdateImage()
 {
+	QColor province_color = this->GetCounty()->GetColor();
+	const LandedTitle *realm = this->GetCounty()->GetRealm();
+	if (realm != nullptr) {
+		province_color = realm->GetColor();
+	}
+
 	const int pixel_count = this->Image.width() * this->Image.height();
 
 	QRgb *rgb_data = reinterpret_cast<QRgb *>(this->Image.bits());
@@ -198,7 +204,7 @@ void Province::UpdateImage()
 			}
 		}
 
-		pixel_rgb = this->GetColor().rgba();
+		pixel_rgb = province_color.rgba();
 	}
 
 	emit ImageChanged();
