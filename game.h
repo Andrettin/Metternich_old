@@ -35,6 +35,11 @@ public:
 	void Start(const QDateTime &start_date);
 	void Run();
 
+	bool IsRunning() const
+	{
+		return this->Running;
+	}
+
 	const QDateTime &GetCurrentDate() const
 	{
 		return this->CurrentDate;
@@ -47,9 +52,11 @@ public:
 	}
 
 signals:
+	void RunningChanged();
 	void CurrentDateChanged();
 
 private:
+	bool Running = false;
 	QDateTime CurrentDate;
 	GameSpeed Speed;
 };

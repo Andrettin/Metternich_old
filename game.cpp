@@ -25,6 +25,9 @@ void Game::Start(const QDateTime &start_date)
 
 	History::Load();
 
+	this->Running = true;
+	emit RunningChanged();
+
 	std::thread game_loop_thread(&Game::Run, this);
 	game_loop_thread.detach();
 }

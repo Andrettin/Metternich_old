@@ -4,6 +4,7 @@
 #include "database/gsml_data.h"
 #include "database/gsml_property.h"
 #include "engine_interface.h"
+#include "game.h"
 #include "landed_title.h"
 #include "map/map.h"
 #include "religion.h"
@@ -21,6 +22,7 @@ Province::Province(const std::string &identifier) : DataEntry(identifier)
 {
 	connect(this, &Province::CultureChanged, this, &DataEntryBase::NameChanged);
 	connect(this, &Province::ReligionChanged, this, &DataEntryBase::NameChanged);
+	connect(Game::GetInstance(), &Game::RunningChanged, this, &Province::UpdateImage);
 }
 
 /**
