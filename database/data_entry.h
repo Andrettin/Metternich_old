@@ -24,6 +24,7 @@ public:
 
 	void ProcessGSMLProperty(const GSMLProperty &property);
 	virtual void ProcessGSMLScope(const GSMLData &scope);
+	void LoadHistory(GSMLData &gsml_data);
 
 	virtual std::string GetName() const = 0;
 

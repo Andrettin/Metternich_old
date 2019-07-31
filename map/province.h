@@ -81,12 +81,12 @@ public:
 		return this->Image;
 	}
 
-	Metternich::Culture *GetCulture() const
+	Culture *GetCulture() const
 	{
 		return this->Culture;
 	}
 
-	Metternich::Religion *GetReligion() const
+	Religion *GetReligion() const
 	{
 		return this->Religion;
 	}
@@ -124,8 +124,8 @@ private:
 	QColor Color; //color used to identify the province in the province map
 	QRect Rect; //the rectangle that the province occupies
 	QImage Image; //the province's image to be drawn on-screen
-	Metternich::Culture *Culture = nullptr;
-	Metternich::Religion *Religion = nullptr;
+	Culture *Culture = nullptr;
+	Religion *Religion = nullptr;
 	Holding *CapitalHolding = nullptr;
 	std::vector<Holding *> Holdings;
 	int MaxHoldings = 1;

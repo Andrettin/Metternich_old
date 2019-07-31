@@ -2,9 +2,6 @@
 
 #include "database/gsml_data.h"
 
-#include "game.h"
-#include "history/history.h"
-
 #include <filesystem>
 #include <map>
 #include <memory>
@@ -149,32 +146,48 @@ public:
 	}
 
 	/**
-	**	@brief	Load history for the instance
+	**	@brief	Load history database for the class
 	*/
-	void LoadHistory()
+	static void LoadHistoryDatabase()
 	{
+		std::filesystem::path history_path("./data/history/" + std::string(T::DatabaseFolder));
+
+		if (!std::filesystem::exists(history_path)) {
+			return;
+		}
+
+		//data types with string identifiers have files with the same name as their identifiers, while for data types with numeric identifiers the file name is not relevant, with the identifier being scoped to within a file
 		if constexpr (std::is_same_v<KEY, std::string>) {
-			std::filesystem::path history_file_path("./data/history/" + std::string(T::DatabaseFolder) + "/" + static_cast<T *>(this)->GetIdentifier() + ".txt");
+			for (T *instance : T::GetAll()) {
+				std::filesystem::path history_file_path(history_path.string() + "/" + instance->GetIdentifier() + ".txt");
 
-			if (!std::filesystem::exists(history_file_path)) {
-				return;
+				if (!std::filesystem::exists(history_file_path)) {
+					return;
+				}
+
+				GSMLData gsml_data = GSMLData::ParseFile(history_file_path);
+
+				instance->LoadHistory(gsml_data);
 			}
+		} else {
+			std::filesystem::recursive_directory_iterator dir_iterator(history_path);
 
-			GSMLData gsml_data = GSMLData::ParseFile(history_file_path);
+			for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
+				if (!dir_entry.is_regular_file()) {
+					continue;
+				}
 
-			for (const GSMLProperty &property : gsml_data.GetProperties()) {
-				static_cast<T *>(this)->ProcessGSMLProperty(property); //properties outside of a date scope, to be applied regardless of start date
-			}
-
-			gsml_data.SortChildren();
-
-			for (const GSMLData &history_entry : gsml_data.GetChildren()) {
-				QDateTime date = History::StringToDate(history_entry.GetTag());
-
-				if (date <= Game::GetInstance()->GetCurrentDate()) {
-					for (const GSMLProperty &property : history_entry.GetProperties()) {
-						static_cast<T *>(this)->ProcessGSMLProperty(property);
+				GSMLData gsml_data = GSMLData::ParseFile(dir_entry.path());
+				for (const GSMLData &data_entry : gsml_data.GetChildren()) {
+					//for data types with numeric identifiers, a new one is created for history
+					T *instance = nullptr;
+					if constexpr (std::is_same_v<KEY, int>) {
+						instance = T::Add(std::stoi(data_entry.GetTag()));
+					} else {
+						instance = T::Add(data_entry.GetTag());
 					}
+
+					instance->LoadHistory(const_cast<GSMLData &>(data_entry));
 				}
 			}
 		}

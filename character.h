@@ -20,11 +20,14 @@ class Character : public NumericDataEntry, public DataType<Character, int>
 
 	Q_PROPERTY(QString name READ GetNameQString WRITE SetNameQString)
 	Q_PROPERTY(bool female MEMBER Female READ IsFemale)
+	Q_PROPERTY(Metternich::Culture* culture MEMBER Culture READ GetCulture)
+	Q_PROPERTY(Metternich::Religion* religion MEMBER Religion READ GetReligion)
 
 public:
 	Character(const int identifier) : NumericDataEntry(identifier) {}
 
 	static constexpr const char *ClassIdentifier = "character";
+	static constexpr const char *DatabaseFolder = "characters";
 
 	virtual std::string GetName() const override
 	{
@@ -46,12 +49,12 @@ public:
 		return this->Dynasty;
 	}
 
-	const Culture *GetCulture() const
+	Culture *GetCulture() const
 	{
 		return this->Culture;
 	}
 
-	const Religion *GetReligion() const
+	Religion *GetReligion() const
 	{
 		return this->Religion;
 	}
@@ -69,9 +72,9 @@ public:
 private:
 	std::string Name;
 	bool Female = false;
-	const Metternich::Dynasty *Dynasty = nullptr;
-	const Metternich::Culture *Culture = nullptr;
-	const Metternich::Religion *Religion = nullptr;
+	Dynasty *Dynasty = nullptr;
+	Culture *Culture = nullptr;
+	Religion *Religion = nullptr;
 	LandedTitle *PrimaryTitle = nullptr;
 	std::vector<LandedTitle *> LandedTitles;
 	Character *Father = nullptr;

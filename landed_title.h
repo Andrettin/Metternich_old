@@ -14,6 +14,8 @@ class LandedTitle : public DataEntry, public DataType<LandedTitle>
 {
 	Q_OBJECT
 
+	Q_PROPERTY(Metternich::Character* holder MEMBER Holder READ GetHolder NOTIFY HolderChanged)
+
 public:
 	LandedTitle(const std::string &identifier) : DataEntry(identifier) {}
 
@@ -29,9 +31,9 @@ public:
 
 	virtual std::string GetName() const override;
 
-	Character *GetOwner() const
+	Character *GetHolder() const
 	{
-		return this->Owner;
+		return this->Holder;
 	}
 
 	Province *GetProvince() const
@@ -44,8 +46,11 @@ public:
 		this->Province = province;
 	}
 
+signals:
+	void HolderChanged();
+
 private:
-	Character *Owner = nullptr;
+	Character *Holder = nullptr;
 	Province *Province = nullptr;
 };
 

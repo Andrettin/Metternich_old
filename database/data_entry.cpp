@@ -1,9 +1,12 @@
 #include "database/data_entry.h"
 
+#include "character.h"
 #include "culture.h"
 #include "database/gsml_data.h"
 #include "database/gsml_operator.h"
 #include "database/gsml_property.h"
+#include "game.h"
+#include "history/history.h"
 #include "landed_title.h"
 #include "religion.h"
 #include "translator.h"
@@ -64,6 +67,8 @@ void DataEntryBase::ProcessGSMLProperty(const GSMLProperty &property)
 				new_property_value = QVariant::fromValue(Culture::Get(property.GetValue()));
 			} else if (property.GetKey() == "religion") {
 				new_property_value = QVariant::fromValue(Religion::Get(property.GetValue()));
+			} else if (property.GetKey() == "character" || property.GetKey() == "holder") {
+				new_property_value = QVariant::fromValue(Character::Get(std::stoi(property.GetValue())));
 			} else {
 				throw std::runtime_error("Unknown type for object reference property \"" + std::string(property_name) + "\": \"" + property.GetKey() + "\".");
 			}
@@ -86,6 +91,28 @@ void DataEntryBase::ProcessGSMLScope(const GSMLData &scope)
 {
 	const QMetaObject *meta_object = this->metaObject();
 	throw std::runtime_error("Invalid " + std::string(meta_object->className()) + " field: \"" + scope.GetTag() + "\".");
+}
+
+/**
+**	@brief	Load history for the data entry
+*/
+void DataEntryBase::LoadHistory(GSMLData &gsml_data)
+{
+	for (const GSMLProperty &property : gsml_data.GetProperties()) {
+		this->ProcessGSMLProperty(property); //properties outside of a date scope, to be applied regardless of start date
+	}
+
+	gsml_data.SortChildren(); //sort by date, so that they are applied chronologically
+
+	for (const GSMLData &history_entry : gsml_data.GetChildren()) {
+		QDateTime date = History::StringToDate(history_entry.GetTag());
+
+		if (date <= Game::GetInstance()->GetCurrentDate()) {
+			for (const GSMLProperty &property : history_entry.GetProperties()) {
+				this->ProcessGSMLProperty(property);
+			}
+		}
+	}
 }
 
 std::string DataEntry::GetName() const

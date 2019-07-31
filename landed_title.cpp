@@ -33,8 +33,8 @@ std::string LandedTitle::GetName() const
 {
 	const Culture *culture = nullptr;
 
-	if (this->GetOwner() != nullptr) {
-		culture = this->GetOwner()->GetCulture();
+	if (this->GetHolder() != nullptr) {
+		culture = this->GetHolder()->GetCulture();
 	} else if (this->GetProvince() != nullptr) {
 		culture = this->GetProvince()->GetCulture();
 	}
