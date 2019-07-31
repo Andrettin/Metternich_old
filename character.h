@@ -95,6 +95,26 @@ public:
 	void AddLandedTitle(LandedTitle *title);
 	void RemoveLandedTitle(LandedTitle *title);
 
+	Character *GetLiege() const
+	{
+		return this->Liege;
+	}
+
+	Character *GetTopLiege() const
+	{
+		if (this->GetLiege() != nullptr) {
+			return this->GetLiege()->GetTopLiege();
+		}
+
+		return const_cast<Character *>(this);
+	}
+
+	LandedTitle *GetRealm() const
+	{
+		Character *top_liege = this->GetTopLiege();
+		return top_liege->GetPrimaryTitle();
+	}
+
 signals:
 	void CultureChanged();
 	void ReligionChanged();
@@ -114,6 +134,7 @@ private:
 	std::vector<Character *> Children;
 	QDateTime BirthDate;
 	QDateTime DeathDate;
+	Character *Liege = nullptr;
 };
 
 }

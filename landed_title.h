@@ -64,6 +64,8 @@ public:
 		this->Province = province;
 	}
 
+	LandedTitle *GetRealm() const;
+
 signals:
 	void HolderChanged();
 

@@ -125,4 +125,16 @@ void LandedTitle::SetHolder(Character *character)
 	emit HolderChanged();
 }
 
+LandedTitle *LandedTitle::GetRealm() const
+{
+	Character *holder = this->GetHolder();
+
+	if (holder != nullptr) {
+		Character *top_liege = holder->GetTopLiege();
+		return top_liege->GetPrimaryTitle();
+	}
+
+	return nullptr;
+}
+
 }
