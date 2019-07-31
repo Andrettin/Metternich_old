@@ -22,8 +22,9 @@ class Character : public NumericDataEntry, public DataType<Character, int>
 
 	Q_PROPERTY(QString name READ GetNameQString WRITE SetNameQString)
 	Q_PROPERTY(bool female MEMBER Female READ IsFemale)
-	Q_PROPERTY(Metternich::Culture* culture MEMBER Culture READ GetCulture)
-	Q_PROPERTY(Metternich::Religion* religion MEMBER Religion READ GetReligion)
+	Q_PROPERTY(Metternich::Culture* culture MEMBER Culture READ GetCulture NOTIFY CultureChanged)
+	Q_PROPERTY(Metternich::Religion* religion MEMBER Religion READ GetReligion NOTIFY ReligionChanged)
+	Q_PROPERTY(Metternich::LandedTitle* primary_title READ GetPrimaryTitle WRITE SetPrimaryTitle NOTIFY PrimaryTitleChanged)
 
 public:
 	Character(const int identifier) : NumericDataEntry(identifier) {}
@@ -73,10 +74,31 @@ public:
 		return this->PrimaryTitle;
 	}
 
+	void SetPrimaryTitle(LandedTitle *title)
+	{
+		if (title == this->GetPrimaryTitle()) {
+			return;
+		}
+
+		this->PrimaryTitle = title;
+
+		emit PrimaryTitleChanged();
+	}
+
+	void ChoosePrimaryTitle();
+
 	const std::vector<LandedTitle *> &GetLandedTitles() const
 	{
 		return this->LandedTitles;
 	}
+
+	void AddLandedTitle(LandedTitle *title);
+	void RemoveLandedTitle(LandedTitle *title);
+
+signals:
+	void CultureChanged();
+	void ReligionChanged();
+	void PrimaryTitleChanged();
 
 private:
 	std::string Name;

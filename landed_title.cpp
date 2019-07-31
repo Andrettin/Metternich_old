@@ -40,6 +40,29 @@ LandedTitle *LandedTitle::Add(const std::string &identifier)
 }
 
 /**
+**	@brief	Process a GSML history property
+**
+**	@param	property	The property
+*/
+void LandedTitle::ProcessGSMLHistoryProperty(const GSMLProperty &property, const QDateTime &date)
+{
+	Q_UNUSED(date);
+
+	if (property.GetKey() == "holder") {
+		if (property.GetOperator() != GSMLOperator::Assignment) {
+			throw std::runtime_error("Only the assignment operator is available for the \"" + property.GetKey() + "\" property.");
+		}
+
+		const Character *holder = Character::Get(std::stoi(property.GetValue()));
+		if (!holder->IsAlive()) {
+			return;
+		}
+	}
+
+	this->ProcessGSMLProperty(property);
+}
+
+/**
 **	@brief	Get the landed title's name
 **
 **	@return	The landed title's name
@@ -60,6 +83,22 @@ std::string LandedTitle::GetName() const
 	}
 
 	return Translator::GetInstance()->Translate(this->GetIdentifier(), suffixes);
+}
+
+void LandedTitle::SetHolder(Character *character)
+{
+	if (character == this->GetHolder()) {
+		return;
+	}
+
+	if (this->GetHolder() != nullptr) {
+		this->GetHolder()->RemoveLandedTitle(this);
+	}
+
+	this->Holder = character;
+	character->AddLandedTitle(this);
+
+	emit HolderChanged();
 }
 
 }

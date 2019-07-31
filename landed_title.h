@@ -15,7 +15,7 @@ class LandedTitle : public DataEntry, public DataType<LandedTitle>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(Metternich::Character* holder MEMBER Holder READ GetHolder NOTIFY HolderChanged)
+	Q_PROPERTY(Metternich::Character* holder READ GetHolder WRITE SetHolder NOTIFY HolderChanged)
 
 public:
 	LandedTitle(const std::string &identifier) : DataEntry(identifier) {}
@@ -30,6 +30,8 @@ public:
 
 	static LandedTitle *Add(const std::string &identifier);
 
+	virtual void ProcessGSMLHistoryProperty(const GSMLProperty &property, const QDateTime &date) override;
+
 	virtual std::string GetName() const override;
 
 	LandedTitleTier GetTier() const
@@ -41,6 +43,8 @@ public:
 	{
 		return this->Holder;
 	}
+
+	void SetHolder(Character *character);
 
 	Province *GetProvince() const
 	{
