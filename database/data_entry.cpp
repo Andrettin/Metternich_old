@@ -10,6 +10,7 @@
 #include "history/history.h"
 #include "landed_title.h"
 #include "religion.h"
+#include "trait.h"
 #include "translator.h"
 #include "util.h"
 
@@ -78,6 +79,33 @@ void DataEntryBase::ProcessGSMLProperty(const GSMLProperty &property)
 			} else {
 				throw std::runtime_error("Unknown type for object reference property \"" + std::string(property_name) + "\": \"" + property.GetKey() + "\".");
 			}
+		} else if (property_type == QVariant::Type::List) {
+			if (property.GetOperator() == GSMLOperator::Assignment) {
+				throw std::runtime_error("The assignment operator is not available for list properties.");
+			}
+
+			std::string method_name;
+			if (property.GetOperator() == GSMLOperator::Addition) {
+				method_name = "Add";
+			} else if (property.GetOperator() == GSMLOperator::Subtraction) {
+				method_name = "Remove";
+			}
+
+			method_name += GetSingularForm(SnakeCaseToPascalCase(property.GetKey()));
+
+			bool success = false;
+			if (property.GetKey() == "traits") {
+				Trait *trait = Trait::Get(property.GetValue());
+				success = QMetaObject::invokeMethod(this, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(Trait *, trait));
+			} else {
+				throw std::runtime_error("Unknown type for list property \"" + std::string(property_name) + "\": \"" + property.GetKey() + "\".");
+			}
+
+			if (!success) {
+				throw std::runtime_error("Failed to add or remove value for list property \"" + std::string(property_name) + "\".");
+			}
+
+			return;
 		} else {
 			throw std::runtime_error("Invalid type for property \"" + std::string(property_name) + "\": \"" + std::string(meta_property.typeName()) + "\".");
 		}

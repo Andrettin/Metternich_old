@@ -6,6 +6,7 @@
 #include "landed_title.h"
 #include "landed_title_tier.h"
 #include "random.h"
+#include "trait.h"
 #include "util.h"
 
 namespace Metternich {
@@ -92,6 +93,11 @@ void Character::RemoveLandedTitle(LandedTitle *title)
 	if (title == this->GetPrimaryTitle()) {
 		this->ChoosePrimaryTitle(); //needs to choose a new primary title, as the old one has been lost
 	}
+}
+
+QVariantList Character::GetTraitsQVariantList() const
+{
+	return VectorToQVariantList(this->GetTraits());
 }
 
 }

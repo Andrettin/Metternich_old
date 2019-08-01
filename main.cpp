@@ -9,6 +9,7 @@
 #include "map/province.h"
 #include "map/province_image_provider.h"
 #include "religion.h"
+#include "trait.h"
 #include "translator.h"
 
 #include "third_party/maskedmousearea/maskedmousearea.h"
@@ -31,6 +32,7 @@ static void LoadDatabase()
 	Dynasty::LoadDatabase();
 	LandedTitle::LoadDatabase();
 	Province::LoadDatabase();
+	Trait::LoadDatabase();
 
 	Culture::CheckAll();
 	LandedTitle::CheckAll();

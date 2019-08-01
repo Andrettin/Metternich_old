@@ -76,5 +76,6 @@ HEADERS += \
     random.h \
     religion.h \
     third_party/maskedmousearea/maskedmousearea.h \
+    trait.h \
     translator.h \
     util.h

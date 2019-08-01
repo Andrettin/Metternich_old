@@ -15,6 +15,7 @@ class Dynasty;
 class GSMLProperty;
 class LandedTitle;
 class Religion;
+class Trait;
 
 class Character : public NumericDataEntry, public DataType<Character, int>
 {
@@ -29,6 +30,7 @@ class Character : public NumericDataEntry, public DataType<Character, int>
 	Q_PROPERTY(Metternich::Character* father READ GetFather WRITE SetFather)
 	Q_PROPERTY(Metternich::Character* mother READ GetMother WRITE SetMother)
 	Q_PROPERTY(Metternich::Character* spouse READ GetSpouse WRITE SetSpouse)
+	Q_PROPERTY(QVariantList traits READ GetTraitsQVariantList)
 
 public:
 	static constexpr const char *ClassIdentifier = "character";
@@ -215,6 +217,23 @@ public:
 		return top_liege->GetPrimaryTitle();
 	}
 
+	const std::vector<Trait *> &GetTraits() const
+	{
+		return this->Traits;
+	}
+
+	QVariantList GetTraitsQVariantList() const;
+
+	Q_INVOKABLE void AddTrait(Trait *trait)
+	{
+		this->Traits.push_back(trait);
+	}
+
+	Q_INVOKABLE void RemoveTrait(Trait *trait)
+	{
+		this->Traits.erase(std::remove(this->Traits.begin(), this->Traits.end(), trait), this->Traits.end());
+	}
+
 signals:
 	void DynastyChanged();
 	void CultureChanged();
@@ -237,6 +256,7 @@ private:
 	QDateTime BirthDate;
 	QDateTime DeathDate;
 	Character *Liege = nullptr;
+	std::vector<Trait *> Traits;
 };
 
 }
