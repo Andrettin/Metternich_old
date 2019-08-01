@@ -33,6 +33,8 @@ public:
 
 	void LoadHistory(GSMLData &gsml_data);
 
+	virtual void Check() const {}
+
 	virtual std::string GetName() const = 0;
 
 	QString GetNameQString() const

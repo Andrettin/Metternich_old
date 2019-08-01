@@ -53,6 +53,7 @@ private:
 
 public:
 	virtual void ProcessGSMLScope(const GSMLData &scope) override;
+	virtual void Check() const override;
 
 	virtual std::string GetName() const override;
 

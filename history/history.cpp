@@ -11,6 +11,10 @@ void History::Load()
 	Province::LoadHistoryDatabase();
 	Character::LoadHistoryDatabase();
 	LandedTitle::LoadHistoryDatabase();
+
+	Character::CheckAll();
+	LandedTitle::CheckAll();
+	Province::CheckAll();
 }
 
 }

@@ -20,6 +20,17 @@ public:
 
 	virtual void ProcessGSMLScope(const GSMLData &scope) override;
 
+	virtual void Check() const override
+	{
+		if (this->MaleNames.empty()) {
+			throw std::runtime_error("Culture \"" + this->GetIdentifier() + "\" has no male names.");
+		}
+
+		if (this->FemaleNames.empty()) {
+			throw std::runtime_error("Culture \"" + this->GetIdentifier() + "\" has no female names.");
+		}
+	}
+
 	std::string GenerateMaleName() const
 	{
 		if (this->MaleNames.empty()) {

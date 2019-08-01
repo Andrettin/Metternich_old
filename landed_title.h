@@ -34,6 +34,7 @@ public:
 
 	virtual void ProcessGSMLHistoryProperty(const GSMLProperty &property, const QDateTime &date) override;
 	virtual void ProcessGSMLScope(const GSMLData &scope) override;
+	virtual void Check() const override;
 
 	virtual std::string GetName() const override;
 

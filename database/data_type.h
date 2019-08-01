@@ -193,6 +193,16 @@ public:
 		}
 	}
 
+	/**
+	**	@brief	Check whether all instances are valid
+	*/
+	static void CheckAll()
+	{
+		for (const T *instance : T::GetAll()) {
+			instance->Check();
+		}
+	}
+
 private:
 	static inline std::vector<T *> Instances;
 	static inline std::map<KEY, std::unique_ptr<T>> InstancesByIdentifier;

@@ -2,6 +2,7 @@
 
 #include "character.h"
 #include "culture.h"
+#include "game.h"
 #include "landed_title_tier.h"
 #include "map/province.h"
 #include "translator.h"
@@ -83,6 +84,24 @@ void LandedTitle::ProcessGSMLScope(const GSMLData &scope)
 		this->Color.setRgb(red, green, blue);
 	} else {
 		DataEntryBase::ProcessGSMLScope(scope);
+	}
+}
+
+/**
+**	@brief	Check whether the landed title is in a valid state
+*/
+void LandedTitle::Check() const
+{
+	if (!this->GetColor().isValid()) {
+		throw std::runtime_error("Landed title \"" + this->GetIdentifier() + "\" has no valid color.");
+	}
+
+	if (Game::GetInstance()->IsStarting()) {
+		if (this->GetProvince() != nullptr) {
+			if (this->GetTier() != LandedTitleTier::County) {
+				throw std::runtime_error("Landed title \"" + this->GetIdentifier() + "\" has been assigned to a province, but is not a county.");
+			}
+		}
 	}
 }
 

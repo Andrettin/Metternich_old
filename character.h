@@ -36,6 +36,21 @@ public:
 
 	virtual void ProcessGSMLHistoryProperty(const GSMLProperty &property, const QDateTime &date) override;
 
+	virtual void Check() const override
+	{
+		if (this->GetName().empty()) {
+			throw std::runtime_error("Character \"" + std::to_string(this->GetIdentifier()) + "\" has no name.");
+		}
+
+		if (this->GetCulture() == nullptr) {
+			throw std::runtime_error("Character \"" + std::to_string(this->GetIdentifier()) + "\" has no culture.");
+		}
+
+		if (this->GetReligion() == nullptr) {
+			throw std::runtime_error("Character \"" + std::to_string(this->GetIdentifier()) + "\" has no religion.");
+		}
+	}
+
 	virtual std::string GetName() const override
 	{
 		return this->Name;

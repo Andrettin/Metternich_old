@@ -85,6 +85,26 @@ void Province::ProcessGSMLScope(const GSMLData &scope)
 }
 
 /**
+**	@brief	Check whether the province is in a valid state
+*/
+void Province::Check() const
+{
+	if (!this->GetColor().isValid()) {
+		throw std::runtime_error("Province \"" + this->GetIdentifier() + "\" has no valid color.");
+	}
+
+	if (Game::GetInstance()->IsStarting()) {
+		if (this->GetCulture() == nullptr) {
+			throw std::runtime_error("Province \"" + this->GetIdentifier() + "\" has no culture.");
+		}
+
+		if (this->GetReligion() == nullptr) {
+			throw std::runtime_error("Province \"" + this->GetIdentifier() + "\" has no religion.");
+		}
+	}
+}
+
+/**
 **	@brief	Get the province's name
 **
 **	@return	The province's name

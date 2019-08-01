@@ -10,6 +10,9 @@
 
 namespace Metternich {
 
+/**
+**	@brief	Get the game singleton instance
+*/
 Game *Game::GetInstance()
 {
 	std::call_once(Game::OnceFlag, [](){ Game::Instance = std::make_unique<Game>(); });
@@ -17,12 +20,22 @@ Game *Game::GetInstance()
 	return Game::Instance.get();
 }
 
+/**
+**	@brief	Constructor
+*/
 Game::Game() : Speed(GameSpeed::Normal)
 {
 }
 
+/**
+**	@brief	Start the game
+**
+**	@param	start_date	The game's start date
+*/
 void Game::Start(const QDateTime &start_date)
 {
+	this->Starting = true;
+
 	this->CurrentDate = start_date;
 	emit CurrentDateChanged();
 
@@ -30,6 +43,7 @@ void Game::Start(const QDateTime &start_date)
 
 	this->GenerateMissingTitleHolders();
 
+	this->Starting = false;
 	this->Running = true;
 	emit RunningChanged();
 
@@ -37,6 +51,9 @@ void Game::Start(const QDateTime &start_date)
 	game_loop_thread.detach();
 }
 
+/**
+**	@brief	Run the game's game loop
+*/
 void Game::Run()
 {
 	while (true) {
@@ -82,6 +99,9 @@ void Game::Run()
 	}
 }
 
+/**
+**	@brief	Generate holders for (non-titular) counties which lack them
+*/
 void Game::GenerateMissingTitleHolders()
 {
 	for (LandedTitle *landed_title : LandedTitle::GetAll()) {

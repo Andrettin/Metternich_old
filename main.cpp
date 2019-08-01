@@ -29,6 +29,10 @@ static void LoadDatabase()
 	Religion::LoadDatabase();
 	LandedTitle::LoadDatabase();
 	Province::LoadDatabase();
+
+	Culture::CheckAll();
+	LandedTitle::CheckAll();
+	Province::CheckAll();
 }
 
 }
