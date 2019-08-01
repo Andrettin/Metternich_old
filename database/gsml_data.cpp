@@ -85,7 +85,15 @@ std::vector<std::string> GSMLData::ParseLine(const std::string &line)
 			//whitespace, carriage returns and etc. separate tokens, if they occur outside of quotes
 			if (c == ' ' || c == '\t' || c == '\r' || c == '\n' || c == '=') {
 				if (c == '=') { //the assignment operator separates tokens, but is also a token in and of itself
-					tokens.push_back(std::string(1, c));
+					std::string operator_token;
+					if (!current_string.empty()) {
+						if (current_string.back() == '+' || current_string.back() == '-') {
+							operator_token = std::string(1, current_string.back());
+							current_string.pop_back();
+						}
+					}
+					operator_token += std::string(1, c);
+					tokens.push_back(operator_token);
 				}
 
 				if (!current_string.empty()) {
