@@ -83,6 +83,24 @@ public:
 	}
 
 	/**
+	**	@brief	Get or add an instance of the class
+	**
+	**	@param	ident	The instance's identifier
+	**
+	**	@return	The instance if found, otherwise a new instance is created and returned
+	*/
+	static inline T *GetOrAdd(const KEY &identifier)
+	{
+		T *instance = T::Get(identifier, false);
+
+		if (!instance) {
+			instance = T::Add(identifier);
+		}
+
+		return instance;
+	}
+
+	/**
 	**	@brief	Remove an instance of the class
 	**
 	**	@param	instance	The instance

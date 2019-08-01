@@ -25,14 +25,41 @@ class Character : public NumericDataEntry, public DataType<Character, int>
 	Q_PROPERTY(Metternich::Culture* culture MEMBER Culture READ GetCulture NOTIFY CultureChanged)
 	Q_PROPERTY(Metternich::Religion* religion MEMBER Religion READ GetReligion NOTIFY ReligionChanged)
 	Q_PROPERTY(Metternich::LandedTitle* primary_title READ GetPrimaryTitle WRITE SetPrimaryTitle NOTIFY PrimaryTitleChanged)
+	Q_PROPERTY(Metternich::Character* father READ GetFather WRITE SetFather)
+	Q_PROPERTY(Metternich::Character* mother READ GetMother WRITE SetMother)
+	Q_PROPERTY(Metternich::Character* spouse READ GetSpouse WRITE SetSpouse)
 
 public:
-	Character(const int identifier) : NumericDataEntry(identifier) {}
-
 	static constexpr const char *ClassIdentifier = "character";
 	static constexpr const char *DatabaseFolder = "characters";
 
 	static Character *Generate(Culture *culture, Religion *religion);
+
+	Character(const int identifier) : NumericDataEntry(identifier) {}
+
+	virtual ~Character() override
+	{
+		//remove references from other characters to his one; necessary since this character could be purged e.g. if it was born after the start date
+		if (this->Father != nullptr) {
+			this->Father->Children.erase(std::remove(this->Father->Children.begin(), this->Father->Children.end(), this), this->Father->Children.end());
+		}
+
+		if (this->Mother != nullptr) {
+			this->Mother->Children.erase(std::remove(this->Mother->Children.begin(), this->Mother->Children.end(), this), this->Mother->Children.end());
+		}
+
+		if (this->Spouse != nullptr) {
+			this->Spouse->Spouse = nullptr;
+		}
+
+		for (Character *child : this->Children) {
+			if (this->IsFemale()) {
+				child->Mother = nullptr;
+			} else {
+				child->Father = nullptr;
+			}
+		}
+	}
 
 	virtual void ProcessGSMLHistoryProperty(const GSMLProperty &property, const QDateTime &date) override;
 
@@ -112,6 +139,61 @@ public:
 	void AddLandedTitle(LandedTitle *title);
 	void RemoveLandedTitle(LandedTitle *title);
 
+	Character *GetFather() const
+	{
+		return this->Father;
+	}
+
+	void SetFather(Character *father)
+	{
+		if (this->GetFather() == father) {
+			return;
+		}
+
+		this->Father = father;
+		father->Children.push_back(this);
+	}
+
+	Character *GetMother() const
+	{
+		return this->Mother;
+	}
+
+	void SetMother(Character *mother)
+	{
+		if (this->GetMother() == mother) {
+			return;
+		}
+
+		this->Mother = mother;
+		mother->Children.push_back(this);
+	}
+
+	Character *GetSpouse() const
+	{
+		return this->Spouse;
+	}
+
+	void SetSpouse(Character *spouse)
+	{
+		if (this->GetSpouse() == spouse) {
+			return;
+		}
+
+		this->Spouse = spouse;
+		spouse->Spouse = this;
+	}
+
+	const QDateTime &GetBirthDate()
+	{
+		return this->BirthDate;
+	}
+
+	const QDateTime &GetDeathDate()
+	{
+		return this->DeathDate;
+	}
+
 	Character *GetLiege() const
 	{
 		return this->Liege;
@@ -132,16 +214,6 @@ public:
 		return top_liege->GetPrimaryTitle();
 	}
 
-	const QDateTime &GetBirthDate()
-	{
-		return this->BirthDate;
-	}
-
-	const QDateTime &GetDeathDate()
-	{
-		return this->DeathDate;
-	}
-
 signals:
 	void CultureChanged();
 	void ReligionChanged();
@@ -159,6 +231,7 @@ private:
 	Character *Father = nullptr;
 	Character *Mother = nullptr;
 	std::vector<Character *> Children;
+	Character *Spouse = nullptr;
 	QDateTime BirthDate;
 	QDateTime DeathDate;
 	Character *Liege = nullptr;

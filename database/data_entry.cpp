@@ -69,6 +69,9 @@ void DataEntryBase::ProcessGSMLProperty(const GSMLProperty &property)
 				new_property_value = QVariant::fromValue(Religion::Get(property.GetValue()));
 			} else if (property.GetKey() == "character" || property.GetKey() == "holder") {
 				new_property_value = QVariant::fromValue(Character::Get(std::stoi(property.GetValue())));
+			} else if (property.GetKey() == "father" || property.GetKey() == "mother" || property.GetKey() == "spouse") {
+				//for character references to other characters, we get or add them, since they may not have been processed yet when the current character is processed
+				new_property_value = QVariant::fromValue(Character::GetOrAdd(std::stoi(property.GetValue())));
 			} else {
 				throw std::runtime_error("Unknown type for object reference property \"" + std::string(property_name) + "\": \"" + property.GetKey() + "\".");
 			}
