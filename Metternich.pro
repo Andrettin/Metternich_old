@@ -14,6 +14,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         character.cpp \
+        culture.cpp \
         database/csv_data.cpp \
         database/data_entry.cpp \
         database/gsml_data.cpp \

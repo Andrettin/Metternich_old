@@ -31,15 +31,21 @@ GSMLData GSMLData::ParseFile(const std::filesystem::path &filepath)
 	std::string line;
 	int line_index = 1;
 	GSMLData *current_gsml_data = &file_gsml_data;
-	while (std::getline(ifstream, line)) {
-		try {
-			std::vector<std::string> tokens = GSMLData::ParseLine(line);
-			GSMLData::ParseTokens(tokens, &current_gsml_data);
-		} catch (std::exception &exception) {
-			throw std::runtime_error("Error parsing data file \"" + filepath.string() + "\", line " + std::to_string(line_index) + ": " + exception.what() + ".");
+	std::vector<std::string> tokens;
+
+	try {
+		while (std::getline(ifstream, line)) {
+				std::vector<std::string> new_tokens = GSMLData::ParseLine(line);
+				for (const std::string &token : new_tokens) {
+					tokens.push_back(token);
+				}
+
+			++line_index;
 		}
 
-		++line_index;
+		GSMLData::ParseTokens(tokens, &current_gsml_data);
+	} catch (std::exception &exception) {
+		throw std::runtime_error("Error parsing data file \"" + filepath.string() + "\", line " + std::to_string(line_index) + ": " + exception.what() + ".");
 	}
 
 	return file_gsml_data;

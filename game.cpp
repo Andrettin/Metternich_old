@@ -1,7 +1,10 @@
 #include "game.h"
 
+#include "character.h"
 #include "game_speed.h"
 #include "history/history.h"
+#include "landed_title.h"
+#include "map/province.h"
 
 #include <chrono>
 
@@ -24,6 +27,8 @@ void Game::Start(const QDateTime &start_date)
 	emit CurrentDateChanged();
 
 	History::Load();
+
+	this->GenerateMissingTitleHolders();
 
 	this->Running = true;
 	emit RunningChanged();
@@ -74,6 +79,23 @@ void Game::Run()
 		if (tick_ms > std::chrono::milliseconds(0)) {
 			std::this_thread::sleep_for(tick_ms);
 		}
+	}
+}
+
+void Game::GenerateMissingTitleHolders()
+{
+	for (LandedTitle *landed_title : LandedTitle::GetAll()) {
+		if (landed_title->GetHolder() != nullptr) {
+			continue;
+		}
+
+		const Province *province = landed_title->GetProvince();
+		if (province == nullptr) {
+			continue;
+		}
+
+		Character *holder = Character::Generate(province->GetCulture(), province->GetReligion());
+		landed_title->SetHolder(holder);
 	}
 }
 

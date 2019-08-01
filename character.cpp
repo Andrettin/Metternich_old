@@ -1,11 +1,29 @@
 #include "character.h"
 
+#include "culture.h"
 #include "database/gsml_property.h"
 #include "landed_title.h"
 #include "landed_title_tier.h"
 #include "util.h"
 
 namespace Metternich {
+
+/**
+**	@brief	Generate a character
+**
+**	@param	culture		The culture for the generated character
+**
+**	@param	religion	The religion for the generated character
+*/
+Character *Character::Generate(Metternich::Culture *culture, Metternich::Religion *religion)
+{
+	const int identifier = Character::GenerateNumericIdentifier();
+	Character *character = Character::Add(identifier);
+	character->Culture = culture;
+	character->Religion = religion;
+	character->Name = culture->GenerateMaleName();
+	return character;
+}
 
 /**
 **	@brief	Process a GSML history property

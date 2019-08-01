@@ -51,6 +51,8 @@ public:
 		return english_locale.toString(this->CurrentDate, "d MMMM, yyyy");
 	}
 
+	void GenerateMissingTitleHolders();
+
 signals:
 	void RunningChanged();
 	void CurrentDateChanged();

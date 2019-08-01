@@ -32,6 +32,8 @@ public:
 	static constexpr const char *ClassIdentifier = "character";
 	static constexpr const char *DatabaseFolder = "characters";
 
+	static Character *Generate(Culture *culture, Religion *religion);
+
 	virtual void ProcessGSMLHistoryProperty(const GSMLProperty &property, const QDateTime &date) override;
 
 	virtual std::string GetName() const override
