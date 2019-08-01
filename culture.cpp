@@ -1,5 +1,6 @@
 #include "culture.h"
 
+#include "dynasty.h"
 #include "random.h"
 
 namespace Metternich {
@@ -45,6 +46,18 @@ std::string Culture::GenerateFemaleName() const
 	}
 
 	return this->FemaleNames[Random::Generate(this->FemaleNames.size())];
+}
+
+/**
+**	@brief	Generate dynasty name
+*/
+std::string Culture::GenerateDynastyName() const
+{
+	if (this->Dynasties.empty()) {
+		return std::string();
+	}
+
+	return this->Dynasties[Random::Generate(this->Dynasties.size())]->GetName();
 }
 
 }

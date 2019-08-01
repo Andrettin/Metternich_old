@@ -19,6 +19,7 @@ SOURCES += \
         database/data_entry.cpp \
         database/gsml_data.cpp \
         defines.cpp \
+        dynasty.cpp \
         engine_interface.cpp \
         game.cpp \
         history/history.cpp \
@@ -57,6 +58,7 @@ HEADERS += \
     database/gsml_operator.h \
     database/gsml_property.h \
     defines.h \
+    dynasty.h \
     empty_image_provider.h \
     engine_interface.h \
     game.h \

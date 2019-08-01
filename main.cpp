@@ -1,5 +1,6 @@
 #include "culture.h"
 #include "defines.h"
+#include "dynasty.h"
 #include "empty_image_provider.h"
 #include "engine_interface.h"
 #include "game.h"
@@ -27,6 +28,7 @@ static void LoadDatabase()
 	Defines::Load();
 	Culture::LoadDatabase();
 	Religion::LoadDatabase();
+	Dynasty::LoadDatabase();
 	LandedTitle::LoadDatabase();
 	Province::LoadDatabase();
 

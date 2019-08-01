@@ -5,6 +5,7 @@
 #include "database/gsml_data.h"
 #include "database/gsml_operator.h"
 #include "database/gsml_property.h"
+#include "dynasty.h"
 #include "game.h"
 #include "history/history.h"
 #include "landed_title.h"
@@ -67,6 +68,8 @@ void DataEntryBase::ProcessGSMLProperty(const GSMLProperty &property)
 				new_property_value = QVariant::fromValue(Culture::Get(property.GetValue()));
 			} else if (property.GetKey() == "religion") {
 				new_property_value = QVariant::fromValue(Religion::Get(property.GetValue()));
+			} else if (property.GetKey() == "dynasty") {
+				new_property_value = QVariant::fromValue(Dynasty::Get(property.GetValue()));
 			} else if (property.GetKey() == "character" || property.GetKey() == "holder") {
 				new_property_value = QVariant::fromValue(Character::Get(std::stoi(property.GetValue())));
 			} else if (property.GetKey() == "father" || property.GetKey() == "mother" || property.GetKey() == "spouse") {

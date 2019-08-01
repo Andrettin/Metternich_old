@@ -22,6 +22,7 @@ class Character : public NumericDataEntry, public DataType<Character, int>
 
 	Q_PROPERTY(QString name READ GetNameQString WRITE SetNameQString)
 	Q_PROPERTY(bool female MEMBER Female READ IsFemale)
+	Q_PROPERTY(Metternich::Dynasty* dynasty MEMBER Dynasty READ GetDynasty NOTIFY DynastyChanged)
 	Q_PROPERTY(Metternich::Culture* culture MEMBER Culture READ GetCulture NOTIFY CultureChanged)
 	Q_PROPERTY(Metternich::Religion* religion MEMBER Religion READ GetReligion NOTIFY ReligionChanged)
 	Q_PROPERTY(Metternich::LandedTitle* primary_title READ GetPrimaryTitle WRITE SetPrimaryTitle NOTIFY PrimaryTitleChanged)
@@ -98,7 +99,7 @@ public:
 		return this->Female;
 	}
 
-	const Dynasty *GetDynasty() const
+	Dynasty *GetDynasty() const
 	{
 		return this->Dynasty;
 	}
@@ -215,6 +216,7 @@ public:
 	}
 
 signals:
+	void DynastyChanged();
 	void CultureChanged();
 	void ReligionChanged();
 	void PrimaryTitleChanged();

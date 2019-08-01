@@ -7,6 +7,8 @@
 
 namespace Metternich {
 
+class Dynasty;
+
 class Culture : public DataEntry, public DataType<Culture>
 {
 	Q_OBJECT
@@ -30,12 +32,19 @@ public:
 		}
 	}
 
+	void AddDynasty(Dynasty *dynasty)
+	{
+		this->Dynasties.push_back(dynasty);
+	}
+
 	std::string GenerateMaleName() const;
 	std::string GenerateFemaleName() const;
+	std::string GenerateDynastyName() const;
 
 private:
 	std::vector<std::string> MaleNames;
 	std::vector<std::string> FemaleNames;
+	std::vector<Dynasty *> Dynasties;
 };
 
 }
