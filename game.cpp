@@ -42,6 +42,7 @@ void Game::Start(const QDateTime &start_date)
 	History::Load();
 
 	this->GenerateMissingTitleHolders();
+	this->PurgeSuperfluousCharacters();
 
 	this->Starting = false;
 	this->Running = true;
@@ -116,6 +117,25 @@ void Game::GenerateMissingTitleHolders()
 
 		Character *holder = Character::Generate(province->GetCulture(), province->GetReligion());
 		landed_title->SetHolder(holder);
+	}
+}
+
+/**
+**	@brief	Purge superfluous characters
+*/
+void Game::PurgeSuperfluousCharacters()
+{
+	std::vector<Character *> characters_to_remove;
+
+	for (Character *character : Character::GetAll()) {
+		//purge characters without a birth date, since this means that they were created during history loading, but haven't actually been born for the chosen start date (so that their birth wasn't loaded)
+		if (!character->GetBirthDate().isValid()) {
+			characters_to_remove.push_back(character);
+		}
+	}
+
+	for (Character *character : characters_to_remove) {
+		Character::Remove(character);
 	}
 }
 

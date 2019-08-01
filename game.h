@@ -57,6 +57,7 @@ public:
 	}
 
 	void GenerateMissingTitleHolders();
+	void PurgeSuperfluousCharacters();
 
 signals:
 	void RunningChanged();
