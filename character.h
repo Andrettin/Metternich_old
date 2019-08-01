@@ -132,6 +132,16 @@ public:
 		return top_liege->GetPrimaryTitle();
 	}
 
+	const QDateTime &GetBirthDate()
+	{
+		return this->BirthDate;
+	}
+
+	const QDateTime &GetDeathDate()
+	{
+		return this->DeathDate;
+	}
+
 signals:
 	void CultureChanged();
 	void ReligionChanged();
@@ -139,7 +149,7 @@ signals:
 
 private:
 	std::string Name;
-	bool Alive = false;
+	bool Alive = true;
 	bool Female = false;
 	Dynasty *Dynasty = nullptr;
 	Culture *Culture = nullptr;

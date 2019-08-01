@@ -71,6 +71,7 @@ HEADERS += \
     map/province.h \
     map/province_image_provider.h \
     pch.h \
+    random.h \
     religion.h \
     third_party/maskedmousearea/maskedmousearea.h \
     translator.h \

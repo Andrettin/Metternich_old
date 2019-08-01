@@ -2,8 +2,10 @@
 
 #include "culture.h"
 #include "database/gsml_property.h"
+#include "game.h"
 #include "landed_title.h"
 #include "landed_title_tier.h"
+#include "random.h"
 #include "util.h"
 
 namespace Metternich {
@@ -22,6 +24,9 @@ Character *Character::Generate(Metternich::Culture *culture, Metternich::Religio
 	character->Culture = culture;
 	character->Religion = religion;
 	character->Name = culture->GenerateMaleName();
+	//generate the character's birth date to be between 60 and 20 years before the current date
+	const QDateTime &current_date = Game::GetInstance()->GetCurrentDate();
+	character->BirthDate = current_date.addDays(Random::GenerateInRange(-60 * 365, -20 * 365));
 	return character;
 }
 

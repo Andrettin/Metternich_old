@@ -1,5 +1,7 @@
 #include "culture.h"
 
+#include "random.h"
+
 namespace Metternich {
 
 /**
@@ -19,6 +21,30 @@ void Culture::ProcessGSMLScope(const GSMLData &scope)
 	} else {
 		DataEntryBase::ProcessGSMLScope(scope);
 	}
+}
+
+/**
+**	@brief	Generate male name
+*/
+std::string Culture::GenerateMaleName() const
+{
+	if (this->MaleNames.empty()) {
+		return std::string();
+	}
+
+	return this->MaleNames[Random::Generate(this->MaleNames.size())];
+}
+
+/**
+**	@brief	Generate female name
+*/
+std::string Culture::GenerateFemaleName() const
+{
+	if (this->FemaleNames.empty()) {
+		return std::string();
+	}
+
+	return this->FemaleNames[Random::Generate(this->FemaleNames.size())];
 }
 
 }
