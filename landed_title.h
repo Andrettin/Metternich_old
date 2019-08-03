@@ -20,6 +20,8 @@ class LandedTitle : public DataEntry, public DataType<LandedTitle>
 	Q_OBJECT
 
 	Q_PROPERTY(Metternich::Character* holder READ GetHolder WRITE SetHolder NOTIFY HolderChanged)
+	Q_PROPERTY(Metternich::LandedTitle* holder_title MEMBER HolderTitle WRITE SetHolderTitle)
+	Q_PROPERTY(Metternich::LandedTitle* liege_title MEMBER LiegeTitle)
 	Q_PROPERTY(Metternich::LandedTitle* de_jure_liege_title READ GetDeJureLiegeTitle WRITE SetDeJureLiegeTitle NOTIFY DeJureLiegeTitleChanged)
 	Q_PROPERTY(Metternich::Province* capital_province MEMBER CapitalProvince READ GetCapitalProvince)
 
@@ -38,6 +40,7 @@ public:
 
 	virtual void ProcessGSMLDatedProperty(const GSMLProperty &property, const QDateTime &date) override;
 	virtual void ProcessGSMLScope(const GSMLData &scope) override;
+	virtual void Initialize() override;
 	virtual void Check() const override;
 
 	virtual std::string GetName() const override;
@@ -58,6 +61,8 @@ public:
 	}
 
 	void SetHolder(Character *character);
+
+	void SetHolderTitle(LandedTitle *title);
 
 	Holding *GetHolding() const
 	{
@@ -120,6 +125,8 @@ private:
 	LandedTitle *DeJureLiegeTitle = nullptr;
 	std::vector<LandedTitle *> DeJureVassalTitles;
 	Metternich::Province *CapitalProvince = nullptr;
+	LandedTitle *HolderTitle = nullptr; //title of this title's holder; used only for initialization, and set to null afterwards
+	LandedTitle *LiegeTitle = nullptr; //title of this title's holder's liege; used only for initialization, and set to null afterwards
 };
 
 }

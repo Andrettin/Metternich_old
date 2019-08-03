@@ -98,6 +98,34 @@ void LandedTitle::ProcessGSMLScope(const GSMLData &scope)
 }
 
 /**
+**	@brief	Initialize the landed title
+*/
+void LandedTitle::Initialize()
+{
+	if (this->HolderTitle != nullptr) {
+		if (this->HolderTitle->GetHolder() == nullptr) {
+			throw std::runtime_error("Tried to set the \"" + this->HolderTitle->GetIdentifier() + "\" holder title for \"" + this->GetIdentifier() + "\", but the former has no holder.");
+		}
+
+		this->SetHolder(this->HolderTitle->GetHolder());
+		this->HolderTitle = nullptr;
+	}
+
+	if (this->LiegeTitle != nullptr) {
+		if (this->LiegeTitle->GetHolder() == nullptr) {
+			throw std::runtime_error("Tried to set the \"" + this->LiegeTitle->GetIdentifier() + "\" liege title for \"" + this->GetIdentifier() + "\", but the former has no holder.");
+		}
+
+		if (this->GetHolder() == nullptr) {
+			throw std::runtime_error("Tried to set the \"" + this->LiegeTitle->GetIdentifier() + "\" liege title for \"" + this->GetIdentifier() + "\", but the latter has no holder.");
+		}
+
+		this->GetHolder()->SetLiege(this->LiegeTitle->GetHolder());
+		this->LiegeTitle = nullptr;
+	}
+}
+
+/**
 **	@brief	Check whether the landed title is in a valid state
 */
 void LandedTitle::Check() const
@@ -168,6 +196,7 @@ void LandedTitle::SetHolder(Character *character)
 
 	this->Holder = character;
 	character->AddLandedTitle(this);
+	this->HolderTitle = nullptr; //set the holder title to null, so that the new holder isn't overwritten by a previous holder title
 
 	emit HolderChanged();
 }
@@ -193,6 +222,13 @@ LandedTitle *LandedTitle::GetRealm() const
 	}
 
 	return nullptr;
+}
+
+void LandedTitle::SetHolderTitle(LandedTitle *title)
+{
+	this->HolderTitle = title;
+	this->Holder = nullptr; //set the holder title to null, so that the new holder title isn't overwritten by a previous holder
+
 }
 
 void LandedTitle::SetDeJureLiegeTitle(LandedTitle *title)

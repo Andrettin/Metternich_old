@@ -19,6 +19,7 @@ void History::Load()
 	LandedTitle::ProcessHistoryDatabase(false);
 
 	Character::InitializeAll();
+	LandedTitle::InitializeAll();
 
 	Character::CheckAll();
 	LandedTitle::CheckAll();
