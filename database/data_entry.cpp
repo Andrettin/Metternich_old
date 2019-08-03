@@ -10,6 +10,7 @@
 #include "history/history.h"
 #include "holding/holding.h"
 #include "landed_title.h"
+#include "map/province.h"
 #include "religion.h"
 #include "trait.h"
 #include "translator.h"
@@ -68,6 +69,9 @@ void DataEntryBase::ProcessGSMLProperty(const GSMLProperty &property)
 
 			if (property.GetKey() == "landed_title" || property.GetKey() == "barony" || property.GetKey() == "county" || property.GetKey() == "duchy" || property.GetKey() == "kingdom" || property.GetKey() == "empire" || property.GetKey() == "de_jure_liege_title") {
 				new_property_value = QVariant::fromValue(LandedTitle::Get(property.GetValue()));
+			} else if (property.GetKey() == "capital_province") {
+				Province *province = Province::Get(property.GetValue());
+				new_property_value = QVariant::fromValue(province);
 			} else if (property.GetKey() == "capital_holding") {
 				const LandedTitle *barony = LandedTitle::Get(property.GetValue());
 				Holding *holding = barony->GetHolding();

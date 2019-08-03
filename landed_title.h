@@ -21,6 +21,7 @@ class LandedTitle : public DataEntry, public DataType<LandedTitle>
 
 	Q_PROPERTY(Metternich::Character* holder READ GetHolder WRITE SetHolder NOTIFY HolderChanged)
 	Q_PROPERTY(Metternich::LandedTitle* de_jure_liege_title READ GetDeJureLiegeTitle WRITE SetDeJureLiegeTitle NOTIFY DeJureLiegeTitleChanged)
+	Q_PROPERTY(Metternich::Province* capital_province MEMBER CapitalProvince READ GetCapitalProvince)
 
 public:
 	LandedTitle(const std::string &identifier) : DataEntry(identifier) {}
@@ -63,10 +64,7 @@ public:
 		return this->Holding;
 	}
 
-	void SetHolding(Holding *holding)
-	{
-		this->Holding = holding;
-	}
+	void SetHolding(Holding *holding);
 
 	Province *GetProvince() const
 	{
@@ -76,6 +74,7 @@ public:
 	void SetProvince(Province *province)
 	{
 		this->Province = province;
+		this->CapitalProvince = province;
 	}
 
 	LandedTitle *GetRealm() const;
@@ -97,6 +96,17 @@ public:
 		this->DeJureVassalTitles.erase(std::remove(this->DeJureVassalTitles.begin(), this->DeJureVassalTitles.end(), title), this->DeJureVassalTitles.end());
 	}
 
+	bool IsTitular() const
+	{
+		//a title is not titular if it has de jure vassals, or if it is a county belonging to a province, or a barony belonging to a holding
+		return !this->DeJureVassalTitles.empty() || this->GetProvince() != nullptr || this->GetHolding() != nullptr;
+	}
+
+	Province *GetCapitalProvince() const
+	{
+		return this->CapitalProvince;
+	}
+
 signals:
 	void HolderChanged();
 	void DeJureLiegeTitleChanged();
@@ -106,9 +116,10 @@ private:
 	LandedTitleTier Tier;
 	Character *Holder = nullptr;
 	Holding *Holding = nullptr; //this title's holding, if it is a non-titular barony
-	Province *Province = nullptr;
+	Metternich::Province *Province = nullptr; //this title's province, if it is a non-titular county
 	LandedTitle *DeJureLiegeTitle = nullptr;
 	std::vector<LandedTitle *> DeJureVassalTitles;
+	Metternich::Province *CapitalProvince = nullptr;
 };
 
 }

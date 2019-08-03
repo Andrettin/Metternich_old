@@ -99,10 +99,28 @@ void LandedTitle::Check() const
 		throw std::runtime_error("Landed title \"" + this->GetIdentifier() + "\" has no valid color.");
 	}
 
+	if (this->GetProvince() != nullptr && this->GetProvince() != this->GetCapitalProvince()) {
+		throw std::runtime_error("Landed title \"" + this->GetIdentifier() + "\" has a different province and capital province.");
+	}
+
 	if (Game::GetInstance()->IsStarting()) {
+		if (this->GetCapitalProvince() == nullptr) {
+			throw std::runtime_error("Landed title \"" + this->GetIdentifier() + "\" has no capital province.");
+		}
+
+		if (this->GetHolding() != nullptr && this->GetHolding()->GetProvince() != this->GetCapitalProvince()) {
+			throw std::runtime_error("Landed title \"" + this->GetIdentifier() + "\" has its holding in a different province than its capital province.");
+		}
+
 		if (this->GetProvince() != nullptr) {
 			if (this->GetTier() != LandedTitleTier::County) {
 				throw std::runtime_error("Landed title \"" + this->GetIdentifier() + "\" has been assigned to a province, but is not a county.");
+			}
+		}
+
+		if (this->GetHolding() != nullptr) {
+			if (this->GetTier() != LandedTitleTier::Barony) {
+				throw std::runtime_error("Landed title \"" + this->GetIdentifier() + "\" has been assigned to a holding, but is not a barony.");
 			}
 		}
 	}
@@ -119,10 +137,8 @@ std::string LandedTitle::GetName() const
 
 	if (this->GetHolder() != nullptr) {
 		culture = this->GetHolder()->GetCulture();
-	} else if (this->GetProvince() != nullptr) {
-		culture = this->GetProvince()->GetCulture();
-	} else if (this->GetHolding() != nullptr) {
-		culture = this->GetHolding()->GetProvince()->GetCulture();
+	} else if (this->GetCapitalProvince() != nullptr) {
+		culture = this->GetCapitalProvince()->GetCulture();
 	}
 
 	std::vector<std::string> suffixes;
@@ -147,6 +163,17 @@ void LandedTitle::SetHolder(Character *character)
 	character->AddLandedTitle(this);
 
 	emit HolderChanged();
+}
+
+void LandedTitle::SetHolding(Metternich::Holding *holding)
+{
+	this->Holding = holding;
+
+	if (holding != nullptr) {
+		this->CapitalProvince = holding->GetProvince();
+	} else {
+		this->CapitalProvince = nullptr;
+	}
 }
 
 LandedTitle *LandedTitle::GetRealm() const
