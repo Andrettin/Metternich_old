@@ -22,7 +22,7 @@ class DataEntryBase : public QObject
 public:
 	virtual ~DataEntryBase() {}
 
-	void ProcessGSMLProperty(const GSMLProperty &property);
+	virtual void ProcessGSMLProperty(const GSMLProperty &property);
 	virtual void ProcessGSMLScope(const GSMLData &scope);
 
 	virtual void ProcessGSMLDatedProperty(const GSMLProperty &property, const QDateTime &date)
