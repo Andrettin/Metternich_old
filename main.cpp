@@ -4,6 +4,7 @@
 #include "empty_image_provider.h"
 #include "engine_interface.h"
 #include "game.h"
+#include "holding/holding_type.h"
 #include "landed_title.h"
 #include "map/map.h"
 #include "map/province.h"
@@ -30,6 +31,7 @@ static void LoadDatabase()
 	Culture::ParseDatabase();
 	Religion::ParseDatabase();
 	Dynasty::ParseDatabase();
+	HoldingType::ParseDatabase();
 	LandedTitle::ParseDatabase();
 	Province::ParseDatabase();
 	Trait::ParseDatabase();
@@ -37,6 +39,7 @@ static void LoadDatabase()
 	Culture::ProcessDatabase(true);
 	Religion::ProcessDatabase(true);
 	Dynasty::ProcessDatabase(true);
+	HoldingType::ProcessDatabase(true);
 	LandedTitle::ProcessDatabase(true);
 	Province::ProcessDatabase(true);
 	Trait::ProcessDatabase(true);
@@ -44,6 +47,7 @@ static void LoadDatabase()
 	Culture::ProcessDatabase(false);
 	Religion::ProcessDatabase(false);
 	Dynasty::ProcessDatabase(false);
+	HoldingType::ProcessDatabase(false);
 	LandedTitle::ProcessDatabase(false);
 	Province::ProcessDatabase(false);
 	Trait::ProcessDatabase(false);
@@ -80,6 +84,7 @@ int main(int argc, char *argv[])
 
 		qmlRegisterType<Culture>();
 		qmlRegisterType<Game>();
+		qmlRegisterType<HoldingType>();
 		qmlRegisterType<LandedTitle>();
 		qmlRegisterType<Province>();
 		qmlRegisterType<Religion>();
