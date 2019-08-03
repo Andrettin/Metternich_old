@@ -9,6 +9,7 @@
 #include <QRect>
 
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
 #include <vector>
@@ -18,6 +19,7 @@ namespace Metternich {
 class CSVData;
 class Culture;
 class Holding;
+class HoldingType;
 class LandedTitle;
 class Religion;
 
@@ -31,10 +33,12 @@ class Province : public DataEntry, public DataType<Province>
 	Q_PROPERTY(QImage image READ GetImage NOTIFY ImageChanged)
 	Q_PROPERTY(Metternich::Culture* culture MEMBER Culture READ GetCulture NOTIFY CultureChanged)
 	Q_PROPERTY(Metternich::Religion* religion MEMBER Religion READ GetReligion NOTIFY ReligionChanged)
+	Q_PROPERTY(QVariantList holdings READ GetHoldingsQVariantList NOTIFY HoldingsChanged)
 	Q_PROPERTY(bool selected READ IsSelected WRITE SetSelected NOTIFY SelectedChanged)
 
 public:
 	Province(const std::string &identifier);
+	virtual ~Province() override;
 
 	static constexpr const char *ClassIdentifier = "province";
 	static constexpr const char *DatabaseFolder = "provinces";
@@ -53,6 +57,7 @@ private:
 	static inline Province *SelectedProvince = nullptr;
 
 public:
+	virtual void ProcessGSMLProperty(const GSMLProperty &property) override;
 	virtual void ProcessGSMLScope(const GSMLData &scope) override;
 	virtual void Check() const override;
 
@@ -98,15 +103,20 @@ public:
 		return this->CapitalHolding;
 	}
 
+	int GetMaxSettlementHoldings() const
+	{
+		return this->MaxSettlementHoldings;
+	}
+
 	const std::vector<Holding *> &GetHoldings() const
 	{
 		return this->Holdings;
 	}
 
-	int GetMaxHoldings() const
-	{
-		return this->MaxHoldings;
-	}
+	QVariantList GetHoldingsQVariantList() const;
+	Holding *GetHolding(LandedTitle *barony) const;
+	void CreateHolding(LandedTitle *barony, HoldingType *type);
+	void DestroyHolding(LandedTitle *barony);
 
 	bool IsSelected() const
 	{
@@ -120,6 +130,7 @@ signals:
 	void ImageChanged();
 	void CultureChanged();
 	void ReligionChanged();
+	void HoldingsChanged();
 	void SelectedChanged();
 
 private:
@@ -131,7 +142,8 @@ private:
 	Religion *Religion = nullptr;
 	Holding *CapitalHolding = nullptr;
 	std::vector<Holding *> Holdings;
-	int MaxHoldings = 1;
+	std::map<LandedTitle *, std::unique_ptr<Holding>> HoldingsByBarony; //the province's holdings, mapped to their respective baronies
+	int MaxSettlementHoldings = 1;
 	bool Selected = false;
 };
 

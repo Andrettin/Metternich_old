@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QObject>
+
 #include <set>
 #include <string>
 
@@ -7,20 +9,50 @@ namespace Metternich {
 
 class Building;
 class HoldingType;
+class LandedTitle;
+class Province;
 
-class Holding
+class Holding : public QObject
 {
-public:
-	static constexpr const char *ClassIdentifier = "holding";
+	Q_OBJECT
 
-	const std::string &GetName() const
+	Q_PROPERTY(QString name READ GetNameQString NOTIFY NameChanged)
+	Q_PROPERTY(Metternich::HoldingType* type READ GetType NOTIFY TypeChanged)
+
+public:
+	Holding(LandedTitle *barony, HoldingType *type, Province *province);
+	~Holding();
+
+	LandedTitle *GetBarony() const
 	{
-		return this->Name;
+		return this->Barony;
 	}
 
-	const HoldingType *GetType() const
+	std::string GetName() const;
+
+	QString GetNameQString() const
+	{
+		return QString::fromStdString(this->GetName());
+	}
+
+	HoldingType *GetType() const
 	{
 		return this->Type;
+	}
+
+	void SetType(HoldingType *type)
+	{
+		if (type == this->GetType()) {
+			return;
+		}
+
+		this->Type = type;
+		emit TypeChanged();
+	}
+
+	Province *GetProvince() const
+	{
+		return this->Province;
 	}
 
 	const std::set<Building *> &GetBuildings() const
@@ -28,9 +60,14 @@ public:
 		return this->Buildings;
 	}
 
+signals:
+	void NameChanged();
+	void TypeChanged();
+
 private:
-	std::string Name;
-	const HoldingType *Type = nullptr;
+	LandedTitle *Barony = nullptr;
+	HoldingType *Type = nullptr;
+	Province *Province = nullptr; //the province to which this holding belongs
 	std::set<Building *> Buildings;
 };
 

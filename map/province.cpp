@@ -5,6 +5,8 @@
 #include "database/gsml_property.h"
 #include "engine_interface.h"
 #include "game.h"
+#include "holding/holding.h"
+#include "holding/holding_type.h"
 #include "landed_title.h"
 #include "map/map.h"
 #include "religion.h"
@@ -14,16 +16,6 @@
 #include <QPainter>
 
 namespace Metternich {
-
-/**
-**	@brief	Constructor
-*/
-Province::Province(const std::string &identifier) : DataEntry(identifier)
-{
-	connect(this, &Province::CultureChanged, this, &DataEntryBase::NameChanged);
-	connect(this, &Province::ReligionChanged, this, &DataEntryBase::NameChanged);
-	connect(Game::GetInstance(), &Game::RunningChanged, this, &Province::UpdateImage);
-}
 
 /**
 **	@brief	Get an instance of the class by the RGB value associated with it
@@ -57,6 +49,49 @@ Province *Province::Add(const std::string &identifier)
 	}
 
 	return DataType<Province>::Add(identifier);
+}
+
+/**
+**	@brief	Constructor
+*/
+Province::Province(const std::string &identifier) : DataEntry(identifier)
+{
+	connect(this, &Province::CultureChanged, this, &DataEntryBase::NameChanged);
+	connect(this, &Province::ReligionChanged, this, &DataEntryBase::NameChanged);
+	connect(Game::GetInstance(), &Game::RunningChanged, this, &Province::UpdateImage);
+}
+
+/**
+**	@brief	Destructor
+*/
+Province::~Province()
+{
+}
+
+/**
+**	@brief	Process a GSML property
+**
+**	@param	property	The property
+*/
+void Province::ProcessGSMLProperty(const GSMLProperty &property)
+{
+	if (property.GetKey().substr(0, 2) == LandedTitle::BaronyPrefix) {
+		//a property related to one of the province's holdings
+		//the assignment operator sets the holding's type (creating the holding if it doesn't exist), while the addition and subtraction operators add or remove buildings in the holding
+		if (property.GetOperator() == GSMLOperator::Assignment) {
+			LandedTitle *barony = LandedTitle::Get(property.GetKey());
+			HoldingType *holding_type = HoldingType::Get(property.GetValue());
+
+			Holding *holding = this->GetHolding(barony);
+			if (holding != nullptr) {
+				holding->SetType(holding_type);
+			} else {
+				this->CreateHolding(barony, holding_type);
+			}
+		}
+	} else {
+		DataEntryBase::ProcessGSMLProperty(property);
+	}
 }
 
 /**
@@ -231,6 +266,56 @@ void Province::UpdateImage()
 	}
 
 	emit ImageChanged();
+}
+
+/**
+**	@brief	Get the province's holdings
+*/
+QVariantList Province::GetHoldingsQVariantList() const
+{
+	return VectorToQVariantList(this->GetHoldings());
+}
+
+/**
+**	@brief	Get one of the province's holdings
+**
+**	@param	barony	The holding's barony
+*/
+Holding *Province::GetHolding(LandedTitle *barony) const
+{
+	auto find_iterator = this->HoldingsByBarony.find(barony);
+	if (find_iterator != this->HoldingsByBarony.end()) {
+		return find_iterator->second.get();
+	}
+
+	return nullptr;
+}
+
+/**
+**	@brief	Create a holding in the province
+**
+**	@param	barony	The holding's barony
+**
+**	@param	type	The holding's type
+*/
+void Province::CreateHolding(LandedTitle *barony, HoldingType *type)
+{
+	auto new_holding = std::make_unique<Holding>(barony, type, this);
+	this->Holdings.push_back(new_holding.get());
+	this->HoldingsByBarony.insert({barony, std::move(new_holding)});
+	emit HoldingsChanged();
+}
+
+/**
+**	@brief	Destroy a holding in the province
+**
+**	@param	barony	The holding's barony
+*/
+void Province::DestroyHolding(LandedTitle *barony)
+{
+	this->Holdings.erase(std::remove(this->Holdings.begin(), this->Holdings.end(), this->GetHolding(barony)), this->Holdings.end());
+	this->HoldingsByBarony.erase(barony);
+	emit HoldingsChanged();
 }
 
 /**

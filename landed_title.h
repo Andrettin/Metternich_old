@@ -11,6 +11,7 @@
 namespace Metternich {
 
 class Character;
+class Holding;
 class Province;
 enum class LandedTitleTier : int;
 
@@ -57,6 +58,16 @@ public:
 
 	void SetHolder(Character *character);
 
+	Holding *GetHolding() const
+	{
+		return this->Holding;
+	}
+
+	void SetHolding(Holding *holding)
+	{
+		this->Holding = holding;
+	}
+
 	Province *GetProvince() const
 	{
 		return this->Province;
@@ -94,6 +105,7 @@ private:
 	QColor Color;
 	LandedTitleTier Tier;
 	Character *Holder = nullptr;
+	Holding *Holding = nullptr; //this title's holding, if it is a non-titular barony
 	Province *Province = nullptr;
 	LandedTitle *DeJureLiegeTitle = nullptr;
 	std::vector<LandedTitle *> DeJureVassalTitles;

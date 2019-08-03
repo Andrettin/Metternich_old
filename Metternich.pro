@@ -23,6 +23,7 @@ SOURCES += \
         engine_interface.cpp \
         game.cpp \
         history/history.cpp \
+        holding/holding.cpp \
         landed_title.cpp \
         main.cpp \
         map/map.cpp \

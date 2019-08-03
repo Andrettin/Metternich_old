@@ -3,6 +3,7 @@
 #include "character.h"
 #include "culture.h"
 #include "game.h"
+#include "holding/holding.h"
 #include "landed_title_tier.h"
 #include "map/province.h"
 #include "translator.h"
@@ -94,7 +95,7 @@ void LandedTitle::ProcessGSMLScope(const GSMLData &scope)
 */
 void LandedTitle::Check() const
 {
-	if (!this->GetColor().isValid()) {
+	if (this->GetTier() != LandedTitleTier::Barony && !this->GetColor().isValid()) {
 		throw std::runtime_error("Landed title \"" + this->GetIdentifier() + "\" has no valid color.");
 	}
 
@@ -120,6 +121,8 @@ std::string LandedTitle::GetName() const
 		culture = this->GetHolder()->GetCulture();
 	} else if (this->GetProvince() != nullptr) {
 		culture = this->GetProvince()->GetCulture();
+	} else if (this->GetHolding() != nullptr) {
+		culture = this->GetHolding()->GetProvince()->GetCulture();
 	}
 
 	std::vector<std::string> suffixes;
