@@ -34,6 +34,7 @@ class Province : public DataEntry, public DataType<Province>
 	Q_PROPERTY(Metternich::Culture* culture MEMBER Culture READ GetCulture NOTIFY CultureChanged)
 	Q_PROPERTY(Metternich::Religion* religion MEMBER Religion READ GetReligion NOTIFY ReligionChanged)
 	Q_PROPERTY(QVariantList holdings READ GetHoldingsQVariantList NOTIFY HoldingsChanged)
+	Q_PROPERTY(Metternich::Holding* capital_holding READ GetCapitalHolding WRITE SetCapitalHolding NOTIFY CapitalHoldingChanged)
 	Q_PROPERTY(bool selected READ IsSelected WRITE SetSelected NOTIFY SelectedChanged)
 
 public:
@@ -98,11 +99,6 @@ public:
 		return this->Religion;
 	}
 
-	Holding *GetCapitalHolding() const
-	{
-		return this->CapitalHolding;
-	}
-
 	int GetMaxSettlementHoldings() const
 	{
 		return this->MaxSettlementHoldings;
@@ -118,6 +114,21 @@ public:
 	void CreateHolding(LandedTitle *barony, HoldingType *type);
 	void DestroyHolding(LandedTitle *barony);
 
+	Holding *GetCapitalHolding() const
+	{
+		return this->CapitalHolding;
+	}
+
+	void SetCapitalHolding(Holding *holding)
+	{
+		if (holding == this->GetCapitalHolding()) {
+			return;
+		}
+
+		this->CapitalHolding = holding;
+		emit CapitalHoldingChanged();
+	}
+
 	bool IsSelected() const
 	{
 		return this->Selected;
@@ -131,6 +142,7 @@ signals:
 	void CultureChanged();
 	void ReligionChanged();
 	void HoldingsChanged();
+	void CapitalHoldingChanged();
 	void SelectedChanged();
 
 private:
@@ -140,9 +152,9 @@ private:
 	QImage Image; //the province's image to be drawn on-screen
 	Culture *Culture = nullptr;
 	Religion *Religion = nullptr;
-	Holding *CapitalHolding = nullptr;
 	std::vector<Holding *> Holdings;
 	std::map<LandedTitle *, std::unique_ptr<Holding>> HoldingsByBarony; //the province's holdings, mapped to their respective baronies
+	Holding *CapitalHolding = nullptr;
 	int MaxSettlementHoldings = 1;
 	bool Selected = false;
 };

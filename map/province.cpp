@@ -304,6 +304,9 @@ void Province::CreateHolding(LandedTitle *barony, HoldingType *type)
 	this->Holdings.push_back(new_holding.get());
 	this->HoldingsByBarony.insert({barony, std::move(new_holding)});
 	emit HoldingsChanged();
+	if (this->GetCapitalHolding() == nullptr) {
+		this->SetCapitalHolding(this->Holdings.front());
+	}
 }
 
 /**
@@ -313,7 +316,16 @@ void Province::CreateHolding(LandedTitle *barony, HoldingType *type)
 */
 void Province::DestroyHolding(LandedTitle *barony)
 {
-	this->Holdings.erase(std::remove(this->Holdings.begin(), this->Holdings.end(), this->GetHolding(barony)), this->Holdings.end());
+	Holding *holding = this->GetHolding(barony);
+	if (holding == this->GetCapitalHolding()) {
+		//if the capital holding is being destroyed, set the next holding as the capital, if any exists, or otherwise set the capital holding to null
+		if (this->Holdings.size() > 1) {
+			this->SetCapitalHolding(this->Holdings.at(1));
+		} else {
+			this->SetCapitalHolding(nullptr);
+		}
+	}
+	this->Holdings.erase(std::remove(this->Holdings.begin(), this->Holdings.end(), holding), this->Holdings.end());
 	this->HoldingsByBarony.erase(barony);
 	emit HoldingsChanged();
 }

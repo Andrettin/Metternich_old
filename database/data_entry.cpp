@@ -8,6 +8,7 @@
 #include "dynasty.h"
 #include "game.h"
 #include "history/history.h"
+#include "holding/holding.h"
 #include "landed_title.h"
 #include "religion.h"
 #include "trait.h"
@@ -67,6 +68,10 @@ void DataEntryBase::ProcessGSMLProperty(const GSMLProperty &property)
 
 			if (property.GetKey() == "landed_title" || property.GetKey() == "barony" || property.GetKey() == "county" || property.GetKey() == "duchy" || property.GetKey() == "kingdom" || property.GetKey() == "empire" || property.GetKey() == "de_jure_liege_title") {
 				new_property_value = QVariant::fromValue(LandedTitle::Get(property.GetValue()));
+			} else if (property.GetKey() == "capital_holding") {
+				const LandedTitle *barony = LandedTitle::Get(property.GetValue());
+				Holding *holding = barony->GetHolding();
+				new_property_value = QVariant::fromValue(holding);
 			} else if (property.GetKey() == "culture") {
 				new_property_value = QVariant::fromValue(Culture::Get(property.GetValue()));
 			} else if (property.GetKey() == "religion") {
