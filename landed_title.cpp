@@ -7,6 +7,8 @@
 #include "map/province.h"
 #include "translator.h"
 
+#include <stdexcept>
+
 namespace Metternich {
 
 /**
@@ -154,6 +156,26 @@ LandedTitle *LandedTitle::GetRealm() const
 	}
 
 	return nullptr;
+}
+
+void LandedTitle::SetDeJureLiegeTitle(LandedTitle *title)
+{
+	if (title == this->GetDeJureLiegeTitle()) {
+		return;
+	}
+
+	if (this->GetDeJureLiegeTitle() != nullptr) {
+		this->GetDeJureLiegeTitle()->RemoveDeJureVassalTitle(this);
+	}
+
+	if (static_cast<int>(title->GetTier()) - static_cast<int>(this->GetTier()) != 1) {
+		throw std::runtime_error("Tried to set title \"" + title->GetIdentifier() + "\" as the de jure liege of \"" + this->GetIdentifier() + "\", but the former is not one title tier above the latter.");
+	}
+
+	this->DeJureLiegeTitle = title;
+	title->AddDeJureVassalTitle(this);
+
+	emit DeJureLiegeTitleChanged();
 }
 
 }

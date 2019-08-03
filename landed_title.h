@@ -6,6 +6,7 @@
 #include <QColor>
 
 #include <string>
+#include <vector>
 
 namespace Metternich {
 
@@ -18,6 +19,7 @@ class LandedTitle : public DataEntry, public DataType<LandedTitle>
 	Q_OBJECT
 
 	Q_PROPERTY(Metternich::Character* holder READ GetHolder WRITE SetHolder NOTIFY HolderChanged)
+	Q_PROPERTY(Metternich::LandedTitle* de_jure_liege_title READ GetDeJureLiegeTitle WRITE SetDeJureLiegeTitle NOTIFY DeJureLiegeTitleChanged)
 
 public:
 	LandedTitle(const std::string &identifier) : DataEntry(identifier) {}
@@ -67,14 +69,34 @@ public:
 
 	LandedTitle *GetRealm() const;
 
+	LandedTitle *GetDeJureLiegeTitle() const
+	{
+		return this->DeJureLiegeTitle;
+	}
+
+	void SetDeJureLiegeTitle(LandedTitle *title);
+
+	void AddDeJureVassalTitle(LandedTitle *title)
+	{
+		this->DeJureVassalTitles.push_back(title);
+	}
+
+	void RemoveDeJureVassalTitle(LandedTitle *title)
+	{
+		this->DeJureVassalTitles.erase(std::remove(this->DeJureVassalTitles.begin(), this->DeJureVassalTitles.end(), title), this->DeJureVassalTitles.end());
+	}
+
 signals:
 	void HolderChanged();
+	void DeJureLiegeTitleChanged();
 
 private:
 	QColor Color;
 	LandedTitleTier Tier;
 	Character *Holder = nullptr;
 	Province *Province = nullptr;
+	LandedTitle *DeJureLiegeTitle = nullptr;
+	std::vector<LandedTitle *> DeJureVassalTitles;
 };
 
 }

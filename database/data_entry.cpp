@@ -65,7 +65,7 @@ void DataEntryBase::ProcessGSMLProperty(const GSMLProperty &property)
 				throw std::runtime_error("Only the assignment operator is available for object reference properties.");
 			}
 
-			if (property.GetKey() == "landed_title" || property.GetKey() == "barony" || property.GetKey() == "county" || property.GetKey() == "duchy" || property.GetKey() == "kingdom" || property.GetKey() == "empire") {
+			if (property.GetKey() == "landed_title" || property.GetKey() == "barony" || property.GetKey() == "county" || property.GetKey() == "duchy" || property.GetKey() == "kingdom" || property.GetKey() == "empire" || property.GetKey() == "de_jure_liege_title") {
 				new_property_value = QVariant::fromValue(LandedTitle::Get(property.GetValue()));
 			} else if (property.GetKey() == "culture") {
 				new_property_value = QVariant::fromValue(Culture::Get(property.GetValue()));
