@@ -8,6 +8,7 @@
 #include <QImage>
 #include <QList>
 #include <QLocale>
+#include <QMetaProperty>
 #include <QObject>
 #include <QPainter>
 #include <QPoint>

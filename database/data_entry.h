@@ -33,7 +33,10 @@ public:
 
 	void LoadHistory(GSMLData &gsml_data);
 
+	virtual void Initialize() {}
 	virtual void Check() const {}
+
+	virtual std::string GetIdentifierString() const = 0;
 
 	virtual std::string GetName() const = 0;
 
@@ -69,6 +72,11 @@ public:
 		return QString::fromStdString(this->GetIdentifier());
 	}
 
+	virtual std::string GetIdentifierString() const override
+	{
+		return this->GetIdentifier();
+	}
+
 	virtual std::string GetName() const override;
 
 private:
@@ -84,11 +92,16 @@ class NumericDataEntry : public DataEntryBase
 
 public:
 	NumericDataEntry(const int identifier) : Identifier(identifier) {}
-	virtual ~NumericDataEntry() {}
+	virtual ~NumericDataEntry() override {}
 
 	int GetIdentifier() const
 	{
 		return this->Identifier;
+	}
+
+	virtual std::string GetIdentifierString() const override
+	{
+		return std::to_string(this->GetIdentifier());
 	}
 
 private:

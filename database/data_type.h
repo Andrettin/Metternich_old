@@ -16,6 +16,8 @@ template <typename T, typename KEY = std::string>
 class DataType
 {
 public:
+	static constexpr bool HistoryOnly = false; //whether the data type is defined in history only
+
 	/**
 	**	@brief	Get an instance of the class by its identifier
 	**
@@ -83,24 +85,6 @@ public:
 	}
 
 	/**
-	**	@brief	Get or add an instance of the class
-	**
-	**	@param	ident	The instance's identifier
-	**
-	**	@return	The instance if found, otherwise a new instance is created and returned
-	*/
-	static inline T *GetOrAdd(const KEY &identifier)
-	{
-		T *instance = T::Get(identifier, false);
-
-		if (!instance) {
-			instance = T::Add(identifier);
-		}
-
-		return instance;
-	}
-
-	/**
 	**	@brief	Remove an instance of the class
 	**
 	**	@param	instance	The instance
@@ -121,9 +105,9 @@ public:
 	}
 
 	/**
-	**	@brief	Load the database for the data type
+	**	@brief	Parse the database for the data type
 	*/
-	static void LoadDatabase()
+	static void ParseDatabase()
 	{
 		std::filesystem::path database_path("./data/common/" + std::string(T::DatabaseFolder));
 
@@ -138,23 +122,45 @@ public:
 				continue;
 			}
 
-			GSMLData gsml_data = GSMLData::ParseFile(dir_entry.path());
+			T::GSMLDataToProcess.push_back(GSMLData::ParseFile(dir_entry.path()));
+		}
+	}
+
+	/**
+	**	@brief	Process the database for the data type
+	**
+	**	@param	definition	Whether data entries are only being defined, or if their properties are actually being processed.
+	*/
+	static void ProcessDatabase(const bool definition)
+	{
+		for (const GSMLData &gsml_data : T::GSMLDataToProcess) {
 			for (const GSMLData &data_entry : gsml_data.GetChildren()) {
-				T *instance = nullptr;
+				KEY identifier;
 				if constexpr (std::is_same_v<KEY, int>) {
-					instance = T::Add(std::stoi(data_entry.GetTag()));
+					identifier = std::stoi(data_entry.GetTag());
 				} else {
-					instance = T::Add(data_entry.GetTag());
+					identifier = data_entry.GetTag();
 				}
 
-				for (const GSMLProperty &property : data_entry.GetProperties()) {
-					instance->ProcessGSMLProperty(property);
-				}
+				T *instance = nullptr;
+				if (definition) {
+					instance = T::Add(identifier);
+				} else {
+					instance = T::Get(identifier);
 
-				for (const GSMLData &child_data : data_entry.GetChildren()) {
-					instance->ProcessGSMLScope(child_data);
+					for (const GSMLProperty &property : data_entry.GetProperties()) {
+						instance->ProcessGSMLProperty(property);
+					}
+
+					for (const GSMLData &child_data : data_entry.GetChildren()) {
+						instance->ProcessGSMLScope(child_data);
+					}
 				}
 			}
+		}
+
+		if (!definition) {
+			T::GSMLDataToProcess.clear();
 		}
 	}
 
@@ -164,9 +170,9 @@ public:
 	}
 
 	/**
-	**	@brief	Load history database for the class
+	**	@brief	Parse the history database for the class
 	*/
-	static void LoadHistoryDatabase()
+	static void ParseHistoryDatabase()
 	{
 		std::filesystem::path history_path("./data/history/" + std::string(T::DatabaseFolder));
 
@@ -174,18 +180,16 @@ public:
 			return;
 		}
 
-		//data types with string identifiers have files with the same name as their identifiers, while for data types with numeric identifiers the file name is not relevant, with the identifier being scoped to within a file
-		if constexpr (std::is_same_v<KEY, std::string>) {
+		//non-history only data types have files with the same name as their identifiers, while for history only data types the file name is not relevant, with the identifier being scoped to within a file
+		if constexpr (T::HistoryOnly == false) {
 			for (T *instance : T::GetAll()) {
 				std::filesystem::path history_file_path(history_path.string() + "/" + instance->GetIdentifier() + ".txt");
 
 				if (!std::filesystem::exists(history_file_path)) {
-					return;
+					continue;
 				}
 
-				GSMLData gsml_data = GSMLData::ParseFile(history_file_path);
-
-				instance->LoadHistory(gsml_data);
+				T::GSMLHistoryDataToProcess.push_back(GSMLData::ParseFile(history_file_path));
 			}
 		} else {
 			std::filesystem::recursive_directory_iterator dir_iterator(history_path);
@@ -195,19 +199,62 @@ public:
 					continue;
 				}
 
-				GSMLData gsml_data = GSMLData::ParseFile(dir_entry.path());
+				T::GSMLHistoryDataToProcess.push_back(GSMLData::ParseFile(dir_entry.path()));
+			}
+		}
+	}
+
+	/**
+	**	@brief	Process the history database for the class
+	**
+	**	@param	definition	Whether data entries are only being defined, or if their properties are actually being processed.
+	*/
+	static void ProcessHistoryDatabase(const bool definition)
+	{
+		//non-history only data types have files with the same name as their identifiers, while for history only data types the file name is not relevant, with the identifier being scoped to within a file
+		if constexpr (T::HistoryOnly == false) {
+			if (definition) {
+				return;
+			}
+
+			for (GSMLData &gsml_data : T::GSMLHistoryDataToProcess) {
+				T *instance = T::Get(gsml_data.GetTag());
+				instance->LoadHistory(gsml_data);
+			}
+		} else {
+			for (const GSMLData &gsml_data : T::GSMLHistoryDataToProcess) {
 				for (const GSMLData &data_entry : gsml_data.GetChildren()) {
-					//for data types with numeric identifiers, a new one is created for history
-					T *instance = nullptr;
+					//for history only data types, a new instance is created for history
+					KEY identifier;
 					if constexpr (std::is_same_v<KEY, int>) {
-						instance = T::Add(std::stoi(data_entry.GetTag()));
+						identifier = std::stoi(data_entry.GetTag());
 					} else {
-						instance = T::Add(data_entry.GetTag());
+						identifier = data_entry.GetTag();
 					}
 
-					instance->LoadHistory(const_cast<GSMLData &>(data_entry));
+					T *instance = nullptr;
+					if (definition) {
+						instance = T::Add(identifier);
+					} else {
+						instance = T::Get(identifier);
+						instance->LoadHistory(const_cast<GSMLData &>(data_entry));
+					}
 				}
 			}
+		}
+
+		if (!definition) {
+			T::GSMLHistoryDataToProcess.clear();
+		}
+	}
+
+	/**
+	**	@brief	Initialize all instances
+	*/
+	static void InitializeAll()
+	{
+		for (T *instance : T::GetAll()) {
+			instance->Initialize();
 		}
 	}
 
@@ -225,6 +272,8 @@ private:
 	static inline std::vector<T *> Instances;
 	static inline std::map<KEY, std::unique_ptr<T>> InstancesByIdentifier;
 	static inline int LastNumericIdentifier = 1;
+	static inline std::vector<GSMLData> GSMLDataToProcess;
+	static inline std::vector<GSMLData> GSMLHistoryDataToProcess;
 };
 
 }

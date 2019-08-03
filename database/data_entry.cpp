@@ -14,6 +14,8 @@
 #include "translator.h"
 #include "util.h"
 
+#include <QMetaProperty>
+
 namespace Metternich {
 
 /**
@@ -71,11 +73,8 @@ void DataEntryBase::ProcessGSMLProperty(const GSMLProperty &property)
 				new_property_value = QVariant::fromValue(Religion::Get(property.GetValue()));
 			} else if (property.GetKey() == "dynasty") {
 				new_property_value = QVariant::fromValue(Dynasty::Get(property.GetValue()));
-			} else if (property.GetKey() == "character" || property.GetKey() == "holder") {
+			} else if (property.GetKey() == "character" || property.GetKey() == "holder" || property.GetKey() == "father" || property.GetKey() == "mother" || property.GetKey() == "spouse" || property.GetKey() == "liege" || property.GetKey() == "employer") {
 				new_property_value = QVariant::fromValue(Character::Get(std::stoi(property.GetValue())));
-			} else if (property.GetKey() == "father" || property.GetKey() == "mother" || property.GetKey() == "spouse") {
-				//for character references to other characters, we get or add them, since they may not have been processed yet when the current character is processed
-				new_property_value = QVariant::fromValue(Character::GetOrAdd(std::stoi(property.GetValue())));
 			} else {
 				throw std::runtime_error("Unknown type for object reference property \"" + std::string(property_name) + "\": \"" + property.GetKey() + "\".");
 			}
@@ -124,7 +123,7 @@ void DataEntryBase::ProcessGSMLProperty(const GSMLProperty &property)
 void DataEntryBase::ProcessGSMLScope(const GSMLData &scope)
 {
 	const QMetaObject *meta_object = this->metaObject();
-	throw std::runtime_error("Invalid " + std::string(meta_object->className()) + " field: \"" + scope.GetTag() + "\".");
+	throw std::runtime_error("Invalid \"" + PascalCaseToSnakeCase(meta_object->className()) + "\" field: \"" + scope.GetTag() + "\".");
 }
 
 /**

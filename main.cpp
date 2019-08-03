@@ -27,12 +27,26 @@ namespace Metternich {
 static void LoadDatabase()
 {
 	Defines::Load();
-	Culture::LoadDatabase();
-	Religion::LoadDatabase();
-	Dynasty::LoadDatabase();
-	LandedTitle::LoadDatabase();
-	Province::LoadDatabase();
-	Trait::LoadDatabase();
+	Culture::ParseDatabase();
+	Religion::ParseDatabase();
+	Dynasty::ParseDatabase();
+	LandedTitle::ParseDatabase();
+	Province::ParseDatabase();
+	Trait::ParseDatabase();
+
+	Culture::ProcessDatabase(true);
+	Religion::ProcessDatabase(true);
+	Dynasty::ProcessDatabase(true);
+	LandedTitle::ProcessDatabase(true);
+	Province::ProcessDatabase(true);
+	Trait::ProcessDatabase(true);
+
+	Culture::ProcessDatabase(false);
+	Religion::ProcessDatabase(false);
+	Dynasty::ProcessDatabase(false);
+	LandedTitle::ProcessDatabase(false);
+	Province::ProcessDatabase(false);
+	Trait::ProcessDatabase(false);
 
 	Culture::CheckAll();
 	LandedTitle::CheckAll();

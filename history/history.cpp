@@ -8,9 +8,17 @@ namespace Metternich {
 
 void History::Load()
 {
-	Province::LoadHistoryDatabase();
-	Character::LoadHistoryDatabase();
-	LandedTitle::LoadHistoryDatabase();
+	Province::ParseHistoryDatabase();
+	Character::ParseHistoryDatabase();
+	LandedTitle::ParseHistoryDatabase();
+
+	Character::ProcessHistoryDatabase(true);
+
+	Province::ProcessHistoryDatabase(false);
+	Character::ProcessHistoryDatabase(false);
+	LandedTitle::ProcessHistoryDatabase(false);
+
+	Character::InitializeAll();
 
 	Character::CheckAll();
 	LandedTitle::CheckAll();
