@@ -54,6 +54,10 @@
 #include <QGuiApplication>
 #include <qqmlfile.h>
 
+//Metternich start
+#include <QQuickImageProvider>
+//Metternich end
+
 MaskedMouseArea::MaskedMouseArea(QQuickItem *parent)
     : QQuickItem(parent),
       m_pressed(false),
