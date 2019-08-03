@@ -118,4 +118,14 @@ inline QVariantList VectorToQVariantList(const std::vector<T> &vector)
 	return list;
 }
 
+template <typename T>
+inline QObjectList VectorToQObjectList(const std::vector<T *> &vector)
+{
+	QObjectList object_list;
+	for (T *element : vector) {
+		object_list.append(element);
+	}
+	return object_list;
+}
+
 }

@@ -3,6 +3,7 @@
 #include "defines.h"
 #include "game.h"
 #include "map/province.h"
+#include "util.h"
 
 #include <QList>
 
@@ -27,10 +28,7 @@ QString EngineInterface::GetAssetImportPath() const
 
 QVariant EngineInterface::GetProvinces() const
 {
-	QObjectList province_list;
-	for (Province *province : Province::GetAll()) {
-		province_list.append(province);
-	}
+	QObjectList province_list = VectorToQObjectList(Province::GetAll());
 	return QVariant::fromValue(province_list);
 }
 
