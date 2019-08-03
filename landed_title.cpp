@@ -57,9 +57,16 @@ void LandedTitle::ProcessGSMLDatedProperty(const GSMLProperty &property, const Q
 			throw std::runtime_error("Only the assignment operator is available for the \"" + property.GetKey() + "\" property.");
 		}
 
-		const Character *holder = Character::Get(std::stoi(property.GetValue()));
-		if (!holder->IsAlive()) {
+		if (property.GetValue() == "random") {
+			//generate random holder
+			Character *holder = Character::Generate(this->GetCapitalProvince()->GetCulture(), this->GetCapitalProvince()->GetReligion());
+			this->SetHolder(holder);
 			return;
+		} else {
+			const Character *holder = Character::Get(std::stoi(property.GetValue()));
+			if (!holder->IsAlive()) {
+				return;
+			}
 		}
 	}
 

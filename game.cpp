@@ -3,6 +3,7 @@
 #include "character.h"
 #include "game_speed.h"
 #include "history/history.h"
+#include "holding/holding.h"
 #include "landed_title.h"
 #include "map/province.h"
 
@@ -110,9 +111,14 @@ void Game::GenerateMissingTitleHolders()
 			continue;
 		}
 
+		//generate missing title holders for county associated with provinces, or baronies associated with holdings
+		if (landed_title->GetProvince() == nullptr && landed_title->GetHolding() == nullptr) {
+			continue;
+		}
+
 		const Province *province = landed_title->GetProvince();
 		if (province == nullptr) {
-			continue;
+			province = landed_title->GetHolding()->GetProvince();
 		}
 
 		Character *holder = Character::Generate(province->GetCulture(), province->GetReligion());
