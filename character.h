@@ -4,6 +4,7 @@
 #include "database/data_type.h"
 
 #include <QDateTime>
+#include <QVariant>
 
 #include <string>
 #include <vector>
@@ -30,6 +31,8 @@ class Character : public NumericDataEntry, public DataType<Character, int>
 	Q_PROPERTY(Metternich::Character* father READ GetFather WRITE SetFather)
 	Q_PROPERTY(Metternich::Character* mother READ GetMother WRITE SetMother)
 	Q_PROPERTY(Metternich::Character* spouse READ GetSpouse WRITE SetSpouse)
+	Q_PROPERTY(Metternich::Character* liege READ GetLiege WRITE SetLiege)
+	Q_PROPERTY(Metternich::Character* employer READ GetLiege WRITE SetLiege)
 	Q_PROPERTY(QVariantList traits READ GetTraitsQVariantList)
 
 public:
@@ -44,16 +47,16 @@ public:
 	virtual ~Character() override
 	{
 		//remove references from other characters to his one; necessary since this character could be purged e.g. if it was born after the start date
-		if (this->Father != nullptr) {
-			this->Father->Children.erase(std::remove(this->Father->Children.begin(), this->Father->Children.end(), this), this->Father->Children.end());
+		if (this->GetFather() != nullptr) {
+			this->GetFather()->Children.erase(std::remove(this->GetFather()->Children.begin(), this->GetFather()->Children.end(), this), this->GetFather()->Children.end());
 		}
 
-		if (this->Mother != nullptr) {
-			this->Mother->Children.erase(std::remove(this->Mother->Children.begin(), this->Mother->Children.end(), this), this->Mother->Children.end());
+		if (this->GetMother() != nullptr) {
+			this->GetMother()->Children.erase(std::remove(this->GetMother()->Children.begin(), this->GetMother()->Children.end(), this), this->GetMother()->Children.end());
 		}
 
-		if (this->Spouse != nullptr) {
-			this->Spouse->Spouse = nullptr;
+		if (this->GetSpouse() != nullptr) {
+			this->GetSpouse()->Spouse = nullptr;
 		}
 
 		for (Character *child : this->Children) {
@@ -62,6 +65,14 @@ public:
 			} else {
 				child->Father = nullptr;
 			}
+		}
+
+		if (this->GetLiege() != nullptr) {
+			this->GetLiege()->Vassals.erase(std::remove(this->GetLiege()->Vassals.begin(), this->GetLiege()->Vassals.end(), this), this->GetLiege()->Vassals.end());
+		}
+
+		for (Character *vassal : this->Vassals) {
+			vassal->Liege = nullptr;
 		}
 	}
 
@@ -154,6 +165,10 @@ public:
 			return;
 		}
 
+		if (this->GetFather() != nullptr) {
+			this->GetFather()->Children.erase(std::remove(this->GetFather()->Children.begin(), this->GetFather()->Children.end(), this), this->GetFather()->Children.end());
+		}
+
 		this->Father = father;
 		father->Children.push_back(this);
 	}
@@ -169,6 +184,10 @@ public:
 			return;
 		}
 
+		if (this->GetMother() != nullptr) {
+			this->GetMother()->Children.erase(std::remove(this->GetMother()->Children.begin(), this->GetMother()->Children.end(), this), this->GetMother()->Children.end());
+		}
+
 		this->Mother = mother;
 		mother->Children.push_back(this);
 	}
@@ -182,6 +201,10 @@ public:
 	{
 		if (this->GetSpouse() == spouse) {
 			return;
+		}
+
+		if (this->GetSpouse() != nullptr) {
+			this->GetSpouse()->Spouse = nullptr;
 		}
 
 		this->Spouse = spouse;
@@ -203,6 +226,19 @@ public:
 		return this->Liege;
 	}
 
+	void SetLiege(Character *liege)
+	{
+		if (this->GetLiege() == liege) {
+			return;
+		}
+
+		if (this->GetLiege() != nullptr) {
+			this->GetLiege()->Vassals.erase(std::remove(this->GetLiege()->Vassals.begin(), this->GetLiege()->Vassals.end(), this), this->GetLiege()->Vassals.end());
+		}
+
+		this->Liege = liege;
+		liege->Vassals.push_back(this);
+	}
 	Character *GetTopLiege() const
 	{
 		if (this->GetLiege() != nullptr) {
@@ -257,6 +293,7 @@ private:
 	QDateTime BirthDate;
 	QDateTime DeathDate;
 	Character *Liege = nullptr;
+	std::vector<Character *> Vassals;
 	std::vector<Trait *> Traits;
 };
 

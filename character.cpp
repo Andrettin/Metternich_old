@@ -9,6 +9,8 @@
 #include "trait.h"
 #include "util.h"
 
+#include <QVariant>
+
 namespace Metternich {
 
 /**

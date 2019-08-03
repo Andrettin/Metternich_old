@@ -14,10 +14,10 @@ class Culture : public DataEntry, public DataType<Culture>
 	Q_OBJECT
 
 public:
-	Culture(const std::string &identifier) : DataEntry(identifier) {}
-
 	static constexpr const char *ClassIdentifier = "culture";
 	static constexpr const char *DatabaseFolder = "cultures";
+
+	Culture(const std::string &identifier) : DataEntry(identifier) {}
 
 	virtual void ProcessGSMLScope(const GSMLData &scope) override;
 

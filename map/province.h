@@ -4,6 +4,7 @@
 #include "database/data_type.h"
 
 #include <QColor>
+#include <QImage>
 #include <QObject>
 #include <QRect>
 
@@ -24,7 +25,7 @@ class Province : public DataEntry, public DataType<Province>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(Metternich::LandedTitle* county READ GetCounty WRITE SetCounty)
+	Q_PROPERTY(Metternich::LandedTitle* county READ GetCounty WRITE SetCounty NOTIFY CountyChanged)
 	Q_PROPERTY(QColor color READ GetColor CONSTANT)
 	Q_PROPERTY(QRect rect READ GetRect CONSTANT)
 	Q_PROPERTY(QImage image READ GetImage NOTIFY ImageChanged)
@@ -115,6 +116,7 @@ public:
 	void SetSelected(const bool selected, const bool notify = true);
 
 signals:
+	void CountyChanged();
 	void ImageChanged();
 	void CultureChanged();
 	void ReligionChanged();
