@@ -35,6 +35,7 @@ class Character : public NumericDataEntry, public DataType<Character, int>
 public:
 	static constexpr const char *ClassIdentifier = "character";
 	static constexpr const char *DatabaseFolder = "characters";
+	static constexpr bool HistoryOnly = true;
 
 	static Character *Generate(Culture *culture, Religion *religion);
 
