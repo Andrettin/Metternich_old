@@ -47,7 +47,7 @@ LandedTitle *LandedTitle::Add(const std::string &identifier)
 **
 **	@param	property	The property
 */
-void LandedTitle::ProcessGSMLHistoryProperty(const GSMLProperty &property, const QDateTime &date)
+void LandedTitle::ProcessGSMLDatedProperty(const GSMLProperty &property, const QDateTime &date)
 {
 	Q_UNUSED(date);
 

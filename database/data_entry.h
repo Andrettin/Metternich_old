@@ -25,7 +25,7 @@ public:
 	void ProcessGSMLProperty(const GSMLProperty &property);
 	virtual void ProcessGSMLScope(const GSMLData &scope);
 
-	virtual void ProcessGSMLHistoryProperty(const GSMLProperty &property, const QDateTime &date)
+	virtual void ProcessGSMLDatedProperty(const GSMLProperty &property, const QDateTime &date)
 	{
 		Q_UNUSED(date);
 		this->ProcessGSMLProperty(property);

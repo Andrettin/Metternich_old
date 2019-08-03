@@ -34,7 +34,7 @@ public:
 
 	static LandedTitle *Add(const std::string &identifier);
 
-	virtual void ProcessGSMLHistoryProperty(const GSMLProperty &property, const QDateTime &date) override;
+	virtual void ProcessGSMLDatedProperty(const GSMLProperty &property, const QDateTime &date) override;
 	virtual void ProcessGSMLScope(const GSMLData &scope) override;
 	virtual void Check() const override;
 

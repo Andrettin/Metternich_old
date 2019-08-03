@@ -38,7 +38,7 @@ Character *Character::Generate(Metternich::Culture *culture, Metternich::Religio
 **
 **	@param	property	The property
 */
-void Character::ProcessGSMLHistoryProperty(const GSMLProperty &property, const QDateTime &date)
+void Character::ProcessGSMLDatedProperty(const GSMLProperty &property, const QDateTime &date)
 {
 	if (property.GetKey() == "birth") {
 		if (property.GetOperator() != GSMLOperator::Assignment) {

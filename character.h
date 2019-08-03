@@ -76,7 +76,7 @@ public:
 		}
 	}
 
-	virtual void ProcessGSMLHistoryProperty(const GSMLProperty &property, const QDateTime &date) override;
+	virtual void ProcessGSMLDatedProperty(const GSMLProperty &property, const QDateTime &date) override;
 	virtual void Initialize() override;
 
 	virtual void Check() const override

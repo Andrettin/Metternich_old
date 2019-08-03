@@ -142,7 +142,7 @@ void DataEntryBase::LoadHistory(GSMLData &gsml_data)
 
 		if (date <= Game::GetInstance()->GetCurrentDate()) {
 			for (const GSMLProperty &property : history_entry.GetProperties()) {
-				this->ProcessGSMLHistoryProperty(property, date);
+				this->ProcessGSMLDatedProperty(property, date);
 			}
 		}
 	}
