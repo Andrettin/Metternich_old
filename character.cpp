@@ -63,6 +63,20 @@ void Character::ProcessGSMLHistoryProperty(const GSMLProperty &property, const Q
 	}
 }
 
+/**
+**	@brief	Initialize the character
+*/
+void Character::Initialize()
+{
+	if (this->Name.empty() && this->GetCulture() != nullptr) {
+		if (this->IsFemale()) {
+			this->Name = this->GetCulture()->GenerateFemaleName();
+		} else {
+			this->Name = this->GetCulture()->GenerateMaleName();
+		}
+	}
+}
+
 void Character::ChoosePrimaryTitle()
 {
 	LandedTitle *best_title = nullptr;
