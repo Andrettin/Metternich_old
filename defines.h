@@ -17,18 +17,12 @@ public:
 	static void Load();
 	static bool ProcessGSMLProperty(const GSMLProperty &property);
 
-	static const std::string &GetAssetImportPath()
-	{
-		return Defines::AssetImportPath;
-	}
-
 	static const QDateTime &GetStartDate()
 	{
 		return Defines::StartDate;
 	}
 
 private:
-	static inline std::string AssetImportPath;
 	static inline QDateTime StartDate;
 };
 

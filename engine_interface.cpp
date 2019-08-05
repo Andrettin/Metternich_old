@@ -21,11 +21,6 @@ Game *EngineInterface::GetGame() const
 	return Game::GetInstance();
 }
 
-QString EngineInterface::GetAssetImportPath() const
-{
-	return QString::fromStdString(Defines::GetAssetImportPath());
-}
-
 QVariant EngineInterface::GetProvinces() const
 {
 	QObjectList province_list = VectorToQObjectList(Province::GetAll());

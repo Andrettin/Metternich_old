@@ -20,7 +20,6 @@ class EngineInterface : public QObject
 	Q_OBJECT
 
 	Q_PROPERTY(Metternich::Game* game READ GetGame CONSTANT)
-	Q_PROPERTY(QString asset_import_path READ GetAssetImportPath CONSTANT)
 	Q_PROPERTY(QVariant provinces READ GetProvinces CONSTANT)
 	Q_PROPERTY(Metternich::Province* selected_province READ GetSelectedProvince NOTIFY SelectedProvinceChanged)
 
@@ -33,7 +32,6 @@ private:
 
 public:
 	Game *GetGame() const;
-	QString GetAssetImportPath() const;
 	QVariant GetProvinces() const;
 	Province *GetSelectedProvince() const;
 

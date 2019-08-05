@@ -38,11 +38,7 @@ bool Defines::ProcessGSMLProperty(const GSMLProperty &property)
 	const GSMLOperator gsml_operator = property.GetOperator();
 	const std::string &value = property.GetValue();
 
-	if (key == "asset_import_path") {
-		if (gsml_operator == GSMLOperator::Assignment) {
-			Defines::AssetImportPath = value;
-		}
-	} else if (key == "start_date") {
+	if (key == "start_date") {
 		if (gsml_operator == GSMLOperator::Assignment) {
 			Defines::StartDate = History::StringToDate(value);
 		}
