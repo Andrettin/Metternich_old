@@ -1,43 +1,29 @@
 #pragma once
 
-#include "database/data_entry.h"
+#include "culture/culture_base.h"
 #include "database/data_type.h"
 
 #include <string>
+#include <vector>
 
 namespace Metternich {
 
 class CultureGroup;
 class Dynasty;
 
-class Culture : public DataEntry, public DataType<Culture>
+class Culture : public CultureBase, public DataType<Culture>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(Metternich::CultureGroup* culture_group MEMBER CultureGroup READ GetCultureGroup)
+	Q_PROPERTY(Metternich::CultureGroup* culture_group MEMBER CultureGroup READ GetCultureGroup NOTIFY CultureGroupChanged)
 
 public:
 	static constexpr const char *ClassIdentifier = "culture";
 	static constexpr const char *DatabaseFolder = "cultures";
 
-	Culture(const std::string &identifier) : DataEntry(identifier) {}
+	Culture(const std::string &identifier) : CultureBase(identifier) {}
 
-	virtual void ProcessGSMLScope(const GSMLData &scope) override;
-
-	virtual void Check() const override
-	{
-		if (this->GetCultureGroup() == nullptr) {
-			throw std::runtime_error("Culture \"" + this->GetIdentifier() + "\" has no culture group.");
-		}
-
-		if (this->MaleNames.empty()) {
-			throw std::runtime_error("Culture \"" + this->GetIdentifier() + "\" has no male names.");
-		}
-
-		if (this->FemaleNames.empty()) {
-			throw std::runtime_error("Culture \"" + this->GetIdentifier() + "\" has no female names.");
-		}
-	}
+	virtual void Check() const override;
 
 	CultureGroup *GetCultureGroup() const
 	{
@@ -53,10 +39,11 @@ public:
 	std::string GenerateFemaleName() const;
 	std::string GenerateDynastyName() const;
 
+signals:
+	void CultureGroupChanged();
+
 private:
 	CultureGroup *CultureGroup = nullptr;
-	std::vector<std::string> MaleNames;
-	std::vector<std::string> FemaleNames;
 	std::vector<Dynasty *> Dynasties;
 };
 

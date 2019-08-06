@@ -1,15 +1,11 @@
 #pragma once
 
-#include "database/data_entry.h"
+#include "culture/culture_base.h"
 #include "database/data_type.h"
-
-#include <string>
 
 namespace Metternich {
 
-class Dynasty;
-
-class CultureGroup : public DataEntry, public DataType<CultureGroup>
+class CultureGroup : public CultureBase, public DataType<CultureGroup>
 {
 	Q_OBJECT
 
@@ -17,7 +13,7 @@ public:
 	static constexpr const char *ClassIdentifier = "culture_group";
 	static constexpr const char *DatabaseFolder = "culture_groups";
 
-	CultureGroup(const std::string &identifier) : DataEntry(identifier) {}
+	CultureGroup(const std::string &identifier) : CultureBase(identifier) {}
 };
 
 }

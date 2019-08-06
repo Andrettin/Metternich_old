@@ -1,26 +1,26 @@
 #include "culture/culture.h"
 
 #include "character/dynasty.h"
+#include "culture/culture_group.h"
 #include "random.h"
 
 namespace Metternich {
 
 /**
-**	@brief	Process GSML data scope
-**
-**	@param	scope	The scope
+**	@brief	Check whether the culture is in a valid state
 */
-void Culture::ProcessGSMLScope(const GSMLData &scope)
+void Culture::Check() const
 {
-	const std::string &tag = scope.GetTag();
-	const std::vector<std::string> &values = scope.GetValues();
+	if (this->GetCultureGroup() == nullptr) {
+		throw std::runtime_error("Culture \"" + this->GetIdentifier() + "\" has no culture group.");
+	}
 
-	if (tag == "male_names") {
-		this->MaleNames = values;
-	} else if (tag == "female_names") {
-		this->FemaleNames = values;
-	} else {
-		DataEntryBase::ProcessGSMLScope(scope);
+	if (this->GetMaleNames().empty() && this->GetCultureGroup()->GetMaleNames().empty()) {
+		throw std::runtime_error("Culture \"" + this->GetIdentifier() + "\" has no male names, and neither does its culture group (\"" + this->GetCultureGroup()->GetIdentifier() + "\").");
+	}
+
+	if (this->GetFemaleNames().empty() && this->GetCultureGroup()->GetFemaleNames().empty()) {
+		throw std::runtime_error("Culture \"" + this->GetIdentifier() + "\" has no female names, and neither does its culture group (\"" + this->GetCultureGroup()->GetIdentifier() + "\").");
 	}
 }
 
@@ -29,11 +29,15 @@ void Culture::ProcessGSMLScope(const GSMLData &scope)
 */
 std::string Culture::GenerateMaleName() const
 {
-	if (this->MaleNames.empty()) {
-		return std::string();
+	if (!this->GetMaleNames().empty()) {
+		return this->GetMaleNames()[Random::Generate(this->GetMaleNames().size())];
 	}
 
-	return this->MaleNames[Random::Generate(this->MaleNames.size())];
+	if (!this->GetCultureGroup()->GetMaleNames().empty()) {
+		return this->GetCultureGroup()->GetMaleNames()[Random::Generate(this->GetCultureGroup()->GetMaleNames().size())];
+	}
+
+	return std::string();
 }
 
 /**
@@ -41,11 +45,15 @@ std::string Culture::GenerateMaleName() const
 */
 std::string Culture::GenerateFemaleName() const
 {
-	if (this->FemaleNames.empty()) {
-		return std::string();
+	if (!this->GetFemaleNames().empty()) {
+		return this->GetFemaleNames()[Random::Generate(this->GetFemaleNames().size())];
 	}
 
-	return this->FemaleNames[Random::Generate(this->FemaleNames.size())];
+	if (!this->GetCultureGroup()->GetFemaleNames().empty()) {
+		return this->GetCultureGroup()->GetFemaleNames()[Random::Generate(this->GetCultureGroup()->GetFemaleNames().size())];
+	}
+
+	return std::string();
 }
 
 /**

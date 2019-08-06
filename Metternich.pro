@@ -16,6 +16,7 @@ SOURCES += \
         character/character.cpp \
         character/dynasty.cpp \
         culture/culture.cpp \
+        culture/culture_base.cpp \
         database/csv_data.cpp \
         database/data_entry.cpp \
         database/gsml_data.cpp \
@@ -54,6 +55,7 @@ HEADERS += \
     character/dynasty.h \
     character/trait.h \
     culture/culture.h \
+    culture/culture_base.h \
     culture/culture_group.h \
     database/csv_data.h \
     database/data_entry.h \
