@@ -54,6 +54,7 @@ HEADERS += \
     character/dynasty.h \
     character/trait.h \
     culture/culture.h \
+    culture/culture_group.h \
     database/csv_data.h \
     database/data_entry.h \
     database/data_type.h \

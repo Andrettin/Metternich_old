@@ -4,6 +4,7 @@
 #include "character/dynasty.h"
 #include "character/trait.h"
 #include "culture/culture.h"
+#include "culture/culture_group.h"
 #include "database/gsml_data.h"
 #include "database/gsml_operator.h"
 #include "database/gsml_property.h"
@@ -78,6 +79,8 @@ void DataEntryBase::ProcessGSMLProperty(const GSMLProperty &property)
 				new_property_value = QVariant::fromValue(holding);
 			} else if (property.GetKey() == "culture") {
 				new_property_value = QVariant::fromValue(Culture::Get(property.GetValue()));
+			} else if (property.GetKey() == "culture_group") {
+				new_property_value = QVariant::fromValue(CultureGroup::Get(property.GetValue()));
 			} else if (property.GetKey() == "religion") {
 				new_property_value = QVariant::fromValue(Religion::Get(property.GetValue()));
 			} else if (property.GetKey() == "dynasty") {

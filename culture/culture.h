@@ -7,11 +7,14 @@
 
 namespace Metternich {
 
+class CultureGroup;
 class Dynasty;
 
 class Culture : public DataEntry, public DataType<Culture>
 {
 	Q_OBJECT
+
+	Q_PROPERTY(Metternich::CultureGroup* culture_group MEMBER CultureGroup READ GetCultureGroup)
 
 public:
 	static constexpr const char *ClassIdentifier = "culture";
@@ -23,6 +26,10 @@ public:
 
 	virtual void Check() const override
 	{
+		if (this->GetCultureGroup() == nullptr) {
+			throw std::runtime_error("Culture \"" + this->GetIdentifier() + "\" has no culture group.");
+		}
+
 		if (this->MaleNames.empty()) {
 			throw std::runtime_error("Culture \"" + this->GetIdentifier() + "\" has no male names.");
 		}
@@ -30,6 +37,11 @@ public:
 		if (this->FemaleNames.empty()) {
 			throw std::runtime_error("Culture \"" + this->GetIdentifier() + "\" has no female names.");
 		}
+	}
+
+	CultureGroup *GetCultureGroup() const
+	{
+		return this->CultureGroup;
 	}
 
 	void AddDynasty(Dynasty *dynasty)
@@ -42,6 +54,7 @@ public:
 	std::string GenerateDynastyName() const;
 
 private:
+	CultureGroup *CultureGroup = nullptr;
 	std::vector<std::string> MaleNames;
 	std::vector<std::string> FemaleNames;
 	std::vector<Dynasty *> Dynasties;

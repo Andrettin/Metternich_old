@@ -1,6 +1,7 @@
 #include "character/dynasty.h"
 #include "character/trait.h"
 #include "culture/culture.h"
+#include "culture/culture_group.h"
 #include "defines.h"
 #include "empty_image_provider.h"
 #include "engine_interface.h"
@@ -28,6 +29,7 @@ namespace Metternich {
 static void LoadDatabase()
 {
 	Defines::Load();
+	CultureGroup::ParseDatabase();
 	Culture::ParseDatabase();
 	Religion::ParseDatabase();
 	Dynasty::ParseDatabase();
@@ -36,6 +38,7 @@ static void LoadDatabase()
 	Province::ParseDatabase();
 	Trait::ParseDatabase();
 
+	CultureGroup::ProcessDatabase(true);
 	Culture::ProcessDatabase(true);
 	Religion::ProcessDatabase(true);
 	Dynasty::ProcessDatabase(true);
@@ -44,6 +47,7 @@ static void LoadDatabase()
 	Province::ProcessDatabase(true);
 	Trait::ProcessDatabase(true);
 
+	CultureGroup::ProcessDatabase(false);
 	Culture::ProcessDatabase(false);
 	Religion::ProcessDatabase(false);
 	Dynasty::ProcessDatabase(false);
