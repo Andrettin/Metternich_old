@@ -1,6 +1,6 @@
-#include "culture.h"
+#include "culture/culture.h"
 
-#include "dynasty.h"
+#include "character/dynasty.h"
 #include "random.h"
 
 namespace Metternich {

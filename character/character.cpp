@@ -1,12 +1,12 @@
-#include "character.h"
+#include "character/character.h"
 
-#include "culture.h"
+#include "character/trait.h"
+#include "culture/culture.h"
 #include "database/gsml_property.h"
-#include "game.h"
-#include "landed_title.h"
-#include "landed_title_tier.h"
+#include "game/game.h"
+#include "landed_title/landed_title.h"
+#include "landed_title/landed_title_tier.h"
 #include "random.h"
-#include "trait.h"
 #include "util.h"
 
 #include <QVariant>

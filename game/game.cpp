@@ -1,10 +1,10 @@
-#include "game.h"
+#include "game/game.h"
 
-#include "character.h"
-#include "game_speed.h"
+#include "character/character.h"
+#include "game/game_speed.h"
 #include "history/history.h"
 #include "holding/holding.h"
-#include "landed_title.h"
+#include "landed_title/landed_title.h"
 #include "map/province.h"
 
 #include <chrono>

@@ -1,10 +1,10 @@
-#include "landed_title.h"
+#include "landed_title/landed_title.h"
 
-#include "character.h"
-#include "culture.h"
-#include "game.h"
+#include "character/character.h"
+#include "culture/culture.h"
+#include "game/game.h"
 #include "holding/holding.h"
-#include "landed_title_tier.h"
+#include "landed_title/landed_title_tier.h"
 #include "map/province.h"
 #include "translator.h"
 

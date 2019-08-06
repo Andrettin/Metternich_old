@@ -1,7 +1,7 @@
 #include "holding.h"
 
-#include "culture.h"
-#include "landed_title.h"
+#include "culture/culture.h"
+#include "landed_title/landed_title.h"
 #include "map/province.h"
 #include "religion.h"
 #include "translator.h"

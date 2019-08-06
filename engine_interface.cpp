@@ -1,7 +1,7 @@
 #include "engine_interface.h"
 
 #include "defines.h"
-#include "game.h"
+#include "game/game.h"
 #include "map/province.h"
 #include "util.h"
 
