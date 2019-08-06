@@ -1,6 +1,7 @@
 #include "holding.h"
 
 #include "culture/culture.h"
+#include "culture/culture_group.h"
 #include "landed_title/landed_title.h"
 #include "map/province.h"
 #include "religion.h"
@@ -25,7 +26,7 @@ Holding::~Holding()
 */
 std::string Holding::GetName() const
 {
-	return Translator::GetInstance()->Translate(this->GetBarony()->GetIdentifier(), {this->GetProvince()->GetCulture()->GetIdentifier(), this->GetProvince()->GetReligion()->GetIdentifier()});
+	return Translator::GetInstance()->Translate(this->GetBarony()->GetIdentifier(), {this->GetProvince()->GetCulture()->GetIdentifier(), this->GetProvince()->GetCulture()->GetCultureGroup()->GetIdentifier(), this->GetProvince()->GetReligion()->GetIdentifier()});
 }
 
 }

@@ -2,6 +2,7 @@
 
 #include "character/character.h"
 #include "culture/culture.h"
+#include "culture/culture_group.h"
 #include "game/game.h"
 #include "holding/holding.h"
 #include "landed_title/landed_title_tier.h"
@@ -179,6 +180,7 @@ std::string LandedTitle::GetName() const
 	std::vector<std::string> suffixes;
 	if (culture != nullptr) {
 		suffixes.push_back(culture->GetIdentifier());
+		suffixes.push_back(culture->GetCultureGroup()->GetIdentifier());
 	}
 
 	return Translator::GetInstance()->Translate(this->GetIdentifier(), suffixes);

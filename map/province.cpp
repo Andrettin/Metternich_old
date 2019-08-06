@@ -1,6 +1,7 @@
 #include "map/province.h"
 
 #include "culture/culture.h"
+#include "culture/culture_group.h"
 #include "database/gsml_data.h"
 #include "database/gsml_property.h"
 #include "engine_interface.h"
@@ -146,7 +147,7 @@ void Province::Check() const
 */
 std::string Province::GetName() const
 {
-	return Translator::GetInstance()->Translate(this->GetCounty()->GetIdentifier(), {this->GetCulture()->GetIdentifier(), this->GetReligion()->GetIdentifier()});
+	return Translator::GetInstance()->Translate(this->GetCounty()->GetIdentifier(), {this->GetCulture()->GetIdentifier(), this->GetCulture()->GetCultureGroup()->GetIdentifier(), this->GetReligion()->GetIdentifier()});
 }
 
 /**
