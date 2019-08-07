@@ -10,6 +10,7 @@
 
 namespace Metternich {
 
+class Character;
 enum class GameSpeed : int;
 
 /**

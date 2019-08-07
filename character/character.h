@@ -22,9 +22,10 @@ class Character : public NumericDataEntry, public DataType<Character, int>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(QString name READ GetNameQString WRITE SetNameQString)
+	Q_PROPERTY(QString name READ GetNameQString WRITE SetNameQString NOTIFY NameChanged)
+	Q_PROPERTY(QString full_name READ GetFullNameQString NOTIFY FullNameChanged)
 	Q_PROPERTY(bool female MEMBER Female READ IsFemale)
-	Q_PROPERTY(Metternich::Dynasty* dynasty MEMBER Dynasty READ GetDynasty NOTIFY DynastyChanged)
+	Q_PROPERTY(Metternich::Dynasty* dynasty READ GetDynasty WRITE SetDynasty NOTIFY DynastyChanged)
 	Q_PROPERTY(Metternich::Culture* culture MEMBER Culture READ GetCulture NOTIFY CultureChanged)
 	Q_PROPERTY(Metternich::Religion* religion MEMBER Religion READ GetReligion NOTIFY ReligionChanged)
 	Q_PROPERTY(Metternich::LandedTitle* primary_title READ GetPrimaryTitle WRITE SetPrimaryTitle NOTIFY PrimaryTitleChanged)
@@ -42,7 +43,11 @@ public:
 
 	static Character *Generate(Culture *culture, Religion *religion);
 
-	Character(const int identifier) : NumericDataEntry(identifier) {}
+	Character(const int identifier) : NumericDataEntry(identifier)
+	{
+		connect(this, &Character::NameChanged, this, &Character::FullNameChanged);
+		connect(this, &Character::DynastyChanged, this, &Character::FullNameChanged);
+	}
 
 	virtual ~Character() override
 	{
@@ -104,6 +109,13 @@ public:
 		this->Name = name.toStdString();
 	}
 
+	std::string GetFullName() const;
+
+	QString GetFullNameQString() const
+	{
+		return QString::fromStdString(this->GetFullName());
+	}
+
 	bool IsAlive() const
 	{
 		return this->Alive;
@@ -117,6 +129,17 @@ public:
 	Dynasty *GetDynasty() const
 	{
 		return this->Dynasty;
+	}
+
+	void SetDynasty(Dynasty *dynasty)
+	{
+		if (dynasty == this->GetDynasty()) {
+			return;
+		}
+
+		this->Dynasty = dynasty;
+
+		emit DynastyChanged();
 	}
 
 	Culture *GetCulture() const
@@ -273,6 +296,8 @@ public:
 	}
 
 signals:
+	void NameChanged();
+	void FullNameChanged();
 	void DynastyChanged();
 	void CultureChanged();
 	void ReligionChanged();

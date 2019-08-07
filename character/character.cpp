@@ -1,5 +1,6 @@
 #include "character/character.h"
 
+#include "character/dynasty.h"
 #include "character/trait.h"
 #include "culture/culture.h"
 #include "database/gsml_property.h"
@@ -75,6 +76,15 @@ void Character::Initialize()
 			this->Name = this->GetCulture()->GenerateMaleName();
 		}
 	}
+}
+
+std::string Character::GetFullName() const
+{
+	std::string full_name = this->Name;
+	if (this->GetDynasty() != nullptr) {
+		full_name += " " + this->GetDynasty()->GetName();
+	}
+	return full_name;
 }
 
 void Character::ChoosePrimaryTitle()
