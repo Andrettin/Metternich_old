@@ -60,6 +60,7 @@ HEADERS += \
     database/csv_data.h \
     database/data_entry.h \
     database/data_type.h \
+    database/database.h \
     database/gsml_data.h \
     database/gsml_operator.h \
     database/gsml_property.h \

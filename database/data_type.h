@@ -1,5 +1,6 @@
 #pragma once
 
+#include "database/database.h"
 #include "database/gsml_data.h"
 
 #include <filesystem>
@@ -268,12 +269,26 @@ public:
 		}
 	}
 
+	/**
+	**	@brief	Initialize the class
+	*/
+	static inline bool InitializeClass()
+	{
+		//initialize the database parsing/processing functions for this data type
+		Database::GetInstance()->AddParsingFunction(std::function<void()>(DataType::ParseDatabase));
+		Database::GetInstance()->AddProcessingFunction(std::function<void(bool)>(DataType::ProcessDatabase));
+		Database::GetInstance()->AddCheckingFunction(std::function<void()>(DataType::CheckAll));
+
+		return true;
+	}
+
 private:
 	static inline std::vector<T *> Instances;
 	static inline std::map<KEY, std::unique_ptr<T>> InstancesByIdentifier;
 	static inline int LastNumericIdentifier = 1;
 	static inline std::vector<GSMLData> GSMLDataToProcess;
 	static inline std::vector<GSMLData> GSMLHistoryDataToProcess;
+	static inline bool ClassInitialized = DataType::InitializeClass();
 };
 
 }

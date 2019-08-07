@@ -2,6 +2,7 @@
 #include "character/trait.h"
 #include "culture/culture.h"
 #include "culture/culture_group.h"
+#include "database/database.h"
 #include "defines.h"
 #include "empty_image_provider.h"
 #include "engine_interface.h"
@@ -29,36 +30,7 @@ namespace Metternich {
 static void LoadDatabase()
 {
 	Defines::Load();
-	CultureGroup::ParseDatabase();
-	Culture::ParseDatabase();
-	Religion::ParseDatabase();
-	Dynasty::ParseDatabase();
-	HoldingType::ParseDatabase();
-	LandedTitle::ParseDatabase();
-	Province::ParseDatabase();
-	Trait::ParseDatabase();
-
-	CultureGroup::ProcessDatabase(true);
-	Culture::ProcessDatabase(true);
-	Religion::ProcessDatabase(true);
-	Dynasty::ProcessDatabase(true);
-	HoldingType::ProcessDatabase(true);
-	LandedTitle::ProcessDatabase(true);
-	Province::ProcessDatabase(true);
-	Trait::ProcessDatabase(true);
-
-	CultureGroup::ProcessDatabase(false);
-	Culture::ProcessDatabase(false);
-	Religion::ProcessDatabase(false);
-	Dynasty::ProcessDatabase(false);
-	HoldingType::ProcessDatabase(false);
-	LandedTitle::ProcessDatabase(false);
-	Province::ProcessDatabase(false);
-	Trait::ProcessDatabase(false);
-
-	Culture::CheckAll();
-	LandedTitle::CheckAll();
-	Province::CheckAll();
+	Database::GetInstance()->Load();
 }
 
 }
