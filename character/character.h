@@ -347,6 +347,11 @@ public:
 		emit WealthChanged();
 	}
 
+	void ChangeWealth(const int change)
+	{
+		this->SetWealth(this->GetWealth() + change);
+	}
+
 signals:
 	void NameChanged();
 	void FullNameChanged();
