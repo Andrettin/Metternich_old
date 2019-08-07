@@ -36,6 +36,10 @@ public:
 
 	void Start(const QDateTime &start_date);
 	void Run();
+	void DoTick();
+	void DoDay();
+	void DoMonth();
+	void DoYear();
 
 	bool IsStarting() const
 	{

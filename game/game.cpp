@@ -64,8 +64,7 @@ void Game::Run()
 	while (true) {
 		std::chrono::time_point<std::chrono::system_clock> tick_start = std::chrono::system_clock::now();
 
-		this->CurrentDate = this->CurrentDate.addDays(1);
-		emit CurrentDateChanged();
+		this->DoTick();
 
 		std::chrono::time_point<std::chrono::system_clock> tick_end = std::chrono::system_clock::now();
 
@@ -102,6 +101,40 @@ void Game::Run()
 			std::this_thread::sleep_for(tick_ms);
 		}
 	}
+}
+
+void Game::DoTick()
+{
+	QDateTime old_date = CurrentDate;
+	this->CurrentDate = this->CurrentDate.addDays(1);
+	emit CurrentDateChanged();
+
+	if (old_date.date().day() != this->CurrentDate.date().day()) {
+		this->DoDay();
+	}
+
+	if (old_date.date().month() != this->CurrentDate.date().month()) {
+		this->DoMonth();
+	}
+
+	if (old_date.date().year() != this->CurrentDate.date().year()) {
+		this->DoYear();
+	}
+}
+
+void Game::DoDay()
+{
+}
+
+void Game::DoMonth()
+{
+	for (Character *character : Character::GetAllLiving()) {
+		character->DoMonth();
+	}
+}
+
+void Game::DoYear()
+{
 }
 
 /**

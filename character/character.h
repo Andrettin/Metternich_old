@@ -352,6 +352,10 @@ public:
 		this->SetWealth(this->GetWealth() + change);
 	}
 
+	void DoMonth()
+	{
+	}
+
 signals:
 	void NameChanged();
 	void FullNameChanged();
