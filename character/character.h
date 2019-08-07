@@ -32,8 +32,8 @@ class Character : public NumericDataEntry, public DataType<Character, int>
 	Q_PROPERTY(Metternich::Character* father READ GetFather WRITE SetFather)
 	Q_PROPERTY(Metternich::Character* mother READ GetMother WRITE SetMother)
 	Q_PROPERTY(Metternich::Character* spouse READ GetSpouse WRITE SetSpouse)
-	Q_PROPERTY(Metternich::Character* liege READ GetLiege WRITE SetLiege)
-	Q_PROPERTY(Metternich::Character* employer READ GetLiege WRITE SetLiege)
+	Q_PROPERTY(Metternich::Character* liege READ GetLiege WRITE SetLiege NOTIFY LiegeChanged)
+	Q_PROPERTY(Metternich::Character* employer READ GetLiege WRITE SetLiege NOTIFY LiegeChanged)
 	Q_PROPERTY(QVariantList traits READ GetTraitsQVariantList)
 
 public:
@@ -262,6 +262,7 @@ public:
 
 		this->Liege = liege;
 		liege->Vassals.push_back(this);
+		emit LiegeChanged();
 	}
 	Character *GetTopLiege() const
 	{
@@ -302,6 +303,7 @@ signals:
 	void CultureChanged();
 	void ReligionChanged();
 	void PrimaryTitleChanged();
+	void LiegeChanged();
 
 private:
 	std::string Name;
