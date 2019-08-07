@@ -7,6 +7,7 @@
 #include <QImage>
 #include <QObject>
 #include <QRect>
+#include <QVariant>
 
 #include <map>
 #include <memory>

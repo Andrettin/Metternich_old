@@ -24,6 +24,7 @@
 #include <QVariant>
 #include <QVector>
 
+#include <algorithm>
 #include <chrono>
 #include <filesystem>
 #include <fstream>

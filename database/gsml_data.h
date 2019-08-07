@@ -2,6 +2,7 @@
 
 #include "database/gsml_property.h"
 
+#include <algorithm>
 #include <filesystem>
 #include <string>
 #include <vector>
