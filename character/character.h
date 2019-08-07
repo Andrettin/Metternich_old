@@ -35,6 +35,7 @@ class Character : public NumericDataEntry, public DataType<Character, int>
 	Q_PROPERTY(Metternich::Character* liege READ GetLiege WRITE SetLiege NOTIFY LiegeChanged)
 	Q_PROPERTY(Metternich::Character* employer READ GetLiege WRITE SetLiege NOTIFY LiegeChanged)
 	Q_PROPERTY(QVariantList traits READ GetTraitsQVariantList)
+	Q_PROPERTY(int wealth READ GetWealth WRITE SetWealth NOTIFY WealthChanged)
 
 public:
 	static constexpr const char *ClassIdentifier = "character";
@@ -331,6 +332,21 @@ public:
 		this->Traits.erase(std::remove(this->Traits.begin(), this->Traits.end(), trait), this->Traits.end());
 	}
 
+	int GetWealth() const
+	{
+		return this->Wealth;
+	}
+
+	void SetWealth(const int wealth)
+	{
+		if (this->Wealth == wealth) {
+			return;
+		}
+
+		this->Wealth = wealth;
+		emit WealthChanged();
+	}
+
 signals:
 	void NameChanged();
 	void FullNameChanged();
@@ -340,6 +356,7 @@ signals:
 	void ReligionChanged();
 	void PrimaryTitleChanged();
 	void LiegeChanged();
+	void WealthChanged();
 
 private:
 	std::string Name;
@@ -359,6 +376,7 @@ private:
 	Character *Liege = nullptr;
 	std::vector<Character *> Vassals;
 	std::vector<Trait *> Traits;
+	int Wealth = 0;
 };
 
 }
