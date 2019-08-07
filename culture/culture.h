@@ -43,7 +43,7 @@ signals:
 	void CultureGroupChanged();
 
 private:
-	CultureGroup *CultureGroup = nullptr;
+	Metternich::CultureGroup *CultureGroup = nullptr;
 	std::vector<Dynasty *> Dynasties;
 };
 

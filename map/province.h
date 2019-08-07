@@ -151,8 +151,8 @@ private:
 	QColor Color; //color used to identify the province in the province map
 	QRect Rect; //the rectangle that the province occupies
 	QImage Image; //the province's image to be drawn on-screen
-	Culture *Culture = nullptr;
-	Religion *Religion = nullptr;
+	Metternich::Culture *Culture = nullptr;
+	Metternich::Religion *Religion = nullptr;
 	std::vector<Holding *> Holdings;
 	std::map<LandedTitle *, std::unique_ptr<Holding>> HoldingsByBarony; //the province's holdings, mapped to their respective baronies
 	Holding *CapitalHolding = nullptr;

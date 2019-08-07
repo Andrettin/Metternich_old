@@ -69,7 +69,7 @@ signals:
 private:
 	LandedTitle *Barony = nullptr;
 	HoldingType *Type = nullptr;
-	Province *Province = nullptr; //the province to which this holding belongs
+	Metternich::Province *Province = nullptr; //the province to which this holding belongs
 	std::set<Building *> Buildings;
 };
 

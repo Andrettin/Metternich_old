@@ -119,7 +119,7 @@ private:
 	QColor Color;
 	LandedTitleTier Tier;
 	Character *Holder = nullptr;
-	Holding *Holding = nullptr; //this title's holding, if it is a non-titular barony
+	Metternich::Holding *Holding = nullptr; //this title's holding, if it is a non-titular barony
 	Metternich::Province *Province = nullptr; //this title's province, if it is a non-titular county
 	LandedTitle *DeJureLiegeTitle = nullptr;
 	std::vector<LandedTitle *> DeJureVassalTitles;
