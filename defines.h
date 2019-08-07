@@ -22,8 +22,14 @@ public:
 		return Defines::StartDate;
 	}
 
+	static int GetPlayerCharacterID()
+	{
+		return Defines::PlayerCharacterID;
+	}
+
 private:
 	static inline QDateTime StartDate;
+	static inline int PlayerCharacterID = 0;
 };
 
 }

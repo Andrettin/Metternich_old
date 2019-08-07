@@ -1,6 +1,7 @@
 #include "game/game.h"
 
 #include "character/character.h"
+#include "defines.h"
 #include "game/game_speed.h"
 #include "history/history.h"
 #include "holding/holding.h"
@@ -44,6 +45,8 @@ void Game::Start(const QDateTime &start_date)
 
 	this->GenerateMissingTitleHolders();
 	this->PurgeSuperfluousCharacters();
+
+	this->SetPlayerCharacter(Character::Get(Defines::GetPlayerCharacterID()));
 
 	this->Starting = false;
 	this->Running = true;

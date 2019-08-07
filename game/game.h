@@ -21,6 +21,7 @@ class Game : public QObject
 
 	Q_PROPERTY(QDateTime current_date READ GetCurrentDate NOTIFY CurrentDateChanged)
 	Q_PROPERTY(QString current_date_string READ GetCurrentDateString NOTIFY CurrentDateChanged)
+	Q_PROPERTY(Metternich::Character* player_character READ GetPlayerCharacter NOTIFY PlayerCharacterChanged)
 
 public:
 	static Game *GetInstance();
@@ -56,18 +57,35 @@ public:
 		return english_locale.toString(this->CurrentDate, "d MMMM, yyyy");
 	}
 
+	Character *GetPlayerCharacter() const
+	{
+		return this->PlayerCharacter;
+	}
+
+	void SetPlayerCharacter(Character *character)
+	{
+		if (this->PlayerCharacter == character) {
+			return;
+		}
+
+		this->PlayerCharacter = character;
+		emit PlayerCharacterChanged();
+	}
+
 	void GenerateMissingTitleHolders();
 	void PurgeSuperfluousCharacters();
 
 signals:
 	void RunningChanged();
 	void CurrentDateChanged();
+	void PlayerCharacterChanged();
 
 private:
 	bool Starting = false;
 	bool Running = false;
 	QDateTime CurrentDate;
 	GameSpeed Speed;
+	Character *PlayerCharacter = nullptr;
 };
 
 }

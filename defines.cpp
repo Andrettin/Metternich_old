@@ -42,6 +42,10 @@ bool Defines::ProcessGSMLProperty(const GSMLProperty &property)
 		if (gsml_operator == GSMLOperator::Assignment) {
 			Defines::StartDate = History::StringToDate(value);
 		}
+	} else if (key == "player_character") {
+		if (gsml_operator == GSMLOperator::Assignment) {
+			Defines::PlayerCharacterID = std::stoi(value);
+		}
 	} else {
 		return false;
 	}
