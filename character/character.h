@@ -41,12 +41,32 @@ public:
 	static constexpr const char *DatabaseFolder = "characters";
 	static constexpr bool HistoryOnly = true;
 
+	static void Remove(Character *character)
+	{
+		if (character->IsAlive()) {
+			Character::LivingCharacters.erase(std::remove(Character::LivingCharacters.begin(), Character::LivingCharacters.end(), character), Character::LivingCharacters.end());
+		}
+
+		DataType<Character, int>::Remove(character);
+	}
+
+	static const std::vector<Character *> &GetAllLiving()
+	{
+		return Character::LivingCharacters;
+	}
+
 	static Character *Generate(Culture *culture, Religion *religion);
 
+private:
+	static inline std::vector<Character *> LivingCharacters;
+
+public:
 	Character(const int identifier) : NumericDataEntry(identifier)
 	{
 		connect(this, &Character::NameChanged, this, &Character::FullNameChanged);
 		connect(this, &Character::DynastyChanged, this, &Character::FullNameChanged);
+
+		Character::LivingCharacters.push_back(this);
 	}
 
 	virtual ~Character() override
@@ -119,6 +139,21 @@ public:
 	bool IsAlive() const
 	{
 		return this->Alive;
+	}
+
+	void SetAlive(const bool alive)
+	{
+		if (alive == this->Alive) {
+			return;
+		}
+
+		this->Alive = alive;
+		if (this->Alive) {
+			Character::LivingCharacters.push_back(this);
+		} else {
+			Character::LivingCharacters.erase(std::remove(Character::LivingCharacters.begin(), Character::LivingCharacters.end(), this), Character::LivingCharacters.end());
+		}
+		emit AliveChanged();
 	}
 
 	bool IsFemale() const
@@ -299,6 +334,7 @@ public:
 signals:
 	void NameChanged();
 	void FullNameChanged();
+	void AliveChanged();
 	void DynastyChanged();
 	void CultureChanged();
 	void ReligionChanged();
