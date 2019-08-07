@@ -61,7 +61,6 @@ public:
 	}
 
 	void SetHolder(Character *character);
-
 	void SetHolderTitle(LandedTitle *title);
 
 	Holding *GetHolding() const

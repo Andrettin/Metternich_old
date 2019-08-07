@@ -18,6 +18,7 @@ class Holding : public QObject
 
 	Q_PROPERTY(QString name READ GetNameQString NOTIFY NameChanged)
 	Q_PROPERTY(Metternich::HoldingType* type READ GetType NOTIFY TypeChanged)
+	Q_PROPERTY(Metternich::LandedTitle* barony READ GetBarony NOTIFY BaronyChanged)
 
 public:
 	Holding(LandedTitle *barony, HoldingType *type, Province *province);
@@ -63,6 +64,7 @@ public:
 signals:
 	void NameChanged();
 	void TypeChanged();
+	void BaronyChanged();
 
 private:
 	LandedTitle *Barony = nullptr;
