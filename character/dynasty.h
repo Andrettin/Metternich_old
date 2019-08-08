@@ -29,7 +29,7 @@ public:
 	void SetCulture(Culture *culture);
 
 private:
-	Culture *Culture = nullptr;
+	Metternich::Culture *Culture = nullptr;
 };
 
 }

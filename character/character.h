@@ -371,9 +371,9 @@ private:
 	std::string Name;
 	bool Alive = true;
 	bool Female = false;
-	Dynasty *Dynasty = nullptr;
-	Culture *Culture = nullptr;
-	Religion *Religion = nullptr;
+	Metternich::Dynasty *Dynasty = nullptr;
+	Metternich::Culture *Culture = nullptr;
+	Metternich::Religion *Religion = nullptr;
 	LandedTitle *PrimaryTitle = nullptr;
 	std::vector<LandedTitle *> LandedTitles;
 	Character *Father = nullptr;
