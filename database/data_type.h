@@ -288,7 +288,12 @@ private:
 	static inline int LastNumericIdentifier = 1;
 	static inline std::vector<GSMLData> GSMLDataToProcess;
 	static inline std::vector<GSMLData> GSMLHistoryDataToProcess;
+#ifdef __GNUC__
+	//the "used" attribute is needed under GCC, or else this variable will be optimized away (even in debug builds)
+	static inline bool ClassInitialized [[gnu::used]] = DataType::InitializeClass();
+#else
 	static inline bool ClassInitialized = DataType::InitializeClass();
+#endif
 };
 
 }
