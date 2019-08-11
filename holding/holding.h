@@ -52,7 +52,7 @@ public:
 		emit TypeChanged();
 	}
 
-	Province *GetProvince() const
+	Metternich::Province *GetProvince() const
 	{
 		return this->Province;
 	}

@@ -21,7 +21,7 @@ public:
 	static constexpr const char *ClassIdentifier = "dynasty";
 	static constexpr const char *DatabaseFolder = "dynasties";
 
-	Culture *GetCulture() const
+	Metternich::Culture *GetCulture() const
 	{
 		return this->Culture;
 	}

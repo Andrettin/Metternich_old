@@ -40,9 +40,6 @@ class Province : public DataEntry, public DataType<Province>
 	Q_PROPERTY(bool selected READ IsSelected WRITE SetSelected NOTIFY SelectedChanged)
 
 public:
-	Province(const std::string &identifier);
-	virtual ~Province() override;
-
 	static constexpr const char *ClassIdentifier = "province";
 	static constexpr const char *DatabaseFolder = "provinces";
 	static constexpr const char *Prefix = "p_";
@@ -60,6 +57,9 @@ private:
 	static inline Province *SelectedProvince = nullptr;
 
 public:
+	Province(const std::string &identifier);
+	virtual ~Province() override;
+
 	virtual void ProcessGSMLProperty(const GSMLProperty &property) override;
 	virtual void ProcessGSMLScope(const GSMLData &scope) override;
 	virtual void ProcessGSMLDatedScope(const GSMLData &scope, const QDateTime &date) override;
@@ -92,12 +92,12 @@ public:
 		return this->Image;
 	}
 
-	Culture *GetCulture() const
+	Metternich::Culture *GetCulture() const
 	{
 		return this->Culture;
 	}
 
-	Religion *GetReligion() const
+	Metternich::Religion *GetReligion() const
 	{
 		return this->Religion;
 	}
@@ -168,7 +168,7 @@ private:
 	QImage Image; //the province's image to be drawn on-screen
 	Metternich::Culture *Culture = nullptr;
 	Metternich::Religion *Religion = nullptr;
-	int Population = 0; //the sum of the population of all the province's settlement holdings
+	int Population = 0; //the sum of the population of all of the province's settlement holdings
 	std::vector<Holding *> Holdings;
 	std::map<LandedTitle *, std::unique_ptr<Holding>> HoldingsByBarony; //the province's holdings, mapped to their respective baronies
 	Holding *CapitalHolding = nullptr;

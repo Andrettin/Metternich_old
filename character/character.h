@@ -162,7 +162,7 @@ public:
 		return this->Female;
 	}
 
-	Dynasty *GetDynasty() const
+	Metternich::Dynasty *GetDynasty() const
 	{
 		return this->Dynasty;
 	}
@@ -178,12 +178,12 @@ public:
 		emit DynastyChanged();
 	}
 
-	Culture *GetCulture() const
+	Metternich::Culture *GetCulture() const
 	{
 		return this->Culture;
 	}
 
-	Religion *GetReligion() const
+	Metternich::Religion *GetReligion() const
 	{
 		return this->Religion;
 	}

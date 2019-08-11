@@ -63,14 +63,14 @@ public:
 	void SetHolder(Character *character);
 	void SetHolderTitle(LandedTitle *title);
 
-	Holding *GetHolding() const
+	Metternich::Holding *GetHolding() const
 	{
 		return this->Holding;
 	}
 
 	void SetHolding(Holding *holding);
 
-	Province *GetProvince() const
+	Metternich::Province *GetProvince() const
 	{
 		return this->Province;
 	}
@@ -106,7 +106,7 @@ public:
 		return !this->DeJureVassalTitles.empty() || this->GetProvince() != nullptr || this->GetHolding() != nullptr;
 	}
 
-	Province *GetCapitalProvince() const
+	Metternich::Province *GetCapitalProvince() const
 	{
 		return this->CapitalProvince;
 	}
