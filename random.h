@@ -24,7 +24,7 @@ public:
 	}
 
 private:
-	static inline std::random_device RandomDevice;
+	static inline std::random_device RandomDevice = std::random_device();
 };
 
 }
