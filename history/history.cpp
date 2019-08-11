@@ -5,6 +5,7 @@
 #include "landed_title/landed_title.h"
 #include "map/province.h"
 #include "map/region.h"
+#include "util.h"
 
 namespace Metternich {
 
@@ -106,6 +107,40 @@ void History::SetPopulationForHoldings(int population, const std::vector<Holding
 			holding->SetPopulation(population);
 		}
 	}
+}
+
+QDateTime History::StringToDate(const std::string &date_str)
+{
+	std::vector<std::string> date_string_list = SplitString(date_str, '.');
+
+	int years = 0;
+	int months = 0;
+	int days = 0;
+	int hours = 12;
+
+	if (date_string_list.size() >= 1) {
+		years = std::stoi(date_string_list[0]);
+
+		if (date_string_list.size() >= 2) {
+			months = std::stoi(date_string_list[1]);
+
+			if (date_string_list.size() >= 3) {
+				days = std::stoi(date_string_list[2]);
+
+				if (date_string_list.size() >= 4) {
+					hours = std::stoi(date_string_list[3]);
+				}
+			}
+		}
+	}
+
+	QDateTime date(QDate(years, months, days), QTime(hours, 0), Qt::UTC);
+
+	if (!date.isValid()) {
+		throw std::runtime_error("Date \"" + date_str + "\" is not a valid date!");
+	}
+
+	return date;
 }
 
 }
