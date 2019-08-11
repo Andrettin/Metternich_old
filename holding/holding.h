@@ -23,6 +23,16 @@ class Holding : public DataEntry
 	Q_PROPERTY(Metternich::HoldingType* type READ GetType NOTIFY TypeChanged)
 	Q_PROPERTY(Metternich::LandedTitle* barony READ GetBarony NOTIFY BaronyChanged)
 	Q_PROPERTY(int population READ GetPopulation WRITE SetPopulation NOTIFY PopulationChanged)
+	Q_PROPERTY(bool selected READ IsSelected WRITE SetSelected NOTIFY SelectedChanged)
+
+public:
+	static Holding *GetSelectedHolding()
+	{
+		return Holding::SelectedHolding;
+	}
+
+private:
+	static inline Holding *SelectedHolding = nullptr;
 
 public:
 	Holding(LandedTitle *barony, HoldingType *type, Province *province);
@@ -79,11 +89,19 @@ public:
 		return this->Buildings;
 	}
 
+	bool IsSelected() const
+	{
+		return this->Selected;
+	}
+
+	void SetSelected(const bool selected, const bool notify = true);
+
 signals:
 	void NameChanged();
 	void TypeChanged();
 	void BaronyChanged();
 	void PopulationChanged();
+	void SelectedChanged();
 
 private:
 	LandedTitle *Barony = nullptr;
@@ -92,6 +110,7 @@ private:
 	std::vector<std::unique_ptr<PopulationUnit>> PopulationUnits;
 	int Population = 0; //this holding's population size
 	std::set<Building *> Buildings;
+	bool Selected = false;
 };
 
 }

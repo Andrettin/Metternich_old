@@ -120,6 +120,7 @@ void Province::ProcessGSMLScope(const GSMLData &scope)
 		DataEntryBase::ProcessGSMLScope(scope);
 	}
 }
+
 /**
 **	@brief	Process a GSML history scope
 **
@@ -399,7 +400,7 @@ void Province::DestroyHolding(LandedTitle *barony)
 **
 **	@param	selected	Whether the province is being selected
 **
-**	@param	notify		Whether to emiot signals indicating the change
+**	@param	notify		Whether to emit signals indicating the change
 */
 void Province::SetSelected(const bool selected, const bool notify)
 {

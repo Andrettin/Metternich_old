@@ -2,6 +2,7 @@
 
 #include "defines.h"
 #include "game/game.h"
+#include "holding/holding.h"
 #include "map/province.h"
 #include "util.h"
 
@@ -30,6 +31,11 @@ QVariant EngineInterface::GetProvinces() const
 Province *EngineInterface::GetSelectedProvince() const
 {
 	return Province::GetSelectedProvince();
+}
+
+Holding *EngineInterface::GetSelectedHolding() const
+{
+	return Holding::GetSelectedHolding();
 }
 
 }

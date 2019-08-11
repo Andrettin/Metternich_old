@@ -10,6 +10,7 @@
 namespace Metternich {
 
 class Game;
+class Holding;
 class Province;
 
 /**
@@ -22,6 +23,7 @@ class EngineInterface : public QObject
 	Q_PROPERTY(Metternich::Game* game READ GetGame CONSTANT)
 	Q_PROPERTY(QVariant provinces READ GetProvinces CONSTANT)
 	Q_PROPERTY(Metternich::Province* selected_province READ GetSelectedProvince NOTIFY SelectedProvinceChanged)
+	Q_PROPERTY(Metternich::Holding* selected_holding READ GetSelectedHolding NOTIFY SelectedHoldingChanged)
 
 public:
 	static EngineInterface *GetInstance();
@@ -34,9 +36,11 @@ public:
 	Game *GetGame() const;
 	QVariant GetProvinces() const;
 	Province *GetSelectedProvince() const;
+	Holding *GetSelectedHolding() const;
 
 signals:
 	void SelectedProvinceChanged();
+	void SelectedHoldingChanged();
 };
 
 }

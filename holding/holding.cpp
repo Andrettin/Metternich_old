@@ -2,6 +2,7 @@
 
 #include "culture/culture.h"
 #include "culture/culture_group.h"
+#include "engine_interface.h"
 #include "game/game.h"
 #include "landed_title/landed_title.h"
 #include "map/province.h"
@@ -102,6 +103,36 @@ void Holding::GeneratePopulationUnits()
 	this->PopulationUnits.push_back(std::move(population_unit));
 
 	this->CalculatePopulation();
+}
+
+/**
+**	@brief	Sets whether the holding is selected
+**
+**	@param	selected	Whether the holding is being selected
+**
+**	@param	notify		Whether to emit signals indicating the change
+*/
+void Holding::SetSelected(const bool selected, const bool notify)
+{
+	if (selected == this->IsSelected()) {
+		return;
+	}
+
+	if (selected) {
+		if (Holding::SelectedHolding != nullptr) {
+			Holding::SelectedHolding->SetSelected(false, false);
+		}
+		Holding::SelectedHolding = this;
+	} else {
+		Holding::SelectedHolding = nullptr;
+	}
+
+	this->Selected = selected;
+
+	if (notify) {
+		emit SelectedChanged();
+		EngineInterface::GetInstance()->emit SelectedHoldingChanged();
+	}
 }
 
 }
