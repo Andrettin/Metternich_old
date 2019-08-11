@@ -25,7 +25,7 @@ public:
 
 	virtual void Check() const override;
 
-	CultureGroup *GetCultureGroup() const
+	Metternich::CultureGroup *GetCultureGroup() const
 	{
 		return this->CultureGroup;
 	}
