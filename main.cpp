@@ -12,6 +12,7 @@
 #include "map/map.h"
 #include "map/province.h"
 #include "map/province_image_provider.h"
+#include "population/population_type.h"
 #include "religion.h"
 #include "translator.h"
 
