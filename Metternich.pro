@@ -30,6 +30,7 @@ SOURCES += \
         map/map.cpp \
         map/province.cpp \
         map/province_image_provider.cpp \
+        population/population_type.cpp \
         third_party/maskedmousearea/maskedmousearea.cpp \
         translator.cpp
 
@@ -79,6 +80,8 @@ HEADERS += \
     map/province.h \
     map/province_image_provider.h \
     pch.h \
+    population/population_type.h \
+    population/population_unit.h \
     random.h \
     religion.h \
     third_party/maskedmousearea/maskedmousearea.h \

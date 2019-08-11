@@ -38,6 +38,7 @@ Character *Character::Generate(Metternich::Culture *culture, Metternich::Religio
 **	@brief	Process a GSML history property
 **
 **	@param	property	The property
+**	@param	date		The date of the property change
 */
 void Character::ProcessGSMLDatedProperty(const GSMLProperty &property, const QDateTime &date)
 {

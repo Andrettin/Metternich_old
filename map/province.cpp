@@ -119,6 +119,32 @@ void Province::ProcessGSMLScope(const GSMLData &scope)
 		DataEntryBase::ProcessGSMLScope(scope);
 	}
 }
+/**
+**	@brief	Process a GSML history scope
+**
+**	@param	scope	The scope
+**	@param	date	The date of the scope change
+*/
+void Province::ProcessGSMLDatedScope(const GSMLData &scope, const QDateTime &date)
+{
+	const std::string &tag = scope.GetTag();
+
+	if (tag.substr(0, 2) == LandedTitle::BaronyPrefix) {
+		//a change to the data of one of the province's holdings
+
+		LandedTitle *barony = LandedTitle::Get(tag);
+		Holding *holding = this->GetHolding(barony);
+		if (holding != nullptr) {
+			for (const GSMLProperty &property : scope.GetProperties()) {
+				holding->ProcessGSMLDatedProperty(property, date);
+			}
+		} else {
+			throw std::runtime_error("Province \"" + this->GetIdentifier() + "\" has no constructed holding for barony \"" + tag + "\", while having history to change the holding's data.");
+		}
+	} else {
+		DataEntryBase::ProcessGSMLScope(scope);
+	}
+}
 
 /**
 **	@brief	Check whether the province is in a valid state
@@ -267,6 +293,21 @@ void Province::UpdateImage()
 	}
 
 	emit ImageChanged();
+}
+
+/**
+**	@brief	Set the province's population
+**
+**	@param	population	The new population size for the province
+*/
+void Province::SetPopulation(const int population)
+{
+	if (population == this->GetPopulation()) {
+		return;
+	}
+
+	this->Population = population;
+	emit PopulationChanged();
 }
 
 /**

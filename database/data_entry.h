@@ -31,6 +31,12 @@ public:
 		this->ProcessGSMLProperty(property);
 	}
 
+	virtual void ProcessGSMLDatedScope(const GSMLData &scope, const QDateTime &date)
+	{
+		Q_UNUSED(date);
+		this->ProcessGSMLScope(scope);
+	}
+
 	void LoadHistory(GSMLData &gsml_data);
 
 	virtual void Initialize() {}

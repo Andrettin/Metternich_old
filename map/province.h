@@ -34,6 +34,7 @@ class Province : public DataEntry, public DataType<Province>
 	Q_PROPERTY(QImage image READ GetImage NOTIFY ImageChanged)
 	Q_PROPERTY(Metternich::Culture* culture MEMBER Culture READ GetCulture NOTIFY CultureChanged)
 	Q_PROPERTY(Metternich::Religion* religion MEMBER Religion READ GetReligion NOTIFY ReligionChanged)
+	Q_PROPERTY(int population READ GetPopulation WRITE SetPopulation NOTIFY PopulationChanged)
 	Q_PROPERTY(QVariantList holdings READ GetHoldingsQVariantList NOTIFY HoldingsChanged)
 	Q_PROPERTY(Metternich::Holding* capital_holding READ GetCapitalHolding WRITE SetCapitalHolding NOTIFY CapitalHoldingChanged)
 	Q_PROPERTY(bool selected READ IsSelected WRITE SetSelected NOTIFY SelectedChanged)
@@ -61,6 +62,7 @@ private:
 public:
 	virtual void ProcessGSMLProperty(const GSMLProperty &property) override;
 	virtual void ProcessGSMLScope(const GSMLData &scope) override;
+	virtual void ProcessGSMLDatedScope(const GSMLData &scope, const QDateTime &date) override;
 	virtual void Check() const override;
 
 	virtual std::string GetName() const override;
@@ -98,6 +100,18 @@ public:
 	Religion *GetReligion() const
 	{
 		return this->Religion;
+	}
+
+	int GetPopulation() const
+	{
+		return this->Population;
+	}
+
+	void SetPopulation(const int population);
+
+	void ChangePopulation(const int change)
+	{
+		this->SetPopulation(this->GetPopulation() + change);
 	}
 
 	int GetMaxSettlementHoldings() const
@@ -142,6 +156,7 @@ signals:
 	void ImageChanged();
 	void CultureChanged();
 	void ReligionChanged();
+	void PopulationChanged();
 	void HoldingsChanged();
 	void CapitalHoldingChanged();
 	void SelectedChanged();
@@ -153,6 +168,7 @@ private:
 	QImage Image; //the province's image to be drawn on-screen
 	Metternich::Culture *Culture = nullptr;
 	Metternich::Religion *Religion = nullptr;
+	int Population = 0; //the sum of the population of all the province's settlement holdings
 	std::vector<Holding *> Holdings;
 	std::map<LandedTitle *, std::unique_ptr<Holding>> HoldingsByBarony; //the province's holdings, mapped to their respective baronies
 	Holding *CapitalHolding = nullptr;

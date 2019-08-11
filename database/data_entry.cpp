@@ -11,6 +11,7 @@
 #include "game/game.h"
 #include "history/history.h"
 #include "holding/holding.h"
+#include "holding/holding_type.h"
 #include "landed_title/landed_title.h"
 #include "map/province.h"
 #include "religion.h"
@@ -73,7 +74,7 @@ void DataEntryBase::ProcessGSMLProperty(const GSMLProperty &property)
 			} else if (property.GetKey() == "capital_province") {
 				Province *province = Province::Get(property.GetValue());
 				new_property_value = QVariant::fromValue(province);
-			} else if (property.GetKey() == "capital_holding") {
+			} else if (property.GetKey() == "holding" || property.GetKey() == "capital_holding") {
 				const LandedTitle *barony = LandedTitle::Get(property.GetValue());
 				Holding *holding = barony->GetHolding();
 				new_property_value = QVariant::fromValue(holding);
@@ -158,6 +159,10 @@ void DataEntryBase::LoadHistory(GSMLData &gsml_data)
 		if (date <= Game::GetInstance()->GetCurrentDate()) {
 			for (const GSMLProperty &property : history_entry.GetProperties()) {
 				this->ProcessGSMLDatedProperty(property, date);
+			}
+
+			for (const GSMLData &scope : history_entry.GetChildren()) {
+				this->ProcessGSMLDatedScope(scope, date);
 			}
 		}
 	}

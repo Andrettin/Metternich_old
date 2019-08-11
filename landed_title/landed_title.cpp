@@ -48,6 +48,7 @@ LandedTitle *LandedTitle::Add(const std::string &identifier)
 **	@brief	Process a GSML history property
 **
 **	@param	property	The property
+**	@param	date		The date of the property change
 */
 void LandedTitle::ProcessGSMLDatedProperty(const GSMLProperty &property, const QDateTime &date)
 {
