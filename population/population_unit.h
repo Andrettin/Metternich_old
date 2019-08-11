@@ -25,12 +25,12 @@ public:
 		return this->Type;
 	}
 
-	Culture *GetCulture() const
+	Metternich::Culture *GetCulture() const
 	{
 		return this->Culture;
 	}
 
-	Religion *GetReligion() const
+	Metternich::Religion *GetReligion() const
 	{
 		return this->Religion;
 	}
@@ -40,7 +40,7 @@ public:
 		return this->Size;
 	}
 
-	Holding *GetHolding() const
+	Metternich::Holding *GetHolding() const
 	{
 		return this->Holding;
 	}
