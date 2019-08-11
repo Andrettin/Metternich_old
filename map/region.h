@@ -17,6 +17,7 @@ class Region : public DataEntry, public DataType<Region>
 	Q_OBJECT
 
 	Q_PROPERTY(QVariantList provinces READ GetProvincesQVariantList)
+	Q_PROPERTY(int population READ GetPopulation WRITE SetPopulation NOTIFY PopulationChanged)
 
 public:
 	static constexpr const char *ClassIdentifier = "region";
@@ -47,11 +48,33 @@ public:
 
 	std::vector<Holding *> GetHoldings() const;
 
+	int GetPopulation() const
+	{
+		return this->Population;
+	}
+
+	void SetPopulation(const int population)
+	{
+		if (population == this->GetPopulation()) {
+			return;
+		}
+
+		this->Population = population;
+		emit PopulationChanged();
+	}
+
+	void ChangePopulation(const int change)
+	{
+		this->SetPopulation(this->GetPopulation() + change);
+	}
+
 signals:
 	void ProvincesChanged();
+	void PopulationChanged();
 
 private:
 	std::vector<Province *> Provinces;
+	int Population = 0; //the sum of the population of all of the region's provinces
 };
 
 }

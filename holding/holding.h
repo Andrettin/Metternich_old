@@ -2,14 +2,17 @@
 
 #include "database/data_entry.h"
 
+#include <memory>
 #include <set>
 #include <string>
+#include <vector>
 
 namespace Metternich {
 
 class Building;
 class HoldingType;
 class LandedTitle;
+class PopulationUnit;
 class Province;
 
 class Holding : public DataEntry
@@ -57,12 +60,19 @@ public:
 		return this->Province;
 	}
 
+	const std::vector<std::unique_ptr<PopulationUnit>> &GetPopulationUnits() const
+	{
+		return this->PopulationUnits;
+	}
+
 	int GetPopulation() const
 	{
 		return this->Population;
 	}
 
 	void SetPopulation(const int population);
+	void CalculatePopulation();
+	void GeneratePopulationUnits();
 
 	const std::set<Building *> &GetBuildings() const
 	{
@@ -79,8 +89,9 @@ private:
 	LandedTitle *Barony = nullptr;
 	HoldingType *Type = nullptr;
 	Metternich::Province *Province = nullptr; //the province to which this holding belongs
-	std::set<Building *> Buildings;
+	std::vector<std::unique_ptr<PopulationUnit>> PopulationUnits;
 	int Population = 0; //this holding's population size
+	std::set<Building *> Buildings;
 };
 
 }

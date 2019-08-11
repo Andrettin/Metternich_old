@@ -64,6 +64,12 @@ public:
 	virtual void ProcessGSMLProperty(const GSMLProperty &property) override;
 	virtual void ProcessGSMLScope(const GSMLData &scope) override;
 	virtual void ProcessGSMLDatedScope(const GSMLData &scope, const QDateTime &date) override;
+
+	virtual void Initialize() override
+	{
+		this->CalculatePopulation();
+	}
+
 	virtual void Check() const override;
 
 	virtual std::string GetName() const override;
@@ -114,6 +120,8 @@ public:
 	{
 		this->SetPopulation(this->GetPopulation() + change);
 	}
+
+	void CalculatePopulation();
 
 	int GetMaxSettlementHoldings() const
 	{

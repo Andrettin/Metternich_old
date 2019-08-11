@@ -10,6 +10,7 @@
 #include "holding/holding_type.h"
 #include "landed_title/landed_title.h"
 #include "map/map.h"
+#include "map/region.h"
 #include "religion.h"
 #include "translator.h"
 #include "util.h"
@@ -306,8 +307,29 @@ void Province::SetPopulation(const int population)
 		return;
 	}
 
+	const int old_population = this->GetPopulation();
 	this->Population = population;
 	emit PopulationChanged();
+
+	if (!Game::GetInstance()->IsStarting()) {
+		//change the population count for this province's regions as well, unless we are loading history for starting a game, in which case the regions' population counts are used to set the population of provinces without any population data set
+		const int population_change = population - old_population;
+		for (Region *region : this->GetRegions()) {
+			region->ChangePopulation(population_change);
+		}
+	}
+}
+
+/**
+**	@brief	Calculate the population size for the province
+*/
+void Province::CalculatePopulation()
+{
+	int population = 0;
+	for (const Holding *holding : this->GetHoldings()) {
+		population += holding->GetPopulation();
+	}
+	this->SetPopulation(population);
 }
 
 /**
