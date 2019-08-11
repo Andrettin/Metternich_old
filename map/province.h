@@ -22,6 +22,7 @@ class Culture;
 class Holding;
 class HoldingType;
 class LandedTitle;
+class Region;
 class Religion;
 
 class Province : public DataEntry, public DataType<Province>
@@ -151,6 +152,21 @@ public:
 
 	void SetSelected(const bool selected, const bool notify = true);
 
+	const std::vector<Region *> &GetRegions() const
+	{
+		return this->Regions;
+	}
+
+	void AddRegion(Region *region)
+	{
+		this->Regions.push_back(region);
+	}
+
+	void RemoveRegion(Region *region)
+	{
+		this->Regions.erase(std::remove(this->Regions.begin(), this->Regions.end(), region), this->Regions.end());
+	}
+
 signals:
 	void CountyChanged();
 	void ImageChanged();
@@ -174,6 +190,7 @@ private:
 	Holding *CapitalHolding = nullptr;
 	int MaxSettlementHoldings = 1;
 	bool Selected = false;
+	std::vector<Region *> Regions; //the regions to which this province belongs
 };
 
 }

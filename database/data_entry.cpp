@@ -112,6 +112,9 @@ void DataEntryBase::ProcessGSMLProperty(const GSMLProperty &property)
 			} else if (property.GetKey() == "holding_types") {
 				HoldingType *holding_type = HoldingType::Get(property.GetValue());
 				success = QMetaObject::invokeMethod(this, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(HoldingType *, holding_type));
+			} else if (property.GetKey() == "provinces") {
+				Province *province = Province::Get(property.GetValue());
+				success = QMetaObject::invokeMethod(this, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(Province *, province));
 			} else {
 				throw std::runtime_error("Unknown type for list property \"" + std::string(property_name) + "\": \"" + property.GetKey() + "\".");
 			}
