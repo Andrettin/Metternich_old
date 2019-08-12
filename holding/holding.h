@@ -2,6 +2,8 @@
 
 #include "database/data_entry.h"
 
+#include <QVariant>
+
 #include <memory>
 #include <set>
 #include <string>
@@ -23,6 +25,7 @@ class Holding : public DataEntry
 	Q_PROPERTY(Metternich::HoldingType* type READ GetType NOTIFY TypeChanged)
 	Q_PROPERTY(Metternich::LandedTitle* barony READ GetBarony NOTIFY BaronyChanged)
 	Q_PROPERTY(int population READ GetPopulation WRITE SetPopulation NOTIFY PopulationChanged)
+	Q_PROPERTY(QVariantList population_units READ GetPopulationUnitsQVariantList NOTIFY PopulationUnitsChanged)
 	Q_PROPERTY(bool selected READ IsSelected WRITE SetSelected NOTIFY SelectedChanged)
 
 public:
@@ -75,6 +78,8 @@ public:
 		return this->PopulationUnits;
 	}
 
+	QVariantList GetPopulationUnitsQVariantList() const;
+
 	int GetPopulation() const
 	{
 		return this->Population;
@@ -100,6 +105,7 @@ signals:
 	void NameChanged();
 	void TypeChanged();
 	void BaronyChanged();
+	void PopulationUnitsChanged();
 	void PopulationChanged();
 	void SelectedChanged();
 

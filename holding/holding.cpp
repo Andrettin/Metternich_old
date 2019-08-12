@@ -10,6 +10,7 @@
 #include "population/population_unit.h"
 #include "religion.h"
 #include "translator.h"
+#include "util.h"
 
 namespace Metternich {
 
@@ -41,6 +42,20 @@ Holding::~Holding()
 std::string Holding::GetName() const
 {
 	return Translator::GetInstance()->Translate(this->GetBarony()->GetIdentifier(), {this->GetProvince()->GetCulture()->GetIdentifier(), this->GetProvince()->GetCulture()->GetCultureGroup()->GetIdentifier(), this->GetProvince()->GetReligion()->GetIdentifier()});
+}
+
+/**
+**	@brief	Get the holding's population units
+*/
+QVariantList Holding::GetPopulationUnitsQVariantList() const
+{
+	QVariantList list;
+
+	for (const std::unique_ptr<PopulationUnit> &population_unit : this->GetPopulationUnits()) {
+		list.append(QVariant::fromValue(population_unit.get()));
+	}
+
+	return list;
 }
 
 /**
@@ -101,6 +116,7 @@ void Holding::GeneratePopulationUnits()
 	population_unit->SetCulture(this->GetProvince()->GetCulture());
 	population_unit->SetReligion(this->GetProvince()->GetReligion());
 	this->PopulationUnits.push_back(std::move(population_unit));
+	emit PopulationUnitsChanged();
 
 	this->CalculatePopulation();
 }

@@ -14,6 +14,7 @@
 #include "map/province_image_provider.h"
 #include "map/region.h"
 #include "population/population_type.h"
+#include "population/population_unit.h"
 #include "religion.h"
 #include "translator.h"
 
@@ -64,6 +65,8 @@ int main(int argc, char *argv[])
 		qmlRegisterType<Game>();
 		qmlRegisterType<HoldingType>();
 		qmlRegisterType<LandedTitle>();
+		qmlRegisterType<PopulationType>();
+		qmlRegisterType<PopulationUnit>();
 		qmlRegisterType<Province>();
 		qmlRegisterType<Religion>();
 		engine.rootContext()->setContextProperty("Metternich", EngineInterface::GetInstance());
