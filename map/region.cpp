@@ -7,7 +7,7 @@ namespace Metternich {
 
 QVariantList Region::GetProvincesQVariantList() const
 {
-	return VectorToQVariantList(this->GetProvinces());
+	return ContainerToQVariantList(this->GetProvinces());
 }
 
 Q_INVOKABLE void Region::AddProvince(Province *province)

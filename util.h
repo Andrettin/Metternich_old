@@ -107,11 +107,11 @@ inline QPoint IndexToPoint(const int index, const QSize &size)
 }
 
 template <typename T>
-inline QVariantList VectorToQVariantList(const std::vector<T> &vector)
+inline QVariantList ContainerToQVariantList(const T &container)
 {
 	QVariantList list;
 
-	for (const T &element : vector) {
+	for (const typename T::value_type &element : container) {
 		list.append(QVariant::fromValue(element));
 	}
 

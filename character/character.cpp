@@ -124,7 +124,7 @@ void Character::RemoveLandedTitle(LandedTitle *title)
 
 QVariantList Character::GetTraitsQVariantList() const
 {
-	return VectorToQVariantList(this->GetTraits());
+	return ContainerToQVariantList(this->GetTraits());
 }
 
 }

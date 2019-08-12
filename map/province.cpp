@@ -338,7 +338,7 @@ void Province::CalculatePopulation()
 */
 QVariantList Province::GetHoldingsQVariantList() const
 {
-	return VectorToQVariantList(this->GetHoldings());
+	return ContainerToQVariantList(this->GetHoldings());
 }
 
 /**

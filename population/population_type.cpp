@@ -7,7 +7,7 @@ namespace Metternich {
 
 QVariantList PopulationType::GetHoldingTypesQVariantList() const
 {
-	return VectorToQVariantList(this->GetHoldingTypes());
+	return ContainerToQVariantList(this->GetHoldingTypes());
 }
 
 }
