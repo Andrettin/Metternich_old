@@ -125,14 +125,16 @@ void PopulationUnit::SubtractExistingSizesInHoldings(const std::vector<Metternic
 */
 bool PopulationUnit::CanDistributeToHolding(const Metternich::Holding *holding) const
 {
-	if (!this->DiscountsExisting()) {
-		return true;
+	if (this->GetType()->GetHoldingTypes().find(holding->GetType()) == this->GetType()->GetHoldingTypes().end()) {
+		return false;
 	}
 
-	//the population unit can only be distributed to the given holding if there is no population unit there with the same type as this one, if discount existing is enabled
-	for (const std::unique_ptr<PopulationUnit> &population_unit : holding->GetPopulationUnits()) {
-		if (this->GetType() == population_unit->GetType()) {
-			return false;
+	if (this->DiscountsExisting()) {
+		//the population unit can only be distributed to the given holding if there is no population unit there with the same type as this one, if discount existing is enabled
+		for (const std::unique_ptr<PopulationUnit> &population_unit : holding->GetPopulationUnits()) {
+			if (this->GetType() == population_unit->GetType()) {
+				return false;
+			}
 		}
 	}
 

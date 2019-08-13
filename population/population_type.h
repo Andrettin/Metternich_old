@@ -5,8 +5,8 @@
 
 #include <QVariant>
 
+#include <set>
 #include <string>
-#include <vector>
 
 namespace Metternich {
 
@@ -25,7 +25,7 @@ public:
 public:
 	PopulationType(const std::string &identifier) : DataEntry(identifier) {}
 
-	const std::vector<HoldingType *> &GetHoldingTypes() const
+	const std::set<HoldingType *> &GetHoldingTypes() const
 	{
 		return this->HoldingTypes;
 	}
@@ -34,16 +34,16 @@ public:
 
 	Q_INVOKABLE void AddHoldingType(HoldingType *holding_type)
 	{
-		this->HoldingTypes.push_back(holding_type);
+		this->HoldingTypes.insert(holding_type);
 	}
 
 	Q_INVOKABLE void RemoveHoldingType(HoldingType *holding_type)
 	{
-		this->HoldingTypes.erase(std::remove(this->HoldingTypes.begin(), this->HoldingTypes.end(), holding_type), this->HoldingTypes.end());
+		this->HoldingTypes.erase(holding_type);
 	}
 
 private:
-	std::vector<HoldingType *> HoldingTypes; //the holding types where this population type can live
+	std::set<HoldingType *> HoldingTypes; //the holding types where this population type can live
 };
 
 }
