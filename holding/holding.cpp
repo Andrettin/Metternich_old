@@ -35,6 +35,23 @@ Holding::~Holding()
 }
 
 /**
+**	@brief	Initialize the holding
+*/
+void Holding::Initialize()
+{
+	for (const std::unique_ptr<PopulationUnit> &population_unit : this->GetPopulationUnits()) {
+		//set the culture and religion of population units without any set to those of the holding's province
+		if (population_unit->GetCulture() == nullptr) {
+			population_unit->SetCulture(this->GetProvince()->GetCulture());
+		}
+
+		if (population_unit->GetReligion() == nullptr) {
+			population_unit->SetReligion(this->GetProvince()->GetReligion());
+		}
+	}
+}
+
+/**
 **	@brief	Get the holding's name
 **
 **	@return	The holding's name

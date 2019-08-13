@@ -155,6 +155,11 @@ void Province::ProcessGSMLDatedScope(const GSMLData &scope, const QDateTime &dat
 void Province::Initialize()
 {
 	this->PopulationUnits.clear();
+
+	for (Holding *holding : this->GetHoldings()) {
+		holding->Initialize();
+	}
+
 	this->CalculatePopulation();
 }
 

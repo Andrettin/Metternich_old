@@ -41,6 +41,8 @@ public:
 	Holding(LandedTitle *barony, HoldingType *type, Province *province);
 	~Holding();
 
+	void Initialize();
+
 	LandedTitle *GetBarony() const
 	{
 		return this->Barony;

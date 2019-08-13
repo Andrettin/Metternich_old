@@ -164,13 +164,9 @@ void PopulationUnit::DistributeToHoldings(const std::vector<Metternich::Holding 
 		population_unit->SetSize(size_per_holding);
 		if (this->GetCulture() != nullptr) {
 			population_unit->SetCulture(this->GetCulture());
-		} else {
-			population_unit->SetCulture(holding->GetProvince()->GetCulture());
 		}
 		if (this->GetReligion() != nullptr) {
 			population_unit->SetReligion(this->GetReligion());
-		} else {
-			population_unit->SetReligion(holding->GetProvince()->GetReligion());
 		}
 		holding->AddPopulationUnit(std::move(population_unit));
 	}
