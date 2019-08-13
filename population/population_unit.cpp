@@ -54,13 +54,13 @@ void PopulationUnit::SetSize(const int size)
 }
 
 /**
-**	@brief	Get the population unit's subtraction types as a QVariantList
+**	@brief	Get the population unit's discount types as a QVariantList
 **
 **	@return The variant list
 */
-QVariantList PopulationUnit::GetSubtractionTypesQVariantList() const
+QVariantList PopulationUnit::GetDiscountTypesQVariantList() const
 {
-	return ContainerToQVariantList(this->GetSubtractionTypes());
+	return ContainerToQVariantList(this->GetDiscountTypes());
 }
 
 /**
@@ -89,7 +89,7 @@ void PopulationUnit::SubtractExistingSizesInHolding(const Metternich::Holding *h
 			continue;
 		}
 
-		if (!this->GetSubtractAnyType() && this->SubtractionTypes.find(population_unit->GetType()) == this->SubtractionTypes.end()) {
+		if (!this->DiscountsAnyType() && this->GetDiscountTypes().find(population_unit->GetType()) == this->GetDiscountTypes().end()) {
 			continue;
 		}
 

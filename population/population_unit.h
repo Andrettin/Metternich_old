@@ -1,7 +1,7 @@
 #pragma once
 
 #include "database/data_entry.h"
-#include "database/data_type_base.h"
+#include "database/simple_data_type.h"
 
 #include <QObject>
 
@@ -27,9 +27,9 @@ class PopulationUnit : public DataEntryBase, public SimpleDataType<PopulationUni
 	Q_PROPERTY(Metternich::Holding* holding READ GetHolding WRITE SetHolding NOTIFY HoldingChanged)
 	Q_PROPERTY(Metternich::Province* province READ GetProvince WRITE SetProvince NOTIFY ProvinceChanged)
 	Q_PROPERTY(Metternich::Region* region READ GetRegion WRITE SetRegion NOTIFY RegionChanged)
-	Q_PROPERTY(bool subtract_existing READ GetSubtractExisting WRITE SetSubtractExisting NOTIFY SubtractExistingChanged)
-	Q_PROPERTY(bool subtract_any_type READ GetSubtractAnyType WRITE SetSubtractAnyType NOTIFY SubtractAnyTypeChanged)
-	Q_PROPERTY(QVariantList subtraction_types READ GetSubtractionTypesQVariantList)
+	Q_PROPERTY(bool discount_existing READ DiscountsExisting WRITE SetDiscountExisting NOTIFY DiscountExistingChanged)
+	Q_PROPERTY(bool discount_any_type READ DiscountsAnyType WRITE SetDiscountAnyType NOTIFY DiscountAnyTypeChanged)
+	Q_PROPERTY(QVariantList discount_types READ GetDiscountTypesQVariantList)
 
 public:
 	static constexpr const char *DatabaseFolder = "population_units";
@@ -130,58 +130,58 @@ public:
 		emit RegionChanged();
 	}
 
-	bool GetSubtractExisting() const
+	bool DiscountsExisting() const
 	{
-		return this->SubtractExisting;
+		return this->DiscountExisting;
 	}
 
-	void SetSubtractExisting(const bool subtract_existing)
+	void SetDiscountExisting(const bool discount_existing)
 	{
-		if (subtract_existing == this->GetSubtractExisting()) {
+		if (discount_existing == this->DiscountsExisting()) {
 			return;
 		}
 
-		this->SubtractExisting = subtract_existing;
-		if (subtract_existing) {
-			this->SubtractionTypes.insert(this->GetType()); //this population unit's type is implicitly added to the subtraction types is SubtractExisting is set to true
+		this->DiscountExisting = discount_existing;
+		if (discount_existing) {
+			this->DiscountTypes.insert(this->GetType()); //this population unit's type is implicitly added to the discount types if DiscountExisting is set to true
 		} else {
-			//if is being set to false, set the SubtractAnyType to false as well, and clear the subtraction types, as both are no longer applicable
-			this->SetSubtractAnyType(false);
-			this->SubtractionTypes.clear();
+			//if is being set to false, set the DiscountAnyType to false as well, and clear the discount types, as both are no longer applicable
+			this->SetDiscountAnyType(false);
+			this->DiscountTypes.clear();
 		}
-		emit SubtractExistingChanged();
+		emit DiscountExistingChanged();
 	}
 
-	bool GetSubtractAnyType() const
+	bool DiscountsAnyType() const
 	{
-		return this->SubtractAnyType;
+		return this->DiscountAnyType;
 	}
 
-	void SetSubtractAnyType(const bool subtract_any_type)
+	void SetDiscountAnyType(const bool discount_any_type)
 	{
-		if (subtract_any_type == this->GetSubtractAnyType()) {
+		if (discount_any_type == this->DiscountsAnyType()) {
 			return;
 		}
 
-		this->SubtractAnyType = subtract_any_type;
-		emit SubtractAnyTypeChanged();
+		this->DiscountAnyType = discount_any_type;
+		emit DiscountAnyTypeChanged();
 	}
 
-	const std::set<PopulationType *> &GetSubtractionTypes() const
+	const std::set<PopulationType *> &GetDiscountTypes() const
 	{
-		return this->SubtractionTypes;
+		return this->DiscountTypes;
 	}
 
-	QVariantList GetSubtractionTypesQVariantList() const;
+	QVariantList GetDiscountTypesQVariantList() const;
 
-	Q_INVOKABLE void AddSubtractionType(PopulationType *type)
+	Q_INVOKABLE void AddDiscountType(PopulationType *type)
 	{
-		this->SubtractionTypes.insert(type);
+		this->DiscountTypes.insert(type);
 	}
 
-	Q_INVOKABLE void RemoveSubtractionType(PopulationType *type)
+	Q_INVOKABLE void RemoveDiscountType(PopulationType *type)
 	{
-		this->SubtractionTypes.erase(type);
+		this->DiscountTypes.erase(type);
 	}
 
 	void SubtractExistingSizes();
@@ -198,8 +198,8 @@ signals:
 	void HoldingChanged();
 	void ProvinceChanged();
 	void RegionChanged();
-	void SubtractExistingChanged();
-	void SubtractAnyTypeChanged();
+	void DiscountExistingChanged();
+	void DiscountAnyTypeChanged();
 
 private:
 	PopulationType *Type = nullptr;
@@ -209,9 +209,9 @@ private:
 	Metternich::Holding *Holding = nullptr; //the settlement holding where this population unit lives
 	Metternich::Province *Province = nullptr; //the province where this population unit lives; used only during initialization to generate population units in settlements in the province
 	Metternich::Region *Region = nullptr; //the region where this population unit lives; used only during initialization to generate population units in settlements in the region
-	bool SubtractExisting = false; //whether to subtract the size of existing population units (in this population unit's holding, province or region) of the types given in SubtractionTypes from that of this one
-	bool SubtractAnyType = false; //whether to subtract the size of any existing population units from that of this one
-	std::set<PopulationType *> SubtractionTypes; //the sizes of population units belonging to these types will be subtracted from that of this population unit
+	bool DiscountExisting = false; //whether to discount the size of existing population units (in this population unit's holding, province or region) of the types given in DiscountTypes from that of this one
+	bool DiscountAnyType = false; //whether to discount the size of any existing population units from that of this one
+	std::set<PopulationType *> DiscountTypes; //the sizes of population units belonging to these types will be discounted from that of this population unit
 };
 
 }

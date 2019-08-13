@@ -68,6 +68,7 @@ HEADERS += \
     database/gsml_data.h \
     database/gsml_operator.h \
     database/gsml_property.h \
+    database/simple_data_type.h \
     defines.h \
     empty_image_provider.h \
     engine_interface.h \

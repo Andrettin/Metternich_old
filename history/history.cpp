@@ -50,18 +50,18 @@ void History::Load()
 void History::GeneratePopulationUnits()
 {
 	for (Province *province : Province::GetAll()) {
-		//subtract the size of other population units for population units that have SubtractExisting enabled
+		//subtract the size of other population units for population units that have DiscountExisting enabled
 		for (Holding *holding : province->GetHoldings()) {
 			for (const std::unique_ptr<PopulationUnit> &population_unit : holding->GetPopulationUnits()) {
-				if (population_unit->GetSubtractExisting()) {
+				if (population_unit->DiscountsExisting()) {
 					population_unit->SubtractExistingSizes();
-					population_unit->SetSubtractExisting(false);
+					population_unit->SetDiscountExisting(false);
 				}
 			}
 		}
 
 		for (const std::unique_ptr<PopulationUnit> &population_unit : province->GetPopulationUnits()) {
-			if (population_unit->GetSubtractExisting()) {
+			if (population_unit->DiscountsExisting()) {
 				population_unit->SubtractExistingSizes();
 			}
 		}
@@ -82,7 +82,7 @@ void History::GeneratePopulationUnits()
 	//do regions after provinces, so that they have lower priority
 	for (Region *region : regions) {
 		for (const std::unique_ptr<PopulationUnit> &population_unit : region->GetPopulationUnits()) {
-			if (population_unit->GetSubtractExisting()) {
+			if (population_unit->DiscountsExisting()) {
 				population_unit->SubtractExistingSizes();
 			}
 		}
