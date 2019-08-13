@@ -82,6 +82,7 @@ public:
 
 	void AddPopulationUnit(std::unique_ptr<PopulationUnit> &&population_unit);
 	QVariantList GetPopulationUnitsQVariantList() const;
+	void SortPopulationUnits();
 
 	int GetPopulation() const
 	{

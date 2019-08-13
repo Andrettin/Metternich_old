@@ -50,6 +50,7 @@ void Holding::Initialize()
 		}
 	}
 
+	this->SortPopulationUnits();
 	this->CalculatePopulation();
 }
 
@@ -74,7 +75,9 @@ void Holding::AddPopulationUnit(std::unique_ptr<PopulationUnit> &&population_uni
 }
 
 /**
-**	@brief	Get the holding's population units
+**	@brief	Get the holding's population units as a QVariantList
+**
+**	@return	The population units as a QVariantList
 */
 QVariantList Holding::GetPopulationUnitsQVariantList() const
 {
@@ -85,6 +88,19 @@ QVariantList Holding::GetPopulationUnitsQVariantList() const
 	}
 
 	return list;
+}
+
+/**
+**	@brief	Sort the holding's population units
+*/
+void Holding::SortPopulationUnits()
+{
+	std::sort(this->PopulationUnits.begin(), this->PopulationUnits.end(), [](const std::unique_ptr<PopulationUnit> &a, const std::unique_ptr<PopulationUnit> &b) {
+		//give priority to population units with greater size, so that they will be displayed first
+		return a->GetSize() > b->GetSize();
+	});
+
+	emit PopulationUnitsChanged();
 }
 
 /**
