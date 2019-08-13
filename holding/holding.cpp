@@ -49,6 +49,8 @@ void Holding::Initialize()
 			population_unit->SetReligion(this->GetProvince()->GetReligion());
 		}
 	}
+
+	this->CalculatePopulation();
 }
 
 /**
@@ -66,9 +68,9 @@ std::string Holding::GetName() const
 */
 void Holding::AddPopulationUnit(std::unique_ptr<PopulationUnit> &&population_unit)
 {
+	this->ChangePopulation(population_unit->GetSize());
 	this->PopulationUnits.push_back(std::move(population_unit));
 	emit PopulationUnitsChanged();
-	this->CalculatePopulation();
 }
 
 /**
@@ -100,11 +102,9 @@ void Holding::SetPopulation(const int population)
 	this->Population = population;
 	emit PopulationChanged();
 
-	if (!Game::GetInstance()->IsStarting()) {
-		//change the population count for the province as well, unless we are loading history for starting a game, in which case the province's population count is used to set the holding population of holdings without any population data set
-		const int population_change = population - old_population;
-		this->GetProvince()->ChangePopulation(population_change);
-	}
+	//change the population count for the province as well
+	const int population_change = population - old_population;
+	this->GetProvince()->ChangePopulation(population_change);
 }
 
 /**

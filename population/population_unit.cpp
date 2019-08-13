@@ -49,8 +49,15 @@ void PopulationUnit::SetSize(const int size)
 		return;
 	}
 
+	int old_size = this->GetSize();
 	this->Size = std::max(size, 0);
 	emit SizeChanged();
+
+	if (this->GetHolding() != nullptr) {
+		//change the population count for the population unit's holding
+		const int population_change = this->GetSize() - old_size;
+		this->GetHolding()->ChangePopulation(population_change);
+	}
 }
 
 /**
@@ -118,7 +125,11 @@ void PopulationUnit::SubtractExistingSizesInHoldings(const std::vector<Metternic
 */
 bool PopulationUnit::CanDistributeToHolding(const Metternich::Holding *holding) const
 {
-	//the population unit can only be distributed to the given holding if there is no population unit there with the same type as this one
+	if (!this->DiscountsExisting()) {
+		return true;
+	}
+
+	//the population unit can only be distributed to the given holding if there is no population unit there with the same type as this one, if discount existing is enabled
 	for (const std::unique_ptr<PopulationUnit> &population_unit : holding->GetPopulationUnits()) {
 		if (this->GetType() == population_unit->GetType()) {
 			return false;

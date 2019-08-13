@@ -89,6 +89,12 @@ public:
 	}
 
 	void SetPopulation(const int population);
+
+	void ChangePopulation(const int change)
+	{
+		this->SetPopulation(this->GetPopulation() + change);
+	}
+
 	void CalculatePopulation();
 
 	const std::set<Building *> &GetBuildings() const
