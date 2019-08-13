@@ -281,6 +281,10 @@ void Province::UpdateImage()
 						continue;
 					}
 
+					if (x_offset != 0 && y_offset != 0) {
+						continue; //don't color pixels that are only diagonally adjacent to those of other provinces
+					}
+
 					QPoint adjacent_pos = pixel_pos + QPoint(x_offset, y_offset);
 
 					const int adjacent_alpha = qAlpha(rgb_data[PointToIndex(adjacent_pos, this->Image.size())]);
