@@ -78,6 +78,7 @@ public:
 		return this->PopulationUnits;
 	}
 
+	void AddPopulationUnit(std::unique_ptr<PopulationUnit> &&population_unit);
 	QVariantList GetPopulationUnitsQVariantList() const;
 
 	int GetPopulation() const
@@ -87,7 +88,6 @@ public:
 
 	void SetPopulation(const int population);
 	void CalculatePopulation();
-	void GeneratePopulationUnits();
 
 	const std::set<Building *> &GetBuildings() const
 	{

@@ -32,6 +32,7 @@ SOURCES += \
         map/province_image_provider.cpp \
         map/region.cpp \
         population/population_type.cpp \
+        population/population_unit.cpp \
         third_party/maskedmousearea/maskedmousearea.cpp \
         translator.cpp
 
@@ -62,6 +63,7 @@ HEADERS += \
     database/csv_data.h \
     database/data_entry.h \
     database/data_type.h \
+    database/data_type_base.h \
     database/database.h \
     database/gsml_data.h \
     database/gsml_operator.h \

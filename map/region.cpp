@@ -1,9 +1,32 @@
 #include "map/region.h"
 
 #include "map/province.h"
+#include "population/population_unit.h"
 #include "util.h"
 
 namespace Metternich {
+
+/**
+**	@brief	Constructor
+*/
+Region::Region(const std::string &identifier) : DataEntry(identifier)
+{
+}
+
+/**
+**	@brief	Destructor
+*/
+Region::~Region()
+{
+}
+
+/**
+**	@brief	Initialize the region
+*/
+void Region::Initialize()
+{
+	this->PopulationUnits.clear();
+}
 
 QVariantList Region::GetProvincesQVariantList() const
 {
@@ -33,6 +56,14 @@ std::vector<Holding *> Region::GetHoldings() const
 	}
 
 	return holdings;
+}
+
+/**
+**	@brief	Add a population unit to the region
+*/
+void Region::AddPopulationUnit(std::unique_ptr<PopulationUnit> &&population_unit)
+{
+	this->PopulationUnits.push_back(std::move(population_unit));
 }
 
 }

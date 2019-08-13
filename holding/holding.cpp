@@ -45,6 +45,16 @@ std::string Holding::GetName() const
 }
 
 /**
+**	@brief	Add a population unit to the holding
+*/
+void Holding::AddPopulationUnit(std::unique_ptr<PopulationUnit> &&population_unit)
+{
+	this->PopulationUnits.push_back(std::move(population_unit));
+	emit PopulationUnitsChanged();
+	this->CalculatePopulation();
+}
+
+/**
 **	@brief	Get the holding's population units
 */
 QVariantList Holding::GetPopulationUnitsQVariantList() const
@@ -90,35 +100,6 @@ void Holding::CalculatePopulation()
 		population += population_unit->GetSize();
 	}
 	this->SetPopulation(population);
-}
-
-/**
-**	@brief	Generate population units based on the holding's historical population number
-*/
-void Holding::GeneratePopulationUnits()
-{
-	if (this->GetPopulation() == 0) {
-		return;
-	}
-
-	int population = this->GetPopulation();
-	for (const std::unique_ptr<PopulationUnit> &population_unit : this->GetPopulationUnits()) {
-		//remove the size of existing population units from the total population
-		population -= population_unit->GetSize();
-	}
-
-	if (population <= 0) {
-		return;
-	}
-
-	auto population_unit = std::make_unique<PopulationUnit>(PopulationType::GetDefaultType(), this);
-	population_unit->SetSize(population);
-	population_unit->SetCulture(this->GetProvince()->GetCulture());
-	population_unit->SetReligion(this->GetProvince()->GetReligion());
-	this->PopulationUnits.push_back(std::move(population_unit));
-	emit PopulationUnitsChanged();
-
-	this->CalculatePopulation();
 }
 
 /**

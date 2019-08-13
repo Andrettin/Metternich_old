@@ -11,6 +11,7 @@
 #include "landed_title/landed_title.h"
 #include "map/map.h"
 #include "map/region.h"
+#include "population/population_unit.h"
 #include "religion.h"
 #include "translator.h"
 #include "util.h"
@@ -58,8 +59,8 @@ Province *Province::Add(const std::string &identifier)
 */
 Province::Province(const std::string &identifier) : DataEntry(identifier)
 {
-	connect(this, &Province::CultureChanged, this, &DataEntryBase::NameChanged);
-	connect(this, &Province::ReligionChanged, this, &DataEntryBase::NameChanged);
+	connect(this, &Province::CultureChanged, this, &IdentifiableDataEntryBase::NameChanged);
+	connect(this, &Province::ReligionChanged, this, &IdentifiableDataEntryBase::NameChanged);
 	connect(Game::GetInstance(), &Game::RunningChanged, this, &Province::UpdateImage);
 }
 
@@ -146,6 +147,15 @@ void Province::ProcessGSMLDatedScope(const GSMLData &scope, const QDateTime &dat
 	} else {
 		DataEntryBase::ProcessGSMLScope(scope);
 	}
+}
+
+/**
+**	@brief	Initialize the province
+*/
+void Province::Initialize()
+{
+	this->PopulationUnits.clear();
+	this->CalculatePopulation();
 }
 
 /**
@@ -308,17 +318,8 @@ void Province::SetPopulation(const int population)
 		return;
 	}
 
-	const int old_population = this->GetPopulation();
 	this->Population = population;
 	emit PopulationChanged();
-
-	if (!Game::GetInstance()->IsStarting()) {
-		//change the population count for this province's regions as well, unless we are loading history for starting a game, in which case the regions' population counts are used to set the population of provinces without any population data set
-		const int population_change = population - old_population;
-		for (Region *region : this->GetRegions()) {
-			region->ChangePopulation(population_change);
-		}
-	}
 }
 
 /**
@@ -425,6 +426,14 @@ void Province::SetSelected(const bool selected, const bool notify)
 		emit SelectedChanged();
 		EngineInterface::GetInstance()->emit SelectedProvinceChanged();
 	}
+}
+
+/**
+**	@brief	Add a population unit to the province
+*/
+void Province::AddPopulationUnit(std::unique_ptr<PopulationUnit> &&population_unit)
+{
+	this->PopulationUnits.push_back(std::move(population_unit));
 }
 
 }

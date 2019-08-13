@@ -14,6 +14,8 @@
 #include "holding/holding_type.h"
 #include "landed_title/landed_title.h"
 #include "map/province.h"
+#include "map/region.h"
+#include "population/population_type.h"
 #include "religion.h"
 #include "translator.h"
 #include "util.h"
@@ -71,13 +73,18 @@ void DataEntryBase::ProcessGSMLProperty(const GSMLProperty &property)
 
 			if (property.GetKey() == "landed_title" || property.GetKey() == "barony" || property.GetKey() == "county" || property.GetKey() == "duchy" || property.GetKey() == "kingdom" || property.GetKey() == "empire" || property.GetKey() == "holder_title" || property.GetKey() == "liege_title" || property.GetKey() == "de_jure_liege_title") {
 				new_property_value = QVariant::fromValue(LandedTitle::Get(property.GetValue()));
-			} else if (property.GetKey() == "capital_province") {
+			} else if (property.GetKey() == "province" || property.GetKey() == "capital_province") {
 				Province *province = Province::Get(property.GetValue());
 				new_property_value = QVariant::fromValue(province);
 			} else if (property.GetKey() == "holding" || property.GetKey() == "capital_holding") {
 				const LandedTitle *barony = LandedTitle::Get(property.GetValue());
 				Holding *holding = barony->GetHolding();
+				if (holding == nullptr) {
+					throw std::runtime_error("Barony \"" + property.GetValue() + "\" has no holding, but a holding property is being set using the barony as the holding's identifier.");
+				}
 				new_property_value = QVariant::fromValue(holding);
+			} else if (property.GetKey() == "region") {
+				new_property_value = QVariant::fromValue(Region::Get(property.GetValue()));
 			} else if (property.GetKey() == "culture") {
 				new_property_value = QVariant::fromValue(Culture::Get(property.GetValue()));
 			} else if (property.GetKey() == "culture_group") {
@@ -89,7 +96,7 @@ void DataEntryBase::ProcessGSMLProperty(const GSMLProperty &property)
 			} else if (property.GetKey() == "character" || property.GetKey() == "holder" || property.GetKey() == "father" || property.GetKey() == "mother" || property.GetKey() == "spouse" || property.GetKey() == "liege" || property.GetKey() == "employer") {
 				new_property_value = QVariant::fromValue(Character::Get(std::stoi(property.GetValue())));
 			} else {
-				throw std::runtime_error("Unknown type for object reference property \"" + std::string(property_name) + "\": \"" + property.GetKey() + "\".");
+				throw std::runtime_error("Unknown type for object reference property \"" + std::string(property_name) + "\".");
 			}
 		} else if (property_type == QVariant::Type::List) {
 			if (property.GetOperator() == GSMLOperator::Assignment) {
@@ -115,8 +122,11 @@ void DataEntryBase::ProcessGSMLProperty(const GSMLProperty &property)
 			} else if (property.GetKey() == "provinces") {
 				Province *province = Province::Get(property.GetValue());
 				success = QMetaObject::invokeMethod(this, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(Province *, province));
+			} else if (property.GetKey() == "subtraction_types") {
+				PopulationType *type = PopulationType::Get(property.GetValue());
+				success = QMetaObject::invokeMethod(this, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(PopulationType *, type));
 			} else {
-				throw std::runtime_error("Unknown type for list property \"" + std::string(property_name) + "\": \"" + property.GetKey() + "\".");
+				throw std::runtime_error("Unknown type for list property \"" + std::string(property_name) + "\".");
 			}
 
 			if (!success) {

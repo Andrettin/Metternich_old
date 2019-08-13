@@ -22,6 +22,7 @@ class Culture;
 class Holding;
 class HoldingType;
 class LandedTitle;
+class PopulationUnit;
 class Region;
 class Religion;
 
@@ -64,12 +65,7 @@ public:
 	virtual void ProcessGSMLProperty(const GSMLProperty &property) override;
 	virtual void ProcessGSMLScope(const GSMLData &scope) override;
 	virtual void ProcessGSMLDatedScope(const GSMLData &scope, const QDateTime &date) override;
-
-	virtual void Initialize() override
-	{
-		this->CalculatePopulation();
-	}
-
+	virtual void Initialize() override;
 	virtual void Check() const override;
 
 	virtual std::string GetName() const override;
@@ -175,6 +171,13 @@ public:
 
 	void SetSelected(const bool selected, const bool notify = true);
 
+	const std::vector<std::unique_ptr<PopulationUnit>> &GetPopulationUnits() const
+	{
+		return this->PopulationUnits;
+	}
+
+	void AddPopulationUnit(std::unique_ptr<PopulationUnit> &&population_unit);
+
 signals:
 	void CountyChanged();
 	void ImageChanged();
@@ -199,6 +202,7 @@ private:
 	int MaxSettlementHoldings = 1;
 	std::vector<Region *> Regions; //the regions to which this province belongs
 	bool Selected = false;
+	std::vector<std::unique_ptr<PopulationUnit>> PopulationUnits; //population units set for this province in history, used during initialization to generate population units in the province's settlements
 };
 
 }

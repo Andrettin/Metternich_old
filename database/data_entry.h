@@ -11,13 +11,11 @@ class GSMLData;
 class GSMLProperty;
 
 /**
-**	@brief	The base class for a de(serializable) and identifiable entry to the database
+**	@brief	The base class for a de(serializable) but not necessarily identifiable entry to the database
 */
 class DataEntryBase : public QObject
 {
 	Q_OBJECT
-
-	Q_PROPERTY(QString name READ GetNameQString NOTIFY NameChanged)
 
 public:
 	virtual ~DataEntryBase() {}
@@ -41,6 +39,19 @@ public:
 
 	virtual void Initialize() {}
 	virtual void Check() const {}
+};
+
+/**
+**	@brief	The base class for a de(serializable) and identifiable entry to the database
+*/
+class IdentifiableDataEntryBase : public DataEntryBase
+{
+	Q_OBJECT
+
+	Q_PROPERTY(QString name READ GetNameQString NOTIFY NameChanged)
+
+public:
+	virtual ~IdentifiableDataEntryBase() override {}
 
 	virtual std::string GetIdentifierString() const = 0;
 
@@ -58,7 +69,7 @@ signals:
 /**
 **	@brief	A de(serializable) and identifiable entry to the database
 */
-class DataEntry : public DataEntryBase
+class DataEntry : public IdentifiableDataEntryBase
 {
 	Q_OBJECT
 
@@ -92,7 +103,7 @@ private:
 /**
 **	@brief	An de(serializable) and identifiable entry to the database, using a number as its identifier
 */
-class NumericDataEntry : public DataEntryBase
+class NumericDataEntry : public IdentifiableDataEntryBase
 {
 	Q_OBJECT
 

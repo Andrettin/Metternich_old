@@ -5,6 +5,7 @@
 #include "landed_title/landed_title.h"
 #include "map/province.h"
 #include "map/region.h"
+#include "population/population_unit.h"
 #include "util.h"
 
 namespace Metternich {
@@ -18,6 +19,7 @@ void History::Load()
 	Province::ParseHistoryDatabase();
 	Character::ParseHistoryDatabase();
 	LandedTitle::ParseHistoryDatabase();
+	PopulationUnit::ParseHistoryDatabase();
 
 	Character::ProcessHistoryDatabase(true);
 
@@ -25,6 +27,9 @@ void History::Load()
 	Province::ProcessHistoryDatabase(false);
 	Character::ProcessHistoryDatabase(false);
 	LandedTitle::ProcessHistoryDatabase(false);
+
+	//process after the province history, so that holdings will have been created
+	PopulationUnit::ProcessHistoryDatabase();
 
 	History::GeneratePopulationUnits();
 
@@ -44,6 +49,29 @@ void History::Load()
 */
 void History::GeneratePopulationUnits()
 {
+	for (Province *province : Province::GetAll()) {
+		//subtract the size of other population units for population units that have SubtractExisting enabled
+		for (Holding *holding : province->GetHoldings()) {
+			for (const std::unique_ptr<PopulationUnit> &population_unit : holding->GetPopulationUnits()) {
+				if (population_unit->GetSubtractExisting()) {
+					population_unit->SubtractExistingSizes();
+					population_unit->SetSubtractExisting(false);
+				}
+			}
+		}
+
+		for (const std::unique_ptr<PopulationUnit> &population_unit : province->GetPopulationUnits()) {
+			if (population_unit->GetSubtractExisting()) {
+				population_unit->SubtractExistingSizes();
+			}
+		}
+
+		//distribute province population units to the settlement holdings in that province
+		for (const std::unique_ptr<PopulationUnit> &population_unit : province->GetPopulationUnits()) {
+			population_unit->DistributeToHoldings(province->GetHoldings());
+		}
+	}
+
 	std::vector<Region *> regions = Region::GetAll();
 
 	//sort regions so that ones with less provinces are applied first
@@ -51,60 +79,17 @@ void History::GeneratePopulationUnits()
 		return a->GetProvinces().size() < b->GetProvinces().size();
 	});
 
-	for (Province *province : Province::GetAll()) {
-		//use province population counts to set the population count for their settlement holdings
-		if (province->GetPopulation() != 0) {
-			History::SetPopulationForHoldings(province->GetPopulation(), province->GetHoldings());
-			province->SetPopulation(0);
-		}
-	}
-
 	//do regions after provinces, so that they have lower priority
 	for (Region *region : regions) {
-		if (region->GetPopulation() != 0) {
-			History::SetPopulationForHoldings(region->GetPopulation(), region->GetHoldings());
-			region->SetPopulation(0);
-		}
-	}
-
-	for (Province *province : Province::GetAll()) {
-		//generate population units for holdings
-		for (Holding *holding : province->GetHoldings()) {
-			holding->GeneratePopulationUnits();
-		}
-	}
-}
-
-/**
-**	@brief	Set a population number for a group of settlement holdings
-**
-**	@param	population	The population size
-**	@param	holdings	The group of settlement holdings
-*/
-void History::SetPopulationForHoldings(int population, const std::vector<Holding *> &holdings)
-{
-	//set population for settlement holdings without population data
-	int holding_count = 0; //count of settlement holdings for which the population will be applied
-
-	//first, remove the population count for settlement holdings which do have it set from the population count
-	for (const Holding *holding : holdings) {
-		if (holding->GetPopulation() == 0) {
-			holding_count++;
-			continue;
+		for (const std::unique_ptr<PopulationUnit> &population_unit : region->GetPopulationUnits()) {
+			if (population_unit->GetSubtractExisting()) {
+				population_unit->SubtractExistingSizes();
+			}
 		}
 
-		population -= holding->GetPopulation();
-	}
-
-	if (population <= 0 || holding_count == 0) {
-		return;
-	}
-
-	//now, apply the remaining population to all settlement holdings without population set for them, in equal proportions
-	population /= holding_count;
-	for (Holding *holding : holdings) {
-		if (holding->GetPopulation() == 0) {
-			holding->SetPopulation(population);
+		//distribute province population units to the settlement holdings in that province
+		for (const std::unique_ptr<PopulationUnit> &population_unit : region->GetPopulationUnits()) {
+			population_unit->DistributeToHoldings(region->GetHoldings());
 		}
 	}
 }

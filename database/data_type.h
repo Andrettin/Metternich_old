@@ -1,6 +1,7 @@
 #pragma once
 
 #include "database/database.h"
+#include "database/data_type_base.h"
 #include "database/gsml_data.h"
 
 #include <filesystem>
@@ -13,8 +14,11 @@
 
 namespace Metternich {
 
+/**
+**	@brief	The class for the data types, which use identifiers to be referred to
+*/
 template <typename T, typename KEY = std::string>
-class DataType
+class DataType : public DataTypeBase<T>
 {
 public:
 	static constexpr bool HistoryOnly = false; //whether the data type is defined in history only
@@ -287,7 +291,6 @@ private:
 	static inline std::map<KEY, std::unique_ptr<T>> InstancesByIdentifier;
 	static inline int LastNumericIdentifier = 1;
 	static inline std::vector<GSMLData> GSMLDataToProcess;
-	static inline std::vector<GSMLData> GSMLHistoryDataToProcess;
 #ifdef __GNUC__
 	//the "used" attribute is needed under GCC, or else this variable will be optimized away (even in debug builds)
 	static inline bool ClassInitialized [[gnu::used]] = DataType::InitializeClass();
