@@ -12,6 +12,7 @@
 namespace Metternich {
 
 class Building;
+class Commodity;
 class HoldingType;
 class LandedTitle;
 class PopulationUnit;
@@ -23,9 +24,10 @@ class Holding : public DataEntry
 
 	Q_PROPERTY(QString name READ GetNameQString NOTIFY NameChanged)
 	Q_PROPERTY(Metternich::HoldingType* type READ GetType NOTIFY TypeChanged)
-	Q_PROPERTY(Metternich::LandedTitle* barony READ GetBarony NOTIFY BaronyChanged)
+	Q_PROPERTY(Metternich::LandedTitle* barony READ GetBarony CONSTANT)
 	Q_PROPERTY(int population READ GetPopulation WRITE SetPopulation NOTIFY PopulationChanged)
 	Q_PROPERTY(QVariantList population_units READ GetPopulationUnitsQVariantList NOTIFY PopulationUnitsChanged)
+	Q_PROPERTY(Metternich::Commodity* commodity READ GetCommodity WRITE SetCommodity NOTIFY CommodityChanged)
 	Q_PROPERTY(bool selected READ IsSelected WRITE SetSelected NOTIFY SelectedChanged)
 
 public:
@@ -103,6 +105,21 @@ public:
 		return this->Buildings;
 	}
 
+	Metternich::Commodity *GetCommodity() const
+	{
+		return this->Commodity;
+	}
+
+	void SetCommodity(Commodity *commodity)
+	{
+		if (commodity == this->GetCommodity()) {
+			return;
+		}
+
+		this->Commodity = commodity;
+		emit CommodityChanged();
+	}
+
 	bool IsSelected() const
 	{
 		return this->Selected;
@@ -113,9 +130,9 @@ public:
 signals:
 	void NameChanged();
 	void TypeChanged();
-	void BaronyChanged();
 	void PopulationUnitsChanged();
 	void PopulationChanged();
+	void CommodityChanged();
 	void SelectedChanged();
 
 private:
@@ -125,6 +142,7 @@ private:
 	std::vector<std::unique_ptr<PopulationUnit>> PopulationUnits;
 	int Population = 0; //this holding's population size
 	std::set<Building *> Buildings;
+	Metternich::Commodity *Commodity = nullptr; //the commodity produced by the holding (if any)
 	bool Selected = false;
 };
 

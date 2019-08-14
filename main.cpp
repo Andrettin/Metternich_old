@@ -4,6 +4,7 @@
 #include "culture/culture_group.h"
 #include "database/database.h"
 #include "defines.h"
+#include "economy/commodity.h"
 #include "empty_image_provider.h"
 #include "engine_interface.h"
 #include "game/game.h"
@@ -61,6 +62,7 @@ int main(int argc, char *argv[])
 
 		qmlRegisterType<MaskedMouseArea>("MaskedMouseArea", 1, 0, "MaskedMouseArea");
 
+		qmlRegisterType<Commodity>();
 		qmlRegisterType<Culture>();
 		qmlRegisterType<Game>();
 		qmlRegisterType<HoldingType>();

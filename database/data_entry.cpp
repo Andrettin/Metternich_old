@@ -8,6 +8,7 @@
 #include "database/gsml_data.h"
 #include "database/gsml_operator.h"
 #include "database/gsml_property.h"
+#include "economy/commodity.h"
 #include "game/game.h"
 #include "history/history.h"
 #include "holding/holding.h"
@@ -95,6 +96,8 @@ void DataEntryBase::ProcessGSMLProperty(const GSMLProperty &property)
 				new_property_value = QVariant::fromValue(Dynasty::Get(property.GetValue()));
 			} else if (property.GetKey() == "character" || property.GetKey() == "holder" || property.GetKey() == "father" || property.GetKey() == "mother" || property.GetKey() == "spouse" || property.GetKey() == "liege" || property.GetKey() == "employer") {
 				new_property_value = QVariant::fromValue(Character::Get(std::stoi(property.GetValue())));
+			} else if (property.GetKey() == "commodity") {
+				new_property_value = QVariant::fromValue(Commodity::Get(property.GetValue()));
 			} else {
 				throw std::runtime_error("Unknown type for object reference property \"" + std::string(property_name) + "\".");
 			}
