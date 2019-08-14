@@ -23,6 +23,10 @@ void PopulationUnit::ProcessHistoryDatabase()
 			auto population_unit = std::make_unique<PopulationUnit>(type);
 			population_unit->LoadHistory(const_cast<GSMLData &>(data_entry));
 
+			if (population_unit->GetSize() <= 0) {
+				continue; //don't add empty population units
+			}
+
 			if (population_unit->GetHolding() != nullptr) {
 				population_unit->GetHolding()->AddPopulationUnit(std::move(population_unit));
 			} else if (population_unit->GetProvince() != nullptr) {
