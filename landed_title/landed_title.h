@@ -103,7 +103,7 @@ public:
 	bool IsTitular() const
 	{
 		//a title is not titular if it has de jure vassals, or if it is a county belonging to a province, or a barony belonging to a holding
-		return !this->DeJureVassalTitles.empty() || this->GetProvince() != nullptr || this->GetHolding() != nullptr;
+		return this->DeJureVassalTitles.empty() && this->GetProvince() == nullptr && this->GetHolding() == nullptr;
 	}
 
 	Metternich::Province *GetCapitalProvince() const
