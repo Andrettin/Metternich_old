@@ -17,3 +17,5 @@ Coding Guidelines for Metternich
 8. Class definitions should be ordered in the following fashion: first, any macros which define a portion of the class (e.g. the Q_OBJECT macro). Then, typedefs, followed by enumerations, constant expressions, static methods, static variables, instance methods and finally instance variables. Within each of these, public ones are to be followed by protected members, and finally private ones.
 
 9. The precompiled headers should include all library/third party headers used by the engine, but no headers belonging to Metternich itself. This way, compile times are reduced substantially, without 
+
+10. Using classes from the standard C++ library is to be preferred to Qt-specific ones.
