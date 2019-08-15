@@ -152,14 +152,7 @@ public:
 					instance = T::Add(identifier);
 				} else {
 					instance = T::Get(identifier);
-
-					for (const GSMLProperty &property : data_entry.GetProperties()) {
-						instance->ProcessGSMLProperty(property);
-					}
-
-					for (const GSMLData &child_data : data_entry.GetChildren()) {
-						instance->ProcessGSMLScope(child_data);
-					}
+					Database::ProcessGSMLData<T>(instance, data_entry);
 				}
 			}
 		}

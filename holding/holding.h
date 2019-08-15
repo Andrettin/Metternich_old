@@ -120,6 +120,8 @@ public:
 		emit CommodityChanged();
 	}
 
+	void GenerateCommodity();
+
 	bool IsSelected() const
 	{
 		return this->Selected;

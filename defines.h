@@ -15,7 +15,7 @@ class Defines
 {
 public:
 	static void Load();
-	static bool ProcessGSMLProperty(const GSMLProperty &property);
+	static void ProcessGSMLProperty(const GSMLProperty &property);
 
 	static const QDateTime &GetStartDate()
 	{

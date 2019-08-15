@@ -382,6 +382,12 @@ void Province::CreateHolding(LandedTitle *barony, HoldingType *type)
 	if (this->GetCapitalHolding() == nullptr) {
 		this->SetCapitalHolding(this->Holdings.front());
 	}
+
+	if (Game::GetInstance()->IsRunning()) {
+		if (new_holding->GetCommodity() == nullptr) {
+			new_holding->GenerateCommodity();
+		}
+	}
 }
 
 /**

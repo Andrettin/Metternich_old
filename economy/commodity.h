@@ -1,5 +1,6 @@
 #pragma once
 
+#include "chance_factor.h"
 #include "database/data_entry.h"
 #include "database/data_type.h"
 
@@ -8,6 +9,9 @@
 #include <string>
 
 namespace Metternich {
+
+class GSMLData;
+class Holding;
 
 class Commodity : public DataEntry, public DataType<Commodity>
 {
@@ -21,6 +25,8 @@ public:
 
 public:
 	Commodity(const std::string &identifier) : DataEntry(identifier) {}
+
+	virtual void ProcessGSMLScope(const GSMLData &scope) override;
 
 	const std::string &GetIconPath() const
 	{
@@ -47,11 +53,18 @@ public:
 		this->SetIconPath(icon_path.toStdString());
 	}
 
+	int CalculateChance(Holding *holding) const
+	{
+		//calculate the chance for the commodity to be generated as the produced one for a holding
+		return this->Chance.Calculate(holding);
+	}
+
 signals:
 	void IconPathChanged();
 
 private:
 	std::string IconPath;
+	ChanceFactor<Holding> Chance; //the chance of the commodity being picked as the one for a given settlement holding
 };
 
 }

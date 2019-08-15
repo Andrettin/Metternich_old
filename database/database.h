@@ -1,5 +1,7 @@
 #pragma once
 
+#include "database/gsml_data.h"
+
 #include <functional>
 #include <memory>
 #include <mutex>
@@ -20,6 +22,24 @@ public:
 		std::call_once(Database::OnceFlag, [](){ Database::Instance = std::make_unique<Database>(); });
 
 		return Database::Instance.get();
+	}
+
+	template <typename T>
+	static void ProcessGSMLData(T *instance, const GSMLData &gsml_data)
+	{
+		for (const GSMLProperty &property : gsml_data.GetProperties()) {
+			instance->ProcessGSMLProperty(property);
+		}
+
+		for (const GSMLData &child_data : gsml_data.GetChildren()) {
+			instance->ProcessGSMLScope(child_data);
+		}
+	}
+
+	template <typename T>
+	static void ProcessGSMLData(T &instance, const GSMLData &gsml_data)
+	{
+		Database::ProcessGSMLData(&instance, gsml_data);
 	}
 
 private:

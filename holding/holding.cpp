@@ -2,15 +2,19 @@
 
 #include "culture/culture.h"
 #include "culture/culture_group.h"
+#include "economy/commodity.h"
 #include "engine_interface.h"
 #include "game/game.h"
 #include "landed_title/landed_title.h"
 #include "map/province.h"
 #include "population/population_type.h"
 #include "population/population_unit.h"
+#include "random.h"
 #include "religion.h"
 #include "translator.h"
 #include "util.h"
+
+#include <utility>
 
 namespace Metternich {
 
@@ -39,6 +43,11 @@ Holding::~Holding()
 */
 void Holding::Initialize()
 {
+	if (this->GetCommodity() == nullptr) {
+		//generate a commodity for the holding if it produces none
+		this->GenerateCommodity();
+	}
+
 	for (const std::unique_ptr<PopulationUnit> &population_unit : this->GetPopulationUnits()) {
 		//set the culture and religion of population units without any set to those of the holding's province
 		if (population_unit->GetCulture() == nullptr) {
@@ -136,7 +145,40 @@ void Holding::CalculatePopulation()
 }
 
 /**
-**	@brief	Sets whether the holding is selected
+**	@brief	Generate a commodity for the holding to produce
+*/
+void Holding::GenerateCommodity()
+{
+	std::map<Metternich::Commodity *, std::pair<int, int>> commodity_chance_ranges;
+	int total_chance_factor = 0;
+	for (Metternich::Commodity *commodity : Commodity::GetAll()) {
+		const int commodity_chance = commodity->CalculateChance(this);
+		if (commodity_chance > 0) {
+			commodity_chance_ranges[commodity] = std::pair<int, int>(total_chance_factor, total_chance_factor + commodity_chance);
+			total_chance_factor += commodity_chance;
+		}
+	}
+
+	if (commodity_chance_ranges.empty()) {
+		return;
+	}
+
+	Metternich::Commodity *chosen_commodity = nullptr;
+
+	const int random_number = Random::Generate(total_chance_factor);
+	for (const auto &element : commodity_chance_ranges) {
+		Metternich::Commodity *commodity = element.first;
+		const std::pair<int, int> range = element.second;
+		if (random_number >= range.first && random_number < range.second) {
+			chosen_commodity = commodity;
+		}
+	}
+
+	this->SetCommodity(chosen_commodity);
+}
+
+/**
+**	@brief	Set whether the holding is selected
 **
 **	@param	selected	Whether the holding is being selected
 **

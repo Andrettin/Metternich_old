@@ -8,6 +8,32 @@
 
 namespace Metternich {
 
+/**
+**	@brief	Convert a centesimal number string (i.e. a number with up to two decimal places) to an integer, multiplying it by 100
+**
+**	@param	str	The string
+*/
+inline int CentesimalNumberStringToInt(const std::string &str)
+{
+	size_t decimal_point_pos = str.find('.');
+	int integer = 0;
+	if (decimal_point_pos != std::string::npos) {
+		integer += std::stoi(str.substr(0, decimal_point_pos)) * 100;
+		const size_t decimal_pos = decimal_point_pos + 1;
+		const size_t decimal_places = str.length() - decimal_pos;
+		const int fraction = std::stoi(str.substr(decimal_pos, decimal_places));
+		if (decimal_places == 1) {
+			integer += fraction * 10;
+		} else {
+			integer += fraction;
+		}
+	} else {
+		integer += std::stoi(str) * 100;
+	}
+
+	return integer;
+}
+
 inline bool StringToBool(const std::string &str)
 {
 	if (str == "true" || str == "yes" || str == "1") {

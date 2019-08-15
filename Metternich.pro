@@ -13,6 +13,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+        chance_factor.cpp \
         character/character.cpp \
         character/dynasty.cpp \
         culture/culture.cpp \
@@ -21,7 +22,9 @@ SOURCES += \
         database/data_entry.cpp \
         database/gsml_data.cpp \
         defines.cpp \
+        economy/commodity.cpp \
         engine_interface.cpp \
+        factor_modifier.cpp \
         game/game.cpp \
         history/history.cpp \
         holding/holding.cpp \
@@ -54,6 +57,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
+    chance_factor.h \
     character/character.h \
     character/dynasty.h \
     character/trait.h \
@@ -73,6 +77,7 @@ HEADERS += \
     economy/commodity.h \
     empty_image_provider.h \
     engine_interface.h \
+    factor_modifier.h \
     game/game.h \
     game/game_speed.h \
     history/history.h \
