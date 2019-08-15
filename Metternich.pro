@@ -34,6 +34,7 @@ SOURCES += \
         map/province.cpp \
         map/province_image_provider.cpp \
         map/region.cpp \
+        map/terrain.cpp \
         population/population_type.cpp \
         population/population_unit.cpp \
         third_party/maskedmousearea/maskedmousearea.cpp \
@@ -90,6 +91,7 @@ HEADERS += \
     map/province.h \
     map/province_image_provider.h \
     map/region.h \
+    map/terrain.h \
     pch.h \
     population/population_type.h \
     population/population_unit.h \

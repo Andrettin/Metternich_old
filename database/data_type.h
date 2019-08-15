@@ -25,11 +25,8 @@ public:
 
 	/**
 	**	@brief	Get an instance of the class by its identifier
-	**
 	**	@param	identifier	The instance's identifier
-	**
 	**	@param	should_find	Whether it is expected that an instance should be found (i.e. if none is, then it is an error).
-	**
 	**	@return	The instance if found, or null otherwise
 	*/
 	static T *Get(const KEY &identifier, const bool should_find = true)

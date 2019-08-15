@@ -11,7 +11,6 @@
 
 #include <map>
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
@@ -25,6 +24,7 @@ class LandedTitle;
 class PopulationUnit;
 class Region;
 class Religion;
+class Terrain;
 
 class Province : public DataEntry, public DataType<Province>
 {
@@ -34,6 +34,7 @@ class Province : public DataEntry, public DataType<Province>
 	Q_PROPERTY(QColor color READ GetColor CONSTANT)
 	Q_PROPERTY(QRect rect READ GetRect CONSTANT)
 	Q_PROPERTY(QImage image READ GetImage NOTIFY ImageChanged)
+	Q_PROPERTY(Metternich::Terrain* terrain READ GetTerrain WRITE SetTerrain NOTIFY TerrainChanged)
 	Q_PROPERTY(Metternich::Culture* culture MEMBER Culture READ GetCulture NOTIFY CultureChanged)
 	Q_PROPERTY(Metternich::Religion* religion MEMBER Religion READ GetReligion NOTIFY ReligionChanged)
 	Q_PROPERTY(int population READ GetPopulation WRITE SetPopulation NOTIFY PopulationChanged)
@@ -47,7 +48,7 @@ public:
 	static constexpr const char *Prefix = "p_";
 
 	static Province *Add(const std::string &identifier);
-	static Province *GetByRGB(const QRgb &rgb);
+	static Province *GetByRGB(const QRgb &rgb, const bool should_find = true);
 
 	static Province *GetSelectedProvince()
 	{
@@ -87,12 +88,27 @@ public:
 		return this->Rect;
 	}
 
-	void CreateImage(const std::set<int> &pixel_indexes);
+	void CreateImage(const std::vector<int> &pixel_indexes);
 	void UpdateImage();
 
 	const QImage &GetImage() const
 	{
 		return this->Image;
+	}
+
+	Metternich::Terrain *GetTerrain() const
+	{
+		return this->Terrain;
+	}
+
+	void SetTerrain(Terrain *terrain)
+	{
+		if (terrain == this->GetTerrain()) {
+			return;
+		}
+
+		this->Terrain = terrain;
+		emit TerrainChanged();
 	}
 
 	Metternich::Culture *GetCulture() const
@@ -181,6 +197,7 @@ public:
 signals:
 	void CountyChanged();
 	void ImageChanged();
+	void TerrainChanged();
 	void CultureChanged();
 	void ReligionChanged();
 	void PopulationChanged();
@@ -190,9 +207,10 @@ signals:
 
 private:
 	LandedTitle *County = nullptr;
-	QColor Color; //color used to identify the province in the province map
+	QColor Color; //the color used to identify the province in the province map
 	QRect Rect; //the rectangle that the province occupies
 	QImage Image; //the province's image to be drawn on-screen
+	Metternich::Terrain *Terrain = nullptr;
 	Metternich::Culture *Culture = nullptr;
 	Metternich::Religion *Religion = nullptr;
 	int Population = 0; //the sum of the population of all of the province's settlement holdings

@@ -22,17 +22,20 @@ namespace Metternich {
 
 /**
 **	@brief	Get an instance of the class by the RGB value associated with it
-**
 **	@param	rgb	The instance's RGB
-**
+**	@param	should_find	Whether it is expected that an instance should be found (i.e. if none is, then it is an error).
 **	@return	The instance if found, or null otherwise
 */
-Province *Province::GetByRGB(const QRgb &rgb)
+Province *Province::GetByRGB(const QRgb &rgb, const bool should_find)
 {
 	typename std::map<QRgb, Province *>::const_iterator find_iterator = Province::InstancesByRGB.find(rgb);
 
 	if (find_iterator != Province::InstancesByRGB.end()) {
 		return find_iterator->second;
+	}
+
+	if (should_find) {
+		throw std::runtime_error("No province found for RGB value: " + std::to_string(rgb) + ".");
 	}
 
 	return nullptr;
@@ -209,7 +212,7 @@ void Province::SetCounty(LandedTitle *county)
 **
 **	@param	pixel_indexes	The indexes of the province's pixels
 */
-void Province::CreateImage(const std::set<int> &pixel_indexes)
+void Province::CreateImage(const std::vector<int> &pixel_indexes)
 {
 	QPoint start_pos(-1, -1);
 	QPoint end_pos(-1, -1);

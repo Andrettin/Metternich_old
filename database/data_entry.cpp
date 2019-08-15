@@ -16,6 +16,7 @@
 #include "landed_title/landed_title.h"
 #include "map/province.h"
 #include "map/region.h"
+#include "map/terrain.h"
 #include "population/population_type.h"
 #include "religion.h"
 #include "translator.h"
@@ -86,6 +87,8 @@ void DataEntryBase::ProcessGSMLProperty(const GSMLProperty &property)
 				new_property_value = QVariant::fromValue(holding);
 			} else if (property.GetKey() == "region") {
 				new_property_value = QVariant::fromValue(Region::Get(property.GetValue()));
+			} else if (property.GetKey() == "terrain") {
+				new_property_value = QVariant::fromValue(Terrain::Get(property.GetValue()));
 			} else if (property.GetKey() == "culture") {
 				new_property_value = QVariant::fromValue(Culture::Get(property.GetValue()));
 			} else if (property.GetKey() == "culture_group") {
