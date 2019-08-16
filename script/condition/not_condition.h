@@ -13,6 +13,13 @@ namespace Metternich {
 class NotCondition : public Condition
 {
 public:
+	NotCondition() {}
+
+	NotCondition(std::unique_ptr<Condition> &&condition)
+	{
+		this->Conditions.push_back(std::move(condition));
+	}
+
 	virtual void ProcessGSMLProperty(const GSMLProperty &property) override
 	{
 		std::unique_ptr<Condition> condition = Condition::FromGSMLProperty(property);

@@ -44,8 +44,13 @@ std::unique_ptr<Condition> Condition::FromGSMLScope(const GSMLData &scope)
 		condition = std::make_unique<AndCondition>();
 	} else if (condition_identifier == "or") {
 		condition = std::make_unique<OrCondition>();
-	} else if (condition_identifier == "not") {
+	} else if (condition_identifier == "not" || condition_identifier == "nor") {
 		condition = std::make_unique<NotCondition>();
+	} else if (condition_identifier == "nand") {
+		auto and_condition = std::make_unique<AndCondition>();
+		Database::ProcessGSMLData(and_condition.get(), scope);
+		condition = std::make_unique<NotCondition>(std::move(and_condition));
+		return condition;
 	} else {
 		throw std::runtime_error("Invalid scope condition: \"" + condition_identifier + "\".");
 	}
