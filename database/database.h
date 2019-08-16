@@ -1,6 +1,7 @@
 #pragma once
 
 #include "database/gsml_data.h"
+#include "type_traits.h"
 
 #include <functional>
 #include <memory>
@@ -39,7 +40,11 @@ public:
 	template <typename T>
 	static void ProcessGSMLData(T &instance, const GSMLData &gsml_data)
 	{
-		Database::ProcessGSMLData(&instance, gsml_data);
+		if constexpr (is_specialization_of_v<T, std::unique_ptr>) {
+			Database::ProcessGSMLData(instance.get(), gsml_data);
+		} else {
+			Database::ProcessGSMLData(&instance, gsml_data);
+		}
 	}
 
 private:
