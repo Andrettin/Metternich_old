@@ -4,6 +4,7 @@
 #include <QSize>
 #include <QVariant>
 
+#include <algorithm>
 #include <string>
 
 namespace Metternich {
@@ -61,6 +62,17 @@ inline std::vector<std::string> SplitString(const std::string &str, const char d
 	string_list.push_back(string_element);
 
 	return string_list;
+}
+
+inline std::string ToLower(const std::string &str)
+{
+	std::string result(str);
+
+	std::transform(result.begin(), result.end(), result.begin(), [](const char c) {
+		return std::tolower(c);
+	});
+
+	return result;
 }
 
 inline std::string PascalCaseToSnakeCase(const std::string &str)
