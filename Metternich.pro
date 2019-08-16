@@ -37,6 +37,8 @@ SOURCES += \
         map/terrain.cpp \
         population/population_type.cpp \
         population/population_unit.cpp \
+        script/condition/condition.cpp \
+        script/condition/terrain_condition.cpp \
         third_party/maskedmousearea/maskedmousearea.cpp \
         translator.cpp
 
@@ -97,6 +99,12 @@ HEADERS += \
     population/population_unit.h \
     random.h \
     religion.h \
+    script/condition/and_condition.h \
+    script/condition/condition.h \
+    script/condition/not_condition.h \
+    script/condition/or_condition.h \
+    script/condition/terrain_condition.h \
     third_party/maskedmousearea/maskedmousearea.h \
     translator.h \
+    type_traits.h \
     util.h

@@ -76,7 +76,7 @@ void LandedTitle::ProcessGSMLDatedProperty(const GSMLProperty &property, const Q
 }
 
 /**
-**	@brief	Process GSML data scope
+**	@brief	Process a GSML scope
 **
 **	@param	scope	The scope
 */

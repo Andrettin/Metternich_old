@@ -26,7 +26,7 @@ Terrain *Terrain::GetByRGB(const QRgb &rgb, const bool should_find)
 }
 
 /**
-**	@brief	Process GSML data scope
+**	@brief	Process a GSML scope
 **
 **	@param	scope	The scope
 */

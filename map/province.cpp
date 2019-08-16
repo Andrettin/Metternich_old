@@ -101,7 +101,7 @@ void Province::ProcessGSMLProperty(const GSMLProperty &property)
 }
 
 /**
-**	@brief	Process GSML data scope
+**	@brief	Process a GSML scope
 **
 **	@param	scope	The scope
 */
