@@ -12,6 +12,8 @@ class Terrain : public DataEntry, public DataType<Terrain>
 	Q_OBJECT
 
 	Q_PROPERTY(QColor color READ GetColor CONSTANT)
+	Q_PROPERTY(bool water MEMBER Water)
+	Q_PROPERTY(bool navigable MEMBER Navigable)
 
 public:
 	static constexpr const char *ClassIdentifier = "terrain";
@@ -32,8 +34,20 @@ public:
 		return this->Color;
 	}
 
+	bool IsWater() const
+	{
+		return this->Water;
+	}
+
+	bool IsNavigable() const
+	{
+		return this->Navigable;
+	}
+
 private:
 	QColor Color; //the color used to identify the terrain in the terrain map
+	bool Water = false; //whether the terrain is a water terrain
+	bool Navigable = false; //whether this water terrain is navigable
 };
 
 }

@@ -49,11 +49,6 @@ void Map::LoadProvinces()
 		}
 	}
 
-	for (const auto &kv_pair : province_pixel_indexes) {
-		Province *province = kv_pair.first;
-		province->CreateImage(kv_pair.second);
-	}
-
 	for (const auto &province_terrain_count : province_terrain_counts) {
 		Province *province = province_terrain_count.first;
 		Terrain *best_terrain = nullptr;
@@ -67,6 +62,11 @@ void Map::LoadProvinces()
 			}
 		}
 		province->SetTerrain(best_terrain);
+	}
+
+	for (const auto &kv_pair : province_pixel_indexes) {
+		Province *province = kv_pair.first;
+		province->CreateImage(kv_pair.second);
 	}
 }
 

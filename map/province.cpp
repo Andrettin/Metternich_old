@@ -11,6 +11,7 @@
 #include "landed_title/landed_title.h"
 #include "map/map.h"
 #include "map/region.h"
+#include "map/terrain.h"
 #include "population/population_unit.h"
 #include "religion.h"
 #include "translator.h"
@@ -175,13 +176,15 @@ void Province::Check() const
 		throw std::runtime_error("Province \"" + this->GetIdentifier() + "\" has no valid color.");
 	}
 
-	if (Game::GetInstance()->IsStarting()) {
-		if (this->GetCulture() == nullptr) {
-			throw std::runtime_error("Province \"" + this->GetIdentifier() + "\" has no culture.");
-		}
+	if (this->GetCounty() != nullptr) {
+		if (Game::GetInstance()->IsStarting()) {
+			if (this->GetCulture() == nullptr) {
+				throw std::runtime_error("Province \"" + this->GetIdentifier() + "\" has no culture.");
+			}
 
-		if (this->GetReligion() == nullptr) {
-			throw std::runtime_error("Province \"" + this->GetIdentifier() + "\" has no religion.");
+			if (this->GetReligion() == nullptr) {
+				throw std::runtime_error("Province \"" + this->GetIdentifier() + "\" has no religion.");
+			}
 		}
 	}
 }
@@ -193,7 +196,11 @@ void Province::Check() const
 */
 std::string Province::GetName() const
 {
-	return Translator::GetInstance()->Translate(this->GetCounty()->GetIdentifier(), {this->GetCulture()->GetIdentifier(), this->GetCulture()->GetCultureGroup()->GetIdentifier(), this->GetReligion()->GetIdentifier()});
+	if (this->GetCounty() != nullptr) {
+		return Translator::GetInstance()->Translate(this->GetCounty()->GetIdentifier(), {this->GetCulture()->GetIdentifier(), this->GetCulture()->GetCultureGroup()->GetIdentifier(), this->GetReligion()->GetIdentifier()});
+	}
+
+	return Translator::GetInstance()->Translate(this->GetIdentifier()); //province without a county; sea zone, river, lake or wasteland
 }
 
 /**
@@ -251,10 +258,18 @@ void Province::CreateImage(const std::vector<int> &pixel_indexes)
 */
 void Province::UpdateImage()
 {
-	QColor province_color = this->GetCounty()->GetColor();
-	const LandedTitle *realm = this->GetCounty()->GetRealm();
-	if (realm != nullptr) {
-		province_color = realm->GetColor();
+	QColor province_color;
+	if (this->GetCounty() != nullptr) {
+		const LandedTitle *realm = this->GetCounty()->GetRealm();
+		if (realm != nullptr) {
+			province_color = realm->GetColor();
+		} else {
+			province_color = this->GetCounty()->GetColor();
+		}
+	} else if (this->GetTerrain()->IsWater()) {
+		province_color = QColor(Qt::darkCyan);
+	} else {
+		province_color = QColor(Qt::darkGray); //wasteland
 	}
 
 	QColor border_color = QColor(province_color.red() / 2, province_color.green() / 2, province_color.blue() / 2);
@@ -415,7 +430,7 @@ void Province::DestroyHolding(LandedTitle *barony)
 }
 
 /**
-**	@brief	Sets whether the province is selected
+**	@brief	Set whether the province is selected
 **
 **	@param	selected	Whether the province is being selected
 **
@@ -444,6 +459,16 @@ void Province::SetSelected(const bool selected, const bool notify)
 		emit SelectedChanged();
 		EngineInterface::GetInstance()->emit SelectedProvinceChanged();
 	}
+}
+
+/**
+**	@brief	Get whether the province is selectable
+**
+**	@return	True if the province is selectable, or false otherwise
+*/
+bool Province::IsSelectable() const
+{
+	return this->GetCounty() != nullptr;
 }
 
 /**

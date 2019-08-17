@@ -41,6 +41,7 @@ class Province : public DataEntry, public DataType<Province>
 	Q_PROPERTY(QVariantList holdings READ GetHoldingsQVariantList NOTIFY HoldingsChanged)
 	Q_PROPERTY(Metternich::Holding* capital_holding READ GetCapitalHolding WRITE SetCapitalHolding NOTIFY CapitalHoldingChanged)
 	Q_PROPERTY(bool selected READ IsSelected WRITE SetSelected NOTIFY SelectedChanged)
+	Q_PROPERTY(bool selectable READ IsSelectable CONSTANT)
 
 public:
 	static constexpr const char *ClassIdentifier = "province";
@@ -186,6 +187,7 @@ public:
 	}
 
 	void SetSelected(const bool selected, const bool notify = true);
+	bool IsSelectable() const;
 
 	const std::vector<std::unique_ptr<PopulationUnit>> &GetPopulationUnits() const
 	{
