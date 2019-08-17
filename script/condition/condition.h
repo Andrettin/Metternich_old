@@ -5,6 +5,7 @@ namespace Metternich {
 class GSMLData;
 class GSMLProperty;
 class Holding;
+class Province;
 
 /**
 **	@brief	A scripted condition
@@ -21,6 +22,12 @@ public:
 	virtual void ProcessGSMLScope(const GSMLData &scope);
 
 	virtual const std::string &GetIdentifier() const = 0;
+
+	virtual bool Check(const Province *province) const
+	{
+		Q_UNUSED(province);
+		throw std::runtime_error("Invalid condition for province: \"" + this->GetIdentifier() + "\".");
+	}
 
 	virtual bool Check(const Holding *holding) const
 	{

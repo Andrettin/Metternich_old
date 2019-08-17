@@ -203,6 +203,8 @@ public:
 		this->BorderProvinces.insert(province);
 	}
 
+	bool BordersWater() const;
+
 signals:
 	void CountyChanged();
 	void ImageChanged();

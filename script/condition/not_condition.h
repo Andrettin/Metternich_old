@@ -32,16 +32,29 @@ public:
 		return identifier;
 	}
 
+	virtual bool Check(const Province *province) const override
+	{
+		return this->CheckInternal(province);
+	}
+
 	virtual bool Check(const Holding *holding) const override
 	{
+		return this->CheckInternal(holding);
+	}
+
+private:
+	template <typename T>
+	bool CheckInternal(const T *scope) const
+	{
 		for (const std::unique_ptr<Condition> &condition : this->Conditions) {
-			if (condition->Check(holding)) {
+			if (condition->Check(scope)) {
 				return false;
 			}
 		}
 
 		return true;
 	}
+
 
 private:
 	std::vector<std::unique_ptr<Condition>> Conditions;

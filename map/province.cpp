@@ -444,4 +444,20 @@ void Province::AddPopulationUnit(std::unique_ptr<PopulationUnit> &&population_un
 	this->PopulationUnits.push_back(std::move(population_unit));
 }
 
+/**
+**	@brief	Get whether this province borders a water province
+**
+**	@return	True if the province borders a water province, or false otherwise
+*/
+bool Province::BordersWater() const
+{
+	for (const Province *border_province : this->BorderProvinces) {
+		if (border_province->GetTerrain()->IsWater()) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 }

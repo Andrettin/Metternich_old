@@ -4,19 +4,17 @@
 
 namespace Metternich {
 
-class Terrain;
-
 /**
-**	@brief	A scripted terrain condition
+**	@brief	A scripted "borders water" condition
 */
-class TerrainCondition : public Condition
+class BordersWaterCondition : public Condition
 {
 public:
-	TerrainCondition(const std::string &terrain_identifier);
+	BordersWaterCondition(const bool borders_water) : BordersWater(borders_water) {}
 
 	virtual const std::string &GetIdentifier() const override
 	{
-		static std::string identifier = "terrain";
+		static std::string identifier = "borders_water";
 		return identifier;
 	}
 
@@ -24,7 +22,7 @@ public:
 	virtual bool Check(const Holding *holding) const override;
 
 private:
-	Metternich::Terrain *Terrain = nullptr;
+	bool BordersWater = false;
 };
 
 }

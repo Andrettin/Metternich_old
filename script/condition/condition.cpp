@@ -4,6 +4,7 @@
 #include "database/gsml_data.h"
 #include "database/gsml_property.h"
 #include "script/condition/and_condition.h"
+#include "script/condition/borders_water_condition.h"
 #include "script/condition/not_condition.h"
 #include "script/condition/or_condition.h"
 #include "script/condition/terrain_condition.h"
@@ -23,6 +24,8 @@ std::unique_ptr<Condition> Condition::FromGSMLProperty(const GSMLProperty &prope
 
 	if (condition_identifier == "terrain") {
 		condition = std::make_unique<TerrainCondition>(property.GetValue());
+	} else if (condition_identifier == "borders_water") {
+		condition = std::make_unique<BordersWaterCondition>(StringToBool(property.GetValue()));
 	} else {
 		throw std::runtime_error("Invalid property condition: \"" + condition_identifier + "\".");
 	}
