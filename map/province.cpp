@@ -267,7 +267,7 @@ void Province::UpdateImage()
 			province_color = this->GetCounty()->GetColor();
 		}
 	} else if (this->GetTerrain()->IsWater()) {
-		province_color = QColor(Qt::darkCyan);
+		province_color = QColor("#0080ff");
 	} else {
 		province_color = QColor(Qt::darkGray); //wasteland
 	}
