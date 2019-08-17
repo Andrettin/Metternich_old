@@ -177,14 +177,18 @@ void Province::Check() const
 		throw std::runtime_error("Province \"" + this->GetIdentifier() + "\" has no valid color.");
 	}
 
-	if (this->GetCounty() != nullptr) {
-		if (Game::GetInstance()->IsStarting()) {
+	if (Game::GetInstance()->IsStarting()) {
+		if (this->GetCounty() != nullptr) {
 			if (this->GetCulture() == nullptr) {
 				throw std::runtime_error("Province \"" + this->GetIdentifier() + "\" has no culture.");
 			}
 
 			if (this->GetReligion() == nullptr) {
 				throw std::runtime_error("Province \"" + this->GetIdentifier() + "\" has no religion.");
+			}
+
+			if (this->GetCapitalHolding() != nullptr && this->GetCapitalHolding()->GetProvince() != this) {
+				throw std::runtime_error("Province \"" + this->GetIdentifier() + "\"'s capital holding (\"" + this->GetCapitalHolding()->GetBarony()->GetIdentifier() + "\") belongs to another province (\"" + this->GetCapitalHolding()->GetProvince()->GetIdentifier() + "\").");
 			}
 		}
 	}
