@@ -11,6 +11,7 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -90,6 +91,7 @@ public:
 	}
 
 	void CreateImage(const std::vector<int> &pixel_indexes);
+	void SetBorderPixels(const std::vector<int> &pixel_indexes);
 	void UpdateImage();
 
 	const QImage &GetImage() const
@@ -186,7 +188,7 @@ public:
 		return this->Selected;
 	}
 
-	void SetSelected(const bool selected, const bool notify = true);
+	void SetSelected(const bool selected, const bool notify_engine_interface = true);
 	bool IsSelectable() const;
 
 	const std::vector<std::unique_ptr<PopulationUnit>> &GetPopulationUnits() const
@@ -195,6 +197,11 @@ public:
 	}
 
 	void AddPopulationUnit(std::unique_ptr<PopulationUnit> &&population_unit);
+
+	void AddBorderProvince(Province *province)
+	{
+		this->BorderProvinces.insert(province);
+	}
 
 signals:
 	void CountyChanged();
@@ -223,6 +230,7 @@ private:
 	std::vector<Region *> Regions; //the regions to which this province belongs
 	bool Selected = false;
 	std::vector<std::unique_ptr<PopulationUnit>> PopulationUnits; //population units set for this province in history, used during initialization to generate population units in the province's settlements
+	std::set<Province *> BorderProvinces; //provinces bordering this one
 };
 
 }

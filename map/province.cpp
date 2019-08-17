@@ -66,6 +66,7 @@ Province::Province(const std::string &identifier) : DataEntry(identifier)
 	connect(this, &Province::CultureChanged, this, &IdentifiableDataEntryBase::NameChanged);
 	connect(this, &Province::ReligionChanged, this, &IdentifiableDataEntryBase::NameChanged);
 	connect(Game::GetInstance(), &Game::RunningChanged, this, &Province::UpdateImage);
+	connect(this, &Province::SelectedChanged, this, &Province::UpdateImage);
 }
 
 /**
@@ -242,15 +243,29 @@ void Province::CreateImage(const std::vector<int> &pixel_indexes)
 
 	this->Rect = QRect(start_pos, end_pos);
 
-	this->Image = QImage(this->Rect.size(), QImage::Format_ARGB32);
-	this->Image.fill(qRgba(0, 0, 0, 0));
+	this->Image = QImage(this->Rect.size(), QImage::Format_Indexed8);
+
+	//index 0 = transparency, index 1 = the main color for the province, index 2 = province border
+	this->Image.setColorTable({qRgba(0, 0, 0, 0), this->GetColor().rgb(), QColor(Qt::darkGray).rgb()});
+	this->Image.fill(0);
 
 	for (const int index : pixel_indexes) {
 		QPoint pixel_pos = Map::GetPixelPosition(index) - this->Rect.topLeft();
-		this->Image.setPixelColor(pixel_pos, this->GetColor());
+		this->Image.setPixel(pixel_pos, 1);
 	}
+}
 
-	this->UpdateImage();
+/**
+**	@brief	Set the border pixels for the province's image
+**
+**	@param	pixel_indexes	The indexes of the province's border pixels
+*/
+void Province::SetBorderPixels(const std::vector<int> &pixel_indexes)
+{
+	for (const int index : pixel_indexes) {
+		QPoint pixel_pos = Map::GetPixelPosition(index) - this->Rect.topLeft();
+		this->Image.setPixel(pixel_pos, 2);
+	}
 }
 
 /**
@@ -272,64 +287,16 @@ void Province::UpdateImage()
 		province_color = QColor(Qt::darkGray); //wasteland
 	}
 
-	QColor border_color = QColor(province_color.red() / 2, province_color.green() / 2, province_color.blue() / 2);
-
-	const int pixel_count = this->Image.width() * this->Image.height();
-
-	QRgb *rgb_data = reinterpret_cast<QRgb *>(this->Image.bits());
-	for (int i = 0; i < pixel_count; ++i) {
-		QRgb &pixel_rgb = rgb_data[i];
-
-		const int pixel_alpha = qAlpha(pixel_rgb);
-		if (pixel_alpha == 0) {
-			continue; //only modify non-alpha pixels of the image, i.e. the pixels of the province itself
-		}
-
-		QPoint pixel_pos = IndexToPoint(i, this->Image.size());
-
-		//check if the pixel is adjacent to one not belonging to this province
-		bool border_pixel = false;
-
-		if (pixel_pos.x() == 0 || pixel_pos.y() == 0 || pixel_pos.x() == (this->Image.width() - 1) || pixel_pos.y() == (this->Image.height() - 1)) {
-			border_pixel = true;
-		} else {
-			for (int x_offset = -1; x_offset <= 1; ++x_offset) {
-				for (int y_offset = -1; y_offset <= 1; ++y_offset) {
-					if (x_offset == 0 && y_offset == 0) {
-						continue;
-					}
-
-					if (x_offset != 0 && y_offset != 0) {
-						continue; //don't color pixels that are only diagonally adjacent to those of other provinces
-					}
-
-					QPoint adjacent_pos = pixel_pos + QPoint(x_offset, y_offset);
-
-					const int adjacent_alpha = qAlpha(rgb_data[PointToIndex(adjacent_pos, this->Image.size())]);
-
-					if (adjacent_alpha == 0) {
-						border_pixel = true;
-						break;
-					}
-				}
-				if (border_pixel) {
-					break;
-				}
-			}
-		}
-
-		if (border_pixel) {
-			if (this->IsSelected()) {
-				//if the province is selected, and this pixel is adjacent to a pixel not belonging to this province, then highlight it
-				pixel_rgb = QColor(Qt::yellow).rgba(); //set border pixels to yellow if the province is selected
-			} else {
-				pixel_rgb = border_color.rgba();
-			}
-			continue;
-		}
-
-		pixel_rgb = province_color.rgba();
+	QColor border_color;
+	if (this->IsSelected()) {
+		//if the province is selected, highlight its border pixels
+		border_color = QColor(Qt::yellow);
+	} else {
+		border_color = QColor(province_color.red() / 2, province_color.green() / 2, province_color.blue() / 2);
 	}
+
+	this->Image.setColor(1, province_color.rgb());
+	this->Image.setColor(2, border_color.rgb());
 
 	emit ImageChanged();
 }
@@ -432,11 +399,11 @@ void Province::DestroyHolding(LandedTitle *barony)
 /**
 **	@brief	Set whether the province is selected
 **
-**	@param	selected	Whether the province is being selected
+**	@param	selected				Whether the province is being selected
 **
-**	@param	notify		Whether to emit signals indicating the change
+**	@param	notify_engine_interface	Whether to emit a signal notifying the engine interface of the change
 */
-void Province::SetSelected(const bool selected, const bool notify)
+void Province::SetSelected(const bool selected, const bool notify_engine_interface)
 {
 	if (selected == this->IsSelected()) {
 		return;
@@ -452,11 +419,9 @@ void Province::SetSelected(const bool selected, const bool notify)
 	}
 
 	this->Selected = selected;
+	emit SelectedChanged();
 
-	this->UpdateImage();
-
-	if (notify) {
-		emit SelectedChanged();
+	if (notify_engine_interface) {
 		EngineInterface::GetInstance()->emit SelectedProvinceChanged();
 	}
 }
