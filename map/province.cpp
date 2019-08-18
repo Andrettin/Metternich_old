@@ -195,6 +195,16 @@ void Province::Check() const
 }
 
 /**
+**	@brief	Do the province's monthly actions
+*/
+void Province::DoMonth()
+{
+	for (Holding *holding : this->GetHoldings()) {
+		holding->DoMonth();
+	}
+}
+
+/**
 **	@brief	Get the province's name
 **
 **	@return	The province's name

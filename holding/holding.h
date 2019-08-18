@@ -36,7 +36,7 @@ class Holding : public DataEntry
 
 public:
 	static constexpr int PopulationCapacityPerLifeRating = 10000;
-	static constexpr int BasePopulationGrowthMultiplier = 10;
+	static constexpr int BasePopulationGrowthPercentMultiplier = 100;
 
 	static Holding *GetSelectedHolding()
 	{
@@ -51,6 +51,8 @@ public:
 	virtual ~Holding() override;
 
 	virtual void InitializeHistory() override;
+
+	void DoMonth();
 
 	LandedTitle *GetBarony() const
 	{
@@ -92,6 +94,7 @@ public:
 	void AddPopulationUnit(std::unique_ptr<PopulationUnit> &&population_unit);
 	QVariantList GetPopulationUnitsQVariantList() const;
 	void SortPopulationUnits();
+	void RemoveEmptyPopulationUnits();
 
 	int GetPopulation() const
 	{
@@ -168,9 +171,12 @@ public:
 			population_growth /= this->GetPopulation();
 			population_growth -= 100;
 		}
-		population_growth *= Holding::BasePopulationGrowthMultiplier; // constant multiplier for population growth
+		population_growth *= Holding::BasePopulationGrowthPercentMultiplier; // constant multiplier for population growth
+		population_growth /= 100;
 		this->SetPopulationGrowth(population_growth);
 	}
+
+	void DoPopulationGrowth();
 
 	const std::set<Building *> &GetBuildings() const
 	{

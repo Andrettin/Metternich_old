@@ -103,6 +103,9 @@ void Game::Run()
 	}
 }
 
+/**
+**	@brief	Do the game's per tick actions
+*/
 void Game::DoTick()
 {
 	QDateTime old_date = CurrentDate;
@@ -122,17 +125,34 @@ void Game::DoTick()
 	}
 }
 
+/**
+**	@brief	Do the game's daily actions
+*/
 void Game::DoDay()
 {
 }
 
+/**
+**	@brief	Do the game's monthly actions
+*/
 void Game::DoMonth()
 {
+	for (Province *province : Province::GetAll()) {
+		if (province->GetCounty() == nullptr) {
+			continue;
+		}
+
+		province->DoMonth();
+	}
+
 	for (Character *character : Character::GetAllLiving()) {
 		character->DoMonth();
 	}
 }
 
+/**
+**	@brief	Do the game's yearly actions
+*/
 void Game::DoYear()
 {
 }

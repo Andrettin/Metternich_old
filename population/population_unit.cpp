@@ -178,6 +178,7 @@ void PopulationUnit::DistributeToHoldings(const std::vector<Metternich::Holding 
 		}
 
 		auto population_unit = std::make_unique<PopulationUnit>(this->GetType());
+		population_unit->SetHolding(holding);
 		population_unit->SetSize(size_per_holding);
 		if (this->GetCulture() != nullptr) {
 			population_unit->SetCulture(this->GetCulture());

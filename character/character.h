@@ -120,6 +120,10 @@ public:
 		}
 	}
 
+	void DoMonth()
+	{
+	}
+
 	virtual std::string GetName() const override
 	{
 		return this->Name;
@@ -350,10 +354,6 @@ public:
 	void ChangeWealth(const int change)
 	{
 		this->SetWealth(this->GetWealth() + change);
-	}
-
-	void DoMonth()
-	{
 	}
 
 signals:

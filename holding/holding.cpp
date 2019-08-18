@@ -63,19 +63,19 @@ void Holding::InitializeHistory()
 		}
 	}
 
-	//remove population units with 0 size
-	for (size_t i = 0; i < this->PopulationUnits.size();) {
-		const std::unique_ptr<PopulationUnit> &population_unit = this->PopulationUnits[i];
-		if (population_unit->GetSize() == 0) {
-			this->PopulationUnits.erase(this->PopulationUnits.begin() + static_cast<int>(i));
-		} else {
-			++i;
-		}
-	}
-
+	this->RemoveEmptyPopulationUnits();
 	this->SortPopulationUnits();
 	this->CalculatePopulation();
 	this->CalculateLifeRating();
+}
+
+/**
+**	@brief	Do the holding's monthly actions
+*/
+void Holding::DoMonth()
+{
+	this->DoPopulationGrowth();
+	this->RemoveEmptyPopulationUnits();
 }
 
 /**
@@ -128,6 +128,21 @@ void Holding::SortPopulationUnits()
 }
 
 /**
+**	@brief	Remove population units that have size 0
+*/
+void Holding::RemoveEmptyPopulationUnits()
+{
+	for (size_t i = 0; i < this->PopulationUnits.size();) {
+		const std::unique_ptr<PopulationUnit> &population_unit = this->PopulationUnits[i];
+		if (population_unit->GetSize() == 0) {
+			this->PopulationUnits.erase(this->PopulationUnits.begin() + static_cast<int>(i));
+		} else {
+			++i;
+		}
+	}
+}
+
+/**
 **	@brief	Set the holding's population
 **
 **	@param	population	The new population size for the holding
@@ -158,6 +173,41 @@ void Holding::CalculatePopulation()
 		population += population_unit->GetSize();
 	}
 	this->SetPopulation(population);
+}
+
+/**
+**	@brief	Do the holding's population growth
+*/
+void Holding::DoPopulationGrowth()
+{
+	const int population_growth = this->GetPopulationGrowth();
+
+	if (population_growth == 0) {
+		return;
+	}
+
+	const int population_capacity = this->GetPopulationCapacity();
+
+	for (const std::unique_ptr<PopulationUnit> &population_unit : this->GetPopulationUnits()) {
+		const int population_capacity_difference = this->GetPopulationCapacity() - this->GetPopulation();
+
+		int change = population_unit->GetSize() * population_growth / 10000;
+		if (change == 0) {
+			if (this->GetPopulation() != population_capacity) {
+				//if the change is zero but population is not equal to population capacity, then make a change of 1
+				if (population_capacity > this->GetPopulation()) {
+					change = 1;
+				} else {
+					change = -1;
+				}
+			} else {
+				return;
+			}
+		} else if (abs(change) > abs(population_capacity_difference)) {
+			change = population_capacity_difference; //don't grow the population beyond capacity, and don't decrease it below capacity either
+		}
+		population_unit->ChangeSize(change);
+	}
 }
 
 /**
