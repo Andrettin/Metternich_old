@@ -26,11 +26,16 @@ class Holding : public DataEntry
 	Q_PROPERTY(Metternich::HoldingType* type READ GetType NOTIFY TypeChanged)
 	Q_PROPERTY(Metternich::LandedTitle* barony READ GetBarony CONSTANT)
 	Q_PROPERTY(int population READ GetPopulation WRITE SetPopulation NOTIFY PopulationChanged)
+	Q_PROPERTY(int population_capacity READ GetPopulationCapacity NOTIFY PopulationCapacityChanged)
 	Q_PROPERTY(QVariantList population_units READ GetPopulationUnitsQVariantList NOTIFY PopulationUnitsChanged)
 	Q_PROPERTY(Metternich::Commodity* commodity READ GetCommodity WRITE SetCommodity NOTIFY CommodityChanged)
+	Q_PROPERTY(int holding_size READ GetHoldingSize WRITE SetHoldingSize NOTIFY HoldingSizeChanged)
+	Q_PROPERTY(int life_rating READ GetLifeRating NOTIFY LifeRatingChanged)
 	Q_PROPERTY(bool selected READ IsSelected WRITE SetSelected NOTIFY SelectedChanged)
 
 public:
+	static constexpr int PopulationCapacityPerLifeRating = 10000;
+
 	static Holding *GetSelectedHolding()
 	{
 		return Holding::SelectedHolding;
@@ -100,6 +105,29 @@ public:
 
 	void CalculatePopulation();
 
+	int GetPopulationCapacity() const
+	{
+		return this->PopulationCapacity;
+	}
+
+	void SetPopulationCapacity(const int population_capacity)
+	{
+		if (population_capacity == this->GetPopulationCapacity()) {
+			return;
+		}
+
+		this->PopulationCapacity = population_capacity;
+		emit PopulationCapacityChanged();
+	}
+
+	void CalculatePopulationCapacity()
+	{
+		int population_capacity = this->GetLifeRating() * Holding::PopulationCapacityPerLifeRating;
+		population_capacity *= this->GetHoldingSize();
+		population_capacity /= 100;
+		this->SetPopulationCapacity(population_capacity);
+	}
+
 	const std::set<Building *> &GetBuildings() const
 	{
 		return this->Buildings;
@@ -122,19 +150,61 @@ public:
 
 	void GenerateCommodity();
 
+	int GetHoldingSize() const
+	{
+		return this->HoldingSize;
+	}
+
+	void SetHoldingSize(const int holding_size)
+	{
+		if (holding_size == this->GetHoldingSize()) {
+			return;
+		}
+
+		this->HoldingSize = holding_size;
+		emit HoldingSizeChanged();
+		this->CalculatePopulationCapacity();
+	}
+
+	int GetLifeRating() const
+	{
+		return this->LifeRating;
+	}
+
+	void SetLifeRating(const int life_rating)
+	{
+		if (life_rating == this->GetLifeRating()) {
+			return;
+		}
+
+		this->LifeRating = life_rating;
+		emit LifeRatingChanged();
+		this->CalculatePopulationCapacity();
+	}
+
+	void ChangeLifeRating(const int change)
+	{
+		this->SetLifeRating(this->GetLifeRating() + change);
+	}
+
+	void CalculateLifeRating();
+
 	bool IsSelected() const
 	{
 		return this->Selected;
 	}
 
-	void SetSelected(const bool selected, const bool notify = true);
+	void SetSelected(const bool selected, const bool notify_engine_interface = true);
 
 signals:
 	void NameChanged();
 	void TypeChanged();
 	void PopulationUnitsChanged();
 	void PopulationChanged();
+	void PopulationCapacityChanged();
 	void CommodityChanged();
+	void HoldingSizeChanged();
+	void LifeRatingChanged();
 	void SelectedChanged();
 
 private:
@@ -142,9 +212,12 @@ private:
 	HoldingType *Type = nullptr;
 	Metternich::Province *Province = nullptr; //the province to which this holding belongs
 	std::vector<std::unique_ptr<PopulationUnit>> PopulationUnits;
-	int Population = 0; //this holding's population size
+	int PopulationCapacity = 0; //the population capacity
+	int Population = 0; //the size of this holding's total population
 	std::set<Building *> Buildings;
 	Metternich::Commodity *Commodity = nullptr; //the commodity produced by the holding (if any)
+	int HoldingSize = 100; //the holding size, which affects population capacity (100 = normal size)
+	int LifeRating = 0; //the holding's life rating, which affects population capacity
 	bool Selected = false;
 };
 

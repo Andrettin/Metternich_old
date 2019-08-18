@@ -41,6 +41,7 @@ class Province : public DataEntry, public DataType<Province>
 	Q_PROPERTY(int population READ GetPopulation WRITE SetPopulation NOTIFY PopulationChanged)
 	Q_PROPERTY(QVariantList holdings READ GetHoldingsQVariantList NOTIFY HoldingsChanged)
 	Q_PROPERTY(Metternich::Holding* capital_holding READ GetCapitalHolding WRITE SetCapitalHolding NOTIFY CapitalHoldingChanged)
+	Q_PROPERTY(int life_rating READ GetLifeRating NOTIFY LifeRatingChanged)
 	Q_PROPERTY(bool selected READ IsSelected WRITE SetSelected NOTIFY SelectedChanged)
 	Q_PROPERTY(bool selectable READ IsSelectable CONSTANT)
 
@@ -104,15 +105,7 @@ public:
 		return this->Terrain;
 	}
 
-	void SetTerrain(Terrain *terrain)
-	{
-		if (terrain == this->GetTerrain()) {
-			return;
-		}
-
-		this->Terrain = terrain;
-		emit TerrainChanged();
-	}
+	void SetTerrain(Terrain *terrain);
 
 	Metternich::Culture *GetCulture() const
 	{
@@ -137,11 +130,6 @@ public:
 	}
 
 	void CalculatePopulation();
-
-	int GetMaxSettlementHoldings() const
-	{
-		return this->MaxSettlementHoldings;
-	}
 
 	const std::vector<Holding *> &GetHoldings() const
 	{
@@ -183,6 +171,25 @@ public:
 		this->Regions.erase(std::remove(this->Regions.begin(), this->Regions.end(), region), this->Regions.end());
 	}
 
+	void AddBorderProvince(Province *province)
+	{
+		this->BorderProvinces.insert(province);
+	}
+
+	bool BordersWater() const;
+
+	int GetLifeRating() const
+	{
+		return this->LifeRating;
+	}
+
+	void SetLifeRating(const int life_rating);
+
+	void ChangeLifeRating(const int change)
+	{
+		this->SetLifeRating(this->GetLifeRating() + change);
+	}
+
 	bool IsSelected() const
 	{
 		return this->Selected;
@@ -198,13 +205,6 @@ public:
 
 	void AddPopulationUnit(std::unique_ptr<PopulationUnit> &&population_unit);
 
-	void AddBorderProvince(Province *province)
-	{
-		this->BorderProvinces.insert(province);
-	}
-
-	bool BordersWater() const;
-
 signals:
 	void CountyChanged();
 	void ImageChanged();
@@ -214,6 +214,7 @@ signals:
 	void PopulationChanged();
 	void HoldingsChanged();
 	void CapitalHoldingChanged();
+	void LifeRatingChanged();
 	void SelectedChanged();
 
 private:
@@ -228,11 +229,11 @@ private:
 	std::vector<Holding *> Holdings;
 	std::map<LandedTitle *, std::unique_ptr<Holding>> HoldingsByBarony; //the province's holdings, mapped to their respective baronies
 	Holding *CapitalHolding = nullptr;
-	int MaxSettlementHoldings = 1;
 	std::vector<Region *> Regions; //the regions to which this province belongs
+	std::set<Province *> BorderProvinces; //provinces bordering this one
+	int LifeRating = 0;
 	bool Selected = false;
 	std::vector<std::unique_ptr<PopulationUnit>> PopulationUnits; //population units set for this province in history, used during initialization to generate population units in the province's settlements
-	std::set<Province *> BorderProvinces; //provinces bordering this one
 };
 
 }

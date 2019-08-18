@@ -28,6 +28,10 @@ namespace Metternich {
 Holding::Holding(LandedTitle *barony, HoldingType *type, Metternich::Province *province) : DataEntry(barony->GetIdentifier()), Barony(barony), Type(type), Province(province)
 {
 	barony->SetHolding(this);
+
+	if (Game::GetInstance()->IsRunning()) {
+		this->CalculateLifeRating();
+	}
 }
 
 /**
@@ -71,6 +75,7 @@ void Holding::InitializeHistory()
 
 	this->SortPopulationUnits();
 	this->CalculatePopulation();
+	this->CalculateLifeRating();
 }
 
 /**
@@ -188,13 +193,22 @@ void Holding::GenerateCommodity()
 }
 
 /**
+**	@brief	Calculate the life rating for the holding
+*/
+void Holding::CalculateLifeRating()
+{
+	int life_rating = this->GetProvince()->GetLifeRating();
+	this->SetLifeRating(life_rating);
+}
+
+/**
 **	@brief	Set whether the holding is selected
 **
 **	@param	selected	Whether the holding is being selected
 **
-**	@param	notify		Whether to emit signals indicating the change
+**	@param	notify_engine_interface	Whether to emit a signal notifying the engine interface of the change
 */
-void Holding::SetSelected(const bool selected, const bool notify)
+void Holding::SetSelected(const bool selected, const bool notify_engine_interface)
 {
 	if (selected == this->IsSelected()) {
 		return;
@@ -210,9 +224,9 @@ void Holding::SetSelected(const bool selected, const bool notify)
 	}
 
 	this->Selected = selected;
+	emit SelectedChanged();
 
-	if (notify) {
-		emit SelectedChanged();
+	if (notify_engine_interface) {
 		EngineInterface::GetInstance()->emit SelectedHoldingChanged();
 	}
 }

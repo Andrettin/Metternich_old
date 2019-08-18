@@ -306,6 +306,34 @@ void Province::UpdateImage()
 }
 
 /**
+**	@brief	Set the province's terrain
+**
+**	@param	terrain	The new terrain
+*/
+void Province::SetTerrain(Metternich::Terrain *terrain)
+{
+	if (terrain == this->GetTerrain()) {
+		return;
+	}
+
+	const Metternich::Terrain *old_terrain = this->GetTerrain();
+	this->Terrain = terrain;
+	emit TerrainChanged();
+
+	int old_terrain_life_rating = 0;
+	if (old_terrain != nullptr) {
+		old_terrain_life_rating = old_terrain->GetLifeRating();
+	}
+
+	int new_terrain_life_rating = 0;
+	if (terrain != nullptr) {
+		new_terrain_life_rating = terrain->GetLifeRating();
+	}
+
+	this->ChangeLifeRating(new_terrain_life_rating - old_terrain_life_rating);
+}
+
+/**
 **	@brief	Set the province's population
 **
 **	@param	population	The new population size for the province
@@ -401,6 +429,50 @@ void Province::DestroyHolding(LandedTitle *barony)
 }
 
 /**
+**	@brief	Add a population unit to the province
+*/
+void Province::AddPopulationUnit(std::unique_ptr<PopulationUnit> &&population_unit)
+{
+	this->PopulationUnits.push_back(std::move(population_unit));
+}
+
+/**
+**	@brief	Get whether this province borders a water province
+**
+**	@return	True if the province borders a water province, or false otherwise
+*/
+bool Province::BordersWater() const
+{
+	for (const Province *border_province : this->BorderProvinces) {
+		if (border_province->GetTerrain()->IsWater()) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
+**	@brief	Set this province's life rating
+**
+**	@param	life_rating	The life rating
+*/
+void Province::SetLifeRating(const int life_rating)
+{
+	if (life_rating == this->GetLifeRating()) {
+		return;
+	}
+
+	const int old_life_rating = this->GetLifeRating();
+	this->LifeRating = life_rating;
+	emit LifeRatingChanged();
+
+	for (Holding *holding : this->GetHoldings()) {
+		holding->ChangeLifeRating(life_rating - old_life_rating);
+	}
+}
+
+/**
 **	@brief	Set whether the province is selected
 **
 **	@param	selected				Whether the province is being selected
@@ -438,30 +510,6 @@ void Province::SetSelected(const bool selected, const bool notify_engine_interfa
 bool Province::IsSelectable() const
 {
 	return this->GetCounty() != nullptr;
-}
-
-/**
-**	@brief	Add a population unit to the province
-*/
-void Province::AddPopulationUnit(std::unique_ptr<PopulationUnit> &&population_unit)
-{
-	this->PopulationUnits.push_back(std::move(population_unit));
-}
-
-/**
-**	@brief	Get whether this province borders a water province
-**
-**	@return	True if the province borders a water province, or false otherwise
-*/
-bool Province::BordersWater() const
-{
-	for (const Province *border_province : this->BorderProvinces) {
-		if (border_province->GetTerrain()->IsWater()) {
-			return true;
-		}
-	}
-
-	return false;
 }
 
 }
