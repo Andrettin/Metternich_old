@@ -100,9 +100,9 @@ void LandedTitle::ProcessGSMLScope(const GSMLData &scope)
 }
 
 /**
-**	@brief	Initialize the landed title
+**	@brief	Initialize the landed title's history
 */
-void LandedTitle::Initialize()
+void LandedTitle::InitializeHistory()
 {
 	if (this->HolderTitle != nullptr) {
 		if (this->HolderTitle->GetHolder() == nullptr) {

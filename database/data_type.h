@@ -249,7 +249,21 @@ public:
 	static void InitializeAll()
 	{
 		for (T *instance : T::GetAll()) {
+			if (instance->IsInitialized()) {
+				continue; //the instance might have been initialized already, e.g. in the initialization function of another instance which needs it to be initialized
+			}
+
 			instance->Initialize();
+		}
+	}
+
+	/**
+	**	@brief	Initialize all instances' history
+	*/
+	static void InitializeAllHistory()
+	{
+		for (T *instance : T::GetAll()) {
+			instance->InitializeHistory();
 		}
 	}
 
@@ -272,6 +286,8 @@ public:
 		Database::GetInstance()->AddParsingFunction(std::function<void()>(DataType::ParseDatabase));
 		Database::GetInstance()->AddProcessingFunction(std::function<void(bool)>(DataType::ProcessDatabase));
 		Database::GetInstance()->AddCheckingFunction(std::function<void()>(DataType::CheckAll));
+		Database::GetInstance()->AddInitializationFunction(std::function<void()>(DataType::InitializeAll));
+		Database::GetInstance()->AddHistoryInitializationFunction(std::function<void()>(DataType::InitializeAllHistory));
 
 		return true;
 	}

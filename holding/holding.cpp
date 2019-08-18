@@ -39,9 +39,9 @@ Holding::~Holding()
 }
 
 /**
-**	@brief	Initialize the holding
+**	@brief	Initialize the holding's history
 */
-void Holding::Initialize()
+void Holding::InitializeHistory()
 {
 	if (this->GetCommodity() == nullptr) {
 		//generate a commodity for the holding if it produces none
@@ -56,6 +56,16 @@ void Holding::Initialize()
 
 		if (population_unit->GetReligion() == nullptr) {
 			population_unit->SetReligion(this->GetProvince()->GetReligion());
+		}
+	}
+
+	//remove population units with 0 size
+	for (size_t i = 0; i < this->PopulationUnits.size();) {
+		const std::unique_ptr<PopulationUnit> &population_unit = this->PopulationUnits[i];
+		if (population_unit->GetSize() == 0) {
+			this->PopulationUnits.erase(this->PopulationUnits.begin() + static_cast<int>(i));
+		} else {
+			++i;
 		}
 	}
 

@@ -41,16 +41,16 @@ private:
 
 public:
 	Holding(LandedTitle *barony, HoldingType *type, Province *province);
-	~Holding();
+	virtual ~Holding() override;
 
-	void Initialize();
+	virtual void InitializeHistory() override;
 
 	LandedTitle *GetBarony() const
 	{
 		return this->Barony;
 	}
 
-	std::string GetName() const;
+	virtual std::string GetName() const override;
 
 	QString GetNameQString() const
 	{

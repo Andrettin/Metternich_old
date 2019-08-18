@@ -1,6 +1,7 @@
 #include "history.h"
 
 #include "character/character.h"
+#include "database/database.h"
 #include "holding/holding.h"
 #include "landed_title/landed_title.h"
 #include "map/province.h"
@@ -33,15 +34,7 @@ void History::Load()
 
 	History::GeneratePopulationUnits();
 
-	Province::InitializeAll();
-	Region::InitializeAll();
-	Character::InitializeAll();
-	LandedTitle::InitializeAll();
-
-	Character::CheckAll();
-	LandedTitle::CheckAll();
-	Province::CheckAll();
-	Region::CheckAll();
+	Database::GetInstance()->InitializeHistory();
 }
 
 /**

@@ -69,6 +69,24 @@ public:
 			function(false);
 		}
 
+		//initialize data entries for each data type
+		for (const std::function<void()> &function : this->InitializationFunctions) {
+			function();
+		}
+
+		//check if data entries are valid for each data type
+		for (const std::function<void()> &function : this->CheckingFunctions) {
+			function();
+		}
+	}
+
+	void InitializeHistory()
+	{
+		//initialize data entries are valid for each data type
+		for (const std::function<void()> &function : this->HistoryInitializationFunctions) {
+			function();
+		}
+
 		//check if data entries are valid for each data type
 		for (const std::function<void()> &function : this->CheckingFunctions) {
 			function();
@@ -90,10 +108,22 @@ public:
 		this->CheckingFunctions.push_back(function);
 	}
 
+	void AddInitializationFunction(const std::function<void()> &function)
+	{
+		this->InitializationFunctions.push_back(function);
+	}
+
+	void AddHistoryInitializationFunction(const std::function<void()> &function)
+	{
+		this->HistoryInitializationFunctions.push_back(function);
+	}
+
 private:
 	std::vector<std::function<void()>> ParsingFunctions; //parsing functions for each data type
 	std::vector<std::function<void(bool)>> ProcessingFunctions; //processing functions for each data type
 	std::vector<std::function<void()>> CheckingFunctions; //functions for each data type, to check if data entries are valid
+	std::vector<std::function<void()>> InitializationFunctions; //functions for each data type, to initialize their entries
+	std::vector<std::function<void()>> HistoryInitializationFunctions; //functions for each data type, to initialize their entries' history
 };
 
 }

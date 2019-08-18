@@ -21,9 +21,9 @@ Region::~Region()
 }
 
 /**
-**	@brief	Initialize the region
+**	@brief	Initialize the region's history
 */
-void Region::Initialize()
+void Region::InitializeHistory()
 {
 	this->PopulationUnits.clear();
 }
@@ -43,6 +43,11 @@ Q_INVOKABLE void Region::RemoveProvince(Province *province)
 {
 	this->Provinces.erase(std::remove(this->Provinces.begin(), this->Provinces.end(), province), this->Provinces.end());
 	province->RemoveRegion(this);
+}
+
+QVariantList Region::GetSubregionsQVariantList() const
+{
+	return ContainerToQVariantList(this->Subregions);
 }
 
 std::vector<Holding *> Region::GetHoldings() const

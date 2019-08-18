@@ -19,6 +19,7 @@ class Region : public DataEntry, public DataType<Region>
 	Q_OBJECT
 
 	Q_PROPERTY(QVariantList provinces READ GetProvincesQVariantList)
+	Q_PROPERTY(QVariantList subregions READ GetSubregionsQVariantList)
 
 public:
 	static constexpr const char *ClassIdentifier = "region";
@@ -38,7 +39,23 @@ public:
 	Region(const std::string &identifier);
 	virtual ~Region() override;
 
-	virtual void Initialize() override;
+	virtual void Initialize() override
+	{
+		//add each subregion's provinces to this one
+		for (Region *subregion : this->Subregions) {
+			if (!subregion->IsInitialized()) {
+				subregion->Initialize();
+			}
+
+			for (Province *province : subregion->GetProvinces()) {
+				this->AddProvince(province);
+			}
+		}
+
+		DataEntryBase::Initialize();
+	}
+
+	virtual void InitializeHistory() override;
 
 	const std::vector<Province *> &GetProvinces() const
 	{
@@ -46,9 +63,20 @@ public:
 	}
 
 	QVariantList GetProvincesQVariantList() const;
-
 	Q_INVOKABLE void AddProvince(Province *province);
 	Q_INVOKABLE void RemoveProvince(Province *province);
+
+	QVariantList GetSubregionsQVariantList() const;
+
+	Q_INVOKABLE void AddSubregion(Region *subregion)
+	{
+		this->Subregions.push_back(subregion);
+	}
+
+	Q_INVOKABLE void RemoveSubregion(Region *subregion)
+	{
+		this->Subregions.erase(std::remove(this->Subregions.begin(), this->Subregions.end(), subregion), this->Subregions.end());
+	}
 
 	std::vector<Holding *> GetHoldings() const;
 
@@ -64,6 +92,7 @@ signals:
 
 private:
 	std::vector<Province *> Provinces;
+	std::vector<Region *> Subregions; //subregions of this region
 	std::vector<std::unique_ptr<PopulationUnit>> PopulationUnits; //population units set for this region in history, used during initialization to generate population units in the region's settlements
 };
 

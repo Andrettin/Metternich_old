@@ -37,8 +37,22 @@ public:
 
 	void LoadHistory(GSMLData &gsml_data);
 
-	virtual void Initialize() {}
+	virtual void Initialize()
+	{
+		this->Initialized = true;
+	}
+
+	virtual void InitializeHistory() { }
+
 	virtual void Check() const {}
+
+	bool IsInitialized() const
+	{
+		return this->Initialized;
+	}
+
+private:
+	bool Initialized = false;
 };
 
 /**

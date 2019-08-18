@@ -66,9 +66,9 @@ void Character::ProcessGSMLDatedProperty(const GSMLProperty &property, const QDa
 }
 
 /**
-**	@brief	Initialize the character
+**	@brief	Initialize the character's history
 */
-void Character::Initialize()
+void Character::InitializeHistory()
 {
 	if (this->Name.empty() && this->GetCulture() != nullptr) {
 		if (this->IsFemale()) {

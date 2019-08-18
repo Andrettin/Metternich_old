@@ -128,6 +128,9 @@ void DataEntryBase::ProcessGSMLProperty(const GSMLProperty &property)
 			} else if (property.GetKey() == "provinces") {
 				Province *province = Province::Get(property.GetValue());
 				success = QMetaObject::invokeMethod(this, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(Province *, province));
+			} else if (property.GetKey() == "subregions") {
+				Region *region = Region::Get(property.GetValue());
+				success = QMetaObject::invokeMethod(this, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(Region *, region));
 			} else if (property.GetKey() == "discount_types") {
 				PopulationType *type = PopulationType::Get(property.GetValue());
 				success = QMetaObject::invokeMethod(this, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(PopulationType *, type));

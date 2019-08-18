@@ -68,7 +68,7 @@ public:
 	virtual void ProcessGSMLProperty(const GSMLProperty &property) override;
 	virtual void ProcessGSMLScope(const GSMLData &scope) override;
 	virtual void ProcessGSMLDatedScope(const GSMLData &scope, const QDateTime &date) override;
-	virtual void Initialize() override;
+	virtual void InitializeHistory() override;
 	virtual void Check() const override;
 
 	virtual std::string GetName() const override;
