@@ -27,6 +27,7 @@ class Holding : public DataEntry
 	Q_PROPERTY(Metternich::LandedTitle* barony READ GetBarony CONSTANT)
 	Q_PROPERTY(int population READ GetPopulation WRITE SetPopulation NOTIFY PopulationChanged)
 	Q_PROPERTY(int population_capacity READ GetPopulationCapacity NOTIFY PopulationCapacityChanged)
+	Q_PROPERTY(int population_growth READ GetPopulationGrowth NOTIFY PopulationGrowthChanged)
 	Q_PROPERTY(QVariantList population_units READ GetPopulationUnitsQVariantList NOTIFY PopulationUnitsChanged)
 	Q_PROPERTY(Metternich::Commodity* commodity READ GetCommodity WRITE SetCommodity NOTIFY CommodityChanged)
 	Q_PROPERTY(int holding_size READ GetHoldingSize WRITE SetHoldingSize NOTIFY HoldingSizeChanged)
@@ -35,6 +36,7 @@ class Holding : public DataEntry
 
 public:
 	static constexpr int PopulationCapacityPerLifeRating = 10000;
+	static constexpr int BasePopulationGrowthMultiplier = 10;
 
 	static Holding *GetSelectedHolding()
 	{
@@ -118,6 +120,7 @@ public:
 
 		this->PopulationCapacity = population_capacity;
 		emit PopulationCapacityChanged();
+		this->CalculatePopulationGrowth(); //population growth depends on the population capacity
 	}
 
 	void CalculatePopulationCapacity()
@@ -126,6 +129,47 @@ public:
 		population_capacity *= this->GetHoldingSize();
 		population_capacity /= 100;
 		this->SetPopulationCapacity(population_capacity);
+	}
+
+	int GetPopulationGrowth() const
+	{
+		return this->PopulationGrowth;
+	}
+
+	void SetPopulationGrowth(const int population_growth)
+	{
+		if (population_growth == this->GetPopulationGrowth()) {
+			return;
+		}
+
+		this->PopulationGrowth = population_growth;
+		emit PopulationGrowthChanged();
+	}
+
+	void CalculatePopulationGrowth()
+	{
+		if (this->GetPopulation() == 0) {
+			this->SetPopulationGrowth(0);
+			return;
+		}
+
+		int population_growth = 0;
+		if (this->GetPopulationCapacity() >= this->GetPopulation()) {
+			//if capacity is equal to or greater than population, use the normal population growth rate formula
+			population_growth = this->GetPopulation();
+			population_growth *= 100;
+			population_growth /= this->GetPopulationCapacity();
+			population_growth -= 100;
+			population_growth *= -1;
+		} else {
+			//use the inverse calculation for negative rates
+			population_growth = this->GetPopulationCapacity();
+			population_growth *= 100;
+			population_growth /= this->GetPopulation();
+			population_growth -= 100;
+		}
+		population_growth *= Holding::BasePopulationGrowthMultiplier; // constant multiplier for population growth
+		this->SetPopulationGrowth(population_growth);
 	}
 
 	const std::set<Building *> &GetBuildings() const
@@ -202,6 +246,7 @@ signals:
 	void PopulationUnitsChanged();
 	void PopulationChanged();
 	void PopulationCapacityChanged();
+	void PopulationGrowthChanged();
 	void CommodityChanged();
 	void HoldingSizeChanged();
 	void LifeRatingChanged();
@@ -214,6 +259,7 @@ private:
 	std::vector<std::unique_ptr<PopulationUnit>> PopulationUnits;
 	int PopulationCapacity = 0; //the population capacity
 	int Population = 0; //the size of this holding's total population
+	int PopulationGrowth = 0; //the population growth, in permyriad (per 10,000)
 	std::set<Building *> Buildings;
 	Metternich::Commodity *Commodity = nullptr; //the commodity produced by the holding (if any)
 	int HoldingSize = 100; //the holding size, which affects population capacity (100 = normal size)

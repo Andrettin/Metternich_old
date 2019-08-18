@@ -141,6 +141,7 @@ void Holding::SetPopulation(const int population)
 	const int old_population = this->GetPopulation();
 	this->Population = population;
 	emit PopulationChanged();
+	this->CalculatePopulationGrowth(); //population growth depends on the current population
 
 	//change the population count for the province as well
 	const int population_change = population - old_population;
