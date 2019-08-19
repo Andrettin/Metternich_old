@@ -38,6 +38,7 @@ SOURCES += \
         population/population_unit.cpp \
         script/chance_factor.cpp \
         script/condition/borders_water_condition.cpp \
+        script/condition/commodity_condition.cpp \
         script/condition/condition.cpp \
         script/condition/terrain_condition.cpp \
         script/factor_modifier.cpp \
@@ -102,6 +103,7 @@ HEADERS += \
     script/chance_factor.h \
     script/condition/and_condition.h \
     script/condition/borders_water_condition.h \
+    script/condition/commodity_condition.h \
     script/condition/condition.h \
     script/condition/not_condition.h \
     script/condition/or_condition.h \
