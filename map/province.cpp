@@ -6,6 +6,7 @@
 #include "database/gsml_property.h"
 #include "engine_interface.h"
 #include "game/game.h"
+#include "holding/building.h"
 #include "holding/holding.h"
 #include "holding/holding_type.h"
 #include "landed_title/landed_title.h"
@@ -85,16 +86,23 @@ void Province::ProcessGSMLProperty(const GSMLProperty &property)
 {
 	if (property.GetKey().substr(0, 2) == LandedTitle::BaronyPrefix) {
 		//a property related to one of the province's holdings
-		//the assignment operator sets the holding's type (creating the holding if it doesn't exist), while the addition and subtraction operators add or remove buildings in the holding
+		LandedTitle *barony = LandedTitle::Get(property.GetKey());
+		Holding *holding = this->GetHolding(barony);
 		if (property.GetOperator() == GSMLOperator::Assignment) {
-			LandedTitle *barony = LandedTitle::Get(property.GetKey());
+			//the assignment operator sets the holding's type (creating the holding if it doesn't exist)
 			HoldingType *holding_type = HoldingType::Get(property.GetValue());
-
-			Holding *holding = this->GetHolding(barony);
 			if (holding != nullptr) {
 				holding->SetType(holding_type);
 			} else {
 				this->CreateHolding(barony, holding_type);
+			}
+		} else if (property.GetOperator() == GSMLOperator::Addition || property.GetOperator() == GSMLOperator::Subtraction) {
+			//the addition/subtraction operators add/remove buildings to/from the holding
+			Building *building = Building::Get(property.GetValue());
+			if (property.GetOperator() == GSMLOperator::Addition) {
+				holding->AddBuilding(building);
+			} else if (property.GetOperator() == GSMLOperator::Subtraction) {
+				holding->RemoveBuilding(building);
 			}
 		}
 	} else {

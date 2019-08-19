@@ -186,6 +186,17 @@ public:
 	}
 
 	QVariantList GetBuildingsQVariantList() const;
+
+	Q_INVOKABLE void AddBuilding(Building *building)
+	{
+		this->Buildings.insert(building);
+	}
+
+	Q_INVOKABLE void RemoveBuilding(Building *building)
+	{
+		this->Buildings.erase(building);
+	}
+
 	std::vector<Building *> GetAvailableBuildings() const;
 	QVariantList GetAvailableBuildingsQVariantList() const;
 
