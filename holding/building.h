@@ -7,6 +7,8 @@
 
 namespace Metternich {
 
+class Condition;
+class Holding;
 class HoldingType;
 
 class Building : public DataEntry, public DataType<Building>
@@ -21,7 +23,10 @@ public:
 	static constexpr const char *ClassIdentifier = "building";
 	static constexpr const char *DatabaseFolder = "buildings";
 
-	Building(const std::string &identifier) : DataEntry(identifier) {}
+	Building(const std::string &identifier);
+	virtual ~Building() override;
+
+	virtual void ProcessGSMLScope(const GSMLData &scope) override;
 
 	const std::string &GetIconPath() const
 	{
@@ -57,12 +62,17 @@ public:
 	Q_INVOKABLE void AddHoldingType(HoldingType *holding_type);
 	Q_INVOKABLE void RemoveHoldingType(HoldingType *holding_type);
 
+	bool IsAvailableForHolding(const Holding *holding) const;
+	bool IsBuildableInHolding(const Holding *holding) const;
+
 signals:
 	void IconPathChanged();
 
 private:
 	std::string IconPath;
 	std::vector<HoldingType *> HoldingTypes;
+	std::unique_ptr<Condition> Preconditions;
+	std::unique_ptr<Condition> Conditions;
 };
 
 }

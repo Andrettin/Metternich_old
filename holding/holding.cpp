@@ -232,7 +232,9 @@ std::vector<Building *> Holding::GetAvailableBuildings() const
 	std::vector<Building *> available_buildings;
 
 	for (Building *building : this->GetType()->GetBuildings()) {
-		available_buildings.push_back(building);
+		if (building->IsAvailableForHolding(this)) {
+			available_buildings.push_back(building);
+		}
 	}
 
 	std::sort(available_buildings.begin(), available_buildings.end(), [this](Building *a, Building *b) {
