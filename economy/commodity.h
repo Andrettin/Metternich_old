@@ -17,6 +17,7 @@ class Commodity : public DataEntry, public DataType<Commodity>
 {
 	Q_OBJECT
 
+	Q_PROPERTY(QString icon READ GetIconPathQString WRITE SetIconPathQString NOTIFY IconPathChanged)
 	Q_PROPERTY(QString icon_path READ GetIconPathQString WRITE SetIconPathQString NOTIFY IconPathChanged)
 
 public:
@@ -25,7 +26,7 @@ public:
 
 public:
 	Commodity(const std::string &identifier);
-	~Commodity();
+	virtual ~Commodity() override;
 
 	virtual void ProcessGSMLScope(const GSMLData &scope) override;
 

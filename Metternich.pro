@@ -25,6 +25,7 @@ SOURCES += \
         engine_interface.cpp \
         game/game.cpp \
         history/history.cpp \
+        holding/building.cpp \
         holding/holding.cpp \
         landed_title/landed_title.cpp \
         main.cpp \

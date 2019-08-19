@@ -5,6 +5,8 @@
 #include "economy/commodity.h"
 #include "engine_interface.h"
 #include "game/game.h"
+#include "holding/building.h"
+#include "holding/holding_type.h"
 #include "landed_title/landed_title.h"
 #include "map/province.h"
 #include "population/population_type.h"
@@ -208,6 +210,53 @@ void Holding::DoPopulationGrowth()
 		}
 		population_unit->ChangeSize(change);
 	}
+}
+
+/**
+**	@brief	Get the holding's buildings as a QVariantList
+**
+**	@return	The buildings as a QVariantList
+*/
+QVariantList Holding::GetBuildingsQVariantList() const
+{
+	return ContainerToQVariantList(this->GetBuildings());
+}
+
+/**
+**	@brief	Get the holding's available buildings (including already constructed ones)
+**
+**	@return	The available buildings
+*/
+std::vector<Building *> Holding::GetAvailableBuildings() const
+{
+	std::vector<Building *> available_buildings;
+
+	for (Building *building : this->GetType()->GetBuildings()) {
+		available_buildings.push_back(building);
+	}
+
+	std::sort(available_buildings.begin(), available_buildings.end(), [this](Building *a, Building *b) {
+		//give priority to buildings that have already been built, so that they will be displayed first
+		bool a_built = this->GetBuildings().find(a) != this->GetBuildings().end();
+		bool b_built = this->GetBuildings().find(b) != this->GetBuildings().end();
+		if (a_built != b_built) {
+			return a_built;
+		}
+
+		return a->GetName() < b->GetName();
+	});
+
+	return available_buildings;
+}
+
+/**
+**	@brief	Get the holding's available buildings as a QVariantList
+**
+**	@return	The available buildings as a QVariantList
+*/
+QVariantList Holding::GetAvailableBuildingsQVariantList() const
+{
+	return ContainerToQVariantList(this->GetAvailableBuildings());
 }
 
 /**

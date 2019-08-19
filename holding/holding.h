@@ -32,6 +32,8 @@ class Holding : public DataEntry
 	Q_PROPERTY(Metternich::Commodity* commodity READ GetCommodity WRITE SetCommodity NOTIFY CommodityChanged)
 	Q_PROPERTY(int holding_size READ GetHoldingSize WRITE SetHoldingSize NOTIFY HoldingSizeChanged)
 	Q_PROPERTY(int life_rating READ GetLifeRating NOTIFY LifeRatingChanged)
+	Q_PROPERTY(QVariantList buildings READ GetBuildingsQVariantList NOTIFY BuildingsChanged)
+	Q_PROPERTY(QVariantList available_buildings READ GetAvailableBuildingsQVariantList NOTIFY AvailableBuildingsChanged)
 	Q_PROPERTY(bool selected READ IsSelected WRITE SetSelected NOTIFY SelectedChanged)
 
 public:
@@ -183,6 +185,10 @@ public:
 		return this->Buildings;
 	}
 
+	QVariantList GetBuildingsQVariantList() const;
+	std::vector<Building *> GetAvailableBuildings() const;
+	QVariantList GetAvailableBuildingsQVariantList() const;
+
 	Metternich::Commodity *GetCommodity() const
 	{
 		return this->Commodity;
@@ -253,6 +259,8 @@ signals:
 	void PopulationChanged();
 	void PopulationCapacityChanged();
 	void PopulationGrowthChanged();
+	void BuildingsChanged();
+	void AvailableBuildingsChanged();
 	void CommodityChanged();
 	void HoldingSizeChanged();
 	void LifeRatingChanged();

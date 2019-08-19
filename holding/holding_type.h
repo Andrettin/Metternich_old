@@ -32,6 +32,16 @@ public:
 		return this->Buildings;
 	}
 
+	void AddBuilding(Building *building)
+	{
+		this->Buildings.push_back(building);
+	}
+
+	void RemoveBuilding(Building *building)
+	{
+		this->Buildings.erase(std::remove(this->Buildings.begin(), this->Buildings.end(), building), this->Buildings.end());
+	}
+
 private:
 	bool Settlement = false;	//whether the holding type occupies a settlement slot
 	std::vector<Building *> Buildings;

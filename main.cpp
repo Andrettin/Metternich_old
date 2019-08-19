@@ -8,6 +8,7 @@
 #include "empty_image_provider.h"
 #include "engine_interface.h"
 #include "game/game.h"
+#include "holding/building.h"
 #include "holding/holding_type.h"
 #include "landed_title/landed_title.h"
 #include "map/map.h"
@@ -63,6 +64,7 @@ int main(int argc, char *argv[])
 
 		qmlRegisterType<MaskedMouseArea>("MaskedMouseArea", 1, 0, "MaskedMouseArea");
 
+		qmlRegisterType<Building>();
 		qmlRegisterType<Commodity>();
 		qmlRegisterType<Culture>();
 		qmlRegisterType<Game>();
