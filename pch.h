@@ -33,8 +33,10 @@
 #include <map>
 #include <memory>
 #include <mutex>
+#include <queue>
 #include <random>
 #include <set>
+#include <shared_mutex>
 #include <stdexcept>
 #include <string>
 #include <thread>

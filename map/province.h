@@ -72,6 +72,7 @@ public:
 	virtual void InitializeHistory() override;
 	virtual void Check() const override;
 
+	void DoDay();
 	void DoMonth();
 
 	virtual std::string GetName() const override;

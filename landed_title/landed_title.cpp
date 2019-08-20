@@ -206,6 +206,11 @@ void LandedTitle::SetHolder(Character *character)
 		this->GetProvince()->GetCapitalHolding()->GetBarony()->SetHolder(character);
 	}
 
+	//if this title is associated with a holding (i.e. it is a non-titular barony), then its holder must also be the owner of the holding
+	if (this->GetHolding() != nullptr) {
+		this->GetHolding()->SetOwner(character);
+	}
+
 	emit HolderChanged();
 }
 

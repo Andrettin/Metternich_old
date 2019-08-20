@@ -30,6 +30,7 @@ namespace Metternich {
 Holding::Holding(LandedTitle *barony, HoldingType *type, Metternich::Province *province) : DataEntry(barony->GetIdentifier()), Barony(barony), Type(type), Province(province)
 {
 	barony->SetHolding(this);
+	this->SetOwner(barony->GetHolder());
 
 	if (Game::GetInstance()->IsRunning()) {
 		this->CalculateLifeRating();
@@ -69,6 +70,21 @@ void Holding::InitializeHistory()
 	this->SortPopulationUnits();
 	this->CalculatePopulation();
 	this->CalculateLifeRating();
+}
+
+/**
+**	@brief	Do the holding's daily actions
+*/
+void Holding::DoDay()
+{
+	//handle construction
+	if (this->GetUnderConstructionBuilding() != nullptr) {
+		this->ChangeConstructionDays(-1);
+		if (this->GetConstructionDays() <= 0) {
+			this->AddBuilding(this->GetUnderConstructionBuilding());
+			this->SetUnderConstructionBuilding(nullptr);
+		}
+	}
 }
 
 /**
@@ -262,6 +278,24 @@ QVariantList Holding::GetAvailableBuildingsQVariantList() const
 }
 
 /**
+**	@brief	Set the under construction building for the holding
+**
+**	@param	building	The building
+*/
+void Holding::SetUnderConstructionBuilding(Building *building)
+{
+	if (building == this->GetUnderConstructionBuilding()) {
+		return;
+	}
+
+	this->UnderConstructionBuilding = building;
+	emit UnderConstructionBuildingChanged();
+	if (building != nullptr) {
+		this->SetConstructionDays(building->GetConstructionDays());
+	}
+}
+
+/**
 **	@brief	Generate a commodity for the holding to produce
 */
 void Holding::GenerateCommodity()
@@ -331,6 +365,15 @@ void Holding::SetSelected(const bool selected, const bool notify_engine_interfac
 	if (notify_engine_interface) {
 		EngineInterface::GetInstance()->emit SelectedHoldingChanged();
 	}
+}
+
+void Holding::order_construction(const QVariant &building_variant)
+{
+	QObject *building_object = qvariant_cast<QObject *>(building_variant);
+	Building *building = static_cast<Building *>(building_object);
+	Game::GetInstance()->PostOrder([this, building]() {
+		this->SetUnderConstructionBuilding(building);
+	});
 }
 
 }

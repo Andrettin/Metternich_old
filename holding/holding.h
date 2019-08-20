@@ -12,6 +12,7 @@
 namespace Metternich {
 
 class Building;
+class Character;
 class Commodity;
 class HoldingType;
 class LandedTitle;
@@ -29,11 +30,13 @@ class Holding : public DataEntry
 	Q_PROPERTY(int population_capacity READ GetPopulationCapacity NOTIFY PopulationCapacityChanged)
 	Q_PROPERTY(int population_growth READ GetPopulationGrowth NOTIFY PopulationGrowthChanged)
 	Q_PROPERTY(QVariantList population_units READ GetPopulationUnitsQVariantList NOTIFY PopulationUnitsChanged)
+	Q_PROPERTY(QVariantList buildings READ GetBuildingsQVariantList NOTIFY BuildingsChanged)
+	Q_PROPERTY(QVariantList available_buildings READ GetAvailableBuildingsQVariantList NOTIFY AvailableBuildingsChanged)
+	Q_PROPERTY(Metternich::Building* under_construction_building READ GetUnderConstructionBuilding NOTIFY UnderConstructionBuildingChanged)
+	Q_PROPERTY(int construction_days READ GetConstructionDays NOTIFY ConstructionDaysChanged)
 	Q_PROPERTY(Metternich::Commodity* commodity READ GetCommodity WRITE SetCommodity NOTIFY CommodityChanged)
 	Q_PROPERTY(int holding_size READ GetHoldingSize WRITE SetHoldingSize NOTIFY HoldingSizeChanged)
 	Q_PROPERTY(int life_rating READ GetLifeRating NOTIFY LifeRatingChanged)
-	Q_PROPERTY(QVariantList buildings READ GetBuildingsQVariantList NOTIFY BuildingsChanged)
-	Q_PROPERTY(QVariantList available_buildings READ GetAvailableBuildingsQVariantList NOTIFY AvailableBuildingsChanged)
 	Q_PROPERTY(bool selected READ IsSelected WRITE SetSelected NOTIFY SelectedChanged)
 
 public:
@@ -54,6 +57,7 @@ public:
 
 	virtual void InitializeHistory() override;
 
+	void DoDay();
 	void DoMonth();
 
 	LandedTitle *GetBarony() const
@@ -81,6 +85,21 @@ public:
 
 		this->Type = type;
 		emit TypeChanged();
+	}
+
+	Character *GetOwner() const
+	{
+		return this->Owner;
+	}
+
+	void SetOwner(Character *character)
+	{
+		if (character == this->GetOwner()) {
+			return;
+		}
+
+		this->Owner = character;
+		emit OwnerChanged();
 	}
 
 	Metternich::Province *GetProvince() const
@@ -190,15 +209,44 @@ public:
 	Q_INVOKABLE void AddBuilding(Building *building)
 	{
 		this->Buildings.insert(building);
+		emit BuildingsChanged();
 	}
 
 	Q_INVOKABLE void RemoveBuilding(Building *building)
 	{
 		this->Buildings.erase(building);
+		emit BuildingsChanged();
 	}
 
 	std::vector<Building *> GetAvailableBuildings() const;
 	QVariantList GetAvailableBuildingsQVariantList() const;
+
+	Building *GetUnderConstructionBuilding() const
+	{
+		return this->UnderConstructionBuilding;
+	}
+
+	void SetUnderConstructionBuilding(Building *building);
+
+	int GetConstructionDays() const
+	{
+		return this->ConstructionDays;
+	}
+
+	void SetConstructionDays(const int construction_days)
+	{
+		if (construction_days == this->GetConstructionDays()) {
+			return;
+		}
+
+		this->ConstructionDays = construction_days;
+		emit ConstructionDaysChanged();
+	}
+
+	void ChangeConstructionDays(const int change)
+	{
+		this->SetConstructionDays(this->GetConstructionDays() + change);
+	}
 
 	Metternich::Commodity *GetCommodity() const
 	{
@@ -263,15 +311,20 @@ public:
 
 	void SetSelected(const bool selected, const bool notify_engine_interface = true);
 
+	Q_INVOKABLE void order_construction(const QVariant &building_variant);
+
 signals:
 	void NameChanged();
 	void TypeChanged();
+	void OwnerChanged();
 	void PopulationUnitsChanged();
 	void PopulationChanged();
 	void PopulationCapacityChanged();
 	void PopulationGrowthChanged();
 	void BuildingsChanged();
 	void AvailableBuildingsChanged();
+	void UnderConstructionBuildingChanged();
+	void ConstructionDaysChanged();
 	void CommodityChanged();
 	void HoldingSizeChanged();
 	void LifeRatingChanged();
@@ -280,12 +333,15 @@ signals:
 private:
 	LandedTitle *Barony = nullptr;
 	HoldingType *Type = nullptr;
+	Character *Owner = nullptr; //the owner of the holding
 	Metternich::Province *Province = nullptr; //the province to which this holding belongs
 	std::vector<std::unique_ptr<PopulationUnit>> PopulationUnits;
 	int PopulationCapacity = 0; //the population capacity
 	int Population = 0; //the size of this holding's total population
 	int PopulationGrowth = 0; //the population growth, in permyriad (per 10,000)
 	std::set<Building *> Buildings;
+	Building *UnderConstructionBuilding = nullptr; //the building currently under construction
+	int ConstructionDays = 0; //the amount of days remaining to construct the building under construction
 	Metternich::Commodity *Commodity = nullptr; //the commodity produced by the holding (if any)
 	int HoldingSize = 100; //the holding size, which affects population capacity (100 = normal size)
 	int LifeRating = 0; //the holding's life rating, which affects population capacity

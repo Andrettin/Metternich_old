@@ -108,6 +108,9 @@ void Game::Run()
 */
 void Game::DoTick()
 {
+	//process the orders given by the player
+	this->DoOrders();
+
 	QDateTime old_date = CurrentDate;
 	this->CurrentDate = this->CurrentDate.addDays(1);
 	emit CurrentDateChanged();
@@ -130,6 +133,14 @@ void Game::DoTick()
 */
 void Game::DoDay()
 {
+	for (Province *province : Province::GetAll()) {
+		if (province->GetCounty() == nullptr) {
+			continue;
+		}
+
+		province->DoDay();
+	}
+
 }
 
 /**

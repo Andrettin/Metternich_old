@@ -203,6 +203,16 @@ void Province::Check() const
 }
 
 /**
+**	@brief	Do the province's daily actions
+*/
+void Province::DoDay()
+{
+	for (Holding *holding : this->GetHoldings()) {
+		holding->DoDay();
+	}
+}
+
+/**
 **	@brief	Do the province's monthly actions
 */
 void Province::DoMonth()

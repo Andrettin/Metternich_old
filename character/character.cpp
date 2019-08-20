@@ -5,6 +5,7 @@
 #include "culture/culture.h"
 #include "database/gsml_property.h"
 #include "game/game.h"
+#include "holding/holding.h"
 #include "landed_title/landed_title.h"
 #include "landed_title/landed_title_tier.h"
 #include "random.h"
@@ -125,6 +126,23 @@ void Character::RemoveLandedTitle(LandedTitle *title)
 QVariantList Character::GetTraitsQVariantList() const
 {
 	return ContainerToQVariantList(this->GetTraits());
+}
+
+/**
+**	@brief	Get whether the character can build in a holding
+**
+**	@param	holding	The holding
+*/
+bool Character::CanBuildInHolding(const Holding *holding)
+{
+	return holding->GetOwner() == this || this->IsAnyLiegeOf(holding->GetOwner());
+}
+
+bool Character::can_build_in_holding(const QVariant &holding_variant)
+{
+	QObject *holding_object = qvariant_cast<QObject *>(holding_variant);
+	const Holding *holding = static_cast<Holding *>(holding_object);
+	return this->CanBuildInHolding(holding);
 }
 
 }

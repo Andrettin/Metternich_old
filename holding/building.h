@@ -18,6 +18,7 @@ class Building : public DataEntry, public DataType<Building>
 	Q_PROPERTY(QString icon READ GetIconPathQString WRITE SetIconPathQString NOTIFY IconPathChanged)
 	Q_PROPERTY(QString icon_path READ GetIconPathQString WRITE SetIconPathQString NOTIFY IconPathChanged)
 	Q_PROPERTY(QVariantList holding_types READ GetHoldingTypesQVariantList)
+	Q_PROPERTY(int construction_days MEMBER ConstructionDays READ GetConstructionDays)
 
 public:
 	static constexpr const char *ClassIdentifier = "building";
@@ -62,6 +63,11 @@ public:
 	Q_INVOKABLE void AddHoldingType(HoldingType *holding_type);
 	Q_INVOKABLE void RemoveHoldingType(HoldingType *holding_type);
 
+	int GetConstructionDays() const
+	{
+		return this->ConstructionDays;
+	}
+
 	bool IsAvailableForHolding(const Holding *holding) const;
 	bool IsBuildableInHolding(const Holding *holding) const;
 
@@ -71,6 +77,7 @@ signals:
 private:
 	std::string IconPath;
 	std::vector<HoldingType *> HoldingTypes;
+	int ConstructionDays = 0; //how many days does it take to construct this building
 	std::unique_ptr<Condition> Preconditions;
 	std::unique_ptr<Condition> Conditions;
 };

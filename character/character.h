@@ -14,6 +14,7 @@ namespace Metternich {
 class Culture;
 class Dynasty;
 class GSMLProperty;
+class Holding;
 class LandedTitle;
 class Religion;
 class Trait;
@@ -313,6 +314,17 @@ public:
 		return const_cast<Character *>(this);
 	}
 
+	bool IsAnyLiegeOf(const Character *character) const
+	{
+		if (character->GetLiege() == nullptr) {
+			return false;
+		} else if (this == character->GetLiege()) {
+			return true;
+		}
+
+		return this->IsAnyLiegeOf(character->GetLiege());
+	}
+
 	LandedTitle *GetRealm() const
 	{
 		Character *top_liege = this->GetTopLiege();
@@ -355,6 +367,9 @@ public:
 	{
 		this->SetWealth(this->GetWealth() + change);
 	}
+
+	bool CanBuildInHolding(const Holding *holding);
+	Q_INVOKABLE bool can_build_in_holding(const QVariant &holding_variant);
 
 signals:
 	void NameChanged();

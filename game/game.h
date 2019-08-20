@@ -4,8 +4,10 @@
 #include <QLocale>
 #include <QObject>
 
+#include <functional>
 #include <memory>
-#include <mutex>
+#include <queue>
+#include <shared_mutex>
 #include <thread>
 
 namespace Metternich {
@@ -77,6 +79,22 @@ public:
 		emit PlayerCharacterChanged();
 	}
 
+	void PostOrder(const std::function<void()> &function)
+	{
+		std::unique_lock<std::shared_mutex> lock(this->Mutex);
+		this->Orders.push(function);
+	}
+
+	void DoOrders()
+	{
+		std::shared_lock<std::shared_mutex> lock(this->Mutex);
+
+		while (!this->Orders.empty()) {
+			this->Orders.front()();
+			this->Orders.pop();
+		}
+	}
+
 	void GenerateMissingTitleHolders();
 	void PurgeSuperfluousCharacters();
 
@@ -91,6 +109,8 @@ private:
 	QDateTime CurrentDate;
 	GameSpeed Speed;
 	Character *PlayerCharacter = nullptr;
+	std::queue<std::function<void()>> Orders; //orders given by the player, received from the UI thread
+	mutable std::shared_mutex Mutex;
 };
 
 }
