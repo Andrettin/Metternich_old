@@ -174,6 +174,13 @@ void Province::InitializeHistory()
 	}
 
 	this->CalculatePopulation();
+
+	if (this->BordersRiver()) {
+		this->ChangeLifeRating(1); //increase life rating if this province borders a river
+	}
+	if (this->IsCoastal()) {
+		this->ChangeLifeRating(1); //increase life rating if this province is coastal
+	}
 }
 
 /**
@@ -481,7 +488,39 @@ bool Province::BordersWater() const
 }
 
 /**
-**	@brief	Set this province's life rating
+**	@brief	Get whether this province borders a river province
+**
+**	@return	True if the province borders a river province, or false otherwise
+*/
+bool Province::BordersRiver() const
+{
+	for (const Province *border_province : this->BorderProvinces) {
+		if (border_province->GetTerrain()->IsRiver()) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
+**	@brief	Get whether this province is coastal
+**
+**	@return	True if the province is coastal, or false otherwise
+*/
+bool Province::IsCoastal() const
+{
+	for (const Province *border_province : this->BorderProvinces) {
+		if (border_province->GetTerrain()->IsOcean()) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
+**	@brief	Set the province's life rating
 **
 **	@param	life_rating	The life rating
 */

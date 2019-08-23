@@ -180,6 +180,8 @@ public:
 	}
 
 	bool BordersWater() const;
+	bool BordersRiver() const;
+	bool IsCoastal() const;
 
 	int GetLifeRating() const
 	{

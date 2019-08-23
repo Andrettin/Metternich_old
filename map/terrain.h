@@ -14,6 +14,8 @@ class Terrain : public DataEntry, public DataType<Terrain>
 	Q_PROPERTY(QColor color READ GetColor CONSTANT)
 	Q_PROPERTY(bool water MEMBER Water READ IsWater)
 	Q_PROPERTY(bool navigable MEMBER Navigable READ IsNavigable)
+	Q_PROPERTY(bool ocean MEMBER Ocean READ IsOcean)
+	Q_PROPERTY(bool river MEMBER River READ IsRiver)
 	Q_PROPERTY(int life_rating MEMBER LifeRating READ GetLifeRating)
 
 public:
@@ -45,6 +47,16 @@ public:
 		return this->Navigable;
 	}
 
+	bool IsOcean() const
+	{
+		return this->Ocean;
+	}
+
+	bool IsRiver() const
+	{
+		return this->River;
+	}
+
 	int GetLifeRating() const
 	{
 		return this->LifeRating;
@@ -54,6 +66,8 @@ private:
 	QColor Color; //the color used to identify the terrain in the terrain map
 	bool Water = false; //whether the terrain is a water terrain
 	bool Navigable = false; //whether this water terrain is navigable
+	bool Ocean = false;
+	bool River = false;
 	int LifeRating = 0; //the life rating of the terrain
 };
 
