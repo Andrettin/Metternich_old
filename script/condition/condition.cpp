@@ -54,14 +54,14 @@ std::unique_ptr<Condition> Condition::FromGSMLScope(const GSMLData &scope)
 		condition = std::make_unique<NotCondition>();
 	} else if (condition_identifier == "nand") {
 		auto and_condition = std::make_unique<AndCondition>();
-		Database::ProcessGSMLData(and_condition.get(), scope);
+		Database::ProcessGSMLData(and_condition, scope);
 		condition = std::make_unique<NotCondition>(std::move(and_condition));
 		return condition;
 	} else {
 		throw std::runtime_error("Invalid scope condition: \"" + condition_identifier + "\".");
 	}
 
-	Database::ProcessGSMLData(condition.get(), scope);
+	Database::ProcessGSMLData(condition, scope);
 
 	return condition;
 }

@@ -55,5 +55,4 @@ int Commodity::CalculateChance(Holding *holding) const
 	return this->Chance->Calculate(holding);
 }
 
-
 }

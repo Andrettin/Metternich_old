@@ -19,6 +19,7 @@ SOURCES += \
         culture/culture_base.cpp \
         database/csv_data.cpp \
         database/data_entry.cpp \
+        database/database.cpp \
         database/gsml_data.cpp \
         defines.cpp \
         economy/commodity.cpp \

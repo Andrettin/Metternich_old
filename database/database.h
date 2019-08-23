@@ -47,6 +47,8 @@ public:
 		}
 	}
 
+	static void ProcessGSMLPropertyForObject(QObject *object, const GSMLProperty &property);
+
 private:
 	static inline std::unique_ptr<Database> Instance;
 	static inline std::once_flag OnceFlag;
