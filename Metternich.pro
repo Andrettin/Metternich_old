@@ -44,7 +44,9 @@ SOURCES += \
         script/chance_factor.cpp \
         script/condition/condition.cpp \
         script/factor_modifier.cpp \
+        script/identifiable_modifier.cpp \
         script/modifier.cpp \
+        script/modifier_base.cpp \
         script/modifier_effect/modifier_effect.cpp \
         third_party/maskedmousearea/maskedmousearea.cpp \
         translator.cpp
@@ -116,7 +118,9 @@ HEADERS += \
     script/condition/or_condition.h \
     script/condition/terrain_condition.h \
     script/factor_modifier.h \
+    script/identifiable_modifier.h \
     script/modifier.h \
+    script/modifier_base.h \
     script/modifier_effect/modifier_effect.h \
     script/modifier_effect/population_capacity_modifier_effect.h \
     script/modifier_effect/population_capacity_modifier_modifier_effect.h \
