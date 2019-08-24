@@ -19,3 +19,5 @@ Coding Guidelines for Metternich
 9. The precompiled headers should include all library/third party headers used by the engine, but no headers belonging to Metternich itself. This way, compile times are reduced substantially, without 
 
 10. Using classes from the standard C++ library is to be preferred to Qt-specific ones.
+
+11. Include Metternich headers in other Metternich headers only in the following circumstances: 1. if a class defined in the header derives from a class defined in the other header, 2. if a template class defined in the header requires the inclusion of the other header or 3. if the header pertains to a small derived class of e.g. a scripted condition, and is itself only included in a source file with a factory function (in such a case the header of the small derived class should have no source file, so that compilation and linking times are kept in check).

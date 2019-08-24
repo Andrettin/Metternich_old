@@ -15,6 +15,7 @@
 #include "map/terrain.h"
 #include "population/population_unit.h"
 #include "religion.h"
+#include "script/modifier.h"
 #include "translator.h"
 #include "util.h"
 
@@ -176,10 +177,10 @@ void Province::InitializeHistory()
 	this->CalculatePopulation();
 
 	if (this->BordersRiver()) {
-		this->ChangeLifeRating(1); //increase life rating if this province borders a river
+		this->ChangePopulationCapacityAdditiveModifier(10000); //increase population capacity if this province borders a river
 	}
 	if (this->IsCoastal()) {
-		this->ChangeLifeRating(1); //increase life rating if this province is coastal
+		this->ChangePopulationCapacityAdditiveModifier(10000); //increase population capacity if this province is coastal
 	}
 }
 
@@ -352,20 +353,18 @@ void Province::SetTerrain(Metternich::Terrain *terrain)
 	}
 
 	const Metternich::Terrain *old_terrain = this->GetTerrain();
+
+	if (old_terrain != nullptr && old_terrain->GetModifier() != nullptr) {
+		old_terrain->GetModifier()->Remove(this);
+	}
+
 	this->Terrain = terrain;
+
+	if (terrain != nullptr && terrain->GetModifier() != nullptr) {
+		terrain->GetModifier()->Apply(this);
+	}
+
 	emit TerrainChanged();
-
-	int old_terrain_life_rating = 0;
-	if (old_terrain != nullptr) {
-		old_terrain_life_rating = old_terrain->GetLifeRating();
-	}
-
-	int new_terrain_life_rating = 0;
-	if (terrain != nullptr) {
-		new_terrain_life_rating = terrain->GetLifeRating();
-	}
-
-	this->ChangeLifeRating(new_terrain_life_rating - old_terrain_life_rating);
 }
 
 /**
@@ -393,6 +392,50 @@ void Province::CalculatePopulation()
 		population += holding->GetPopulation();
 	}
 	this->SetPopulation(population);
+}
+
+/**
+**	@brief	Set the province's population capacity additive modifier
+**
+**	@param	population	The new population capacity additive modifier for the province
+*/
+void Province::SetPopulationCapacityAdditiveModifier(const int population_capacity_modifier)
+{
+	if (population_capacity_modifier == this->GetPopulationCapacityAdditiveModifier()) {
+		return;
+	}
+
+	for (Holding *holding : this->GetHoldings()) {
+		holding->ChangeBasePopulationCapacity(-this->GetPopulationCapacityAdditiveModifier());
+	}
+
+	this->PopulationCapacityAdditiveModifier = population_capacity_modifier;
+
+	for (Holding *holding : this->GetHoldings()) {
+		holding->ChangeBasePopulationCapacity(this->GetPopulationCapacityAdditiveModifier());
+	}
+}
+
+/**
+**	@brief	Set the province's population capacity modifier
+**
+**	@param	population	The new population capacity modifier for the province
+*/
+void Province::SetPopulationCapacityModifier(const int population_capacity_modifier)
+{
+	if (population_capacity_modifier == this->GetPopulationCapacityModifier()) {
+		return;
+	}
+
+	for (Holding *holding : this->GetHoldings()) {
+		holding->ChangePopulationCapacityModifier(-this->GetPopulationCapacityModifier());
+	}
+
+	this->PopulationCapacityModifier = population_capacity_modifier;
+
+	for (Holding *holding : this->GetHoldings()) {
+		holding->ChangePopulationCapacityModifier(this->GetPopulationCapacityModifier());
+	}
 }
 
 /**
@@ -517,26 +560,6 @@ bool Province::IsCoastal() const
 	}
 
 	return false;
-}
-
-/**
-**	@brief	Set the province's life rating
-**
-**	@param	life_rating	The life rating
-*/
-void Province::SetLifeRating(const int life_rating)
-{
-	if (life_rating == this->GetLifeRating()) {
-		return;
-	}
-
-	const int old_life_rating = this->GetLifeRating();
-	this->LifeRating = life_rating;
-	emit LifeRatingChanged();
-
-	for (Holding *holding : this->GetHoldings()) {
-		holding->ChangeLifeRating(life_rating - old_life_rating);
-	}
 }
 
 /**

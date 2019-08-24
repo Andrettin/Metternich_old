@@ -36,11 +36,9 @@ class Holding : public DataEntry
 	Q_PROPERTY(int construction_days READ GetConstructionDays NOTIFY ConstructionDaysChanged)
 	Q_PROPERTY(Metternich::Commodity* commodity READ GetCommodity WRITE SetCommodity NOTIFY CommodityChanged)
 	Q_PROPERTY(int holding_size READ GetHoldingSize WRITE SetHoldingSize NOTIFY HoldingSizeChanged)
-	Q_PROPERTY(int life_rating READ GetLifeRating NOTIFY LifeRatingChanged)
 	Q_PROPERTY(bool selected READ IsSelected WRITE SetSelected NOTIFY SelectedChanged)
 
 public:
-	static constexpr int PopulationCapacityPerLifeRating = 10000;
 	static constexpr int BasePopulationGrowthPercentMultiplier = 100;
 
 	static Holding *GetSelectedHolding()
@@ -77,15 +75,7 @@ public:
 		return this->Type;
 	}
 
-	void SetType(HoldingType *type)
-	{
-		if (type == this->GetType()) {
-			return;
-		}
-
-		this->Type = type;
-		emit TypeChanged();
-	}
+	void SetType(HoldingType *type);
 
 	Character *GetOwner() const
 	{
@@ -131,6 +121,46 @@ public:
 
 	void CalculatePopulation();
 
+	int GetBasePopulationCapacity() const
+	{
+		return this->BasePopulationCapacity;
+	}
+
+	void SetBasePopulationCapacity(const int base_population_capacity)
+	{
+		if (base_population_capacity == this->GetBasePopulationCapacity()) {
+			return;
+		}
+
+		this->BasePopulationCapacity = base_population_capacity;
+		this->CalculatePopulationCapacity();
+	}
+
+	void ChangeBasePopulationCapacity(const int change)
+	{
+		this->SetBasePopulationCapacity(this->GetBasePopulationCapacity() + change);
+	}
+
+	int GetPopulationCapacityModifier() const
+	{
+		return this->PopulationCapacityModifier;
+	}
+
+	void SetPopulationCapacityModifier(const int population_capacity_modifier)
+	{
+		if (population_capacity_modifier == this->GetPopulationCapacityModifier()) {
+			return;
+		}
+
+		this->PopulationCapacityModifier = population_capacity_modifier;
+		this->CalculatePopulationCapacity();
+	}
+
+	void ChangePopulationCapacityModifier(const int change)
+	{
+		this->SetPopulationCapacityModifier(this->GetPopulationCapacityModifier() + change);
+	}
+
 	int GetPopulationCapacity() const
 	{
 		return this->PopulationCapacity;
@@ -149,7 +179,9 @@ public:
 
 	void CalculatePopulationCapacity()
 	{
-		int population_capacity = this->GetLifeRating() * Holding::PopulationCapacityPerLifeRating;
+		int population_capacity = this->GetBasePopulationCapacity();
+		population_capacity *= this->GetPopulationCapacityModifier();
+		population_capacity /= 100;
 		population_capacity *= this->GetHoldingSize();
 		population_capacity /= 100;
 		this->SetPopulationCapacity(population_capacity);
@@ -281,29 +313,6 @@ public:
 		this->CalculatePopulationCapacity();
 	}
 
-	int GetLifeRating() const
-	{
-		return this->LifeRating;
-	}
-
-	void SetLifeRating(const int life_rating)
-	{
-		if (life_rating == this->GetLifeRating()) {
-			return;
-		}
-
-		this->LifeRating = life_rating;
-		emit LifeRatingChanged();
-		this->CalculatePopulationCapacity();
-	}
-
-	void ChangeLifeRating(const int change)
-	{
-		this->SetLifeRating(this->GetLifeRating() + change);
-	}
-
-	void CalculateLifeRating();
-
 	bool IsSelected() const
 	{
 		return this->Selected;
@@ -327,7 +336,6 @@ signals:
 	void ConstructionDaysChanged();
 	void CommodityChanged();
 	void HoldingSizeChanged();
-	void LifeRatingChanged();
 	void SelectedChanged();
 
 private:
@@ -336,6 +344,8 @@ private:
 	Character *Owner = nullptr; //the owner of the holding
 	Metternich::Province *Province = nullptr; //the province to which this holding belongs
 	std::vector<std::unique_ptr<PopulationUnit>> PopulationUnits;
+	int BasePopulationCapacity = 0; //the base population capacity
+	int PopulationCapacityModifier = 100; //the population capacity modifier
 	int PopulationCapacity = 0; //the population capacity
 	int Population = 0; //the size of this holding's total population
 	int PopulationGrowth = 0; //the population growth, in permyriad (per 10,000)
@@ -344,7 +354,6 @@ private:
 	int ConstructionDays = 0; //the amount of days remaining to construct the building under construction
 	Metternich::Commodity *Commodity = nullptr; //the commodity produced by the holding (if any)
 	int HoldingSize = 100; //the holding size, which affects population capacity (100 = normal size)
-	int LifeRating = 0; //the holding's life rating, which affects population capacity
 	bool Selected = false;
 };
 

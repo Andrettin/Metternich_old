@@ -41,7 +41,6 @@ class Province : public DataEntry, public DataType<Province>
 	Q_PROPERTY(int population READ GetPopulation WRITE SetPopulation NOTIFY PopulationChanged)
 	Q_PROPERTY(QVariantList holdings READ GetHoldingsQVariantList NOTIFY HoldingsChanged)
 	Q_PROPERTY(Metternich::Holding* capital_holding READ GetCapitalHolding WRITE SetCapitalHolding NOTIFY CapitalHoldingChanged)
-	Q_PROPERTY(int life_rating READ GetLifeRating NOTIFY LifeRatingChanged)
 	Q_PROPERTY(bool selected READ IsSelected WRITE SetSelected NOTIFY SelectedChanged)
 	Q_PROPERTY(bool selectable READ IsSelectable CONSTANT)
 
@@ -134,6 +133,30 @@ public:
 
 	void CalculatePopulation();
 
+	int GetPopulationCapacityAdditiveModifier() const
+	{
+		return this->PopulationCapacityAdditiveModifier;
+	}
+
+	void SetPopulationCapacityAdditiveModifier(const int population_capacity_modifier);
+
+	void ChangePopulationCapacityAdditiveModifier(const int change)
+	{
+		this->SetPopulationCapacityAdditiveModifier(this->GetPopulationCapacityAdditiveModifier() + change);
+	}
+
+	int GetPopulationCapacityModifier() const
+	{
+		return this->PopulationCapacityModifier;
+	}
+
+	void SetPopulationCapacityModifier(const int population_capacity_modifier);
+
+	void ChangePopulationCapacityModifier(const int change)
+	{
+		this->SetPopulationCapacityModifier(this->GetPopulationCapacityModifier() + change);
+	}
+
 	const std::vector<Holding *> &GetHoldings() const
 	{
 		return this->Holdings;
@@ -183,18 +206,6 @@ public:
 	bool BordersRiver() const;
 	bool IsCoastal() const;
 
-	int GetLifeRating() const
-	{
-		return this->LifeRating;
-	}
-
-	void SetLifeRating(const int life_rating);
-
-	void ChangeLifeRating(const int change)
-	{
-		this->SetLifeRating(this->GetLifeRating() + change);
-	}
-
 	bool IsSelected() const
 	{
 		return this->Selected;
@@ -219,7 +230,6 @@ signals:
 	void PopulationChanged();
 	void HoldingsChanged();
 	void CapitalHoldingChanged();
-	void LifeRatingChanged();
 	void SelectedChanged();
 
 private:
@@ -231,12 +241,13 @@ private:
 	Metternich::Culture *Culture = nullptr;
 	Metternich::Religion *Religion = nullptr;
 	int Population = 0; //the sum of the population of all of the province's settlement holdings
+	int PopulationCapacityAdditiveModifier = 0; //the population capacity additive modifier which the province provides to its holdings
+	int PopulationCapacityModifier = 0; //the population capacity modifier which the province provides to its holdings
 	std::vector<Holding *> Holdings;
 	std::map<LandedTitle *, std::unique_ptr<Holding>> HoldingsByBarony; //the province's holdings, mapped to their respective baronies
 	Holding *CapitalHolding = nullptr;
 	std::vector<Region *> Regions; //the regions to which this province belongs
 	std::set<Province *> BorderProvinces; //provinces bordering this one
-	int LifeRating = 0;
 	bool Selected = false;
 	std::vector<std::unique_ptr<PopulationUnit>> PopulationUnits; //population units set for this province in history, used during initialization to generate population units in the province's settlements
 };

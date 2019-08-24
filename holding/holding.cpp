@@ -13,6 +13,7 @@
 #include "population/population_unit.h"
 #include "random.h"
 #include "religion.h"
+#include "script/modifier.h"
 #include "translator.h"
 #include "util.h"
 
@@ -27,14 +28,13 @@ namespace Metternich {
 **	@param	type		The holding's type (e.g. city)
 **	@param	province	The province where the holding is located
 */
-Holding::Holding(LandedTitle *barony, HoldingType *type, Metternich::Province *province) : DataEntry(barony->GetIdentifier()), Barony(barony), Type(type), Province(province)
+Holding::Holding(LandedTitle *barony, HoldingType *type, Metternich::Province *province) : DataEntry(barony->GetIdentifier()), Barony(barony), Province(province)
 {
 	barony->SetHolding(this);
+	this->SetType(type);
 	this->SetOwner(barony->GetHolder());
-
-	if (Game::GetInstance()->IsRunning()) {
-		this->CalculateLifeRating();
-	}
+	this->ChangeBasePopulationCapacity(province->GetPopulationCapacityAdditiveModifier());
+	this->ChangePopulationCapacityModifier(province->GetPopulationCapacityModifier());
 }
 
 /**
@@ -69,7 +69,6 @@ void Holding::InitializeHistory()
 	this->RemoveEmptyPopulationUnits();
 	this->SortPopulationUnits();
 	this->CalculatePopulation();
-	this->CalculateLifeRating();
 }
 
 /**
@@ -104,6 +103,30 @@ void Holding::DoMonth()
 std::string Holding::GetName() const
 {
 	return Translator::GetInstance()->Translate(this->GetBarony()->GetIdentifier(), {this->GetProvince()->GetCulture()->GetIdentifier(), this->GetProvince()->GetCulture()->GetCultureGroup()->GetIdentifier(), this->GetProvince()->GetReligion()->GetIdentifier()});
+}
+
+/**
+**	@brief	Set the holding's type
+**
+**	@param	type	The holding type
+*/
+void Holding::SetType(HoldingType *type)
+{
+	if (type == this->GetType()) {
+		return;
+	}
+
+	if (this->GetType() != nullptr && this->GetType()->GetModifier() != nullptr) {
+		this->GetType()->GetModifier()->Remove(this);
+	}
+
+	this->Type = type;
+
+	if (this->GetType() != nullptr && this->GetType()->GetModifier() != nullptr) {
+		this->GetType()->GetModifier()->Apply(this);
+	}
+
+	emit TypeChanged();
 }
 
 /**
@@ -326,15 +349,6 @@ void Holding::GenerateCommodity()
 	}
 
 	this->SetCommodity(chosen_commodity);
-}
-
-/**
-**	@brief	Calculate the life rating for the holding
-*/
-void Holding::CalculateLifeRating()
-{
-	int life_rating = this->GetProvince()->GetLifeRating();
-	this->SetLifeRating(life_rating);
 }
 
 /**

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "holding/holding.h"
+#include "map/province.h"
 #include "script/condition/condition.h"
 
 namespace Metternich {
@@ -18,8 +20,15 @@ public:
 		return identifier;
 	}
 
-	virtual bool Check(const Province *province) const override;
-	virtual bool Check(const Holding *holding) const override;
+	virtual bool Check(const Province *province) const override
+	{
+		return province->BordersWater() == this->BordersWater;
+	}
+
+	virtual bool Check(const Holding *holding) const override
+	{
+		return this->Check(holding->GetProvince());
+	}
 
 private:
 	bool BordersWater = false;

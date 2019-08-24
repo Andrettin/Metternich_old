@@ -23,11 +23,15 @@ SOURCES += \
         database/gsml_data.cpp \
         defines.cpp \
         economy/commodity.cpp \
+        economy/employee.cpp \
+        economy/employment_owner.cpp \
+        economy/employment_type.cpp \
         engine_interface.cpp \
         game/game.cpp \
         history/history.cpp \
         holding/building.cpp \
         holding/holding.cpp \
+        holding/holding_type.cpp \
         landed_title/landed_title.cpp \
         main.cpp \
         map/map.cpp \
@@ -38,11 +42,10 @@ SOURCES += \
         population/population_type.cpp \
         population/population_unit.cpp \
         script/chance_factor.cpp \
-        script/condition/borders_water_condition.cpp \
-        script/condition/commodity_condition.cpp \
         script/condition/condition.cpp \
-        script/condition/terrain_condition.cpp \
         script/factor_modifier.cpp \
+        script/modifier.cpp \
+        script/modifier_effect/modifier_effect.cpp \
         third_party/maskedmousearea/maskedmousearea.cpp \
         translator.cpp
 
@@ -81,6 +84,9 @@ HEADERS += \
     database/simple_data_type.h \
     defines.h \
     economy/commodity.h \
+    economy/employee.h \
+    economy/employment_owner.h \
+    economy/employment_type.h \
     empty_image_provider.h \
     engine_interface.h \
     game/game.h \
@@ -110,6 +116,10 @@ HEADERS += \
     script/condition/or_condition.h \
     script/condition/terrain_condition.h \
     script/factor_modifier.h \
+    script/modifier.h \
+    script/modifier_effect/modifier_effect.h \
+    script/modifier_effect/population_capacity_modifier_effect.h \
+    script/modifier_effect/population_capacity_modifier_modifier_effect.h \
     third_party/maskedmousearea/maskedmousearea.h \
     translator.h \
     type_traits.h \

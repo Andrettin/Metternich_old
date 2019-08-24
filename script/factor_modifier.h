@@ -47,7 +47,7 @@ public:
 private:
 	int Factor = 0; //the factor of the modifier itself
 	bool Additive = false; //whether the modifier is additive instead of multiplicative
-	std::vector<std::unique_ptr<Condition>> Conditions; //conditions for whether the modifier is to apply
+	std::vector<std::unique_ptr<Condition>> Conditions; //conditions for whether the modifier is to be applied
 };
 
 }

@@ -9,6 +9,7 @@
 namespace Metternich {
 
 class Building;
+class Modifier;
 
 class HoldingType : public DataEntry, public DataType<HoldingType>
 {
@@ -20,7 +21,10 @@ public:
 	static constexpr const char *ClassIdentifier = "holding_type";
 	static constexpr const char *DatabaseFolder = "holding_types";
 
-	HoldingType(const std::string &identifier) : DataEntry(identifier) {}
+	HoldingType(const std::string &identifier);
+	virtual ~HoldingType() override;
+
+	virtual void ProcessGSMLScope(const GSMLData &scope) override;
 
 	bool IsSettlement() const
 	{
@@ -42,9 +46,15 @@ public:
 		this->Buildings.erase(std::remove(this->Buildings.begin(), this->Buildings.end(), building), this->Buildings.end());
 	}
 
+	const std::unique_ptr<Metternich::Modifier> &GetModifier() const
+	{
+		return this->Modifier;
+	}
+
 private:
 	bool Settlement = false;	//whether the holding type occupies a settlement slot
 	std::vector<Building *> Buildings;
+	std::unique_ptr<Metternich::Modifier> Modifier; //the modifier applied to holdings of this type
 };
 
 }

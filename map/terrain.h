@@ -7,6 +7,8 @@
 
 namespace Metternich {
 
+class Modifier;
+
 class Terrain : public DataEntry, public DataType<Terrain>
 {
 	Q_OBJECT
@@ -16,7 +18,6 @@ class Terrain : public DataEntry, public DataType<Terrain>
 	Q_PROPERTY(bool navigable MEMBER Navigable READ IsNavigable)
 	Q_PROPERTY(bool ocean MEMBER Ocean READ IsOcean)
 	Q_PROPERTY(bool river MEMBER River READ IsRiver)
-	Q_PROPERTY(int life_rating MEMBER LifeRating READ GetLifeRating)
 
 public:
 	static constexpr const char *ClassIdentifier = "terrain";
@@ -28,7 +29,8 @@ private:
 	static inline std::map<QRgb, Terrain *> InstancesByRGB;
 
 public:
-	Terrain(const std::string &identifier) : DataEntry(identifier) {}
+	Terrain(const std::string &identifier);
+	virtual ~Terrain() override;
 
 	virtual void ProcessGSMLScope(const GSMLData &scope) override;
 
@@ -57,9 +59,9 @@ public:
 		return this->River;
 	}
 
-	int GetLifeRating() const
+	const std::unique_ptr<Metternich::Modifier> &GetModifier() const
 	{
-		return this->LifeRating;
+		return this->Modifier;
 	}
 
 private:
@@ -68,7 +70,7 @@ private:
 	bool Navigable = false; //whether this water terrain is navigable
 	bool Ocean = false;
 	bool River = false;
-	int LifeRating = 0; //the life rating of the terrain
+	std::unique_ptr<Metternich::Modifier> Modifier; //the modifier applied to provinces with this terrain
 };
 
 }

@@ -1,6 +1,7 @@
 #include "map/terrain.h"
 
 #include "database/gsml_data.h"
+#include "script/modifier.h"
 
 namespace Metternich {
 
@@ -26,6 +27,20 @@ Terrain *Terrain::GetByRGB(const QRgb &rgb, const bool should_find)
 }
 
 /**
+**	@brief	Constructor
+*/
+Terrain::Terrain(const std::string &identifier) : DataEntry(identifier)
+{
+}
+
+/**
+**	@brief	Destructor
+*/
+Terrain::~Terrain()
+{
+}
+
+/**
 **	@brief	Process a GSML scope
 **
 **	@param	scope	The scope
@@ -45,6 +60,9 @@ void Terrain::ProcessGSMLScope(const GSMLData &scope)
 		const int blue = std::stoi(values.at(2));
 		this->Color.setRgb(red, green, blue);
 		Terrain::InstancesByRGB[this->Color.rgb()] = this;
+	} else if (tag == "modifier") {
+		this->Modifier = std::make_unique<Metternich::Modifier>();
+		Database::ProcessGSMLData(this->Modifier, scope);
 	} else {
 		DataEntryBase::ProcessGSMLScope(scope);
 	}
