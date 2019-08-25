@@ -180,7 +180,7 @@ void Database::ProcessGSMLPropertyForObject(QObject *object, const GSMLProperty 
 */
 void Database::Load()
 {
-	Defines::GetInstance()->Load();
+	Defines::Get()->Load();
 
 	//parse the files for in each data type's folder
 	for (const std::function<void()> &function : this->ParsingFunctions) {

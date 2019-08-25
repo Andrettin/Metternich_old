@@ -30,7 +30,7 @@ Character *Character::Generate(Metternich::Culture *culture, Metternich::Religio
 	character->Religion = religion;
 	character->Name = culture->GenerateMaleName();
 	//generate the character's birth date to be between 60 and 20 years before the current date
-	const QDateTime &current_date = Game::GetInstance()->GetCurrentDate();
+	const QDateTime &current_date = Game::Get()->GetCurrentDate();
 	character->BirthDate = current_date.addDays(Random::GenerateInRange(-60 * 365, -20 * 365));
 	return character;
 }

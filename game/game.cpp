@@ -36,7 +36,7 @@ void Game::Start(const QDateTime &start_date)
 	this->GenerateMissingTitleHolders();
 	this->PurgeSuperfluousCharacters();
 
-	this->SetPlayerCharacter(Character::Get(Defines::GetInstance()->GetPlayerCharacterID()));
+	this->SetPlayerCharacter(Character::Get(Defines::Get()->GetPlayerCharacterID()));
 
 	this->Starting = false;
 	this->Running = true;

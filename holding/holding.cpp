@@ -33,7 +33,7 @@ namespace Metternich {
 Holding::Holding(LandedTitle *barony, HoldingType *type, Metternich::Province *province) : DataEntry(barony->GetIdentifier()), Barony(barony), Province(province)
 {
 	barony->SetHolding(this);
-	this->ChangeBasePopulationGrowth(Defines::GetInstance()->GetBasePopulationGrowth());
+	this->ChangeBasePopulationGrowth(Defines::Get()->GetBasePopulationGrowth());
 	this->SetType(type);
 	this->SetOwner(barony->GetHolder());
 	this->ChangeBasePopulationCapacity(province->GetPopulationCapacityAdditiveModifier());
@@ -107,7 +107,7 @@ void Holding::DoMonth()
 */
 std::string Holding::GetName() const
 {
-	return Translator::GetInstance()->Translate(this->GetBarony()->GetIdentifier(), {this->GetProvince()->GetCulture()->GetIdentifier(), this->GetProvince()->GetCulture()->GetCultureGroup()->GetIdentifier(), this->GetProvince()->GetReligion()->GetIdentifier()});
+	return Translator::Get()->Translate(this->GetBarony()->GetIdentifier(), {this->GetProvince()->GetCulture()->GetIdentifier(), this->GetProvince()->GetCulture()->GetCultureGroup()->GetIdentifier(), this->GetProvince()->GetReligion()->GetIdentifier()});
 }
 
 /**
@@ -402,7 +402,7 @@ void Holding::SetSelected(const bool selected, const bool notify_engine_interfac
 	emit SelectedChanged();
 
 	if (notify_engine_interface) {
-		EngineInterface::GetInstance()->emit SelectedHoldingChanged();
+		EngineInterface::Get()->emit SelectedHoldingChanged();
 	}
 }
 
@@ -410,7 +410,7 @@ void Holding::order_construction(const QVariant &building_variant)
 {
 	QObject *building_object = qvariant_cast<QObject *>(building_variant);
 	Building *building = static_cast<Building *>(building_object);
-	Game::GetInstance()->PostOrder([this, building]() {
+	Game::Get()->PostOrder([this, building]() {
 		this->SetUnderConstructionBuilding(building);
 	});
 }

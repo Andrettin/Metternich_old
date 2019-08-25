@@ -15,7 +15,7 @@ public:
 	/**
 	**	@brief	Get the singleton instance
 	*/
-	static T *GetInstance()
+	static T *Get()
 	{
 		std::call_once(Singleton<T>::OnceFlag, [](){ Singleton<T>::Instance = std::make_unique<T>(); });
 

@@ -67,7 +67,7 @@ Province::Province(const std::string &identifier) : DataEntry(identifier)
 {
 	connect(this, &Province::CultureChanged, this, &IdentifiableDataEntryBase::NameChanged);
 	connect(this, &Province::ReligionChanged, this, &IdentifiableDataEntryBase::NameChanged);
-	connect(Game::GetInstance(), &Game::RunningChanged, this, &Province::UpdateImage);
+	connect(Game::Get(), &Game::RunningChanged, this, &Province::UpdateImage);
 	connect(this, &Province::SelectedChanged, this, &Province::UpdateImage);
 }
 
@@ -198,7 +198,7 @@ void Province::Check() const
 		throw std::runtime_error("Province \"" + this->GetIdentifier() + "\" has no valid color.");
 	}
 
-	if (Game::GetInstance()->IsStarting()) {
+	if (Game::Get()->IsStarting()) {
 		if (this->GetCounty() != nullptr) {
 			if (this->GetCulture() == nullptr) {
 				throw std::runtime_error("Province \"" + this->GetIdentifier() + "\" has no culture.");
@@ -243,10 +243,10 @@ void Province::DoMonth()
 std::string Province::GetName() const
 {
 	if (this->GetCounty() != nullptr) {
-		return Translator::GetInstance()->Translate(this->GetCounty()->GetIdentifier(), {this->GetCulture()->GetIdentifier(), this->GetCulture()->GetCultureGroup()->GetIdentifier(), this->GetReligion()->GetIdentifier()});
+		return Translator::Get()->Translate(this->GetCounty()->GetIdentifier(), {this->GetCulture()->GetIdentifier(), this->GetCulture()->GetCultureGroup()->GetIdentifier(), this->GetReligion()->GetIdentifier()});
 	}
 
-	return Translator::GetInstance()->Translate(this->GetIdentifier()); //province without a county; sea zone, river, lake or wasteland
+	return Translator::Get()->Translate(this->GetIdentifier()); //province without a county; sea zone, river, lake or wasteland
 }
 
 /**
@@ -505,7 +505,7 @@ void Province::CreateHolding(LandedTitle *barony, HoldingType *type)
 		this->SetCapitalHolding(this->Holdings.front());
 	}
 
-	if (Game::GetInstance()->IsRunning()) {
+	if (Game::Get()->IsRunning()) {
 		if (new_holding->GetCommodity() == nullptr) {
 			new_holding->GenerateCommodity();
 		}
@@ -615,7 +615,7 @@ void Province::SetSelected(const bool selected, const bool notify_engine_interfa
 	emit SelectedChanged();
 
 	if (notify_engine_interface) {
-		EngineInterface::GetInstance()->emit SelectedProvinceChanged();
+		EngineInterface::Get()->emit SelectedProvinceChanged();
 	}
 }
 

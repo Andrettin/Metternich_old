@@ -40,15 +40,15 @@ int main(int argc, char *argv[])
 
 		QGuiApplication app(argc, argv);
 
-		Translator *translator = Translator::GetInstance();
+		Translator *translator = Translator::Get();
 
-		Database::GetInstance()->Load();
+		Database::Get()->Load();
 		Map::Load();
 		translator->LoadLocale("english");
 
 		app.installTranslator(translator);
 
-		Game::GetInstance()->Start(Defines::GetInstance()->GetStartDate());
+		Game::Get()->Start(Defines::Get()->GetStartDate());
 
 		QQmlApplicationEngine engine;
 
@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 		qmlRegisterType<Province>();
 		qmlRegisterType<Religion>();
 		qmlRegisterType<Terrain>();
-		engine.rootContext()->setContextProperty("Metternich", EngineInterface::GetInstance());
+		engine.rootContext()->setContextProperty("Metternich", EngineInterface::Get());
 		engine.addImageProvider(QLatin1String("provinces"), new ProvinceImageProvider);
 		engine.addImageProvider(QLatin1String("empty"), new EmptyImageProvider);
 

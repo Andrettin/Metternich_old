@@ -283,11 +283,11 @@ public:
 	static inline bool InitializeClass()
 	{
 		//initialize the database parsing/processing functions for this data type
-		Database::GetInstance()->AddParsingFunction(std::function<void()>(T::ParseDatabase));
-		Database::GetInstance()->AddProcessingFunction(std::function<void(bool)>(T::ProcessDatabase));
-		Database::GetInstance()->AddCheckingFunction(std::function<void()>(T::CheckAll));
-		Database::GetInstance()->AddInitializationFunction(std::function<void()>(T::InitializeAll));
-		Database::GetInstance()->AddHistoryInitializationFunction(std::function<void()>(T::InitializeAllHistory));
+		Database::Get()->AddParsingFunction(std::function<void()>(T::ParseDatabase));
+		Database::Get()->AddProcessingFunction(std::function<void(bool)>(T::ProcessDatabase));
+		Database::Get()->AddCheckingFunction(std::function<void()>(T::CheckAll));
+		Database::Get()->AddInitializationFunction(std::function<void()>(T::InitializeAll));
+		Database::Get()->AddHistoryInitializationFunction(std::function<void()>(T::InitializeAllHistory));
 
 		return true;
 	}

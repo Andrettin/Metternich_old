@@ -38,7 +38,7 @@ void DataEntryBase::LoadHistory(GSMLData &gsml_data)
 	for (const GSMLData &history_entry : gsml_data.GetChildren()) {
 		QDateTime date = History::StringToDate(history_entry.GetTag());
 
-		if (date <= Game::GetInstance()->GetCurrentDate()) {
+		if (date <= Game::Get()->GetCurrentDate()) {
 			for (const GSMLProperty &property : history_entry.GetProperties()) {
 				this->ProcessGSMLDatedProperty(property, date);
 			}
@@ -52,7 +52,7 @@ void DataEntryBase::LoadHistory(GSMLData &gsml_data)
 
 std::string DataEntry::GetName() const
 {
-	return Translator::GetInstance()->Translate(this->Identifier);
+	return Translator::Get()->Translate(this->Identifier);
 }
 
 }

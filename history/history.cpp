@@ -34,7 +34,7 @@ void History::Load()
 
 	History::GeneratePopulationUnits();
 
-	Database::GetInstance()->InitializeHistory();
+	Database::Get()->InitializeHistory();
 }
 
 /**

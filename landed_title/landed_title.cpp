@@ -140,7 +140,7 @@ void LandedTitle::Check() const
 		throw std::runtime_error("Landed title \"" + this->GetIdentifier() + "\" has a different province and capital province.");
 	}
 
-	if (Game::GetInstance()->IsStarting()) {
+	if (Game::Get()->IsStarting()) {
 		if (this->GetCapitalProvince() == nullptr) {
 			throw std::runtime_error("Landed title \"" + this->GetIdentifier() + "\" has no capital province.");
 		}
@@ -184,7 +184,7 @@ std::string LandedTitle::GetName() const
 		suffixes.push_back(culture->GetCultureGroup()->GetIdentifier());
 	}
 
-	return Translator::GetInstance()->Translate(this->GetIdentifier(), suffixes);
+	return Translator::Get()->Translate(this->GetIdentifier(), suffixes);
 }
 
 void LandedTitle::SetHolder(Character *character)

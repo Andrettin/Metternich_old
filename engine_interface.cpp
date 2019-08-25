@@ -12,7 +12,7 @@ namespace Metternich {
 
 Game *EngineInterface::GetGame() const
 {
-	return Game::GetInstance();
+	return Game::Get();
 }
 
 QVariant EngineInterface::GetProvinces() const
