@@ -130,6 +130,11 @@ void Province::ProcessGSMLScope(const GSMLData &scope)
 		const int green = std::stoi(values.at(1));
 		const int blue = std::stoi(values.at(2));
 		this->Color.setRgb(red, green, blue);
+
+		if (Province::InstancesByRGB.find(this->Color.rgb()) != Province::InstancesByRGB.end()) {
+			throw std::runtime_error("The color set for province \"" + this->GetIdentifier() + "\" is already used by province \"" + Province::InstancesByRGB.find(this->Color.rgb())->second->GetIdentifier() + "\"");
+		}
+
 		Province::InstancesByRGB[this->Color.rgb()] = this;
 	} else {
 		DataEntryBase::ProcessGSMLScope(scope);
