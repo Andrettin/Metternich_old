@@ -40,8 +40,6 @@ class Holding : public DataEntry
 	Q_PROPERTY(bool selected READ IsSelected WRITE SetSelected NOTIFY SelectedChanged)
 
 public:
-	static constexpr int BaselinePopulationGrowth = 1; //0.01%
-
 	static Holding *GetSelectedHolding()
 	{
 		return Holding::SelectedHolding;
@@ -359,7 +357,7 @@ private:
 	int PopulationCapacityModifier = 100; //the population capacity modifier
 	int PopulationCapacity = 0; //the population capacity
 	int Population = 0; //the size of this holding's total population
-	int BasePopulationGrowth = Holding::BaselinePopulationGrowth; //the base population growth
+	int BasePopulationGrowth = 0; //the base population growth
 	int PopulationGrowth = 0; //the population growth, in permyriad (per 10,000)
 	std::set<Building *> Buildings;
 	Building *UnderConstructionBuilding = nullptr; //the building currently under construction

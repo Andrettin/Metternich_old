@@ -8,6 +8,7 @@
 #include "database/gsml_data.h"
 #include "database/gsml_operator.h"
 #include "database/gsml_property.h"
+#include "defines.h"
 #include "economy/commodity.h"
 #include "game/game.h"
 #include "history/history.h"
@@ -59,6 +60,8 @@ void Database::ProcessGSMLPropertyForObject(QObject *object, const GSMLProperty 
 
 			if (property.GetKey() == "efficiency" || property.GetKey() == "output_value" || property.GetKey() == "output_modifier" || property.GetKey() == "workforce_proportion" || property.GetKey() == "proportion_to_workforce" || property.GetKey() == "income_share") {
 				value = CentesimalNumberStringToInt(property.GetValue());
+			} else if (property.GetKey() == "base_population_growth") {
+				value = FractionalNumberStringToInt<4>(property.GetValue());
 			} else {
 				value = std::stoi(property.GetValue());
 			}
@@ -76,6 +79,12 @@ void Database::ProcessGSMLPropertyForObject(QObject *object, const GSMLProperty 
 			}
 
 			new_property_value = QString::fromStdString(property.GetValue());
+		} else if (property_type == QVariant::DateTime) {
+			if (property.GetOperator() != GSMLOperator::Assignment) {
+				throw std::runtime_error("Only the assignment operator is available for date-time properties.");
+			}
+
+			new_property_value = History::StringToDate(property.GetValue());
 		} else if (property_type == QVariant::Type::UserType) {
 			if (property.GetOperator() != GSMLOperator::Assignment) {
 				throw std::runtime_error("Only the assignment operator is available for object reference properties.");
@@ -164,6 +173,39 @@ void Database::ProcessGSMLPropertyForObject(QObject *object, const GSMLProperty 
 	}
 
 	throw std::runtime_error("Invalid " + std::string(meta_object->className()) + " property: \"" + property.GetKey() + "\".");
+}
+
+/**
+**	@brief	Load the database
+*/
+void Database::Load()
+{
+	Defines::GetInstance()->Load();
+
+	//parse the files for in each data type's folder
+	for (const std::function<void()> &function : this->ParsingFunctions) {
+		function();
+	}
+
+	//create data entries for each data type
+	for (const std::function<void(bool)> &function : this->ProcessingFunctions) {
+		function(true);
+	}
+
+	//actually define the data entries for each data type
+	for (const std::function<void(bool)> &function : this->ProcessingFunctions) {
+		function(false);
+	}
+
+	//initialize data entries for each data type
+	for (const std::function<void()> &function : this->InitializationFunctions) {
+		function();
+	}
+
+	//check if data entries are valid for each data type
+	for (const std::function<void()> &function : this->CheckingFunctions) {
+		function();
+	}
 }
 
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "singleton.h"
+
 #include <QObject>
 #include <QString>
 #include <QVariant>
@@ -16,7 +18,7 @@ class Province;
 /**
 **	@brief	Interface for the engine, to be used in the context of QML
 */
-class EngineInterface : public QObject
+class EngineInterface : public QObject, public Singleton<EngineInterface>
 {
 	Q_OBJECT
 
@@ -24,13 +26,6 @@ class EngineInterface : public QObject
 	Q_PROPERTY(QVariant provinces READ GetProvinces CONSTANT)
 	Q_PROPERTY(Metternich::Province* selected_province READ GetSelectedProvince NOTIFY SelectedProvinceChanged)
 	Q_PROPERTY(Metternich::Holding* selected_holding READ GetSelectedHolding NOTIFY SelectedHoldingChanged)
-
-public:
-	static EngineInterface *GetInstance();
-
-private:
-	static inline std::unique_ptr<EngineInterface> Instance;
-	static inline std::once_flag OnceFlag;
 
 public:
 	Game *GetGame() const;

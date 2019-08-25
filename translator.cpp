@@ -7,13 +7,6 @@
 
 namespace Metternich {
 
-Translator *Translator::GetInstance()
-{
-	std::call_once(Translator::OnceFlag, [](){ Translator::Instance = std::make_unique<Translator>(); });
-
-	return Translator::Instance.get();
-}
-
 std::string Translator::Translate(const std::string &source_text, const std::vector<std::string> &suffixes) const
 {
 	if (!suffixes.empty()) {

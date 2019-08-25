@@ -1,11 +1,12 @@
 #pragma once
 
+#include "singleton.h"
+
 #include <QDateTime>
 #include <QLocale>
 #include <QObject>
 
 #include <functional>
-#include <memory>
 #include <queue>
 #include <shared_mutex>
 #include <thread>
@@ -18,20 +19,13 @@ enum class GameSpeed : int;
 /**
 **	@brief	The game instance
 */
-class Game : public QObject
+class Game : public QObject, public Singleton<Game>
 {
 	Q_OBJECT
 
 	Q_PROPERTY(QDateTime current_date READ GetCurrentDate NOTIFY CurrentDateChanged)
 	Q_PROPERTY(QString current_date_string READ GetCurrentDateString NOTIFY CurrentDateChanged)
 	Q_PROPERTY(Metternich::Character* player_character READ GetPlayerCharacter NOTIFY PlayerCharacterChanged)
-
-public:
-	static Game *GetInstance();
-
-private:
-	static inline std::unique_ptr<Game> Instance;
-	static inline std::once_flag OnceFlag;
 
 public:
 	Game();

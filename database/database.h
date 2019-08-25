@@ -1,6 +1,7 @@
 #pragma once
 
 #include "database/gsml_data.h"
+#include "singleton.h"
 #include "type_traits.h"
 
 #include <functional>
@@ -15,16 +16,9 @@ class DataEntry;
 /**
 **	@brief	The database
 */
-class Database
+class Database : public Singleton<Database>
 {
 public:
-	static Database *GetInstance()
-	{
-		std::call_once(Database::OnceFlag, [](){ Database::Instance = std::make_unique<Database>(); });
-
-		return Database::Instance.get();
-	}
-
 	template <typename T>
 	static void ProcessGSMLData(T *instance, const GSMLData &gsml_data)
 	{
@@ -49,38 +43,8 @@ public:
 
 	static void ProcessGSMLPropertyForObject(QObject *object, const GSMLProperty &property);
 
-private:
-	static inline std::unique_ptr<Database> Instance;
-	static inline std::once_flag OnceFlag;
-
 public:
-	void Load()
-	{
-		//parse the files for in each data type's folder
-		for (const std::function<void()> &function : this->ParsingFunctions) {
-			function();
-		}
-
-		//create data entries for each data type
-		for (const std::function<void(bool)> &function : this->ProcessingFunctions) {
-			function(true);
-		}
-
-		//actually define the data entries for each data type
-		for (const std::function<void(bool)> &function : this->ProcessingFunctions) {
-			function(false);
-		}
-
-		//initialize data entries for each data type
-		for (const std::function<void()> &function : this->InitializationFunctions) {
-			function();
-		}
-
-		//check if data entries are valid for each data type
-		for (const std::function<void()> &function : this->CheckingFunctions) {
-			function();
-		}
-	}
+	void Load();
 
 	void InitializeHistory()
 	{

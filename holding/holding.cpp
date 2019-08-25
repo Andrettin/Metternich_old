@@ -2,6 +2,7 @@
 
 #include "culture/culture.h"
 #include "culture/culture_group.h"
+#include "defines.h"
 #include "economy/commodity.h"
 #include "engine_interface.h"
 #include "game/game.h"
@@ -32,6 +33,7 @@ namespace Metternich {
 Holding::Holding(LandedTitle *barony, HoldingType *type, Metternich::Province *province) : DataEntry(barony->GetIdentifier()), Barony(barony), Province(province)
 {
 	barony->SetHolding(this);
+	this->ChangeBasePopulationGrowth(Defines::GetInstance()->GetBasePopulationGrowth());
 	this->SetType(type);
 	this->SetOwner(barony->GetHolder());
 	this->ChangeBasePopulationCapacity(province->GetPopulationCapacityAdditiveModifier());

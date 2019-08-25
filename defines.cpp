@@ -1,5 +1,6 @@
 #include "defines.h"
 
+#include "database/database.h"
 #include "database/gsml_data.h"
 #include "history/history.h"
 
@@ -19,7 +20,7 @@ void Defines::Load()
 	GSMLData gsml_data = GSMLData::ParseFile(defines_path);
 
 	for (const GSMLProperty &property : gsml_data.GetProperties()) {
-		Defines::ProcessGSMLProperty(property);
+		this->ProcessGSMLProperty(property);
 	}
 }
 
@@ -30,25 +31,7 @@ void Defines::Load()
 */
 void Defines::ProcessGSMLProperty(const GSMLProperty &property)
 {
-	const std::string &key = property.GetKey();
-	const GSMLOperator gsml_operator = property.GetOperator();
-	const std::string &value = property.GetValue();
-
-	if (key == "start_date") {
-		if (gsml_operator == GSMLOperator::Assignment) {
-			Defines::StartDate = History::StringToDate(value);
-		} else {
-			throw std::runtime_error("Invalid operator for define (\"" + property.GetKey() + "\").");
-		}
-	} else if (key == "player_character") {
-		if (gsml_operator == GSMLOperator::Assignment) {
-			Defines::PlayerCharacterID = std::stoi(value);
-		} else {
-			throw std::runtime_error("Invalid operator for define (\"" + property.GetKey() + "\").");
-		}
-	} else {
-		throw std::runtime_error("Invalid define: \"" + property.GetKey() + "\".");
-	}
+	Database::ProcessGSMLPropertyForObject(this, property);
 }
 
 }

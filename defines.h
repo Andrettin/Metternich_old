@@ -1,5 +1,7 @@
 #pragma once
 
+#include "singleton.h"
+
 #include <QDateTime>
 
 #include <string>
@@ -11,25 +13,37 @@ class GSMLProperty;
 /**
 **	@brief	Defines for the engine which are loaded from the database
 */
-class Defines
+class Defines : public QObject, public Singleton<Defines>
 {
-public:
-	static void Load();
-	static void ProcessGSMLProperty(const GSMLProperty &property);
+	Q_OBJECT
 
-	static const QDateTime &GetStartDate()
+	Q_PROPERTY(QDateTime start_date MEMBER StartDate READ GetStartDate)
+	Q_PROPERTY(int player_character MEMBER PlayerCharacterID READ GetPlayerCharacterID)
+	Q_PROPERTY(int base_population_growth MEMBER BasePopulationGrowth READ GetBasePopulationGrowth)
+
+public:
+	void Load();
+	void ProcessGSMLProperty(const GSMLProperty &property);
+
+	const QDateTime &GetStartDate() const
 	{
-		return Defines::StartDate;
+		return this->StartDate;
 	}
 
-	static int GetPlayerCharacterID()
+	int GetPlayerCharacterID() const
 	{
-		return Defines::PlayerCharacterID;
+		return this->PlayerCharacterID;
+	}
+
+	int GetBasePopulationGrowth() const
+	{
+		return this->BasePopulationGrowth;
 	}
 
 private:
-	static inline QDateTime StartDate;
-	static inline int PlayerCharacterID = 0;
+	QDateTime StartDate;
+	int PlayerCharacterID = 0;
+	int BasePopulationGrowth = 0; //permyriad
 };
 
 }

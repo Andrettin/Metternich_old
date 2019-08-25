@@ -10,13 +10,6 @@
 
 namespace Metternich {
 
-EngineInterface *EngineInterface::GetInstance()
-{
-	std::call_once(EngineInterface::OnceFlag, [](){ EngineInterface::Instance = std::make_unique<EngineInterface>(); });
-	
-	return EngineInterface::Instance.get();
-}
-
 Game *EngineInterface::GetGame() const
 {
 	return Game::GetInstance();

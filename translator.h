@@ -1,5 +1,7 @@
 #pragma once
 
+#include "singleton.h"
+
 #include <QTranslator>
 
 #include <map>
@@ -13,16 +15,9 @@ namespace Metternich {
 /**
 **	@brief	Custom translator class
 */
-class Translator : public QTranslator
+class Translator : public QTranslator, public Singleton<Translator>
 {
 	Q_OBJECT
-
-public:
-	static Translator *GetInstance();
-
-private:
-	static inline std::unique_ptr<Translator> Instance;
-	static inline std::once_flag OnceFlag;
 
 public:
 	void LoadLocale(const std::string &language);

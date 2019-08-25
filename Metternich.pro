@@ -125,6 +125,7 @@ HEADERS += \
     script/modifier_effect/population_capacity_modifier_effect.h \
     script/modifier_effect/population_capacity_modifier_modifier_effect.h \
     script/modifier_effect/population_growth_modifier_effect.h \
+    singleton.h \
     third_party/maskedmousearea/maskedmousearea.h \
     translator.h \
     type_traits.h \
