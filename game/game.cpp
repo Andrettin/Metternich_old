@@ -13,16 +13,6 @@
 namespace Metternich {
 
 /**
-**	@brief	Get the game singleton instance
-*/
-Game *Game::GetInstance()
-{
-	std::call_once(Game::OnceFlag, [](){ Game::Instance = std::make_unique<Game>(); });
-	
-	return Game::Instance.get();
-}
-
-/**
 **	@brief	Constructor
 */
 Game::Game() : Speed(GameSpeed::Normal)
@@ -46,7 +36,7 @@ void Game::Start(const QDateTime &start_date)
 	this->GenerateMissingTitleHolders();
 	this->PurgeSuperfluousCharacters();
 
-	this->SetPlayerCharacter(Character::Get(Defines::GetPlayerCharacterID()));
+	this->SetPlayerCharacter(Character::Get(Defines::GetInstance()->GetPlayerCharacterID()));
 
 	this->Starting = false;
 	this->Running = true;
