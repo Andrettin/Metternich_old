@@ -439,6 +439,28 @@ void Province::SetPopulationCapacityModifier(const int population_capacity_modif
 }
 
 /**
+**	@brief	Set the province's population growth modifier
+**
+**	@param	population	The new population growth modifier for the province
+*/
+void Province::SetPopulationGrowthModifier(const int population_growth_modifier)
+{
+	if (population_growth_modifier == this->GetPopulationGrowthModifier()) {
+		return;
+	}
+
+	for (Holding *holding : this->GetHoldings()) {
+		holding->ChangeBasePopulationGrowth(-this->GetPopulationGrowthModifier());
+	}
+
+	this->PopulationGrowthModifier = population_growth_modifier;
+
+	for (Holding *holding : this->GetHoldings()) {
+		holding->ChangeBasePopulationGrowth(this->GetPopulationGrowthModifier());
+	}
+}
+
+/**
 **	@brief	Get the province's holdings
 */
 QVariantList Province::GetHoldingsQVariantList() const

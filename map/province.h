@@ -157,6 +157,18 @@ public:
 		this->SetPopulationCapacityModifier(this->GetPopulationCapacityModifier() + change);
 	}
 
+	int GetPopulationGrowthModifier() const
+	{
+		return this->PopulationGrowthModifier;
+	}
+
+	void SetPopulationGrowthModifier(const int population_capacity_modifier);
+
+	void ChangePopulationGrowthModifier(const int change)
+	{
+		this->SetPopulationGrowthModifier(this->GetPopulationGrowthModifier() + change);
+	}
+
 	const std::vector<Holding *> &GetHoldings() const
 	{
 		return this->Holdings;
@@ -243,6 +255,7 @@ private:
 	int Population = 0; //the sum of the population of all of the province's settlement holdings
 	int PopulationCapacityAdditiveModifier = 0; //the population capacity additive modifier which the province provides to its holdings
 	int PopulationCapacityModifier = 0; //the population capacity modifier which the province provides to its holdings
+	int PopulationGrowthModifier = 0; //the population growth modifier which the province provides to its holdings
 	std::vector<Holding *> Holdings;
 	std::map<LandedTitle *, std::unique_ptr<Holding>> HoldingsByBarony; //the province's holdings, mapped to their respective baronies
 	Holding *CapitalHolding = nullptr;

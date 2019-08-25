@@ -15,6 +15,7 @@ class Building;
 class Character;
 class Commodity;
 class HoldingType;
+class IdentifiableModifier;
 class LandedTitle;
 class PopulationUnit;
 class Province;
@@ -39,7 +40,7 @@ class Holding : public DataEntry
 	Q_PROPERTY(bool selected READ IsSelected WRITE SetSelected NOTIFY SelectedChanged)
 
 public:
-	static constexpr int BasePopulationGrowthPercentMultiplier = 100;
+	static constexpr int BaselinePopulationGrowth = 1; //0.01%
 
 	static Holding *GetSelectedHolding()
 	{
@@ -187,6 +188,27 @@ public:
 		this->SetPopulationCapacity(population_capacity);
 	}
 
+	int GetBasePopulationGrowth() const
+	{
+		return this->BasePopulationGrowth;
+	}
+
+	void SetBasePopulationGrowth(const int base_population_growth)
+	{
+		if (base_population_growth == this->GetBasePopulationGrowth()) {
+			return;
+		}
+
+		this->BasePopulationGrowth = base_population_growth;
+		this->CalculatePopulationGrowth();
+	}
+
+	void ChangeBasePopulationGrowth(const int change)
+	{
+		this->SetBasePopulationGrowth(this->GetBasePopulationGrowth() + change);
+	}
+
+
 	int GetPopulationGrowth() const
 	{
 		return this->PopulationGrowth;
@@ -209,27 +231,16 @@ public:
 			return;
 		}
 
-		int population_growth = 0;
-		if (this->GetPopulationCapacity() >= this->GetPopulation()) {
-			//if capacity is equal to or greater than population, use the normal population growth rate formula
-			population_growth = this->GetPopulation();
-			population_growth *= 100;
-			population_growth /= this->GetPopulationCapacity();
-			population_growth -= 100;
-			population_growth *= -1;
-		} else {
-			//use the inverse calculation for negative rates
-			population_growth = this->GetPopulationCapacity();
-			population_growth *= 100;
-			population_growth /= this->GetPopulation();
-			population_growth -= 100;
+		int population_growth = this->GetBasePopulationGrowth();
+		if (population_growth > 0 && this->GetPopulation() >= this->GetPopulationCapacity()) {
+			population_growth = 0;
 		}
-		population_growth *= Holding::BasePopulationGrowthPercentMultiplier; // constant multiplier for population growth
-		population_growth /= 100;
+
 		this->SetPopulationGrowth(population_growth);
 	}
 
 	void DoPopulationGrowth();
+	void CheckOverpopulation();
 
 	const std::set<Building *> &GetBuildings() const
 	{
@@ -348,12 +359,14 @@ private:
 	int PopulationCapacityModifier = 100; //the population capacity modifier
 	int PopulationCapacity = 0; //the population capacity
 	int Population = 0; //the size of this holding's total population
+	int BasePopulationGrowth = Holding::BaselinePopulationGrowth; //the base population growth
 	int PopulationGrowth = 0; //the population growth, in permyriad (per 10,000)
 	std::set<Building *> Buildings;
 	Building *UnderConstructionBuilding = nullptr; //the building currently under construction
 	int ConstructionDays = 0; //the amount of days remaining to construct the building under construction
 	Metternich::Commodity *Commodity = nullptr; //the commodity produced by the holding (if any)
 	int HoldingSize = 100; //the holding size, which affects population capacity (100 = normal size)
+	std::set<IdentifiableModifier *> Modifiers; //modifiers applied to the holding
 	bool Selected = false;
 };
 

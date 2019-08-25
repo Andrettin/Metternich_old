@@ -40,6 +40,12 @@ public:
 	IdentifiableModifier(const std::string &identifier) : DataEntry(identifier) {}
 
 	virtual void ProcessGSMLProperty(const GSMLProperty &property) override;
+
+	template <typename T>
+	void Remove(T *scope) const //to prevent ambiguity for name lookup between ModifierBase::Remove and DataType::Remove
+	{
+		this->ModifierBase::Remove(scope);
+	}
 };
 
 }

@@ -13,6 +13,7 @@
 #include "population/population_unit.h"
 #include "random.h"
 #include "religion.h"
+#include "script/identifiable_modifier.h"
 #include "script/modifier.h"
 #include "translator.h"
 #include "util.h"
@@ -35,6 +36,7 @@ Holding::Holding(LandedTitle *barony, HoldingType *type, Metternich::Province *p
 	this->SetOwner(barony->GetHolder());
 	this->ChangeBasePopulationCapacity(province->GetPopulationCapacityAdditiveModifier());
 	this->ChangePopulationCapacityModifier(province->GetPopulationCapacityModifier());
+	this->ChangeBasePopulationGrowth(province->GetPopulationGrowthModifier());
 }
 
 /**
@@ -69,6 +71,7 @@ void Holding::InitializeHistory()
 	this->RemoveEmptyPopulationUnits();
 	this->SortPopulationUnits();
 	this->CalculatePopulation();
+	this->CheckOverpopulation();
 }
 
 /**
@@ -197,6 +200,7 @@ void Holding::SetPopulation(const int population)
 	const int old_population = this->GetPopulation();
 	this->Population = population;
 	emit PopulationChanged();
+
 	this->CalculatePopulationGrowth(); //population growth depends on the current population
 
 	//change the population count for the province as well
@@ -227,27 +231,46 @@ void Holding::DoPopulationGrowth()
 		return;
 	}
 
-	const int population_capacity = this->GetPopulationCapacity();
-
 	for (const std::unique_ptr<PopulationUnit> &population_unit : this->GetPopulationUnits()) {
 		const int population_capacity_difference = this->GetPopulationCapacity() - this->GetPopulation();
 
 		int change = population_unit->GetSize() * population_growth / 10000;
 		if (change == 0) {
-			if (this->GetPopulation() != population_capacity) {
-				//if the change is zero but population is not equal to population capacity, then make a change of 1
-				if (population_capacity > this->GetPopulation()) {
+			if (population_growth != 0) {
+				//if the change is zero but population growth is non-zero, then make a change of 1
+				if (population_growth > 0) {
 					change = 1;
 				} else {
 					change = -1;
 				}
-			} else {
-				return;
 			}
-		} else if (abs(change) > abs(population_capacity_difference)) {
-			change = population_capacity_difference; //don't grow the population beyond capacity, and don't decrease it below capacity either
+		} else if (change > 0 && change > population_capacity_difference) {
+			change = population_capacity_difference; //don't grow the population beyond capacity
 		}
+
 		population_unit->ChangeSize(change);
+	}
+
+	this->CheckOverpopulation();
+}
+
+/**
+**	@brief	Check if the holding is overpopulated, and if so apply the "overpopulation" modifier
+*/
+void Holding::CheckOverpopulation()
+{
+	//give the overpopulation modifier if the holding has become overpopulated, or remove it if it was overpopulated but isn't anymore
+	const bool overpopulated = this->GetPopulation() > this->GetPopulationCapacity();
+	if (overpopulated) {
+		if (this->Modifiers.find(IdentifiableModifier::GetOverpopulationModifier()) == this->Modifiers.end()) {
+			IdentifiableModifier::GetOverpopulationModifier()->Apply(this);
+			this->Modifiers.insert(IdentifiableModifier::GetOverpopulationModifier());
+		}
+	} else {
+		if (this->Modifiers.find(IdentifiableModifier::GetOverpopulationModifier()) != this->Modifiers.end()) {
+			IdentifiableModifier::GetOverpopulationModifier()->Remove(this);
+			this->Modifiers.erase(IdentifiableModifier::GetOverpopulationModifier());
+		}
 	}
 }
 
