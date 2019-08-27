@@ -250,14 +250,61 @@ std::string Province::GetName() const
 }
 
 /**
-**	@brief	Get the province's county
+**	@brief	Set the province's county
 **
-**	@return	The province's county
+**	@param	county	The new county for the province
 */
 void Province::SetCounty(LandedTitle *county)
 {
+	if (county == this->GetCounty()) {
+		return;
+	}
+
 	this->County = county;
 	county->SetProvince(this);
+	emit CountyChanged();
+}
+
+/**
+**	@brief	Get the province's (de jure) duchy
+**
+**	@return	The province's (de jure) duchy
+*/
+LandedTitle *Province::GetDuchy() const
+{
+	if (this->GetCounty() != nullptr) {
+		return this->GetCounty()->GetDeJureLiegeTitle();
+	}
+
+	return nullptr;
+}
+
+/**
+**	@brief	Get the province's (de jure) kingdom
+**
+**	@return	The province's (de jure) kingdom
+*/
+LandedTitle *Province::GetKingdom() const
+{
+	if (this->GetDuchy() != nullptr) {
+		return this->GetDuchy()->GetDeJureLiegeTitle();
+	}
+
+	return nullptr;
+}
+
+/**
+**	@brief	Get the province's (de jure) empire
+**
+**	@return	The province's (de jure) empire
+*/
+LandedTitle *Province::GetEmpire() const
+{
+	if (this->GetKingdom() != nullptr) {
+		return this->GetKingdom()->GetDeJureLiegeTitle();
+	}
+
+	return nullptr;
 }
 
 /**

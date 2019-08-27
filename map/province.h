@@ -32,6 +32,9 @@ class Province : public DataEntry, public DataType<Province>
 	Q_OBJECT
 
 	Q_PROPERTY(Metternich::LandedTitle* county READ GetCounty WRITE SetCounty NOTIFY CountyChanged)
+	Q_PROPERTY(Metternich::LandedTitle* duchy READ GetDuchy NOTIFY DuchyChanged)
+	Q_PROPERTY(Metternich::LandedTitle* kingdom READ GetKingdom NOTIFY KingdomChanged)
+	Q_PROPERTY(Metternich::LandedTitle* empire READ GetEmpire NOTIFY EmpireChanged)
 	Q_PROPERTY(QColor color READ GetColor CONSTANT)
 	Q_PROPERTY(QRect rect READ GetRect CONSTANT)
 	Q_PROPERTY(QImage image READ GetImage NOTIFY ImageChanged)
@@ -82,6 +85,10 @@ public:
 	}
 
 	void SetCounty(LandedTitle *county);
+
+	LandedTitle *GetDuchy() const;
+	LandedTitle *GetKingdom() const;
+	LandedTitle *GetEmpire() const;
 
 	const QColor &GetColor() const
 	{
@@ -235,6 +242,9 @@ public:
 
 signals:
 	void CountyChanged();
+	void DuchyChanged();
+	void KingdomChanged();
+	void EmpireChanged();
 	void ImageChanged();
 	void TerrainChanged();
 	void CultureChanged();
