@@ -9,6 +9,7 @@
 #include "landed_title/landed_title.h"
 #include "landed_title/landed_title_tier.h"
 #include "random.h"
+#include "translator.h"
 #include "util.h"
 
 #include <QVariant>
@@ -87,6 +88,23 @@ std::string Character::GetFullName() const
 		full_name += " " + this->GetDynasty()->GetName();
 	}
 	return full_name;
+}
+
+std::string Character::GetTitledName() const
+{
+	std::string titled_name;
+
+	if (this->GetPrimaryTitle() != nullptr) {
+		titled_name += this->GetPrimaryTitle()->GetHolderTitleName() + " ";
+	}
+
+	titled_name += this->GetName();
+
+	if (this->GetPrimaryTitle() != nullptr) {
+		titled_name += " of " + this->GetPrimaryTitle()->GetName();
+	}
+
+	return titled_name;
 }
 
 void Character::ChoosePrimaryTitle()

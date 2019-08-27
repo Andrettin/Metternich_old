@@ -5,6 +5,7 @@
 #include "culture/culture_group.h"
 #include "game/game.h"
 #include "holding/holding.h"
+#include "holding/holding_type.h"
 #include "landed_title/landed_title_tier.h"
 #include "map/province.h"
 #include "translator.h"
@@ -42,6 +43,46 @@ LandedTitle *LandedTitle::Add(const std::string &identifier)
 	}
 
 	return title;
+}
+
+/**
+**	@brief	Get the string identifier for a landed title tier
+**
+**	@param	tier	The tier enumeration value
+**
+**	@return	The string identifier for the title tier
+*/
+const char *LandedTitle::GetTierIdentifier(const LandedTitleTier tier)
+{
+	switch (tier) {
+		case LandedTitleTier::Barony: return LandedTitle::BaronyIdentifier;
+		case LandedTitleTier::County: return LandedTitle::CountyIdentifier;
+		case LandedTitleTier::Duchy: return LandedTitle::DuchyIdentifier;
+		case LandedTitleTier::Kingdom: return LandedTitle::KingdomIdentifier;
+		case LandedTitleTier::Empire: return LandedTitle::EmpireIdentifier;
+	}
+
+	throw std::runtime_error("Invalid landed title tier enumeration value: " + std::to_string(static_cast<int>(tier)) + ".");
+}
+
+/**
+**	@brief	Get the string identifier for a landed title tier's holder
+**
+**	@param	tier	The tier enumeration value
+**
+**	@return	The string identifier for the title tier's holder
+*/
+const char *LandedTitle::GetTierHolderIdentifier(const LandedTitleTier tier)
+{
+	switch (tier) {
+		case LandedTitleTier::Barony: return LandedTitle::BaronIdentifier;
+		case LandedTitleTier::County: return LandedTitle::CountIdentifier;
+		case LandedTitleTier::Duchy: return LandedTitle::DukeIdentifier;
+		case LandedTitleTier::Kingdom: return LandedTitle::KingIdentifier;
+		case LandedTitleTier::Empire: return LandedTitle::EmperorIdentifier;
+	}
+
+	throw std::runtime_error("Invalid landed title tier enumeration value: " + std::to_string(static_cast<int>(tier)) + ".");
 }
 
 /**
@@ -185,6 +226,36 @@ std::string LandedTitle::GetName() const
 	}
 
 	return Translator::Get()->Translate(this->GetIdentifier(), suffixes);
+}
+
+/**
+**	@brief	Get the landed title's holder title name
+**
+**	@return	The landed title's holder title name
+*/
+std::string LandedTitle::GetHolderTitleName() const
+{
+	const Culture *culture = nullptr;
+
+	if (this->GetHolder() != nullptr) {
+		culture = this->GetHolder()->GetCulture();
+	} else if (this->GetCapitalProvince() != nullptr) {
+		culture = this->GetCapitalProvince()->GetCulture();
+	}
+
+	std::vector<std::string> suffixes;
+
+	if (this->GetHolding() != nullptr) {
+		//for non-titular baronies, use the holding's type for the localization, so that e.g. a city's holder title name will be "mayor", regardless of the character's actual government
+		suffixes.push_back(this->GetHolding()->GetType()->GetIdentifier());
+	}
+
+	if (culture != nullptr) {
+		suffixes.push_back(culture->GetIdentifier());
+		suffixes.push_back(culture->GetCultureGroup()->GetIdentifier());
+	}
+
+	return Translator::Get()->Translate(LandedTitle::GetTierHolderIdentifier(this->GetTier()), suffixes);
 }
 
 void LandedTitle::SetHolder(Character *character)

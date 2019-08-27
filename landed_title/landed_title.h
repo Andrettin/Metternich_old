@@ -36,7 +36,24 @@ public:
 	static constexpr const char *KingdomPrefix = "k_";
 	static constexpr const char *EmpirePrefix = "e_";
 
+	//string identifiers for landed title tiers
+	static constexpr const char *BaronyIdentifier = "barony";
+	static constexpr const char *CountyIdentifier = "county";
+	static constexpr const char *DuchyIdentifier = "duchy";
+	static constexpr const char *KingdomIdentifier = "kingdom";
+	static constexpr const char *EmpireIdentifier = "empire";
+
+	//string identifiers for landed title tier holder title names
+	static constexpr const char *BaronIdentifier = "baron";
+	static constexpr const char *CountIdentifier = "count";
+	static constexpr const char *DukeIdentifier = "duke";
+	static constexpr const char *KingIdentifier = "king";
+	static constexpr const char *EmperorIdentifier = "emperor";
+
 	static LandedTitle *Add(const std::string &identifier);
+
+	static const char *GetTierIdentifier(const LandedTitleTier tier);
+	static const char *GetTierHolderIdentifier(const LandedTitleTier tier);
 
 	virtual void ProcessGSMLDatedProperty(const GSMLProperty &property, const QDateTime &date) override;
 	virtual void ProcessGSMLScope(const GSMLData &scope) override;
@@ -44,6 +61,7 @@ public:
 	virtual void Check() const override;
 
 	virtual std::string GetName() const override;
+	std::string GetHolderTitleName() const;
 
 	const QColor &GetColor() const
 	{

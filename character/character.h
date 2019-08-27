@@ -25,6 +25,7 @@ class Character : public NumericDataEntry, public DataType<Character, int>
 
 	Q_PROPERTY(QString name READ GetNameQString WRITE SetNameQString NOTIFY NameChanged)
 	Q_PROPERTY(QString full_name READ GetFullNameQString NOTIFY FullNameChanged)
+	Q_PROPERTY(QString titled_name READ GetTitledNameQString NOTIFY TitledNameChanged)
 	Q_PROPERTY(bool female MEMBER Female READ IsFemale)
 	Q_PROPERTY(Metternich::Dynasty* dynasty READ GetDynasty WRITE SetDynasty NOTIFY DynastyChanged)
 	Q_PROPERTY(Metternich::Culture* culture MEMBER Culture READ GetCulture NOTIFY CultureChanged)
@@ -66,7 +67,9 @@ public:
 	Character(const int identifier) : NumericDataEntry(identifier)
 	{
 		connect(this, &Character::NameChanged, this, &Character::FullNameChanged);
+		connect(this, &Character::NameChanged, this, &Character::TitledNameChanged);
 		connect(this, &Character::DynastyChanged, this, &Character::FullNameChanged);
+		connect(this, &Character::PrimaryTitleChanged, this, &Character::TitledNameChanged);
 
 		Character::LivingCharacters.push_back(this);
 	}
@@ -140,6 +143,13 @@ public:
 	QString GetFullNameQString() const
 	{
 		return QString::fromStdString(this->GetFullName());
+	}
+
+	std::string GetTitledName() const;
+
+	QString GetTitledNameQString() const
+	{
+		return QString::fromStdString(this->GetTitledName());
 	}
 
 	bool IsAlive() const
@@ -374,6 +384,7 @@ public:
 signals:
 	void NameChanged();
 	void FullNameChanged();
+	void TitledNameChanged();
 	void AliveChanged();
 	void DynastyChanged();
 	void CultureChanged();
