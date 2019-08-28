@@ -229,6 +229,48 @@ std::string LandedTitle::GetName() const
 }
 
 /**
+**	@brief	Get the landed title's tier title name
+**
+**	@return	The landed title's tier title name
+*/
+std::string LandedTitle::GetTierTitleName() const
+{
+	const Culture *culture = nullptr;
+
+	if (this->GetHolder() != nullptr) {
+		culture = this->GetHolder()->GetCulture();
+	} else if (this->GetCapitalProvince() != nullptr) {
+		culture = this->GetCapitalProvince()->GetCulture();
+	}
+
+	std::vector<std::string> suffixes;
+
+	if (this->GetHolding() != nullptr) {
+		//for non-titular baronies, use the holding's type for the localization
+		suffixes.push_back(this->GetHolding()->GetType()->GetIdentifier());
+	}
+
+	if (culture != nullptr) {
+		suffixes.push_back(culture->GetIdentifier());
+		suffixes.push_back(culture->GetCultureGroup()->GetIdentifier());
+	}
+
+	return Translator::Get()->Translate(LandedTitle::GetTierIdentifier(this->GetTier()), suffixes);
+}
+
+/**
+**	@brief	Get the landed title's titled name
+**
+**	@return	The landed title's titled name
+*/
+std::string LandedTitle::GetTitledName() const
+{
+	std::string titled_name = this->GetTierTitleName() + " of ";
+	titled_name += this->GetName();
+	return titled_name;
+}
+
+/**
 **	@brief	Get the landed title's holder title name
 **
 **	@return	The landed title's holder title name

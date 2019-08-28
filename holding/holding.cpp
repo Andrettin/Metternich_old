@@ -39,6 +39,8 @@ Holding::Holding(LandedTitle *barony, HoldingType *type, Metternich::Province *p
 	this->ChangeBasePopulationCapacity(province->GetPopulationCapacityAdditiveModifier());
 	this->ChangePopulationCapacityModifier(province->GetPopulationCapacityModifier());
 	this->ChangeBasePopulationGrowth(province->GetPopulationGrowthModifier());
+
+	connect(this, &Holding::TypeChanged, this, &Holding::TitledNameChanged);
 }
 
 /**
@@ -108,6 +110,36 @@ void Holding::DoMonth()
 std::string Holding::GetName() const
 {
 	return Translator::Get()->Translate(this->GetBarony()->GetIdentifier(), {this->GetProvince()->GetCulture()->GetIdentifier(), this->GetProvince()->GetCulture()->GetCultureGroup()->GetIdentifier(), this->GetProvince()->GetReligion()->GetIdentifier()});
+}
+
+/**
+**	@brief	Get the holding's type name
+**
+**	@return	The holding's type name
+*/
+std::string Holding::GetTypeName() const
+{
+	const Culture *culture = this->GetProvince()->GetCulture();
+	const Religion *religion = this->GetProvince()->GetReligion();
+
+	std::vector<std::string> suffixes;
+	suffixes.push_back(culture->GetIdentifier());
+	suffixes.push_back(culture->GetCultureGroup()->GetIdentifier());
+	suffixes.push_back(religion->GetIdentifier());
+
+	return Translator::Get()->Translate(this->GetType()->GetIdentifier(), suffixes);
+}
+
+/**
+**	@brief	Get the holding's titled name
+**
+**	@return	The holding's titled name
+*/
+std::string Holding::GetTitledName() const
+{
+	std::string titled_name = this->GetTypeName() + " of ";
+	titled_name += this->GetName();
+	return titled_name;
 }
 
 /**

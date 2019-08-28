@@ -19,6 +19,7 @@ class LandedTitle : public DataEntry, public DataType<LandedTitle>
 {
 	Q_OBJECT
 
+	Q_PROPERTY(QString titled_name READ GetTitledNameQString NOTIFY TitledNameChanged)
 	Q_PROPERTY(Metternich::Character* holder READ GetHolder WRITE SetHolder NOTIFY HolderChanged)
 	Q_PROPERTY(Metternich::LandedTitle* holder_title MEMBER HolderTitle WRITE SetHolderTitle)
 	Q_PROPERTY(Metternich::LandedTitle* liege_title MEMBER LiegeTitle)
@@ -61,6 +62,15 @@ public:
 	virtual void Check() const override;
 
 	virtual std::string GetName() const override;
+	std::string GetTierTitleName() const;
+
+	std::string GetTitledName() const;
+
+	QString GetTitledNameQString() const
+	{
+		return QString::fromStdString(this->GetTitledName());
+	}
+
 	std::string GetHolderTitleName() const;
 
 	const QColor &GetColor() const
@@ -130,6 +140,7 @@ public:
 	}
 
 signals:
+	void TitledNameChanged();
 	void HolderChanged();
 	void DeJureLiegeTitleChanged();
 

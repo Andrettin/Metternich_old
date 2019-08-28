@@ -25,6 +25,7 @@ class Holding : public DataEntry
 	Q_OBJECT
 
 	Q_PROPERTY(QString name READ GetNameQString NOTIFY NameChanged)
+	Q_PROPERTY(QString titled_name READ GetTitledNameQString NOTIFY TitledNameChanged)
 	Q_PROPERTY(Metternich::HoldingType* type READ GetType NOTIFY TypeChanged)
 	Q_PROPERTY(Metternich::LandedTitle* barony READ GetBarony CONSTANT)
 	Q_PROPERTY(int population READ GetPopulation WRITE SetPopulation NOTIFY PopulationChanged)
@@ -67,6 +68,14 @@ public:
 	QString GetNameQString() const
 	{
 		return QString::fromStdString(this->GetName());
+	}
+
+	std::string GetTypeName() const;
+	std::string GetTitledName() const;
+
+	QString GetTitledNameQString() const
+	{
+		return QString::fromStdString(this->GetTitledName());
 	}
 
 	HoldingType *GetType() const
@@ -333,6 +342,7 @@ public:
 
 signals:
 	void NameChanged();
+	void TitledNameChanged();
 	void TypeChanged();
 	void OwnerChanged();
 	void PopulationUnitsChanged();

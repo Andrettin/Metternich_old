@@ -81,6 +81,11 @@ void Character::InitializeHistory()
 	}
 }
 
+/**
+**	@brief	Get the character's full name
+**
+**	@return	The character's full name
+*/
 std::string Character::GetFullName() const
 {
 	std::string full_name = this->Name;
@@ -90,6 +95,11 @@ std::string Character::GetFullName() const
 	return full_name;
 }
 
+/**
+**	@brief	Get the character's titled name
+**
+**	@return	The character's titled name
+*/
 std::string Character::GetTitledName() const
 {
 	std::string titled_name;
