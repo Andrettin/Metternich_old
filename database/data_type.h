@@ -31,6 +31,16 @@ public:
 	*/
 	static T *Get(const KEY &identifier, const bool should_find = true)
 	{
+		if constexpr (std::is_same_v<KEY, std::string>) {
+			if (identifier == "none") {
+				return nullptr;
+			}
+		} else if constexpr (std::is_arithmetic_v<KEY>) {
+			if (identifier == 0) {
+				return nullptr;
+			}
+		}
+
 		typename std::map<KEY, std::unique_ptr<T>>::const_iterator find_iterator = DataType::InstancesByIdentifier.find(identifier);
 
 		if (find_iterator != DataType::InstancesByIdentifier.end()) {

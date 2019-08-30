@@ -105,9 +105,12 @@ void LandedTitle::ProcessGSMLDatedProperty(const GSMLProperty &property, const Q
 			Character *holder = Character::Generate(this->GetCapitalProvince()->GetCulture(), this->GetCapitalProvince()->GetReligion());
 			this->SetHolder(holder);
 			return;
+		} else if (property.GetValue() == "none") {
+			this->SetHolder(nullptr);
+			return;
 		} else {
 			const Character *holder = Character::Get(std::stoi(property.GetValue()));
-			if (!holder->IsAlive()) {
+			if (holder != nullptr && !holder->IsAlive()) {
 				return;
 			}
 		}
@@ -311,8 +314,11 @@ void LandedTitle::SetHolder(Character *character)
 	}
 
 	this->Holder = character;
-	character->AddLandedTitle(this);
-	this->HolderTitle = nullptr; //set the holder title to null, so that the new holder isn't overwritten by a previous holder title
+
+	if (character != nullptr) {
+		character->AddLandedTitle(this);
+	}
+	this->HolderTitle = nullptr; //set the holder title to null, so that the new holder (null or otherwise) isn't overwritten by a previous holder title
 
 	//if this is a non-titular county, then the character holding it must also possess the county's capital holding
 	if (this->GetProvince() != nullptr) {
