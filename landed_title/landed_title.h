@@ -24,6 +24,7 @@ class LandedTitle : public DataEntry, public DataType<LandedTitle>
 	Q_PROPERTY(Metternich::LandedTitle* holder_title MEMBER HolderTitle WRITE SetHolderTitle)
 	Q_PROPERTY(Metternich::LandedTitle* liege_title MEMBER LiegeTitle)
 	Q_PROPERTY(Metternich::LandedTitle* de_jure_liege_title READ GetDeJureLiegeTitle WRITE SetDeJureLiegeTitle NOTIFY DeJureLiegeTitleChanged)
+	Q_PROPERTY(Metternich::LandedTitle* realm READ GetRealm NOTIFY RealmChanged)
 	Q_PROPERTY(Metternich::Province* capital_province MEMBER CapitalProvince READ GetCapitalProvince)
 
 public:
@@ -143,6 +144,7 @@ signals:
 	void TitledNameChanged();
 	void HolderChanged();
 	void DeJureLiegeTitleChanged();
+	void RealmChanged();
 
 private:
 	QColor Color;
