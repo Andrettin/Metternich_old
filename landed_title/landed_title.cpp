@@ -144,6 +144,19 @@ void LandedTitle::ProcessGSMLScope(const GSMLData &scope)
 }
 
 /**
+**	@brief	Initialize the landed title
+*/
+void LandedTitle::Initialize()
+{
+	if (this->GetTier() == LandedTitleTier::Barony) {
+		if (this->GetDeJureLiegeTitle() != nullptr) {
+			//set the barony's capital province to its county's province
+			this->CapitalProvince = this->GetDeJureLiegeTitle()->GetProvince();
+		}
+	}
+}
+
+/**
 **	@brief	Initialize the landed title's history
 */
 void LandedTitle::InitializeHistory()
@@ -336,12 +349,6 @@ void LandedTitle::SetHolder(Character *character)
 void LandedTitle::SetHolding(Metternich::Holding *holding)
 {
 	this->Holding = holding;
-
-	if (holding != nullptr) {
-		this->CapitalProvince = holding->GetProvince();
-	} else {
-		this->CapitalProvince = nullptr;
-	}
 }
 
 LandedTitle *LandedTitle::GetRealm() const
