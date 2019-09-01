@@ -8,6 +8,7 @@
 namespace Metternich {
 
 class Condition;
+class EmploymentType;
 class Holding;
 class HoldingType;
 
@@ -19,6 +20,8 @@ class Building : public DataEntry, public DataType<Building>
 	Q_PROPERTY(QString icon_path READ GetIconPathQString WRITE SetIconPathQString NOTIFY IconPathChanged)
 	Q_PROPERTY(QVariantList holding_types READ GetHoldingTypesQVariantList)
 	Q_PROPERTY(int construction_days MEMBER ConstructionDays READ GetConstructionDays)
+	Q_PROPERTY(Metternich::EmploymentType* employment_type MEMBER EmploymentType READ GetEmploymentType)
+	Q_PROPERTY(int workforce MEMBER Workforce READ GetWorkforce)
 
 public:
 	static constexpr const char *ClassIdentifier = "building";
@@ -68,6 +71,16 @@ public:
 		return this->ConstructionDays;
 	}
 
+	Metternich::EmploymentType *GetEmploymentType() const
+	{
+		return this->EmploymentType;
+	}
+
+	int GetWorkforce() const
+	{
+		return this->Workforce;
+	}
+
 	bool IsAvailableForHolding(const Holding *holding) const;
 	bool IsBuildableInHolding(const Holding *holding) const;
 
@@ -80,6 +93,8 @@ private:
 	int ConstructionDays = 0; //how many days does it take to construct this building
 	std::unique_ptr<Condition> Preconditions;
 	std::unique_ptr<Condition> Conditions;
+	Metternich::EmploymentType *EmploymentType = nullptr;
+	int Workforce = 0; //how many workers does this building allow for its employment type
 };
 
 }
