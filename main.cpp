@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
 		engine.addImageProvider(QLatin1String("provinces"), new ProvinceImageProvider);
 		engine.addImageProvider(QLatin1String("empty"), new EmptyImageProvider);
 
-		const QUrl url(QStringLiteral("./main.qml"));
+		const QUrl url(QStringLiteral("./interface/main.qml"));
 		QObject::connect(&engine, &QQmlApplicationEngine::objectCreated, &app, [url](QObject *obj, const QUrl &objUrl) {
 			if (!obj && url == objUrl) {
 				QCoreApplication::exit(-1);
