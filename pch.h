@@ -18,6 +18,7 @@
 #include <QRect>
 #include <QSize>
 #include <QString>
+#include <QThread>
 #include <QTimer>
 #include <QTimeZone>
 #include <QTranslator>

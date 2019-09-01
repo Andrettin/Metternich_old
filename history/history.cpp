@@ -2,6 +2,7 @@
 
 #include "character/character.h"
 #include "database/database.h"
+#include "engine_interface.h"
 #include "holding/holding.h"
 #include "landed_title/landed_title.h"
 #include "map/province.h"
@@ -16,6 +17,8 @@ namespace Metternich {
 */
 void History::Load()
 {
+	EngineInterface::Get()->SetLoadingMessage("Loading History...");
+
 	Region::ParseHistoryDatabase();
 	Province::ParseHistoryDatabase();
 	Character::ParseHistoryDatabase();

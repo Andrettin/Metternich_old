@@ -19,6 +19,7 @@
 #include "translator.h"
 #include "util.h"
 
+#include <QGuiApplication>
 #include <QPainter>
 
 namespace Metternich {
@@ -318,7 +319,7 @@ void Province::CreateImage(const std::vector<int> &pixel_indexes)
 	QPoint end_pos(-1, -1);
 
 	for (const int index : pixel_indexes) {
-		QPoint pixel_pos = Map::GetPixelPosition(index);
+		QPoint pixel_pos = Map::Get()->GetPixelPosition(index);
 		if (start_pos.x() == -1 || pixel_pos.x() < start_pos.x()) {
 			start_pos.setX(pixel_pos.x());
 		}
@@ -342,7 +343,7 @@ void Province::CreateImage(const std::vector<int> &pixel_indexes)
 	this->Image.fill(0);
 
 	for (const int index : pixel_indexes) {
-		QPoint pixel_pos = Map::GetPixelPosition(index) - this->Rect.topLeft();
+		QPoint pixel_pos = Map::Get()->GetPixelPosition(index) - this->Rect.topLeft();
 		this->Image.setPixel(pixel_pos, 1);
 	}
 }
@@ -355,7 +356,7 @@ void Province::CreateImage(const std::vector<int> &pixel_indexes)
 void Province::SetBorderPixels(const std::vector<int> &pixel_indexes)
 {
 	for (const int index : pixel_indexes) {
-		QPoint pixel_pos = Map::GetPixelPosition(index) - this->Rect.topLeft();
+		QPoint pixel_pos = Map::Get()->GetPixelPosition(index) - this->Rect.topLeft();
 		this->Image.setPixel(pixel_pos, 2);
 	}
 }
@@ -545,6 +546,7 @@ Holding *Province::GetHolding(LandedTitle *barony) const
 void Province::CreateHolding(LandedTitle *barony, HoldingType *type)
 {
 	auto new_holding = std::make_unique<Holding>(barony, type, this);
+	new_holding->moveToThread(QGuiApplication::instance()->thread());
 	this->Holdings.push_back(new_holding.get());
 	this->HoldingsByBarony.insert({barony, std::move(new_holding)});
 	emit HoldingsChanged();

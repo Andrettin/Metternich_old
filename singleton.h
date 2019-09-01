@@ -1,7 +1,12 @@
 #pragma once
 
+#include <QGuiApplication>
+#include <QObject>
+#include <QThread>
+
 #include <memory>
 #include <mutex>
+#include <type_traits>
 
 namespace Metternich {
 
@@ -17,9 +22,26 @@ public:
 	*/
 	static T *Get()
 	{
-		std::call_once(Singleton<T>::OnceFlag, [](){ Singleton<T>::Instance = std::make_unique<T>(); });
+		std::call_once(Singleton<T>::OnceFlag, [](){
+			T::Create();
+		});
 
 		return Singleton<T>::Instance.get();
+	}
+
+private:
+	/**
+	**	@brief	Create the singleton instance
+	*/
+	static void Create()
+	{
+		Singleton<T>::Instance = std::make_unique<T>();
+
+		if constexpr (std::is_base_of_v<QObject, T>) {
+			if (QGuiApplication::instance()->thread() != QThread::currentThread()) {
+				Singleton<T>::Instance->moveToThread(QGuiApplication::instance()->thread());
+			}
+		}
 	}
 
 private:

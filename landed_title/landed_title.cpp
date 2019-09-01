@@ -1,6 +1,7 @@
 #include "landed_title/landed_title.h"
 
 #include "character/character.h"
+#include "character/dynasty.h"
 #include "culture/culture.h"
 #include "culture/culture_group.h"
 #include "game/game.h"
@@ -236,9 +237,15 @@ std::string LandedTitle::GetName() const
 	}
 
 	std::vector<std::string> suffixes;
+
 	if (culture != nullptr) {
 		suffixes.push_back(culture->GetIdentifier());
 		suffixes.push_back(culture->GetCultureGroup()->GetIdentifier());
+	}
+
+	if (this->GetHolder() != nullptr && this->GetHolder()->GetDynasty() != nullptr) {
+		//allow for different localizations depending on the title holder's dynasty
+		suffixes.push_back(this->GetHolder()->GetDynasty()->GetIdentifier());
 	}
 
 	return Translator::Get()->Translate(this->GetIdentifier(), suffixes);

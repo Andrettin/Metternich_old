@@ -31,6 +31,15 @@
 #include <iostream>
 #include <stdexcept>
 
+namespace Metternich {
+	static void LoadData()
+	{
+		Database::Get()->Load();
+		Map::Get()->Load();
+		Game::Get()->Start(Defines::Get()->GetStartDate());
+	}
+}
+
 int main(int argc, char *argv[])
 {
 	using namespace Metternich;
@@ -42,13 +51,12 @@ int main(int argc, char *argv[])
 
 		Translator *translator = Translator::Get();
 
-		Database::Get()->Load();
-		Map::Load();
 		translator->LoadLocale("english");
 
 		app.installTranslator(translator);
 
-		Game::Get()->Start(Defines::Get()->GetStartDate());
+		std::thread data_load_thread(LoadData);
+		data_load_thread.detach();
 
 		QQmlApplicationEngine engine;
 

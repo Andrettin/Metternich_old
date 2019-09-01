@@ -8,6 +8,8 @@
 #include "population/population_type.h"
 #include "util.h"
 
+#include <QGuiApplication>
+
 namespace Metternich {
 
 /**
@@ -21,6 +23,7 @@ void PopulationUnit::ProcessHistoryDatabase()
 			const std::string type_identifier = data_entry.GetTag();
 			PopulationType *type = PopulationType::Get(type_identifier);
 			auto population_unit = std::make_unique<PopulationUnit>(type);
+			population_unit->moveToThread(QGuiApplication::instance()->thread());
 			population_unit->LoadHistory(const_cast<GSMLData &>(data_entry));
 
 			if (population_unit->GetSize() <= 0) {
@@ -178,6 +181,7 @@ void PopulationUnit::DistributeToHoldings(const std::vector<Metternich::Holding 
 		}
 
 		auto population_unit = std::make_unique<PopulationUnit>(this->GetType());
+		population_unit->moveToThread(QGuiApplication::instance()->thread());
 		population_unit->SetHolding(holding);
 		population_unit->SetSize(size_per_holding);
 		if (this->GetCulture() != nullptr) {

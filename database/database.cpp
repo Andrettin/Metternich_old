@@ -11,6 +11,7 @@
 #include "defines.h"
 #include "economy/commodity.h"
 #include "economy/employment_type.h"
+#include "engine_interface.h"
 #include "game/game.h"
 #include "history/history.h"
 #include "holding/holding.h"
@@ -183,6 +184,8 @@ void Database::ProcessGSMLPropertyForObject(QObject *object, const GSMLProperty 
 */
 void Database::Load()
 {
+	EngineInterface::Get()->SetLoadingMessage("Loading Database...");
+
 	Defines::Get()->Load();
 
 	//parse the files for in each data type's folder

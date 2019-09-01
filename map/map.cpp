@@ -1,5 +1,6 @@
 #include "map/map.h"
 
+#include "engine_interface.h"
 #include "map/province.h"
 #include "map/terrain.h"
 #include "util.h"
@@ -11,20 +12,22 @@ namespace Metternich {
 
 void Map::Load()
 {
-	Map::LoadProvinces();
-	Map::LoadTerrain();
+	this->LoadProvinces();
+	this->LoadTerrain();
 }
 
 QPoint Map::GetPixelPosition(const int index)
 {
-	return IndexToPoint(index, Map::Size);
+	return IndexToPoint(index, this->Size);
 }
 
 void Map::LoadProvinces()
 {
+	EngineInterface::Get()->SetLoadingMessage("Loading Provinces... (0%)");
+
 	QImage province_image("./map/provinces.png");
 	QImage terrain_image("./map/terrain.png"); //used to calculate each province's terrain
-	Map::Size = province_image.size(); //set the map's size to that of the province map
+	this->Size = province_image.size(); //set the map's size to that of the province map
 	const int pixel_count = province_image.width() * province_image.height();
 
 	std::map<Province *, std::vector<int>> province_pixel_indexes;
@@ -39,6 +42,10 @@ void Map::LoadProvinces()
 		if ((i % province_image.width()) == 0) {
 			//new line, set the previous pixel province to null
 			previous_pixel_province = nullptr;
+
+			//update the progress in the loading message
+			const long long int progress_percent = static_cast<long long int>(i) * 100 / pixel_count;
+			EngineInterface::Get()->SetLoadingMessage("Loading Provinces... (" + QString::number(progress_percent) + "%)");
 		}
 
 		const QRgb &pixel_rgb = rgb_data[i];
@@ -106,6 +113,7 @@ void Map::LoadProvinces()
 
 void Map::LoadTerrain()
 {
+	EngineInterface::Get()->SetLoadingMessage("Loading Terrain...");
 	QImage terrain_image("./map/terrain.png");
 }
 
