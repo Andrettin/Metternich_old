@@ -19,7 +19,7 @@
 #include "translator.h"
 #include "util.h"
 
-#include <QGuiApplication>
+#include <QApplication>
 #include <QPainter>
 
 namespace Metternich {
@@ -546,7 +546,7 @@ Holding *Province::GetHolding(LandedTitle *barony) const
 void Province::CreateHolding(LandedTitle *barony, HoldingType *type)
 {
 	auto new_holding = std::make_unique<Holding>(barony, type, this);
-	new_holding->moveToThread(QGuiApplication::instance()->thread());
+	new_holding->moveToThread(QApplication::instance()->thread());
 	this->Holdings.push_back(new_holding.get());
 	this->HoldingsByBarony.insert({barony, std::move(new_holding)});
 	emit HoldingsChanged();

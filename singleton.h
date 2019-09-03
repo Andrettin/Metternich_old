@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QGuiApplication>
+#include <QApplication>
 #include <QObject>
 #include <QThread>
 
@@ -38,8 +38,8 @@ private:
 		Singleton<T>::Instance = std::make_unique<T>();
 
 		if constexpr (std::is_base_of_v<QObject, T>) {
-			if (QGuiApplication::instance()->thread() != QThread::currentThread()) {
-				Singleton<T>::Instance->moveToThread(QGuiApplication::instance()->thread());
+			if (QApplication::instance()->thread() != QThread::currentThread()) {
+				Singleton<T>::Instance->moveToThread(QApplication::instance()->thread());
 			}
 		}
 	}

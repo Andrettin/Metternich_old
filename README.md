@@ -12,3 +12,5 @@ For the data repository holding the actual game content, see:
 https://github.com/Andrettin/Iron-Barons
 
 To play it, compile the engine and run it with the Iron Barons root directory as the engine's working directory.
+
+The engine is licensed under the MIT license, see the LICENSE file for details.

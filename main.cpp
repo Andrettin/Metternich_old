@@ -23,7 +23,7 @@
 
 #include "third_party/maskedmousearea/maskedmousearea.h"
 
-#include <QGuiApplication>
+#include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QTranslator>
@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 	try {
 		QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
-		QGuiApplication app(argc, argv);
+		QApplication app(argc, argv);
 
 		Translator *translator = Translator::Get();
 

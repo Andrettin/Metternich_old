@@ -4,7 +4,7 @@
 #include "database/data_type_base.h"
 #include "database/gsml_data.h"
 
-#include <QGuiApplication>
+#include <QApplication>
 
 #include <filesystem>
 #include <map>
@@ -88,7 +88,7 @@ public:
 		DataType::InstancesByIdentifier[identifier] = std::make_unique<T>(identifier);
 		T *instance = DataType::InstancesByIdentifier.find(identifier)->second.get();
 		DataType::Instances.push_back(instance);
-		instance->moveToThread(QGuiApplication::instance()->thread());
+		instance->moveToThread(QApplication::instance()->thread());
 
 		if constexpr (std::is_same_v<KEY, int>) {
 			if (identifier > DataType::LastNumericIdentifier) {

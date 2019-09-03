@@ -2,9 +2,9 @@
 
 #include "maskedmousearea/maskedmousearea.h"
 
+#include <QApplication>
 #include <QColor>
 #include <QDateTime>
-#include <QGuiApplication>
 #include <QImage>
 #include <QList>
 #include <QLocale>
