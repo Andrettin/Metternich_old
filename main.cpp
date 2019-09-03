@@ -9,6 +9,7 @@
 #include "engine_interface.h"
 #include "game/game.h"
 #include "holding/building.h"
+#include "holding/holding.h"
 #include "holding/holding_type.h"
 #include "landed_title/landed_title.h"
 #include "map/map.h"
@@ -66,6 +67,7 @@ int main(int argc, char *argv[])
 		qmlRegisterType<Commodity>();
 		qmlRegisterType<Culture>();
 		qmlRegisterType<Game>();
+		qmlRegisterType<Holding>();
 		qmlRegisterType<HoldingType>();
 		qmlRegisterType<LandedTitle>();
 		qmlRegisterType<PopulationType>();

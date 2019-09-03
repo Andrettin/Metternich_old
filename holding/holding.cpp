@@ -100,6 +100,7 @@ void Holding::DoMonth()
 {
 	this->DoPopulationGrowth();
 	this->RemoveEmptyPopulationUnits();
+	this->CalculatePopulationProportions();
 }
 
 /**
@@ -119,8 +120,8 @@ std::string Holding::GetName() const
 */
 std::string Holding::GetTypeName() const
 {
-	const Culture *culture = this->GetProvince()->GetCulture();
-	const Religion *religion = this->GetProvince()->GetReligion();
+	const Metternich::Culture *culture = this->GetProvince()->GetCulture();
+	const Metternich::Religion *religion = this->GetProvince()->GetReligion();
 
 	std::vector<std::string> suffixes;
 	suffixes.push_back(culture->GetIdentifier());
@@ -309,6 +310,40 @@ void Holding::CheckOverpopulation()
 }
 
 /**
+**	@brief	Calculate the proportions of the population for each culture, religion and etc.
+*/
+void Holding::CalculatePopulationProportions()
+{
+	this->PopulationTypeProportions.clear();
+	this->CultureProportions.clear();
+	this->ReligionProportions.clear();
+
+	std::map<PopulationType *, long long int> population_per_type;
+	std::map<Metternich::Culture *, long long int> population_per_culture;
+	std::map<Metternich::Religion *, long long int> population_per_religion;
+
+	for (const std::unique_ptr<PopulationUnit> &population_unit : this->GetPopulationUnits()) {
+		population_per_type[population_unit->GetType()] += population_unit->GetSize();
+		population_per_culture[population_unit->GetCulture()] += population_unit->GetSize();
+		population_per_religion[population_unit->GetReligion()] += population_unit->GetSize();
+	}
+
+	for (const auto &kv_pair : population_per_type) {
+		this->PopulationTypeProportions[kv_pair.first] = kv_pair.second * 10000 / this->GetPopulation();
+	}
+
+	for (const auto &kv_pair : population_per_culture) {
+		this->CultureProportions[kv_pair.first] = kv_pair.second * 10000 / this->GetPopulation();
+	}
+
+	for (const auto &kv_pair : population_per_religion) {
+		this->ReligionProportions[kv_pair.first] = kv_pair.second * 10000 / this->GetPopulation();
+	}
+
+	emit populationProportionsChanged();
+}
+
+/**
 **	@brief	Get the holding's buildings as a QVariantList
 **
 **	@return	The buildings as a QVariantList
@@ -412,7 +447,6 @@ void Holding::GenerateCommodity()
 **	@brief	Set whether the holding is selected
 **
 **	@param	selected	Whether the holding is being selected
-**
 **	@param	notify_engine_interface	Whether to emit a signal notifying the engine interface of the change
 */
 void Holding::SetSelected(const bool selected, const bool notify_engine_interface)
@@ -434,8 +468,19 @@ void Holding::SetSelected(const bool selected, const bool notify_engine_interfac
 	emit SelectedChanged();
 
 	if (notify_engine_interface) {
-		EngineInterface::Get()->emit SelectedHoldingChanged();
+		EngineInterface::Get()->emit selectedHoldingChanged();
 	}
+}
+
+Q_INVOKABLE QVariantMap Holding::get_culture_proportions() const
+{
+	QVariantMap culture_proportions;
+
+	for (const auto &kv_pair : this->CultureProportions) {
+		culture_proportions[QString::fromStdString(kv_pair.first->GetName())] = static_cast<int>(kv_pair.second);
+	}
+
+	return culture_proportions;
 }
 
 void Holding::order_construction(const QVariant &building_variant)
