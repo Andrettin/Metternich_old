@@ -14,11 +14,14 @@ namespace Metternich {
 class Building;
 class Character;
 class Commodity;
+class Culture;
 class HoldingType;
 class IdentifiableModifier;
 class LandedTitle;
+class PopulationType;
 class PopulationUnit;
 class Province;
+class Religion;
 
 class Holding : public DataEntry
 {
@@ -339,7 +342,7 @@ public:
 
 	void SetSelected(const bool selected, const bool notify_engine_interface = true);
 
-	Q_INVOKABLE QVariantMap get_culture_proportions() const;
+	Q_INVOKABLE QVariantList get_culture_proportions() const;
 	Q_INVOKABLE void order_construction(const QVariant &building_variant);
 
 signals:

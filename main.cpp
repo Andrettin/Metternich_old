@@ -35,9 +35,14 @@
 namespace Metternich {
 	static void LoadData()
 	{
-		Database::Get()->Load();
-		Map::Get()->Load();
-		Game::Get()->Start(Defines::Get()->GetStartDate());
+		try {
+			Database::Get()->Load();
+			Map::Get()->Load();
+			Game::Get()->Start(Defines::Get()->GetStartDate());
+		} catch (const std::exception &exception) {
+			std::cerr << exception.what() << '\n';
+			exit(-1);
+		}
 	}
 }
 

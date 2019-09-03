@@ -3,6 +3,8 @@
 #include "culture/culture_base.h"
 #include "database/data_type.h"
 
+#include <QColor>
+
 #include <string>
 #include <vector>
 
@@ -16,6 +18,7 @@ class Culture : public CultureBase, public DataType<Culture>
 	Q_OBJECT
 
 	Q_PROPERTY(Metternich::CultureGroup* culture_group MEMBER CultureGroup READ GetCultureGroup NOTIFY CultureGroupChanged)
+	Q_PROPERTY(QColor color MEMBER Color READ GetColor)
 
 public:
 	static constexpr const char *ClassIdentifier = "culture";
@@ -23,11 +26,17 @@ public:
 
 	Culture(const std::string &identifier) : CultureBase(identifier) {}
 
+	virtual void ProcessGSMLScope(const GSMLData &scope) override;
 	virtual void Check() const override;
 
 	Metternich::CultureGroup *GetCultureGroup() const
 	{
 		return this->CultureGroup;
+	}
+
+	const QColor &GetColor() const
+	{
+		return this->Color;
 	}
 
 	void AddDynasty(Dynasty *dynasty)
@@ -44,6 +53,7 @@ signals:
 
 private:
 	Metternich::CultureGroup *CultureGroup = nullptr;
+	QColor Color;
 	std::vector<Dynasty *> Dynasties;
 };
 

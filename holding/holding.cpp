@@ -472,12 +472,15 @@ void Holding::SetSelected(const bool selected, const bool notify_engine_interfac
 	}
 }
 
-Q_INVOKABLE QVariantMap Holding::get_culture_proportions() const
+Q_INVOKABLE QVariantList Holding::get_culture_proportions() const
 {
-	QVariantMap culture_proportions;
+	QVariantList culture_proportions;
 
 	for (const auto &kv_pair : this->CultureProportions) {
-		culture_proportions[QString::fromStdString(kv_pair.first->GetName())] = static_cast<int>(kv_pair.second);
+		QVariantMap culture_proportion;
+		culture_proportion["culture"] = QVariant::fromValue(kv_pair.first);
+		culture_proportion["proportion"] = QVariant::fromValue(kv_pair.second);
+		culture_proportions.append(culture_proportion);
 	}
 
 	return culture_proportions;
