@@ -25,7 +25,7 @@ class EngineInterface : public QObject, public Singleton<EngineInterface>
 	Q_PROPERTY(Metternich::Game* game READ GetGame CONSTANT)
 	Q_PROPERTY(QVariant provinces READ GetProvinces CONSTANT)
 	Q_PROPERTY(Metternich::Province* selected_province READ GetSelectedProvince NOTIFY SelectedProvinceChanged)
-	Q_PROPERTY(Metternich::Holding* selected_holding READ GetSelectedHolding NOTIFY SelectedHoldingChanged)
+	Q_PROPERTY(Metternich::Holding* selected_holding READ GetSelectedHolding NOTIFY selectedHoldingChanged)
 	Q_PROPERTY(QString loading_message READ GetLoadingMessage NOTIFY LoadingMessageChanged)
 
 public:
@@ -51,7 +51,7 @@ public:
 
 signals:
 	void SelectedProvinceChanged();
-	void SelectedHoldingChanged();
+	void selectedHoldingChanged();
 	void LoadingMessageChanged();
 
 private:
