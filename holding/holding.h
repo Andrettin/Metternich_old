@@ -251,7 +251,7 @@ public:
 
 	void DoPopulationGrowth();
 	void CheckOverpopulation();
-	void CalculatePopulationProportions();
+	void CalculatePopulationGroups();
 
 	const std::set<Building *> &GetBuildings() const
 	{
@@ -342,7 +342,9 @@ public:
 
 	void SetSelected(const bool selected, const bool notify_engine_interface = true);
 
-	Q_INVOKABLE QVariantList get_culture_proportions() const;
+	Q_INVOKABLE QVariantList get_population_per_type() const;
+	Q_INVOKABLE QVariantList get_population_per_culture() const;
+	Q_INVOKABLE QVariantList get_population_per_religion() const;
 	Q_INVOKABLE void order_construction(const QVariant &building_variant);
 
 signals:
@@ -354,7 +356,7 @@ signals:
 	void PopulationChanged();
 	void PopulationCapacityChanged();
 	void PopulationGrowthChanged();
-	void populationProportionsChanged();
+	void populationGroupsChanged();
 	void BuildingsChanged();
 	void AvailableBuildingsChanged();
 	void UnderConstructionBuildingChanged();
@@ -382,9 +384,9 @@ private:
 	int HoldingSize = 100; //the holding size, which affects population capacity (100 = normal size)
 	std::set<IdentifiableModifier *> Modifiers; //modifiers applied to the holding
 	bool Selected = false;
-	std::map<PopulationType *, long long int> PopulationTypeProportions; //the proportion of the population of each population type, in per myriad
-	std::map<Metternich::Culture *, long long int> CultureProportions; //the proportion of the population of each culture, in per myriad
-	std::map<Metternich::Religion *, long long int> ReligionProportions; //the proportion of the population of each religion, in per myriad
+	std::map<PopulationType *, int> PopulationPerType; //the population for each population type
+	std::map<Metternich::Culture *, int> PopulationPerCulture; //the population for each culture
+	std::map<Metternich::Religion *, int> PopulationPerReligion; //the population for each religion
 };
 
 }

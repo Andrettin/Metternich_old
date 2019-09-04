@@ -100,7 +100,7 @@ void Holding::DoMonth()
 {
 	this->DoPopulationGrowth();
 	this->RemoveEmptyPopulationUnits();
-	this->CalculatePopulationProportions();
+	this->CalculatePopulationGroups();
 }
 
 /**
@@ -310,37 +310,27 @@ void Holding::CheckOverpopulation()
 }
 
 /**
-**	@brief	Calculate the proportions of the population for each culture, religion and etc.
+**	@brief	Calculate the population for each culture, religion and etc.
 */
-void Holding::CalculatePopulationProportions()
+void Holding::CalculatePopulationGroups()
 {
-	this->PopulationTypeProportions.clear();
-	this->CultureProportions.clear();
-	this->ReligionProportions.clear();
-
-	std::map<PopulationType *, long long int> population_per_type;
-	std::map<Metternich::Culture *, long long int> population_per_culture;
-	std::map<Metternich::Religion *, long long int> population_per_religion;
+	this->PopulationPerType.clear();
+	this->PopulationPerCulture.clear();
+	this->PopulationPerReligion.clear();
 
 	for (const std::unique_ptr<PopulationUnit> &population_unit : this->GetPopulationUnits()) {
-		population_per_type[population_unit->GetType()] += population_unit->GetSize();
-		population_per_culture[population_unit->GetCulture()] += population_unit->GetSize();
-		population_per_religion[population_unit->GetReligion()] += population_unit->GetSize();
+		this->PopulationPerType[population_unit->GetType()] += population_unit->GetSize();
+		this->PopulationPerCulture[population_unit->GetCulture()] += population_unit->GetSize();
+		this->PopulationPerReligion[population_unit->GetReligion()] += population_unit->GetSize();
 	}
 
-	for (const auto &kv_pair : population_per_type) {
-		this->PopulationTypeProportions[kv_pair.first] = kv_pair.second * 10000 / this->GetPopulation();
+	emit populationGroupsChanged();
+}
+
 	}
 
-	for (const auto &kv_pair : population_per_culture) {
-		this->CultureProportions[kv_pair.first] = kv_pair.second * 10000 / this->GetPopulation();
 	}
 
-	for (const auto &kv_pair : population_per_religion) {
-		this->ReligionProportions[kv_pair.first] = kv_pair.second * 10000 / this->GetPopulation();
-	}
-
-	emit populationProportionsChanged();
 }
 
 /**
@@ -472,18 +462,46 @@ void Holding::SetSelected(const bool selected, const bool notify_engine_interfac
 	}
 }
 
-Q_INVOKABLE QVariantList Holding::get_culture_proportions() const
+Q_INVOKABLE QVariantList Holding::get_population_per_type() const
 {
-	QVariantList culture_proportions;
+	QVariantList population_per_type;
 
-	for (const auto &kv_pair : this->CultureProportions) {
-		QVariantMap culture_proportion;
-		culture_proportion["culture"] = QVariant::fromValue(kv_pair.first);
-		culture_proportion["proportion"] = QVariant::fromValue(kv_pair.second);
-		culture_proportions.append(culture_proportion);
+	for (const auto &kv_pair : this->PopulationPerType) {
+		QVariantMap type_population;
+		type_population["type"] = QVariant::fromValue(kv_pair.first);
+		type_population["population"] = QVariant::fromValue(kv_pair.second);
+		population_per_type.append(type_population);
 	}
 
-	return culture_proportions;
+	return population_per_type;
+}
+
+Q_INVOKABLE QVariantList Holding::get_population_per_culture() const
+{
+	QVariantList population_per_culture;
+
+	for (const auto &kv_pair : this->PopulationPerCulture) {
+		QVariantMap culture_population;
+		culture_population["culture"] = QVariant::fromValue(kv_pair.first);
+		culture_population["population"] = QVariant::fromValue(kv_pair.second);
+		population_per_culture.append(culture_population);
+	}
+
+	return population_per_culture;
+}
+
+Q_INVOKABLE QVariantList Holding::get_population_per_religion() const
+{
+	QVariantList population_per_religion;
+
+	for (const auto &kv_pair : this->PopulationPerReligion) {
+		QVariantMap religion_population;
+		religion_population["religion"] = QVariant::fromValue(kv_pair.first);
+		religion_population["population"] = QVariant::fromValue(kv_pair.second);
+		population_per_religion.append(religion_population);
+	}
+
+	return population_per_religion;
 }
 
 void Holding::order_construction(const QVariant &building_variant)
