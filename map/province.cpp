@@ -13,6 +13,7 @@
 #include "map/map.h"
 #include "map/region.h"
 #include "map/terrain.h"
+#include "population/population_type.h"
 #include "population/population_unit.h"
 #include "religion.h"
 #include "script/modifier.h"
@@ -181,6 +182,7 @@ void Province::InitializeHistory()
 	}
 
 	this->CalculatePopulation();
+	this->CalculatePopulationGroups();
 
 	if (this->BordersRiver()) {
 		this->ChangePopulationCapacityAdditiveModifier(10000); //increase population capacity if this province borders a river
@@ -234,6 +236,8 @@ void Province::DoMonth()
 	for (Holding *holding : this->GetHoldings()) {
 		holding->DoMonth();
 	}
+
+	this->CalculatePopulationGroups();
 }
 
 /**
@@ -514,6 +518,59 @@ void Province::SetPopulationGrowthModifier(const int population_growth_modifier)
 }
 
 /**
+**	@brief	Calculate the population for each culture, religion and etc.
+*/
+void Province::CalculatePopulationGroups()
+{
+	this->PopulationPerType.clear();
+	this->PopulationPerCulture.clear();
+	this->PopulationPerReligion.clear();
+
+	for (Holding *holding : this->GetHoldings()) {
+		for (const auto &kv_pair : holding->GetPopulationPerType()) {
+			this->PopulationPerType[kv_pair.first] += kv_pair.second;
+		}
+		for (const auto &kv_pair : holding->GetPopulationPerCulture()) {
+			this->PopulationPerCulture[kv_pair.first] += kv_pair.second;
+		}
+		for (const auto &kv_pair : holding->GetPopulationPerReligion()) {
+			this->PopulationPerReligion[kv_pair.first] += kv_pair.second;
+		}
+	}
+
+	emit populationGroupsChanged();
+
+	//update the province's main culture and religion
+
+	Metternich::Culture *plurality_culture = nullptr;
+	int plurality_culture_size = 0;
+
+	for (const auto &kv_pair : this->PopulationPerCulture) {
+		Metternich::Culture *culture = kv_pair.first;
+		const int culture_size = kv_pair.second;
+		if (plurality_culture == nullptr || culture_size > plurality_culture_size) {
+			plurality_culture = culture;
+			plurality_culture_size = culture_size;
+		}
+	}
+
+	Metternich::Religion *plurality_religion = nullptr;
+	int plurality_religion_size = 0;
+
+	for (const auto &kv_pair : this->PopulationPerReligion) {
+		Metternich::Religion *religion = kv_pair.first;
+		const int religion_size = kv_pair.second;
+		if (plurality_religion == nullptr || religion_size > plurality_religion_size) {
+			plurality_religion = religion;
+			plurality_religion_size = religion_size;
+		}
+	}
+
+	this->SetCulture(plurality_culture);
+	this->SetReligion(plurality_religion);
+}
+
+/**
 **	@brief	Get the province's holdings
 */
 QVariantList Province::GetHoldingsQVariantList() const
@@ -676,6 +733,48 @@ void Province::SetSelected(const bool selected, const bool notify_engine_interfa
 bool Province::IsSelectable() const
 {
 	return this->GetCounty() != nullptr;
+}
+
+Q_INVOKABLE QVariantList Province::get_population_per_type() const
+{
+	QVariantList population_per_type;
+
+	for (const auto &kv_pair : this->PopulationPerType) {
+		QVariantMap type_population;
+		type_population["type"] = QVariant::fromValue(kv_pair.first);
+		type_population["population"] = QVariant::fromValue(kv_pair.second);
+		population_per_type.append(type_population);
+	}
+
+	return population_per_type;
+}
+
+Q_INVOKABLE QVariantList Province::get_population_per_culture() const
+{
+	QVariantList population_per_culture;
+
+	for (const auto &kv_pair : this->PopulationPerCulture) {
+		QVariantMap culture_population;
+		culture_population["culture"] = QVariant::fromValue(kv_pair.first);
+		culture_population["population"] = QVariant::fromValue(kv_pair.second);
+		population_per_culture.append(culture_population);
+	}
+
+	return population_per_culture;
+}
+
+Q_INVOKABLE QVariantList Province::get_population_per_religion() const
+{
+	QVariantList population_per_religion;
+
+	for (const auto &kv_pair : this->PopulationPerReligion) {
+		QVariantMap religion_population;
+		religion_population["religion"] = QVariant::fromValue(kv_pair.first);
+		religion_population["population"] = QVariant::fromValue(kv_pair.second);
+		population_per_religion.append(religion_population);
+	}
+
+	return population_per_religion;
 }
 
 }

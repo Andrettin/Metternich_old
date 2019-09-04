@@ -61,20 +61,31 @@ void Holding::InitializeHistory()
 		this->GenerateCommodity();
 	}
 
+	if (this->GetProvince() != nullptr) {
+		if (this->GetCulture() == nullptr) {
+			this->SetCulture(this->GetProvince()->GetCulture());
+		}
+
+		if (this->GetReligion() == nullptr) {
+			this->SetReligion(this->GetProvince()->GetReligion());
+		}
+	}
+
 	for (const std::unique_ptr<PopulationUnit> &population_unit : this->GetPopulationUnits()) {
 		//set the culture and religion of population units without any set to those of the holding's province
 		if (population_unit->GetCulture() == nullptr) {
-			population_unit->SetCulture(this->GetProvince()->GetCulture());
+			population_unit->SetCulture(this->GetCulture());
 		}
 
 		if (population_unit->GetReligion() == nullptr) {
-			population_unit->SetReligion(this->GetProvince()->GetReligion());
+			population_unit->SetReligion(this->GetReligion());
 		}
 	}
 
 	this->RemoveEmptyPopulationUnits();
 	this->SortPopulationUnits();
 	this->CalculatePopulation();
+	this->CalculatePopulationGroups();
 	this->CheckOverpopulation();
 }
 
@@ -110,7 +121,7 @@ void Holding::DoMonth()
 */
 std::string Holding::GetName() const
 {
-	return Translator::Get()->Translate(this->GetBarony()->GetIdentifier(), {this->GetProvince()->GetCulture()->GetIdentifier(), this->GetProvince()->GetCulture()->GetCultureGroup()->GetIdentifier(), this->GetProvince()->GetReligion()->GetIdentifier()});
+	return Translator::Get()->Translate(this->GetBarony()->GetIdentifier(), {this->GetCulture()->GetIdentifier(), this->GetCulture()->GetCultureGroup()->GetIdentifier(), this->GetReligion()->GetIdentifier()});
 }
 
 /**
@@ -120,8 +131,8 @@ std::string Holding::GetName() const
 */
 std::string Holding::GetTypeName() const
 {
-	const Metternich::Culture *culture = this->GetProvince()->GetCulture();
-	const Metternich::Religion *religion = this->GetProvince()->GetReligion();
+	const Metternich::Culture *culture = this->GetCulture();
+	const Metternich::Religion *religion = this->GetReligion();
 
 	std::vector<std::string> suffixes;
 	suffixes.push_back(culture->GetIdentifier());
@@ -325,12 +336,35 @@ void Holding::CalculatePopulationGroups()
 	}
 
 	emit populationGroupsChanged();
-}
 
+	//update the holding's main culture and religion
+
+	Metternich::Culture *plurality_culture = nullptr;
+	int plurality_culture_size = 0;
+
+	for (const auto &kv_pair : this->PopulationPerCulture) {
+		Metternich::Culture *culture = kv_pair.first;
+		const int culture_size = kv_pair.second;
+		if (plurality_culture == nullptr || culture_size > plurality_culture_size) {
+			plurality_culture = culture;
+			plurality_culture_size = culture_size;
+		}
 	}
 
+	Metternich::Religion *plurality_religion = nullptr;
+	int plurality_religion_size = 0;
+
+	for (const auto &kv_pair : this->PopulationPerReligion) {
+		Metternich::Religion *religion = kv_pair.first;
+		const int religion_size = kv_pair.second;
+		if (plurality_religion == nullptr || religion_size > plurality_religion_size) {
+			plurality_religion = religion;
+			plurality_religion_size = religion_size;
+		}
 	}
 
+	this->SetCulture(plurality_culture);
+	this->SetReligion(plurality_religion);
 }
 
 /**
@@ -341,6 +375,38 @@ void Holding::CalculatePopulationGroups()
 QVariantList Holding::GetBuildingsQVariantList() const
 {
 	return ContainerToQVariantList(this->GetBuildings());
+}
+
+void Holding::AddBuilding(Building *building)
+{
+	if (this->Buildings.find(building) != this->Buildings.end()) {
+		throw std::runtime_error("Tried to add the \"" + building->GetIdentifier() + "\" building to a holding that already has it.");
+	}
+
+	this->Buildings.insert(building);
+	this->ApplyBuildingEffects(building, 1);
+	emit BuildingsChanged();
+}
+
+void Holding::RemoveBuilding(Building *building)
+{
+	if (this->Buildings.find(building) == this->Buildings.end()) {
+		throw std::runtime_error("Tried to remove the \"" + building->GetIdentifier() + "\" building to a holding that does not have it.");
+	}
+
+	this->Buildings.erase(building);
+	this->ApplyBuildingEffects(building, -1);
+	emit BuildingsChanged();
+}
+
+/**
+**	@brief	Apply a building's effects to the holding
+**
+**	@param	building	The building
+**	@param	change		The multiplier for the change: 1 to apply, -1 to remove
+*/
+void Holding::ApplyBuildingEffects(const Building *building, const int change)
+{
 }
 
 /**

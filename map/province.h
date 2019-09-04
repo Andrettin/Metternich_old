@@ -22,6 +22,7 @@ class Culture;
 class Holding;
 class HoldingType;
 class LandedTitle;
+class PopulationType;
 class PopulationUnit;
 class Region;
 class Religion;
@@ -39,8 +40,8 @@ class Province : public DataEntry, public DataType<Province>
 	Q_PROPERTY(QRect rect READ GetRect CONSTANT)
 	Q_PROPERTY(QImage image READ GetImage NOTIFY ImageChanged)
 	Q_PROPERTY(Metternich::Terrain* terrain READ GetTerrain WRITE SetTerrain NOTIFY TerrainChanged)
-	Q_PROPERTY(Metternich::Culture* culture MEMBER Culture READ GetCulture NOTIFY CultureChanged)
-	Q_PROPERTY(Metternich::Religion* religion MEMBER Religion READ GetReligion NOTIFY ReligionChanged)
+	Q_PROPERTY(Metternich::Culture* culture READ GetCulture WRITE SetCulture NOTIFY CultureChanged)
+	Q_PROPERTY(Metternich::Religion* religion READ GetReligion WRITE SetReligion NOTIFY ReligionChanged)
 	Q_PROPERTY(int population READ GetPopulation WRITE SetPopulation NOTIFY PopulationChanged)
 	Q_PROPERTY(QVariantList holdings READ GetHoldingsQVariantList NOTIFY HoldingsChanged)
 	Q_PROPERTY(Metternich::Holding* capital_holding READ GetCapitalHolding WRITE SetCapitalHolding NOTIFY CapitalHoldingChanged)
@@ -121,9 +122,29 @@ public:
 		return this->Culture;
 	}
 
+	void SetCulture(Culture *culture)
+	{
+		if (culture == this->GetCulture()) {
+			return;
+		}
+
+		this->Culture = culture;
+		emit CultureChanged();
+	}
+
 	Metternich::Religion *GetReligion() const
 	{
 		return this->Religion;
+	}
+
+	void SetReligion(Religion *religion)
+	{
+		if (religion == this->GetReligion()) {
+			return;
+		}
+
+		this->Religion = religion;
+		emit ReligionChanged();
 	}
 
 	int GetPopulation() const
@@ -175,6 +196,8 @@ public:
 	{
 		this->SetPopulationGrowthModifier(this->GetPopulationGrowthModifier() + change);
 	}
+
+	void CalculatePopulationGroups();
 
 	const std::vector<Holding *> &GetHoldings() const
 	{
@@ -240,6 +263,10 @@ public:
 
 	void AddPopulationUnit(std::unique_ptr<PopulationUnit> &&population_unit);
 
+	Q_INVOKABLE QVariantList get_population_per_type() const;
+	Q_INVOKABLE QVariantList get_population_per_culture() const;
+	Q_INVOKABLE QVariantList get_population_per_religion() const;
+
 signals:
 	void CountyChanged();
 	void DuchyChanged();
@@ -250,6 +277,7 @@ signals:
 	void CultureChanged();
 	void ReligionChanged();
 	void PopulationChanged();
+	void populationGroupsChanged();
 	void HoldingsChanged();
 	void CapitalHoldingChanged();
 	void SelectedChanged();
@@ -273,6 +301,9 @@ private:
 	std::set<Province *> BorderProvinces; //provinces bordering this one
 	bool Selected = false;
 	std::vector<std::unique_ptr<PopulationUnit>> PopulationUnits; //population units set for this province in history, used during initialization to generate population units in the province's settlements
+	std::map<PopulationType *, int> PopulationPerType; //the population for each population type
+	std::map<Metternich::Culture *, int> PopulationPerCulture; //the population for each culture
+	std::map<Metternich::Religion *, int> PopulationPerReligion; //the population for each religion
 };
 
 }

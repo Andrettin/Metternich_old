@@ -41,7 +41,7 @@ namespace Metternich {
 			Game::Get()->Start(Defines::Get()->GetStartDate());
 		} catch (const std::exception &exception) {
 			std::cerr << exception.what() << '\n';
-			exit(-1);
+			QApplication::quit();
 		}
 	}
 }

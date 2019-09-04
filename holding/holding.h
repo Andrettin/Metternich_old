@@ -40,6 +40,8 @@ class Holding : public DataEntry
 	Q_PROPERTY(Metternich::Building* under_construction_building READ GetUnderConstructionBuilding NOTIFY UnderConstructionBuildingChanged)
 	Q_PROPERTY(int construction_days READ GetConstructionDays NOTIFY ConstructionDaysChanged)
 	Q_PROPERTY(Metternich::Commodity* commodity READ GetCommodity WRITE SetCommodity NOTIFY CommodityChanged)
+	Q_PROPERTY(Metternich::Culture* culture READ GetCulture WRITE SetCulture NOTIFY CultureChanged)
+	Q_PROPERTY(Metternich::Religion* religion READ GetReligion WRITE SetReligion NOTIFY ReligionChanged)
 	Q_PROPERTY(int holding_size READ GetHoldingSize WRITE SetHoldingSize NOTIFY HoldingSizeChanged)
 	Q_PROPERTY(bool selected READ IsSelected WRITE SetSelected NOTIFY SelectedChanged)
 
@@ -251,6 +253,52 @@ public:
 
 	void DoPopulationGrowth();
 	void CheckOverpopulation();
+
+	const std::map<PopulationType *, int> &GetPopulationPerType() const
+	{
+		return this->PopulationPerType;
+	}
+
+	int GetPopulationTypePopulation(PopulationType *population_type) const
+	{
+		auto find_iterator = this->PopulationPerType.find(population_type);
+		if (find_iterator == this->PopulationPerType.end()) {
+			return 0;
+		}
+
+		return find_iterator->second;
+	}
+
+	const std::map<Metternich::Culture *, int> &GetPopulationPerCulture() const
+	{
+		return this->PopulationPerCulture;
+	}
+
+	int GetCulturePopulation(Metternich::Culture *culture) const
+	{
+		auto find_iterator = this->PopulationPerCulture.find(culture);
+		if (find_iterator == this->PopulationPerCulture.end()) {
+			return 0;
+		}
+
+		return find_iterator->second;
+	}
+
+	const std::map<Metternich::Religion *, int> &GetPopulationPerReligion() const
+	{
+		return this->PopulationPerReligion;
+	}
+
+	int GetReligionPopulation(Metternich::Religion *religion) const
+	{
+		auto find_iterator = this->PopulationPerReligion.find(religion);
+		if (find_iterator == this->PopulationPerReligion.end()) {
+			return 0;
+		}
+
+		return find_iterator->second;
+	}
+
 	void CalculatePopulationGroups();
 
 	const std::set<Building *> &GetBuildings() const
@@ -259,19 +307,9 @@ public:
 	}
 
 	QVariantList GetBuildingsQVariantList() const;
-
-	Q_INVOKABLE void AddBuilding(Building *building)
-	{
-		this->Buildings.insert(building);
-		emit BuildingsChanged();
-	}
-
-	Q_INVOKABLE void RemoveBuilding(Building *building)
-	{
-		this->Buildings.erase(building);
-		emit BuildingsChanged();
-	}
-
+	Q_INVOKABLE void AddBuilding(Building *building);
+	Q_INVOKABLE void RemoveBuilding(Building *building);
+	void ApplyBuildingEffects(const Building *building, const int change);
 	std::vector<Building *> GetAvailableBuildings() const;
 	QVariantList GetAvailableBuildingsQVariantList() const;
 
@@ -319,6 +357,36 @@ public:
 
 	void GenerateCommodity();
 
+	Metternich::Culture *GetCulture() const
+	{
+		return this->Culture;
+	}
+
+	void SetCulture(Culture *culture)
+	{
+		if (culture == this->GetCulture()) {
+			return;
+		}
+
+		this->Culture = culture;
+		emit CultureChanged();
+	}
+
+	Metternich::Religion *GetReligion() const
+	{
+		return this->Religion;
+	}
+
+	void SetReligion(Religion *religion)
+	{
+		if (religion == this->GetReligion()) {
+			return;
+		}
+
+		this->Religion = religion;
+		emit ReligionChanged();
+	}
+
 	int GetHoldingSize() const
 	{
 		return this->HoldingSize;
@@ -362,6 +430,8 @@ signals:
 	void UnderConstructionBuildingChanged();
 	void ConstructionDaysChanged();
 	void CommodityChanged();
+	void CultureChanged();
+	void ReligionChanged();
 	void HoldingSizeChanged();
 	void SelectedChanged();
 
@@ -382,6 +452,8 @@ private:
 	int ConstructionDays = 0; //the amount of days remaining to construct the building under construction
 	Metternich::Commodity *Commodity = nullptr; //the commodity produced by the holding (if any)
 	int HoldingSize = 100; //the holding size, which affects population capacity (100 = normal size)
+	Metternich::Culture *Culture = nullptr; //the holding's culture
+	Metternich::Religion *Religion = nullptr; //the holding's religion
 	std::set<IdentifiableModifier *> Modifiers; //modifiers applied to the holding
 	bool Selected = false;
 	std::map<PopulationType *, int> PopulationPerType; //the population for each population type
