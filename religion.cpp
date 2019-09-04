@@ -1,7 +1,4 @@
-#include "population/population_type.h"
-
-#include "holding/holding_type.h"
-#include "util.h"
+#include "religion.h"
 
 namespace Metternich {
 
@@ -10,7 +7,7 @@ namespace Metternich {
 **
 **	@param	scope	The scope
 */
-void PopulationType::ProcessGSMLScope(const GSMLData &scope)
+void Religion::ProcessGSMLScope(const GSMLData &scope)
 {
 	const std::string &tag = scope.GetTag();
 	const std::vector<std::string> &values = scope.GetValues();
@@ -30,18 +27,13 @@ void PopulationType::ProcessGSMLScope(const GSMLData &scope)
 }
 
 /**
-**	@brief	Check whether the population type is in a valid state
+**	@brief	Check whether the religion is in a valid state
 */
-void PopulationType::Check() const
+void Religion::Check() const
 {
 	if (!this->GetColor().isValid()) {
-		throw std::runtime_error("Population type \"" + this->GetIdentifier() + "\" has no valid color.");
+		throw std::runtime_error("Religion \"" + this->GetIdentifier() + "\" has no valid color.");
 	}
-}
-
-QVariantList PopulationType::GetHoldingTypesQVariantList() const
-{
-	return ContainerToQVariantList(this->GetHoldingTypes());
 }
 
 }

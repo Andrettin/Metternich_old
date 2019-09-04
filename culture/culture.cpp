@@ -18,7 +18,7 @@ void Culture::ProcessGSMLScope(const GSMLData &scope)
 
 	if (tag == "color") {
 		if (values.size() != 3) {
-			throw std::runtime_error("The \"color\" scope for landed titles needs to contain exactly three values!");
+			throw std::runtime_error("The \"color\" scope for cultures needs to contain exactly three values!");
 		}
 
 		const int red = std::stoi(values.at(0));

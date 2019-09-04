@@ -41,6 +41,7 @@ SOURCES += \
         map/terrain.cpp \
         population/population_type.cpp \
         population/population_unit.cpp \
+        religion.cpp \
         script/chance_factor.cpp \
         script/condition/condition.cpp \
         script/factor_modifier.cpp \
