@@ -9,7 +9,7 @@
 #include <set>
 #include <string>
 
-namespace Metternich {
+namespace metternich {
 
 class HoldingType;
 

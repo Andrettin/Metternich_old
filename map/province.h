@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-namespace Metternich {
+namespace metternich {
 
 class CSVData;
 class Culture;
@@ -32,19 +32,19 @@ class Province : public DataEntry, public DataType<Province>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(Metternich::LandedTitle* county READ GetCounty WRITE SetCounty NOTIFY CountyChanged)
-	Q_PROPERTY(Metternich::LandedTitle* duchy READ GetDuchy NOTIFY DuchyChanged)
-	Q_PROPERTY(Metternich::LandedTitle* kingdom READ GetKingdom NOTIFY KingdomChanged)
-	Q_PROPERTY(Metternich::LandedTitle* empire READ GetEmpire NOTIFY EmpireChanged)
+	Q_PROPERTY(metternich::LandedTitle* county READ GetCounty WRITE SetCounty NOTIFY CountyChanged)
+	Q_PROPERTY(metternich::LandedTitle* duchy READ GetDuchy NOTIFY DuchyChanged)
+	Q_PROPERTY(metternich::LandedTitle* kingdom READ GetKingdom NOTIFY KingdomChanged)
+	Q_PROPERTY(metternich::LandedTitle* empire READ GetEmpire NOTIFY EmpireChanged)
 	Q_PROPERTY(QColor color READ GetColor CONSTANT)
 	Q_PROPERTY(QRect rect READ GetRect CONSTANT)
 	Q_PROPERTY(QImage image READ GetImage NOTIFY ImageChanged)
-	Q_PROPERTY(Metternich::Terrain* terrain READ GetTerrain WRITE SetTerrain NOTIFY TerrainChanged)
-	Q_PROPERTY(Metternich::Culture* culture READ GetCulture WRITE SetCulture NOTIFY CultureChanged)
-	Q_PROPERTY(Metternich::Religion* religion READ GetReligion WRITE SetReligion NOTIFY ReligionChanged)
+	Q_PROPERTY(metternich::Terrain* terrain READ GetTerrain WRITE SetTerrain NOTIFY TerrainChanged)
+	Q_PROPERTY(metternich::Culture* culture READ GetCulture WRITE SetCulture NOTIFY CultureChanged)
+	Q_PROPERTY(metternich::Religion* religion READ GetReligion WRITE SetReligion NOTIFY ReligionChanged)
 	Q_PROPERTY(int population READ GetPopulation WRITE SetPopulation NOTIFY PopulationChanged)
 	Q_PROPERTY(QVariantList holdings READ GetHoldingsQVariantList NOTIFY HoldingsChanged)
-	Q_PROPERTY(Metternich::Holding* capital_holding READ GetCapitalHolding WRITE SetCapitalHolding NOTIFY CapitalHoldingChanged)
+	Q_PROPERTY(metternich::Holding* capital_holding READ GetCapitalHolding WRITE SetCapitalHolding NOTIFY CapitalHoldingChanged)
 	Q_PROPERTY(bool selected READ IsSelected WRITE SetSelected NOTIFY SelectedChanged)
 	Q_PROPERTY(bool selectable READ IsSelectable CONSTANT)
 
@@ -110,14 +110,14 @@ public:
 		return this->Image;
 	}
 
-	Metternich::Terrain *GetTerrain() const
+	metternich::Terrain *GetTerrain() const
 	{
 		return this->Terrain;
 	}
 
 	void SetTerrain(Terrain *terrain);
 
-	Metternich::Culture *GetCulture() const
+	metternich::Culture *GetCulture() const
 	{
 		return this->Culture;
 	}
@@ -132,7 +132,7 @@ public:
 		emit CultureChanged();
 	}
 
-	Metternich::Religion *GetReligion() const
+	metternich::Religion *GetReligion() const
 	{
 		return this->Religion;
 	}
@@ -287,9 +287,9 @@ private:
 	QColor Color; //the color used to identify the province in the province map
 	QRect Rect; //the rectangle that the province occupies
 	QImage Image; //the province's image to be drawn on-screen
-	Metternich::Terrain *Terrain = nullptr;
-	Metternich::Culture *Culture = nullptr;
-	Metternich::Religion *Religion = nullptr;
+	metternich::Terrain *Terrain = nullptr;
+	metternich::Culture *Culture = nullptr;
+	metternich::Religion *Religion = nullptr;
 	int Population = 0; //the sum of the population of all of the province's settlement holdings
 	int PopulationCapacityAdditiveModifier = 0; //the population capacity additive modifier which the province provides to its holdings
 	int PopulationCapacityModifier = 0; //the population capacity modifier which the province provides to its holdings
@@ -302,8 +302,8 @@ private:
 	bool Selected = false;
 	std::vector<std::unique_ptr<PopulationUnit>> PopulationUnits; //population units set for this province in history, used during initialization to generate population units in the province's settlements
 	std::map<PopulationType *, int> PopulationPerType; //the population for each population type
-	std::map<Metternich::Culture *, int> PopulationPerCulture; //the population for each culture
-	std::map<Metternich::Religion *, int> PopulationPerReligion; //the population for each religion
+	std::map<metternich::Culture *, int> PopulationPerCulture; //the population for each culture
+	std::map<metternich::Religion *, int> PopulationPerReligion; //the population for each religion
 };
 
 }

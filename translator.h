@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	Custom translator class

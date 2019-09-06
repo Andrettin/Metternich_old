@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace Metternich {
+namespace metternich {
 
 class Building;
 class Modifier;
@@ -46,7 +46,7 @@ public:
 		this->Buildings.erase(std::remove(this->Buildings.begin(), this->Buildings.end(), building), this->Buildings.end());
 	}
 
-	const std::unique_ptr<Metternich::Modifier> &GetModifier() const
+	const std::unique_ptr<metternich::Modifier> &GetModifier() const
 	{
 		return this->Modifier;
 	}
@@ -54,7 +54,7 @@ public:
 private:
 	bool Settlement = false;	//whether the holding type occupies a settlement slot
 	std::vector<Building *> Buildings;
-	std::unique_ptr<Metternich::Modifier> Modifier; //the modifier applied to holdings of this type
+	std::unique_ptr<metternich::Modifier> Modifier; //the modifier applied to holdings of this type
 };
 
 }

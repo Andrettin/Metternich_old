@@ -23,7 +23,7 @@
 #include <QApplication>
 #include <QPainter>
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	Get an instance of the class by the RGB value associated with it
@@ -403,13 +403,13 @@ void Province::UpdateImage()
 **
 **	@param	terrain	The new terrain
 */
-void Province::SetTerrain(Metternich::Terrain *terrain)
+void Province::SetTerrain(metternich::Terrain *terrain)
 {
 	if (terrain == this->GetTerrain()) {
 		return;
 	}
 
-	const Metternich::Terrain *old_terrain = this->GetTerrain();
+	const metternich::Terrain *old_terrain = this->GetTerrain();
 
 	if (old_terrain != nullptr && old_terrain->GetModifier() != nullptr) {
 		old_terrain->GetModifier()->Remove(this);
@@ -542,11 +542,11 @@ void Province::CalculatePopulationGroups()
 
 	//update the province's main culture and religion
 
-	Metternich::Culture *plurality_culture = nullptr;
+	metternich::Culture *plurality_culture = nullptr;
 	int plurality_culture_size = 0;
 
 	for (const auto &kv_pair : this->PopulationPerCulture) {
-		Metternich::Culture *culture = kv_pair.first;
+		metternich::Culture *culture = kv_pair.first;
 		const int culture_size = kv_pair.second;
 		if (plurality_culture == nullptr || culture_size > plurality_culture_size) {
 			plurality_culture = culture;
@@ -554,11 +554,11 @@ void Province::CalculatePopulationGroups()
 		}
 	}
 
-	Metternich::Religion *plurality_religion = nullptr;
+	metternich::Religion *plurality_religion = nullptr;
 	int plurality_religion_size = 0;
 
 	for (const auto &kv_pair : this->PopulationPerReligion) {
-		Metternich::Religion *religion = kv_pair.first;
+		metternich::Religion *religion = kv_pair.first;
 		const int religion_size = kv_pair.second;
 		if (plurality_religion == nullptr || religion_size > plurality_religion_size) {
 			plurality_religion = religion;

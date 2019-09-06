@@ -32,7 +32,7 @@
 #include <iostream>
 #include <stdexcept>
 
-namespace Metternich {
+namespace metternich {
 	static void LoadData()
 	{
 		try {
@@ -48,7 +48,7 @@ namespace Metternich {
 
 int main(int argc, char *argv[])
 {
-	using namespace Metternich;
+	using namespace metternich;
 
 	try {
 		QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
 		qmlRegisterType<Province>();
 		qmlRegisterType<Religion>();
 		qmlRegisterType<Terrain>();
-		engine.rootContext()->setContextProperty("Metternich", EngineInterface::Get());
+		engine.rootContext()->setContextProperty("metternich", EngineInterface::Get());
 		engine.addImageProvider(QLatin1String("provinces"), new ProvinceImageProvider);
 		engine.addImageProvider(QLatin1String("empty"), new EmptyImageProvider);
 

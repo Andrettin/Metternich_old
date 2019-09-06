@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	The class for simple data types, which don't use identifiers

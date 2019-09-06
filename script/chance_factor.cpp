@@ -6,7 +6,7 @@
 #include "factor_modifier.h"
 #include "util.h"
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	Constructor

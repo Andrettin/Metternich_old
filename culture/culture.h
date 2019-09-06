@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-namespace Metternich {
+namespace metternich {
 
 class CultureGroup;
 class Dynasty;
@@ -17,7 +17,7 @@ class Culture : public CultureBase, public DataType<Culture>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(Metternich::CultureGroup* culture_group MEMBER CultureGroup READ GetCultureGroup NOTIFY CultureGroupChanged)
+	Q_PROPERTY(metternich::CultureGroup* culture_group MEMBER CultureGroup READ GetCultureGroup NOTIFY CultureGroupChanged)
 	Q_PROPERTY(QColor color MEMBER Color READ GetColor)
 
 public:
@@ -29,7 +29,7 @@ public:
 	virtual void ProcessGSMLScope(const gsml_data &scope) override;
 	virtual void Check() const override;
 
-	Metternich::CultureGroup *GetCultureGroup() const
+	metternich::CultureGroup *GetCultureGroup() const
 	{
 		return this->CultureGroup;
 	}
@@ -52,7 +52,7 @@ signals:
 	void CultureGroupChanged();
 
 private:
-	Metternich::CultureGroup *CultureGroup = nullptr;
+	metternich::CultureGroup *CultureGroup = nullptr;
 	QColor Color;
 	std::vector<Dynasty *> Dynasties;
 };

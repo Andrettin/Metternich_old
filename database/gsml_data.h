@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	Grand strategy markup language data

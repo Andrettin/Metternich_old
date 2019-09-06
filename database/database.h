@@ -9,7 +9,7 @@
 #include <mutex>
 #include <vector>
 
-namespace Metternich {
+namespace metternich {
 
 class DataEntry;
 

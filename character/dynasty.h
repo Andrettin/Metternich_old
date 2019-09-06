@@ -5,7 +5,7 @@
 
 #include <string>
 
-namespace Metternich {
+namespace metternich {
 
 class Culture;
 
@@ -13,7 +13,7 @@ class Dynasty : public DataEntry, public DataType<Dynasty>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(Metternich::Culture* culture READ GetCulture WRITE SetCulture)
+	Q_PROPERTY(metternich::Culture* culture READ GetCulture WRITE SetCulture)
 
 public:
 	Dynasty(const std::string &identifier) : DataEntry(identifier) {}
@@ -21,7 +21,7 @@ public:
 	static constexpr const char *ClassIdentifier = "dynasty";
 	static constexpr const char *DatabaseFolder = "dynasties";
 
-	Metternich::Culture *GetCulture() const
+	metternich::Culture *GetCulture() const
 	{
 		return this->Culture;
 	}
@@ -29,7 +29,7 @@ public:
 	void SetCulture(Culture *culture);
 
 private:
-	Metternich::Culture *Culture = nullptr;
+	metternich::Culture *Culture = nullptr;
 };
 
 }

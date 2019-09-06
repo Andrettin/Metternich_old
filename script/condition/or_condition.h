@@ -5,7 +5,7 @@
 #include <memory>
 #include <vector>
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	A scripted "or" condition

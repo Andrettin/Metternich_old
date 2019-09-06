@@ -2,7 +2,7 @@
 
 #include <QQuickImageProvider>
 
-namespace Metternich {
+namespace metternich {
 
 class ProvinceImageProvider : public QQuickImageProvider
 {

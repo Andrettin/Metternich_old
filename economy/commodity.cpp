@@ -5,7 +5,7 @@
 #include "database/gsml_property.h"
 #include "script/chance_factor.h"
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	Constructor

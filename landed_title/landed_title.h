@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-namespace Metternich {
+namespace metternich {
 
 class Character;
 class Holding;
@@ -20,12 +20,12 @@ class LandedTitle : public DataEntry, public DataType<LandedTitle>
 	Q_OBJECT
 
 	Q_PROPERTY(QString titled_name READ GetTitledNameQString NOTIFY TitledNameChanged)
-	Q_PROPERTY(Metternich::Character* holder READ GetHolder WRITE SetHolder NOTIFY HolderChanged)
-	Q_PROPERTY(Metternich::LandedTitle* holder_title MEMBER HolderTitle WRITE SetHolderTitle)
-	Q_PROPERTY(Metternich::LandedTitle* liege_title MEMBER LiegeTitle)
-	Q_PROPERTY(Metternich::LandedTitle* de_jure_liege_title READ GetDeJureLiegeTitle WRITE SetDeJureLiegeTitle NOTIFY DeJureLiegeTitleChanged)
-	Q_PROPERTY(Metternich::LandedTitle* realm READ GetRealm NOTIFY RealmChanged)
-	Q_PROPERTY(Metternich::Province* capital_province MEMBER CapitalProvince READ GetCapitalProvince)
+	Q_PROPERTY(metternich::Character* holder READ GetHolder WRITE SetHolder NOTIFY HolderChanged)
+	Q_PROPERTY(metternich::LandedTitle* holder_title MEMBER HolderTitle WRITE SetHolderTitle)
+	Q_PROPERTY(metternich::LandedTitle* liege_title MEMBER LiegeTitle)
+	Q_PROPERTY(metternich::LandedTitle* de_jure_liege_title READ GetDeJureLiegeTitle WRITE SetDeJureLiegeTitle NOTIFY DeJureLiegeTitleChanged)
+	Q_PROPERTY(metternich::LandedTitle* realm READ GetRealm NOTIFY RealmChanged)
+	Q_PROPERTY(metternich::Province* capital_province MEMBER CapitalProvince READ GetCapitalProvince)
 
 public:
 	LandedTitle(const std::string &identifier) : DataEntry(identifier) {}
@@ -93,14 +93,14 @@ public:
 	void SetHolder(Character *character);
 	void SetHolderTitle(LandedTitle *title);
 
-	Metternich::Holding *GetHolding() const
+	metternich::Holding *GetHolding() const
 	{
 		return this->Holding;
 	}
 
 	void SetHolding(Holding *holding);
 
-	Metternich::Province *GetProvince() const
+	metternich::Province *GetProvince() const
 	{
 		return this->Province;
 	}
@@ -136,7 +136,7 @@ public:
 		return this->DeJureVassalTitles.empty() && this->GetProvince() == nullptr && this->GetHolding() == nullptr;
 	}
 
-	Metternich::Province *GetCapitalProvince() const
+	metternich::Province *GetCapitalProvince() const
 	{
 		return this->CapitalProvince;
 	}
@@ -151,11 +151,11 @@ private:
 	QColor Color;
 	LandedTitleTier Tier;
 	Character *Holder = nullptr;
-	Metternich::Holding *Holding = nullptr; //this title's holding, if it is a non-titular barony
-	Metternich::Province *Province = nullptr; //this title's province, if it is a non-titular county
+	metternich::Holding *Holding = nullptr; //this title's holding, if it is a non-titular barony
+	metternich::Province *Province = nullptr; //this title's province, if it is a non-titular county
 	LandedTitle *DeJureLiegeTitle = nullptr;
 	std::vector<LandedTitle *> DeJureVassalTitles;
-	Metternich::Province *CapitalProvince = nullptr;
+	metternich::Province *CapitalProvince = nullptr;
 	LandedTitle *HolderTitle = nullptr; //title of this title's holder; used only for initialization, and set to null afterwards
 	LandedTitle *LiegeTitle = nullptr; //title of this title's holder's liege; used only for initialization, and set to null afterwards
 };

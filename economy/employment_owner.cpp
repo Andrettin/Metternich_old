@@ -6,7 +6,7 @@
 #include "population/population_type.h"
 #include "util.h"
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	Create an employment owner from a GSML scope

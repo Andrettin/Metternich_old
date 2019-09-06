@@ -4,7 +4,7 @@
 
 #include <vector>
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	The base class for the data type class per se, and for simpler data type classes which don't use identifiers

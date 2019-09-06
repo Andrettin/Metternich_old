@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-namespace Metternich {
+namespace metternich {
 
 class Culture;
 class Dynasty;
@@ -27,15 +27,15 @@ class Character : public NumericDataEntry, public DataType<Character, int>
 	Q_PROPERTY(QString full_name READ GetFullNameQString NOTIFY FullNameChanged)
 	Q_PROPERTY(QString titled_name READ GetTitledNameQString NOTIFY TitledNameChanged)
 	Q_PROPERTY(bool female MEMBER Female READ IsFemale)
-	Q_PROPERTY(Metternich::Dynasty* dynasty READ GetDynasty WRITE SetDynasty NOTIFY DynastyChanged)
-	Q_PROPERTY(Metternich::Culture* culture MEMBER Culture READ GetCulture NOTIFY CultureChanged)
-	Q_PROPERTY(Metternich::Religion* religion MEMBER Religion READ GetReligion NOTIFY ReligionChanged)
-	Q_PROPERTY(Metternich::LandedTitle* primary_title READ GetPrimaryTitle WRITE SetPrimaryTitle NOTIFY PrimaryTitleChanged)
-	Q_PROPERTY(Metternich::Character* father READ GetFather WRITE SetFather)
-	Q_PROPERTY(Metternich::Character* mother READ GetMother WRITE SetMother)
-	Q_PROPERTY(Metternich::Character* spouse READ GetSpouse WRITE SetSpouse)
-	Q_PROPERTY(Metternich::Character* liege READ GetLiege WRITE SetLiege NOTIFY LiegeChanged)
-	Q_PROPERTY(Metternich::Character* employer READ GetLiege WRITE SetLiege NOTIFY LiegeChanged)
+	Q_PROPERTY(metternich::Dynasty* dynasty READ GetDynasty WRITE SetDynasty NOTIFY DynastyChanged)
+	Q_PROPERTY(metternich::Culture* culture MEMBER Culture READ GetCulture NOTIFY CultureChanged)
+	Q_PROPERTY(metternich::Religion* religion MEMBER Religion READ GetReligion NOTIFY ReligionChanged)
+	Q_PROPERTY(metternich::LandedTitle* primary_title READ GetPrimaryTitle WRITE SetPrimaryTitle NOTIFY PrimaryTitleChanged)
+	Q_PROPERTY(metternich::Character* father READ GetFather WRITE SetFather)
+	Q_PROPERTY(metternich::Character* mother READ GetMother WRITE SetMother)
+	Q_PROPERTY(metternich::Character* spouse READ GetSpouse WRITE SetSpouse)
+	Q_PROPERTY(metternich::Character* liege READ GetLiege WRITE SetLiege NOTIFY LiegeChanged)
+	Q_PROPERTY(metternich::Character* employer READ GetLiege WRITE SetLiege NOTIFY LiegeChanged)
 	Q_PROPERTY(QVariantList traits READ GetTraitsQVariantList)
 	Q_PROPERTY(int wealth READ GetWealth WRITE SetWealth NOTIFY WealthChanged)
 
@@ -177,7 +177,7 @@ public:
 		return this->Female;
 	}
 
-	Metternich::Dynasty *GetDynasty() const
+	metternich::Dynasty *GetDynasty() const
 	{
 		return this->Dynasty;
 	}
@@ -193,12 +193,12 @@ public:
 		emit DynastyChanged();
 	}
 
-	Metternich::Culture *GetCulture() const
+	metternich::Culture *GetCulture() const
 	{
 		return this->Culture;
 	}
 
-	Metternich::Religion *GetReligion() const
+	metternich::Religion *GetReligion() const
 	{
 		return this->Religion;
 	}
@@ -397,9 +397,9 @@ private:
 	std::string Name;
 	bool Alive = true;
 	bool Female = false;
-	Metternich::Dynasty *Dynasty = nullptr;
-	Metternich::Culture *Culture = nullptr;
-	Metternich::Religion *Religion = nullptr;
+	metternich::Dynasty *Dynasty = nullptr;
+	metternich::Culture *Culture = nullptr;
+	metternich::Religion *Religion = nullptr;
 	LandedTitle *PrimaryTitle = nullptr;
 	std::vector<LandedTitle *> LandedTitles;
 	Character *Father = nullptr;

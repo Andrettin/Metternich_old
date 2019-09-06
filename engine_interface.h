@@ -9,7 +9,7 @@
 #include <memory>
 #include <mutex>
 
-namespace Metternich {
+namespace metternich {
 
 class Game;
 class Holding;
@@ -22,10 +22,10 @@ class EngineInterface : public QObject, public Singleton<EngineInterface>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(Metternich::Game* game READ GetGame CONSTANT)
+	Q_PROPERTY(metternich::Game* game READ GetGame CONSTANT)
 	Q_PROPERTY(QVariant provinces READ GetProvinces CONSTANT)
-	Q_PROPERTY(Metternich::Province* selected_province READ GetSelectedProvince NOTIFY SelectedProvinceChanged)
-	Q_PROPERTY(Metternich::Holding* selected_holding READ GetSelectedHolding NOTIFY selectedHoldingChanged)
+	Q_PROPERTY(metternich::Province* selected_province READ GetSelectedProvince NOTIFY SelectedProvinceChanged)
+	Q_PROPERTY(metternich::Holding* selected_holding READ GetSelectedHolding NOTIFY selectedHoldingChanged)
 	Q_PROPERTY(QString loading_message READ GetLoadingMessage NOTIFY LoadingMessageChanged)
 
 public:

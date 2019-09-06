@@ -2,7 +2,7 @@
 
 #include "database/gsml_data.h"
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	Process a GSML scope

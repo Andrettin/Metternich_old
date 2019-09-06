@@ -6,7 +6,7 @@
 #include "economy/employee.h"
 #include "economy/employment_owner.h"
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	Constructor

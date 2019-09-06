@@ -11,7 +11,7 @@
 #include <shared_mutex>
 #include <thread>
 
-namespace Metternich {
+namespace metternich {
 
 class Character;
 enum class GameSpeed : int;
@@ -26,7 +26,7 @@ class Game : public QObject, public Singleton<Game>
 	Q_PROPERTY(bool running READ IsRunning NOTIFY RunningChanged)
 	Q_PROPERTY(QDateTime current_date READ GetCurrentDate NOTIFY CurrentDateChanged)
 	Q_PROPERTY(QString current_date_string READ GetCurrentDateString NOTIFY CurrentDateChanged)
-	Q_PROPERTY(Metternich::Character* player_character READ GetPlayerCharacter NOTIFY PlayerCharacterChanged)
+	Q_PROPERTY(metternich::Character* player_character READ GetPlayerCharacter NOTIFY PlayerCharacterChanged)
 
 public:
 	Game();

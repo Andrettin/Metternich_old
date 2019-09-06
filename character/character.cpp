@@ -14,7 +14,7 @@
 
 #include <QVariant>
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	Generate a character
@@ -23,7 +23,7 @@ namespace Metternich {
 **
 **	@param	religion	The religion for the generated character
 */
-Character *Character::Generate(Metternich::Culture *culture, Metternich::Religion *religion)
+Character *Character::Generate(metternich::Culture *culture, metternich::Religion *religion)
 {
 	const int identifier = Character::GenerateNumericIdentifier();
 	Character *character = Character::Add(identifier);

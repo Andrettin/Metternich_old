@@ -5,7 +5,7 @@
 #include <memory>
 #include <vector>
 
-namespace Metternich {
+namespace metternich {
 
 class FactorModifier;
 class gsml_data;

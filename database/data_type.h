@@ -14,7 +14,7 @@
 #include <type_traits>
 #include <vector>
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	The class for the data types, which use identifiers to be referred to

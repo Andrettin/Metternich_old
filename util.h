@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <string>
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	Convert a fractional number string (i.e. a number with up to two decimal places) to an integer, multiplying it by 10 ^ the number of decimal places; the template argument is the number of decimal places

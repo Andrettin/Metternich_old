@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-namespace Metternich {
+namespace metternich {
 
 class Holding;
 class PopulationUnit;

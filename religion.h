@@ -7,7 +7,7 @@
 
 #include <string>
 
-namespace Metternich {
+namespace metternich {
 
 class Religion : public DataEntry, public DataType<Religion>
 {

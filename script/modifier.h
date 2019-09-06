@@ -2,7 +2,7 @@
 
 #include "script/modifier_base.h"
 
-namespace Metternich {
+namespace metternich {
 
 class gsml_data;
 class GSMLProperty;

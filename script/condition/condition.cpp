@@ -11,7 +11,7 @@
 #include "script/condition/terrain_condition.h"
 #include "util.h"
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	Create a condition from a GSML property

@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	The base class for characteristics common to cultures and culture groups

@@ -28,7 +28,7 @@
 #include <QMetaProperty>
 #include <QObject>
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	Process a GSML property for an instance of a QObject-derived class

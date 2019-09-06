@@ -2,7 +2,7 @@
 
 #include <QObject>
 
-namespace Metternich {
+namespace metternich {
 
 class gsml_data;
 class GSMLProperty;
@@ -32,7 +32,7 @@ public:
 		return employee;
 	}
 
-	const Metternich::PopulationType *GetPopulationType() const
+	const metternich::PopulationType *GetPopulationType() const
 	{
 		return this->PopulationType;
 	}
@@ -53,7 +53,7 @@ public:
 	}
 
 private:
-	const Metternich::PopulationType *PopulationType = nullptr;
+	const metternich::PopulationType *PopulationType = nullptr;
 	int Efficiency = 100; //the employee's efficiency, as a percentage
 	int WorkforceProportion = 100; //the proportion that the employee can make of the workforce, as a percentage
 	int IncomeShare = 50; //the share of income for the employee

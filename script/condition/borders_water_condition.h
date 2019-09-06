@@ -4,7 +4,7 @@
 #include "map/province.h"
 #include "script/condition/condition.h"
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	A scripted "borders water" condition

@@ -5,7 +5,7 @@
 
 #include <string>
 
-namespace Metternich {
+namespace metternich {
 
 class Trait : public DataEntry, public DataType<Trait>
 {

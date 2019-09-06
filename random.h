@@ -2,7 +2,7 @@
 
 #include <random>
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	Random number generator

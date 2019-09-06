@@ -4,7 +4,7 @@
 #include "database/gsml_data.h"
 #include "history/history.h"
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	Load the defines

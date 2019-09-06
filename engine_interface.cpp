@@ -8,7 +8,7 @@
 
 #include <QList>
 
-namespace Metternich {
+namespace metternich {
 
 Game *EngineInterface::GetGame() const
 {

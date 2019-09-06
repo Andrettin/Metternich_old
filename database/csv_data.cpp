@@ -3,7 +3,7 @@
 #include <fstream>
 #include <stdexcept>
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	Parse a CSV data file

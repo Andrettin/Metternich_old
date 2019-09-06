@@ -3,7 +3,7 @@
 #include "holding/holding_type.h"
 #include "util.h"
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	Process a GSML scope

@@ -13,7 +13,7 @@
 
 #include <stdexcept>
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	Add a new instance of the class
@@ -353,7 +353,7 @@ void LandedTitle::SetHolder(Character *character)
 	emit HolderChanged();
 }
 
-void LandedTitle::SetHolding(Metternich::Holding *holding)
+void LandedTitle::SetHolding(metternich::Holding *holding)
 {
 	this->Holding = holding;
 }

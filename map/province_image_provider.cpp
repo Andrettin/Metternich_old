@@ -2,7 +2,7 @@
 
 #include "province.h"
 
-namespace Metternich {
+namespace metternich {
 
 QImage ProvinceImageProvider::requestImage(const QString &id, QSize *size, const QSize &)
 {

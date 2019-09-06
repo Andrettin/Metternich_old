@@ -1,6 +1,6 @@
 Coding Guidelines for Metternich
 
-1. Class, variable and function names are in snake_case.
+1. Namespace, class, variable and function names are in snake_case.
 
 2. Function names generally begin with a verb in the imperative, for example: DoSomething().
 

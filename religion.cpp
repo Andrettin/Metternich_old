@@ -1,6 +1,6 @@
 #include "religion.h"
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	Process a GSML scope

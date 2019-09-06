@@ -10,7 +10,7 @@
 
 #include <chrono>
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	Constructor

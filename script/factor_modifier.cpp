@@ -5,7 +5,7 @@
 #include "script/condition/condition.h"
 #include "util.h"
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	Constructor

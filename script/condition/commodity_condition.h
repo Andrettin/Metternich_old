@@ -4,7 +4,7 @@
 #include "holding/holding.h"
 #include "script/condition/condition.h"
 
-namespace Metternich {
+namespace metternich {
 
 class Commodity;
 
@@ -33,7 +33,7 @@ public:
 	}
 
 private:
-	Metternich::Commodity *Commodity = nullptr;
+	metternich::Commodity *Commodity = nullptr;
 };
 
 }

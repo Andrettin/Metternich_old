@@ -3,7 +3,7 @@
 #include "culture/culture_base.h"
 #include "database/data_type.h"
 
-namespace Metternich {
+namespace metternich {
 
 class CultureGroup : public CultureBase, public DataType<CultureGroup>
 {

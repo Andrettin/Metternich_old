@@ -10,7 +10,7 @@
 
 #include <QApplication>
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	Process the history database for population units
@@ -96,7 +96,7 @@ void PopulationUnit::SubtractExistingSizes()
 **
 **	@param	holding	The holding
 */
-void PopulationUnit::SubtractExistingSizesInHolding(const Metternich::Holding *holding)
+void PopulationUnit::SubtractExistingSizesInHolding(const metternich::Holding *holding)
 {
 	for (const std::unique_ptr<PopulationUnit> &population_unit : holding->GetPopulationUnits()) {
 		if (&*population_unit == &*this) {
@@ -116,9 +116,9 @@ void PopulationUnit::SubtractExistingSizesInHolding(const Metternich::Holding *h
 **
 **	@param	holdings	The holdings
 */
-void PopulationUnit::SubtractExistingSizesInHoldings(const std::vector<Metternich::Holding *> &holdings)
+void PopulationUnit::SubtractExistingSizesInHoldings(const std::vector<metternich::Holding *> &holdings)
 {
-	for (const Metternich::Holding *holding : holdings) {
+	for (const metternich::Holding *holding : holdings) {
 		this->SubtractExistingSizesInHolding(holding);
 	}
 }
@@ -130,7 +130,7 @@ void PopulationUnit::SubtractExistingSizesInHoldings(const std::vector<Metternic
 **
 **	@return	True if the population unit can be distributed to the holding, or false otherwise
 */
-bool PopulationUnit::CanDistributeToHolding(const Metternich::Holding *holding) const
+bool PopulationUnit::CanDistributeToHolding(const metternich::Holding *holding) const
 {
 	if (this->GetType()->GetHoldingTypes().find(holding->GetType()) == this->GetType()->GetHoldingTypes().end()) {
 		return false;
@@ -153,12 +153,12 @@ bool PopulationUnit::CanDistributeToHolding(const Metternich::Holding *holding) 
 **
 **	@param	holdings	The holdings
 */
-void PopulationUnit::DistributeToHoldings(const std::vector<Metternich::Holding *> &holdings)
+void PopulationUnit::DistributeToHoldings(const std::vector<metternich::Holding *> &holdings)
 {
 	//set population for settlement holdings without population data
 	int holding_count = 0; //count of settlement holdings for which the population will be applied
 
-	for (const Metternich::Holding *holding : holdings) {
+	for (const metternich::Holding *holding : holdings) {
 		if (this->CanDistributeToHolding(holding)) {
 			holding_count++;
 		}
@@ -175,7 +175,7 @@ void PopulationUnit::DistributeToHoldings(const std::vector<Metternich::Holding 
 		return;
 	}
 
-	for (Metternich::Holding *holding : holdings) {
+	for (metternich::Holding *holding : holdings) {
 		if (!this->CanDistributeToHolding(holding)) {
 			continue;
 		}

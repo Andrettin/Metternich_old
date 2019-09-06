@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Metternich {
+namespace metternich {
 
 class gsml_data;
 class GSMLProperty;

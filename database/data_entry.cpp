@@ -6,7 +6,7 @@
 #include "translator.h"
 #include "util.h"
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	Process a GSML property

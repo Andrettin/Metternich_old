@@ -5,7 +5,7 @@
 #include "map/terrain.h"
 #include "script/condition/condition.h"
 
-namespace Metternich {
+namespace metternich {
 
 class Terrain;
 
@@ -37,7 +37,7 @@ public:
 	}
 
 private:
-	Metternich::Terrain *Terrain = nullptr;
+	metternich::Terrain *Terrain = nullptr;
 };
 
 }

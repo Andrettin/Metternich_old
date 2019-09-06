@@ -5,7 +5,7 @@
 #include <QPoint>
 #include <QSize>
 
-namespace Metternich {
+namespace metternich {
 
 class Province;
 

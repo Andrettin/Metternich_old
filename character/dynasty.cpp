@@ -2,9 +2,9 @@
 
 #include "culture/culture.h"
 
-namespace Metternich {
+namespace metternich {
 
-void Dynasty::SetCulture(Metternich::Culture *culture)
+void Dynasty::SetCulture(metternich::Culture *culture)
 {
 	this->Culture = culture;
 	culture->AddDynasty(this);

@@ -3,7 +3,7 @@
 #include "database/gsml_data.h"
 #include "script/modifier.h"
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	Get an instance of the class by the RGB value associated with it
@@ -61,7 +61,7 @@ void Terrain::ProcessGSMLScope(const gsml_data &scope)
 		this->Color.setRgb(red, green, blue);
 		Terrain::InstancesByRGB[this->Color.rgb()] = this;
 	} else if (tag == "modifier") {
-		this->Modifier = std::make_unique<Metternich::Modifier>();
+		this->Modifier = std::make_unique<metternich::Modifier>();
 		Database::ProcessGSMLData(this->Modifier, scope);
 	} else {
 		DataEntryBase::ProcessGSMLScope(scope);

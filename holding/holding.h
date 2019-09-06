@@ -9,12 +9,13 @@
 #include <string>
 #include <vector>
 
-namespace Metternich {
+namespace metternich {
 
 class Building;
 class Character;
 class Commodity;
 class Culture;
+class EmploymentType;
 class HoldingType;
 class IdentifiableModifier;
 class LandedTitle;
@@ -29,19 +30,19 @@ class Holding : public DataEntry
 
 	Q_PROPERTY(QString name READ GetNameQString NOTIFY NameChanged)
 	Q_PROPERTY(QString titled_name READ GetTitledNameQString NOTIFY TitledNameChanged)
-	Q_PROPERTY(Metternich::HoldingType* type READ GetType NOTIFY TypeChanged)
-	Q_PROPERTY(Metternich::LandedTitle* barony READ GetBarony CONSTANT)
+	Q_PROPERTY(metternich::HoldingType* type READ GetType NOTIFY TypeChanged)
+	Q_PROPERTY(metternich::LandedTitle* barony READ GetBarony CONSTANT)
 	Q_PROPERTY(int population READ GetPopulation WRITE SetPopulation NOTIFY PopulationChanged)
 	Q_PROPERTY(int population_capacity READ GetPopulationCapacity NOTIFY PopulationCapacityChanged)
 	Q_PROPERTY(int population_growth READ GetPopulationGrowth NOTIFY PopulationGrowthChanged)
 	Q_PROPERTY(QVariantList population_units READ GetPopulationUnitsQVariantList NOTIFY PopulationUnitsChanged)
 	Q_PROPERTY(QVariantList buildings READ GetBuildingsQVariantList NOTIFY BuildingsChanged)
 	Q_PROPERTY(QVariantList available_buildings READ GetAvailableBuildingsQVariantList NOTIFY AvailableBuildingsChanged)
-	Q_PROPERTY(Metternich::Building* under_construction_building READ GetUnderConstructionBuilding NOTIFY UnderConstructionBuildingChanged)
+	Q_PROPERTY(metternich::Building* under_construction_building READ GetUnderConstructionBuilding NOTIFY UnderConstructionBuildingChanged)
 	Q_PROPERTY(int construction_days READ GetConstructionDays NOTIFY ConstructionDaysChanged)
-	Q_PROPERTY(Metternich::Commodity* commodity READ GetCommodity WRITE SetCommodity NOTIFY CommodityChanged)
-	Q_PROPERTY(Metternich::Culture* culture READ GetCulture WRITE SetCulture NOTIFY CultureChanged)
-	Q_PROPERTY(Metternich::Religion* religion READ GetReligion WRITE SetReligion NOTIFY ReligionChanged)
+	Q_PROPERTY(metternich::Commodity* commodity READ GetCommodity WRITE SetCommodity NOTIFY CommodityChanged)
+	Q_PROPERTY(metternich::Culture* culture READ GetCulture WRITE SetCulture NOTIFY CultureChanged)
+	Q_PROPERTY(metternich::Religion* religion READ GetReligion WRITE SetReligion NOTIFY ReligionChanged)
 	Q_PROPERTY(int holding_size READ GetHoldingSize WRITE SetHoldingSize NOTIFY HoldingSizeChanged)
 	Q_PROPERTY(bool selected READ IsSelected WRITE SetSelected NOTIFY SelectedChanged)
 
@@ -105,7 +106,7 @@ public:
 		emit OwnerChanged();
 	}
 
-	Metternich::Province *GetProvince() const
+	metternich::Province *GetProvince() const
 	{
 		return this->Province;
 	}
@@ -269,12 +270,12 @@ public:
 		return find_iterator->second;
 	}
 
-	const std::map<Metternich::Culture *, int> &GetPopulationPerCulture() const
+	const std::map<metternich::Culture *, int> &GetPopulationPerCulture() const
 	{
 		return this->PopulationPerCulture;
 	}
 
-	int GetCulturePopulation(Metternich::Culture *culture) const
+	int GetCulturePopulation(metternich::Culture *culture) const
 	{
 		auto find_iterator = this->PopulationPerCulture.find(culture);
 		if (find_iterator == this->PopulationPerCulture.end()) {
@@ -284,12 +285,12 @@ public:
 		return find_iterator->second;
 	}
 
-	const std::map<Metternich::Religion *, int> &GetPopulationPerReligion() const
+	const std::map<metternich::Religion *, int> &GetPopulationPerReligion() const
 	{
 		return this->PopulationPerReligion;
 	}
 
-	int GetReligionPopulation(Metternich::Religion *religion) const
+	int GetReligionPopulation(metternich::Religion *religion) const
 	{
 		auto find_iterator = this->PopulationPerReligion.find(religion);
 		if (find_iterator == this->PopulationPerReligion.end()) {
@@ -340,7 +341,7 @@ public:
 		this->SetConstructionDays(this->GetConstructionDays() + change);
 	}
 
-	Metternich::Commodity *GetCommodity() const
+	metternich::Commodity *GetCommodity() const
 	{
 		return this->Commodity;
 	}
@@ -357,7 +358,7 @@ public:
 
 	void GenerateCommodity();
 
-	Metternich::Culture *GetCulture() const
+	metternich::Culture *GetCulture() const
 	{
 		return this->Culture;
 	}
@@ -372,7 +373,7 @@ public:
 		emit CultureChanged();
 	}
 
-	Metternich::Religion *GetReligion() const
+	metternich::Religion *GetReligion() const
 	{
 		return this->Religion;
 	}
@@ -439,7 +440,7 @@ private:
 	LandedTitle *Barony = nullptr;
 	HoldingType *Type = nullptr;
 	Character *Owner = nullptr; //the owner of the holding
-	Metternich::Province *Province = nullptr; //the province to which this holding belongs
+	metternich::Province *Province = nullptr; //the province to which this holding belongs
 	std::vector<std::unique_ptr<PopulationUnit>> PopulationUnits;
 	int BasePopulationCapacity = 0; //the base population capacity
 	int PopulationCapacityModifier = 100; //the population capacity modifier
@@ -450,15 +451,15 @@ private:
 	std::set<Building *> Buildings;
 	Building *UnderConstructionBuilding = nullptr; //the building currently under construction
 	int ConstructionDays = 0; //the amount of days remaining to construct the building under construction
-	Metternich::Commodity *Commodity = nullptr; //the commodity produced by the holding (if any)
+	metternich::Commodity *Commodity = nullptr; //the commodity produced by the holding (if any)
 	int HoldingSize = 100; //the holding size, which affects population capacity (100 = normal size)
-	Metternich::Culture *Culture = nullptr; //the holding's culture
-	Metternich::Religion *Religion = nullptr; //the holding's religion
+	metternich::Culture *Culture = nullptr; //the holding's culture
+	metternich::Religion *Religion = nullptr; //the holding's religion
 	std::set<IdentifiableModifier *> Modifiers; //modifiers applied to the holding
 	bool Selected = false;
 	std::map<PopulationType *, int> PopulationPerType; //the population for each population type
-	std::map<Metternich::Culture *, int> PopulationPerCulture; //the population for each culture
-	std::map<Metternich::Religion *, int> PopulationPerReligion; //the population for each religion
+	std::map<metternich::Culture *, int> PopulationPerCulture; //the population for each culture
+	std::map<metternich::Religion *, int> PopulationPerReligion; //the population for each religion
 };
 
 }

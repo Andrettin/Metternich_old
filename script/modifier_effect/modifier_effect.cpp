@@ -6,7 +6,7 @@
 #include "script/modifier_effect/population_growth_modifier_effect.h"
 #include "util.h"
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	Create a modifier effect from a GSML property

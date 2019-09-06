@@ -5,7 +5,7 @@
 
 #include <QColor>
 
-namespace Metternich {
+namespace metternich {
 
 class Modifier;
 
@@ -59,7 +59,7 @@ public:
 		return this->River;
 	}
 
-	const std::unique_ptr<Metternich::Modifier> &GetModifier() const
+	const std::unique_ptr<metternich::Modifier> &GetModifier() const
 	{
 		return this->Modifier;
 	}
@@ -70,7 +70,7 @@ private:
 	bool Navigable = false; //whether this water terrain is navigable
 	bool Ocean = false;
 	bool River = false;
-	std::unique_ptr<Metternich::Modifier> Modifier; //the modifier applied to provinces with this terrain
+	std::unique_ptr<metternich::Modifier> Modifier; //the modifier applied to provinces with this terrain
 };
 
 }

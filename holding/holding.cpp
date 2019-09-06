@@ -21,7 +21,7 @@
 
 #include <utility>
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	Constructor
@@ -30,7 +30,7 @@ namespace Metternich {
 **	@param	type		The holding's type (e.g. city)
 **	@param	province	The province where the holding is located
 */
-Holding::Holding(LandedTitle *barony, HoldingType *type, Metternich::Province *province) : DataEntry(barony->GetIdentifier()), Barony(barony), Province(province)
+Holding::Holding(LandedTitle *barony, HoldingType *type, metternich::Province *province) : DataEntry(barony->GetIdentifier()), Barony(barony), Province(province)
 {
 	barony->SetHolding(this);
 	this->ChangeBasePopulationGrowth(Defines::Get()->GetBasePopulationGrowth());
@@ -131,8 +131,8 @@ std::string Holding::GetName() const
 */
 std::string Holding::GetTypeName() const
 {
-	const Metternich::Culture *culture = this->GetCulture();
-	const Metternich::Religion *religion = this->GetReligion();
+	const metternich::Culture *culture = this->GetCulture();
+	const metternich::Religion *religion = this->GetReligion();
 
 	std::vector<std::string> suffixes;
 	suffixes.push_back(culture->GetIdentifier());
@@ -339,11 +339,11 @@ void Holding::CalculatePopulationGroups()
 
 	//update the holding's main culture and religion
 
-	Metternich::Culture *plurality_culture = nullptr;
+	metternich::Culture *plurality_culture = nullptr;
 	int plurality_culture_size = 0;
 
 	for (const auto &kv_pair : this->PopulationPerCulture) {
-		Metternich::Culture *culture = kv_pair.first;
+		metternich::Culture *culture = kv_pair.first;
 		const int culture_size = kv_pair.second;
 		if (plurality_culture == nullptr || culture_size > plurality_culture_size) {
 			plurality_culture = culture;
@@ -351,11 +351,11 @@ void Holding::CalculatePopulationGroups()
 		}
 	}
 
-	Metternich::Religion *plurality_religion = nullptr;
+	metternich::Religion *plurality_religion = nullptr;
 	int plurality_religion_size = 0;
 
 	for (const auto &kv_pair : this->PopulationPerReligion) {
-		Metternich::Religion *religion = kv_pair.first;
+		metternich::Religion *religion = kv_pair.first;
 		const int religion_size = kv_pair.second;
 		if (plurality_religion == nullptr || religion_size > plurality_religion_size) {
 			plurality_religion = religion;
@@ -471,9 +471,9 @@ void Holding::SetUnderConstructionBuilding(Building *building)
 */
 void Holding::GenerateCommodity()
 {
-	std::map<Metternich::Commodity *, std::pair<int, int>> commodity_chance_ranges;
+	std::map<metternich::Commodity *, std::pair<int, int>> commodity_chance_ranges;
 	int total_chance_factor = 0;
-	for (Metternich::Commodity *commodity : Commodity::GetAll()) {
+	for (metternich::Commodity *commodity : Commodity::GetAll()) {
 		const int commodity_chance = commodity->CalculateChance(this);
 		if (commodity_chance > 0) {
 			commodity_chance_ranges[commodity] = std::pair<int, int>(total_chance_factor, total_chance_factor + commodity_chance);
@@ -485,11 +485,11 @@ void Holding::GenerateCommodity()
 		return;
 	}
 
-	Metternich::Commodity *chosen_commodity = nullptr;
+	metternich::Commodity *chosen_commodity = nullptr;
 
 	const int random_number = Random::Generate(total_chance_factor);
 	for (const auto &element : commodity_chance_ranges) {
-		Metternich::Commodity *commodity = element.first;
+		metternich::Commodity *commodity = element.first;
 		const std::pair<int, int> range = element.second;
 		if (random_number >= range.first && random_number < range.second) {
 			chosen_commodity = commodity;

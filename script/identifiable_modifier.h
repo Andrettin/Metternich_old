@@ -4,7 +4,7 @@
 #include "database/data_type.h"
 #include "script/modifier_base.h"
 
-namespace Metternich {
+namespace metternich {
 
 class GSMLProperty;
 

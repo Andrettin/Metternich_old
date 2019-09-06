@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Metternich {
+namespace metternich {
 
 class GSMLProperty;
 class Holding;

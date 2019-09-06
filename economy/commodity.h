@@ -7,7 +7,7 @@
 
 #include <string>
 
-namespace Metternich {
+namespace metternich {
 
 class ChanceFactor;
 class gsml_data;

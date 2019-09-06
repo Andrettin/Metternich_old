@@ -2,7 +2,7 @@
 
 #include <QQuickImageProvider>
 
-namespace Metternich {
+namespace metternich {
 
 class EmptyImageProvider : public QQuickImageProvider
 {

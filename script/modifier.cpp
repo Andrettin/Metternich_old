@@ -3,7 +3,7 @@
 #include "database/gsml_property.h"
 #include "script/modifier_effect/modifier_effect.h"
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	Process a GSML property

@@ -2,7 +2,7 @@
 
 #include "script/modifier_effect/modifier_effect.h"
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	Constructor

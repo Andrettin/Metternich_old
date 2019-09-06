@@ -6,7 +6,7 @@
 
 #include <string>
 
-namespace Metternich {
+namespace metternich {
 
 class GSMLProperty;
 

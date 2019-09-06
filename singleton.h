@@ -8,7 +8,7 @@
 #include <mutex>
 #include <type_traits>
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	The singleton template class

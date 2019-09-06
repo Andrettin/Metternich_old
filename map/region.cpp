@@ -4,7 +4,7 @@
 #include "population/population_unit.h"
 #include "util.h"
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	Constructor

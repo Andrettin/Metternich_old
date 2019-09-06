@@ -2,7 +2,7 @@
 
 #include <QObject>
 
-namespace Metternich {
+namespace metternich {
 
 class gsml_data;
 class GSMLProperty;
@@ -32,7 +32,7 @@ public:
 		return owner;
 	}
 
-	const Metternich::PopulationType *GetPopulationType() const
+	const metternich::PopulationType *GetPopulationType() const
 	{
 		return this->PopulationType;
 	}
@@ -53,7 +53,7 @@ public:
 	}
 
 private:
-	const Metternich::PopulationType *PopulationType = nullptr;
+	const metternich::PopulationType *PopulationType = nullptr;
 	int OutputModifier = 100; //the owner's output modifier in ideal conditions (i.e. the proportion of owners to workforce being exactly as in ProportionToWorkforce)
 	int ProportionToWorkforce = 1; //the proportion (in percent) that the owners should have to the workforce to grant the output modifier in full
 	int IncomeShare = 50; //the share of income for the employment owner

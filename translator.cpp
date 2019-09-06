@@ -5,7 +5,7 @@
 
 #include <filesystem>
 
-namespace Metternich {
+namespace metternich {
 
 std::string Translator::Translate(const std::string &source_text, const std::vector<std::string> &suffixes) const
 {

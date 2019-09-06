@@ -5,7 +5,7 @@
 
 #include <map>
 
-namespace Metternich {
+namespace metternich {
 
 class Commodity;
 class gsml_data;
@@ -18,7 +18,7 @@ class EmploymentType : public DataEntry, public DataType<EmploymentType>
 	Q_OBJECT
 
 	Q_PROPERTY(int workforce MEMBER Workforce READ GetWorkforce)
-	Q_PROPERTY(Metternich::Commodity* output_commodity MEMBER OutputCommodity READ GetOutputCommodity)
+	Q_PROPERTY(metternich::Commodity* output_commodity MEMBER OutputCommodity READ GetOutputCommodity)
 	Q_PROPERTY(int output_value MEMBER OutputValue READ GetOutputValue)
 
 public:

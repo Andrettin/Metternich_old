@@ -8,7 +8,7 @@
 #include <QImage>
 #include <QRect>
 
-namespace Metternich {
+namespace metternich {
 
 void Map::Load()
 {

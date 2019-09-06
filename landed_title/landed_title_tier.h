@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Metternich {
+namespace metternich {
 
 enum class LandedTitleTier : int
 {

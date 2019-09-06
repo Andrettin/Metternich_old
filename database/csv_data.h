@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-namespace Metternich {
+namespace metternich {
 
 /**
 **	@brief	CSV data
