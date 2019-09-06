@@ -4,6 +4,8 @@
 
 #include <algorithm>
 #include <filesystem>
+#include <fstream>
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -56,6 +58,25 @@ public:
 		std::sort(this->Children.begin(), this->Children.end(), [](GSMLData &a, GSMLData &b) {
 			return a.GetTag() < b.GetTag();
 		});
+	}
+
+	void Print(std::ofstream &ofstream) const
+	{
+		ofstream << this->GetTag() << " = {\n";
+
+		for (const std::string &value : this->GetValues()) {
+			ofstream << value << " ";
+		}
+
+		for (const GSMLProperty &property : this->GetProperties()) {
+			property.Print(ofstream);
+		}
+
+		for (const GSMLData &child_data : this->GetChildren()) {
+			child_data.Print(ofstream);
+		}
+
+		ofstream << "}\n";
 	}
 
 private:

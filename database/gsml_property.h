@@ -29,6 +29,24 @@ public:
 		return this->Value;
 	}
 
+	void Print(std::ofstream &ofstream) const
+	{
+		ofstream << this->GetKey() << " ";
+
+		switch (this->GetOperator()) {
+			case GSMLOperator::Assignment:
+				ofstream << "=";
+			case GSMLOperator::Addition:
+				ofstream << "+=";
+			case GSMLOperator::Subtraction:
+				ofstream << "-=";
+			case GSMLOperator::None:
+				throw std::runtime_error("Cannot print the GSML \"none\" operator.");
+		}
+
+		ofstream << " " << this->GetValue() << "\n";
+	}
+
 private:
 	std::string Key;
 	GSMLOperator Operator;
