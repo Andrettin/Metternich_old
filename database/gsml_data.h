@@ -14,77 +14,77 @@ namespace Metternich {
 /**
 **	@brief	Grand strategy markup language data
 */
-class GSMLData
+class gsml_data
 {
 public:
-	GSMLData(const std::string tag) : Tag(tag) {}
+	gsml_data(const std::string tag) : tag(tag) {}
 
-	static GSMLData ParseFile(const std::filesystem::path &filepath);
+	static gsml_data parse_file(const std::filesystem::path &filepath);
 
 private:
-	static std::vector<std::string> ParseLine(const std::string &line);
-	static bool ParseEscapedCharacter(std::string &current_string, const char c);
-	static void ParseTokens(const std::vector<std::string> &tokens, GSMLData **current_gsml_data);
+	static std::vector<std::string> parse_line(const std::string &line);
+	static bool parse_escaped_character(std::string &current_string, const char c);
+	static void parse_tokens(const std::vector<std::string> &tokens, gsml_data **current_gsml_data);
 
 public:
-	const std::string &GetTag() const
+	const std::string &get_tag() const
 	{
-		return this->Tag;
+		return this->tag;
 	}
 
-	const GSMLData *GetParent() const
+	const gsml_data *get_parent() const
 	{
-		return this->Parent;
+		return this->parent;
 	}
 
-	const std::vector<GSMLData> &GetChildren() const
+	const std::vector<gsml_data> &get_children() const
 	{
-		return this->Children;
+		return this->children;
 	}
 
-	const std::vector<GSMLProperty> &GetProperties() const
+	const std::vector<GSMLProperty> &get_properties() const
 	{
-		return this->Properties;
+		return this->properties;
 	}
 
-	const std::vector<std::string> &GetValues() const
+	const std::vector<std::string> &get_values() const
 	{
-		return this->Values;
+		return this->values;
 	}
 
-	void SortChildren()
+	void sort_children()
 	{
 		//sort children by tag, alphabetically
-		std::sort(this->Children.begin(), this->Children.end(), [](GSMLData &a, GSMLData &b) {
-			return a.GetTag() < b.GetTag();
+		std::sort(this->children.begin(), this->children.end(), [](gsml_data &a, gsml_data &b) {
+			return a.get_tag() < b.get_tag();
 		});
 	}
 
-	void Print(std::ofstream &ofstream) const
+	void print(std::ofstream &ofstream) const
 	{
-		ofstream << this->GetTag() << " = {\n";
+		ofstream << this->get_tag() << " = {\n";
 
-		for (const std::string &value : this->GetValues()) {
+		for (const std::string &value : this->get_values()) {
 			ofstream << value << " ";
 		}
 
-		for (const GSMLProperty &property : this->GetProperties()) {
+		for (const GSMLProperty &property : this->get_properties()) {
 			property.Print(ofstream);
 		}
 
-		for (const GSMLData &child_data : this->GetChildren()) {
-			child_data.Print(ofstream);
+		for (const gsml_data &child_data : this->get_children()) {
+			child_data.print(ofstream);
 		}
 
 		ofstream << "}\n";
 	}
 
 private:
-	std::string Tag;
-	GSMLData *Parent = nullptr;
-	std::vector<GSMLData> Children;
-	std::vector<GSMLProperty> Properties;
-	std::vector<std::string> Values; //values directly attached to the GSML data scope, used for e.g. name arrays
+	std::string tag;
+	gsml_data *parent = nullptr;
+	std::vector<gsml_data> children;
+	std::vector<GSMLProperty> properties;
+	std::vector<std::string> values; //values directly attached to the GSML data scope, used for e.g. name arrays
 };
 
 }

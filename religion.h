@@ -21,7 +21,7 @@ public:
 	static constexpr const char *ClassIdentifier = "religion";
 	static constexpr const char *DatabaseFolder = "religions";
 
-	virtual void ProcessGSMLScope(const GSMLData &scope) override;
+	virtual void ProcessGSMLScope(const gsml_data &scope) override;
 	virtual void Check() const override;
 
 	const QColor &GetColor() const

@@ -24,9 +24,9 @@ HoldingType::~HoldingType()
 **
 **	@param	scope	The scope
 */
-void HoldingType::ProcessGSMLScope(const GSMLData &scope)
+void HoldingType::ProcessGSMLScope(const gsml_data &scope)
 {
-	const std::string &tag = scope.GetTag();
+	const std::string &tag = scope.get_tag();
 
 	if (tag == "modifier") {
 		this->Modifier = std::make_unique<Metternich::Modifier>();

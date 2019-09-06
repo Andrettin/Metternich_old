@@ -27,7 +27,7 @@ public:
 public:
 	PopulationType(const std::string &identifier) : DataEntry(identifier) {}
 
-	virtual void ProcessGSMLScope(const GSMLData &scope) override;
+	virtual void ProcessGSMLScope(const gsml_data &scope) override;
 	virtual void Check() const override;
 
 	const QColor &GetColor() const

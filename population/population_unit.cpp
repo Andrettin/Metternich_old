@@ -18,13 +18,13 @@ namespace Metternich {
 void PopulationUnit::ProcessHistoryDatabase()
 {
 	//simple data types are only loaded in history, instanced directly based on their GSML data
-	for (const GSMLData &gsml_data : PopulationUnit::GSMLHistoryDataToProcess) {
-		for (const GSMLData &data_entry : gsml_data.GetChildren()) {
-			const std::string type_identifier = data_entry.GetTag();
+	for (const gsml_data &data : PopulationUnit::gsml_history_data_to_process) {
+		for (const gsml_data &data_entry : data.get_children()) {
+			const std::string type_identifier = data_entry.get_tag();
 			PopulationType *type = PopulationType::Get(type_identifier);
 			auto population_unit = std::make_unique<PopulationUnit>(type);
 			population_unit->moveToThread(QApplication::instance()->thread());
-			population_unit->LoadHistory(const_cast<GSMLData &>(data_entry));
+			population_unit->LoadHistory(const_cast<gsml_data &>(data_entry));
 
 			if (population_unit->GetSize() <= 0) {
 				continue; //don't add empty population units
@@ -42,7 +42,7 @@ void PopulationUnit::ProcessHistoryDatabase()
 		}
 	}
 
-	PopulationUnit::GSMLHistoryDataToProcess.clear();
+	PopulationUnit::gsml_history_data_to_process.clear();
 }
 
 /**

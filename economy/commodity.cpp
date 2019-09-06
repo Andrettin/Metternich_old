@@ -28,9 +28,9 @@ Commodity::~Commodity()
 **
 **	@param	scope	The scope
 */
-void Commodity::ProcessGSMLScope(const GSMLData &scope)
+void Commodity::ProcessGSMLScope(const gsml_data &scope)
 {
-	const std::string &tag = scope.GetTag();
+	const std::string &tag = scope.get_tag();
 
 	if (tag == "chance") {
 		this->Chance = std::make_unique<ChanceFactor>();

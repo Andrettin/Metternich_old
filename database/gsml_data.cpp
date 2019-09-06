@@ -14,7 +14,7 @@ namespace Metternich {
 **
 **	@return	The parsed GSML data for the file.
 */
-GSMLData GSMLData::ParseFile(const std::filesystem::path &filepath)
+gsml_data gsml_data::parse_file(const std::filesystem::path &filepath)
 {
 	if (!std::filesystem::exists(filepath)) {
 		throw std::runtime_error("File \"" + filepath.string() + "\" not found.");
@@ -26,16 +26,16 @@ GSMLData GSMLData::ParseFile(const std::filesystem::path &filepath)
 		throw std::runtime_error("Failed to open file: " + filepath.string());
 	}
 
-	GSMLData file_gsml_data(filepath.stem().string());
+	gsml_data file_gsml_data(filepath.stem().string());
 
 	std::string line;
 	int line_index = 1;
-	GSMLData *current_gsml_data = &file_gsml_data;
+	gsml_data *current_gsml_data = &file_gsml_data;
 	std::vector<std::string> tokens;
 
 	try {
 		while (std::getline(ifstream, line)) {
-				std::vector<std::string> new_tokens = GSMLData::ParseLine(line);
+				std::vector<std::string> new_tokens = gsml_data::parse_line(line);
 				for (const std::string &token : new_tokens) {
 					tokens.push_back(token);
 				}
@@ -43,7 +43,7 @@ GSMLData GSMLData::ParseFile(const std::filesystem::path &filepath)
 			++line_index;
 		}
 
-		GSMLData::ParseTokens(tokens, &current_gsml_data);
+		gsml_data::parse_tokens(tokens, &current_gsml_data);
 	} catch (std::exception &exception) {
 		throw std::runtime_error("Error parsing data file \"" + filepath.string() + "\", line " + std::to_string(line_index) + ": " + exception.what() + ".");
 	}
@@ -58,7 +58,7 @@ GSMLData GSMLData::ParseFile(const std::filesystem::path &filepath)
 **
 **	@return	A vector holding the line's tokens
 */
-std::vector<std::string> GSMLData::ParseLine(const std::string &line)
+std::vector<std::string> gsml_data::parse_line(const std::string &line)
 {
 	std::vector<std::string> tokens;
 
@@ -108,7 +108,7 @@ std::vector<std::string> GSMLData::ParseLine(const std::string &line)
 		if (escaped) {
 			escaped = false;
 
-			if (GSMLData::ParseEscapedCharacter(current_string, c)) {
+			if (gsml_data::parse_escaped_character(current_string, c)) {
 				continue;
 			}
 		}
@@ -131,7 +131,7 @@ std::vector<std::string> GSMLData::ParseLine(const std::string &line)
 **
 **	@return	True if an escaped character was added to the string, or false otherwise
 */
-bool GSMLData::ParseEscapedCharacter(std::string &current_string, const char c)
+bool gsml_data::parse_escaped_character(std::string &current_string, const char c)
 {
 	if (c == 'n') {
 		current_string += '\n';
@@ -156,7 +156,7 @@ bool GSMLData::ParseEscapedCharacter(std::string &current_string, const char c)
 **	@param	tokens				The tokens to be parsed
 **	@param	current_gsml_data	The current GSML data element being processed
 */
-void GSMLData::ParseTokens(const std::vector<std::string> &tokens, GSMLData **current_gsml_data)
+void gsml_data::parse_tokens(const std::vector<std::string> &tokens, gsml_data **current_gsml_data)
 {
 	std::string key;
 	GSMLOperator property_operator = GSMLOperator::None;
@@ -164,7 +164,7 @@ void GSMLData::ParseTokens(const std::vector<std::string> &tokens, GSMLData **cu
 	for (const std::string &token : tokens) {
 		if (!key.empty() && property_operator == GSMLOperator::None && token != "=" && token != "+=" && token != "-=" && token != "{") {
 			//if the previously-given key isn't empty and no operator has been provided before or now, then the key was actually a value, part of a simple collection of values
-			(*current_gsml_data)->Values.push_back(key);
+			(*current_gsml_data)->values.push_back(key);
 			key.clear();
 		}
 
@@ -174,11 +174,11 @@ void GSMLData::ParseTokens(const std::vector<std::string> &tokens, GSMLData **cu
 					throw std::runtime_error("Tried closing tag before any tag had been opened.");
 				}
 
-				if ((*current_gsml_data)->Parent == nullptr) {
+				if ((*current_gsml_data)->parent == nullptr) {
 					throw std::runtime_error("Extra tag closing token!");
 				}
 
-				(*current_gsml_data) = (*current_gsml_data)->Parent;
+				(*current_gsml_data) = (*current_gsml_data)->parent;
 			} else { //key
 				key = token;
 			}
@@ -207,12 +207,12 @@ void GSMLData::ParseTokens(const std::vector<std::string> &tokens, GSMLData **cu
 			}
 
 			std::string tag_name = key;
-			(*current_gsml_data)->Children.emplace_back(tag_name);
-			GSMLData &new_gsml_data = (*current_gsml_data)->Children.back();
-			new_gsml_data.Parent = *current_gsml_data;
+			(*current_gsml_data)->children.emplace_back(tag_name);
+			gsml_data &new_gsml_data = (*current_gsml_data)->children.back();
+			new_gsml_data.parent = *current_gsml_data;
 			(*current_gsml_data) = &new_gsml_data;
 		} else {
-			(*current_gsml_data)->Properties.push_back(GSMLProperty(key, property_operator, token));
+			(*current_gsml_data)->properties.push_back(GSMLProperty(key, property_operator, token));
 		}
 
 		key.clear();

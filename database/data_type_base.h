@@ -13,7 +13,7 @@ template <typename T>
 class DataTypeBase
 {
 protected:
-	static inline std::vector<GSMLData> GSMLHistoryDataToProcess;
+	static inline std::vector<gsml_data> gsml_history_data_to_process;
 };
 
 }

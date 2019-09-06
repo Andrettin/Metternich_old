@@ -10,10 +10,10 @@ namespace Metternich {
 **
 **	@param	scope	The scope
 */
-void PopulationType::ProcessGSMLScope(const GSMLData &scope)
+void PopulationType::ProcessGSMLScope(const gsml_data &scope)
 {
-	const std::string &tag = scope.GetTag();
-	const std::vector<std::string> &values = scope.GetValues();
+	const std::string &tag = scope.get_tag();
+	const std::vector<std::string> &values = scope.get_values();
 
 	if (tag == "color") {
 		if (values.size() != 3) {

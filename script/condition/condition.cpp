@@ -41,9 +41,9 @@ std::unique_ptr<Condition> Condition::FromGSMLProperty(const GSMLProperty &prope
 **
 **	@param	scope	The GSML scope
 */
-std::unique_ptr<Condition> Condition::FromGSMLScope(const GSMLData &scope)
+std::unique_ptr<Condition> Condition::FromGSMLScope(const gsml_data &scope)
 {
-	std::string condition_identifier = ToLower(scope.GetTag());
+	std::string condition_identifier = ToLower(scope.get_tag());
 	std::unique_ptr<Condition> condition;
 
 	if (condition_identifier == "and") {
@@ -81,9 +81,9 @@ void Condition::ProcessGSMLProperty(const GSMLProperty &property)
 **
 **	@param	scope	The scope
 */
-void Condition::ProcessGSMLScope(const GSMLData &scope)
+void Condition::ProcessGSMLScope(const gsml_data &scope)
 {
-	throw std::runtime_error("Invalid \"" + this->GetIdentifier() + "\" condition scope: " + scope.GetTag() + ".");
+	throw std::runtime_error("Invalid \"" + this->GetIdentifier() + "\" condition scope: " + scope.get_tag() + ".");
 }
 
 }

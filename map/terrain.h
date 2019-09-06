@@ -32,7 +32,7 @@ public:
 	Terrain(const std::string &identifier);
 	virtual ~Terrain() override;
 
-	virtual void ProcessGSMLScope(const GSMLData &scope) override;
+	virtual void ProcessGSMLScope(const gsml_data &scope) override;
 
 	const QColor &GetColor() const
 	{

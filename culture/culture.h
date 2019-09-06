@@ -26,7 +26,7 @@ public:
 
 	Culture(const std::string &identifier) : CultureBase(identifier) {}
 
-	virtual void ProcessGSMLScope(const GSMLData &scope) override;
+	virtual void ProcessGSMLScope(const gsml_data &scope) override;
 	virtual void Check() const override;
 
 	Metternich::CultureGroup *GetCultureGroup() const

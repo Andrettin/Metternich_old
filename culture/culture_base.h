@@ -17,7 +17,7 @@ class CultureBase : public DataEntry
 public:
 	CultureBase(const std::string &identifier) : DataEntry(identifier) {}
 
-	virtual void ProcessGSMLScope(const GSMLData &scope) override;
+	virtual void ProcessGSMLScope(const gsml_data &scope) override;
 
 	const std::vector<std::string> &GetMaleNames() const
 	{

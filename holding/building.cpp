@@ -27,12 +27,12 @@ Building::~Building()
 **
 **	@param	scope	The scope
 */
-void Building::ProcessGSMLScope(const GSMLData &scope)
+void Building::ProcessGSMLScope(const gsml_data &scope)
 {
-	if (scope.GetTag() == "preconditions") {
+	if (scope.get_tag() == "preconditions") {
 		this->Preconditions = std::make_unique<AndCondition>();
 		Database::ProcessGSMLData(this->Preconditions.get(), scope);
-	} else if (scope.GetTag() == "conditions") {
+	} else if (scope.get_tag() == "conditions") {
 		this->Conditions = std::make_unique<AndCondition>();
 		Database::ProcessGSMLData(this->Conditions.get(), scope);
 	} else {

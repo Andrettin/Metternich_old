@@ -13,10 +13,10 @@ namespace Metternich {
 **
 **	@param	scope	The GSML scope
 */
-std::unique_ptr<Employee> Employee::FromGSMLScope(const GSMLData &scope)
+std::unique_ptr<Employee> Employee::FromGSMLScope(const gsml_data &scope)
 {
 	auto employee = std::make_unique<Employee>();
-	employee->PopulationType = PopulationType::Get(scope.GetTag());
+	employee->PopulationType = PopulationType::Get(scope.get_tag());
 
 	Database::ProcessGSMLData(employee, scope);
 

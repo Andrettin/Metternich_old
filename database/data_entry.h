@@ -7,7 +7,7 @@
 
 namespace Metternich {
 
-class GSMLData;
+class gsml_data;
 class GSMLProperty;
 
 /**
@@ -21,7 +21,7 @@ public:
 	virtual ~DataEntryBase() {}
 
 	virtual void ProcessGSMLProperty(const GSMLProperty &property);
-	virtual void ProcessGSMLScope(const GSMLData &scope);
+	virtual void ProcessGSMLScope(const gsml_data &scope);
 
 	virtual void ProcessGSMLDatedProperty(const GSMLProperty &property, const QDateTime &date)
 	{
@@ -29,13 +29,13 @@ public:
 		this->ProcessGSMLProperty(property);
 	}
 
-	virtual void ProcessGSMLDatedScope(const GSMLData &scope, const QDateTime &date)
+	virtual void ProcessGSMLDatedScope(const gsml_data &scope, const QDateTime &date)
 	{
 		Q_UNUSED(date);
 		this->ProcessGSMLScope(scope);
 	}
 
-	void LoadHistory(GSMLData &gsml_data);
+	void LoadHistory(gsml_data &data);
 
 	virtual void Initialize()
 	{

@@ -30,7 +30,7 @@ public:
 	Building(const std::string &identifier);
 	virtual ~Building() override;
 
-	virtual void ProcessGSMLScope(const GSMLData &scope) override;
+	virtual void ProcessGSMLScope(const gsml_data &scope) override;
 
 	const std::string &GetIconPath() const
 	{

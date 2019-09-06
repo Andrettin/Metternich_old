@@ -34,7 +34,7 @@ public:
 				continue;
 			}
 
-			T::GSMLHistoryDataToProcess.push_back(GSMLData::ParseFile(dir_entry.path()));
+			T::gsml_history_data_to_process.push_back(gsml_data::parse_file(dir_entry.path()));
 		}
 	}
 };

@@ -70,8 +70,8 @@ public:
 	virtual ~Province() override;
 
 	virtual void ProcessGSMLProperty(const GSMLProperty &property) override;
-	virtual void ProcessGSMLScope(const GSMLData &scope) override;
-	virtual void ProcessGSMLDatedScope(const GSMLData &scope, const QDateTime &date) override;
+	virtual void ProcessGSMLScope(const gsml_data &scope) override;
+	virtual void ProcessGSMLDatedScope(const gsml_data &scope, const QDateTime &date) override;
 	virtual void InitializeHistory() override;
 	virtual void Check() const override;
 

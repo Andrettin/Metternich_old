@@ -20,24 +20,24 @@ class Database : public Singleton<Database>
 {
 public:
 	template <typename T>
-	static void ProcessGSMLData(T *instance, const GSMLData &gsml_data)
+	static void ProcessGSMLData(T *instance, const gsml_data &data)
 	{
-		for (const GSMLProperty &property : gsml_data.GetProperties()) {
+		for (const GSMLProperty &property : data.get_properties()) {
 			instance->ProcessGSMLProperty(property);
 		}
 
-		for (const GSMLData &child_data : gsml_data.GetChildren()) {
+		for (const gsml_data &child_data : data.get_children()) {
 			instance->ProcessGSMLScope(child_data);
 		}
 	}
 
 	template <typename T>
-	static void ProcessGSMLData(T &instance, const GSMLData &gsml_data)
+	static void ProcessGSMLData(T &instance, const gsml_data &data)
 	{
 		if constexpr (is_specialization_of_v<T, std::unique_ptr>) {
-			Database::ProcessGSMLData(instance.get(), gsml_data);
+			Database::ProcessGSMLData(instance.get(), data);
 		} else {
-			Database::ProcessGSMLData(&instance, gsml_data);
+			Database::ProcessGSMLData(&instance, data);
 		}
 	}
 

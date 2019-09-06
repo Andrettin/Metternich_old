@@ -17,9 +17,9 @@ void Defines::Load()
 		return;
 	}
 
-	GSMLData gsml_data = GSMLData::ParseFile(defines_path);
+	gsml_data gsml_data = gsml_data::parse_file(defines_path);
 
-	for (const GSMLProperty &property : gsml_data.GetProperties()) {
+	for (const GSMLProperty &property : gsml_data.get_properties()) {
 		this->ProcessGSMLProperty(property);
 	}
 }

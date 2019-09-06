@@ -49,7 +49,7 @@ void FactorModifier::ProcessGSMLProperty(const GSMLProperty &property)
 **
 **	@param	scope	The scope
 */
-void FactorModifier::ProcessGSMLScope(const GSMLData &scope)
+void FactorModifier::ProcessGSMLScope(const gsml_data &scope)
 {
 	std::unique_ptr<Condition> condition = Condition::FromGSMLScope(scope);
 	this->Conditions.push_back(std::move(condition));

@@ -118,10 +118,10 @@ void Province::ProcessGSMLProperty(const GSMLProperty &property)
 **
 **	@param	scope	The scope
 */
-void Province::ProcessGSMLScope(const GSMLData &scope)
+void Province::ProcessGSMLScope(const gsml_data &scope)
 {
-	const std::string &tag = scope.GetTag();
-	const std::vector<std::string> &values = scope.GetValues();
+	const std::string &tag = scope.get_tag();
+	const std::vector<std::string> &values = scope.get_values();
 
 	if (tag == "color") {
 		if (values.size() != 3) {
@@ -149,9 +149,9 @@ void Province::ProcessGSMLScope(const GSMLData &scope)
 **	@param	scope	The scope
 **	@param	date	The date of the scope change
 */
-void Province::ProcessGSMLDatedScope(const GSMLData &scope, const QDateTime &date)
+void Province::ProcessGSMLDatedScope(const gsml_data &scope, const QDateTime &date)
 {
-	const std::string &tag = scope.GetTag();
+	const std::string &tag = scope.get_tag();
 
 	if (tag.substr(0, 2) == LandedTitle::BaronyPrefix) {
 		//a change to the data of one of the province's holdings
@@ -159,7 +159,7 @@ void Province::ProcessGSMLDatedScope(const GSMLData &scope, const QDateTime &dat
 		LandedTitle *barony = LandedTitle::Get(tag);
 		Holding *holding = this->GetHolding(barony);
 		if (holding != nullptr) {
-			for (const GSMLProperty &property : scope.GetProperties()) {
+			for (const GSMLProperty &property : scope.get_properties()) {
 				holding->ProcessGSMLDatedProperty(property, date);
 			}
 		} else {

@@ -49,14 +49,14 @@ void ChanceFactor::ProcessGSMLProperty(const GSMLProperty &property)
 **
 **	@param	scope	The scope
 */
-void ChanceFactor::ProcessGSMLScope(const GSMLData &scope)
+void ChanceFactor::ProcessGSMLScope(const gsml_data &scope)
 {
-	if (scope.GetTag() == "modifier") {
+	if (scope.get_tag() == "modifier") {
 		auto factor_modifier = std::make_unique<FactorModifier>();
 		Database::ProcessGSMLData(factor_modifier, scope);
 		this->Modifiers.push_back(std::move(factor_modifier));
 	} else {
-		throw std::runtime_error("Invalid chance scope: " + scope.GetTag() + ".");
+		throw std::runtime_error("Invalid chance scope: " + scope.get_tag() + ".");
 	}
 }
 

@@ -9,10 +9,10 @@ namespace Metternich {
 **
 **	@param	scope	The scope
 */
-void CultureBase::ProcessGSMLScope(const GSMLData &scope)
+void CultureBase::ProcessGSMLScope(const gsml_data &scope)
 {
-	const std::string &tag = scope.GetTag();
-	const std::vector<std::string> &values = scope.GetValues();
+	const std::string &tag = scope.get_tag();
+	const std::vector<std::string> &values = scope.get_values();
 
 	if (tag == "male_names") {
 		this->MaleNames = values;

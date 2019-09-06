@@ -24,7 +24,7 @@ public:
 	HoldingType(const std::string &identifier);
 	virtual ~HoldingType() override;
 
-	virtual void ProcessGSMLScope(const GSMLData &scope) override;
+	virtual void ProcessGSMLScope(const gsml_data &scope) override;
 
 	bool IsSettlement() const
 	{

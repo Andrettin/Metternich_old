@@ -8,7 +8,7 @@
 namespace Metternich {
 
 class Commodity;
-class GSMLData;
+class gsml_data;
 class Employee;
 class EmploymentOwner;
 class PopulationType;
@@ -30,7 +30,7 @@ public:
 	virtual ~EmploymentType() override;
 
 	virtual void ProcessGSMLProperty(const GSMLProperty &property) override;
-	virtual void ProcessGSMLScope(const GSMLData &scope) override;
+	virtual void ProcessGSMLScope(const gsml_data &scope) override;
 	virtual void Initialize() override;
 
 	int GetWorkforce() const

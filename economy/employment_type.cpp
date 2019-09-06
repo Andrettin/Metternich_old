@@ -47,12 +47,12 @@ void EmploymentType::ProcessGSMLProperty(const GSMLProperty &property)
 **
 **	@param	scope	The scope
 */
-void EmploymentType::ProcessGSMLScope(const GSMLData &scope)
+void EmploymentType::ProcessGSMLScope(const gsml_data &scope)
 {
-	const std::string &tag = scope.GetTag();
+	const std::string &tag = scope.get_tag();
 
 	if (tag == "input_commodities") {
-		for (const GSMLProperty &property : scope.GetProperties()) {
+		for (const GSMLProperty &property : scope.get_properties()) {
 			if (property.GetOperator() != GSMLOperator::Assignment) {
 				throw std::runtime_error("Only the assignment operator may be used for properties in the \"" + tag + "\" scope.");
 			}
@@ -62,12 +62,12 @@ void EmploymentType::ProcessGSMLScope(const GSMLData &scope)
 			this->InputCommodities[commodity] = input_quantity;
 		}
 	} else if (tag == "employees") {
-		for (const GSMLData &employee_scope : scope.GetChildren()) {
+		for (const gsml_data &employee_scope : scope.get_children()) {
 			std::unique_ptr<Employee> employee = Employee::FromGSMLScope(employee_scope);
 			this->Employees.push_back(std::move(employee));
 		}
 	} else if (tag == "owners") {
-		for (const GSMLData &owner_scope : scope.GetChildren()) {
+		for (const gsml_data &owner_scope : scope.get_children()) {
 			std::unique_ptr<EmploymentOwner> owner = EmploymentOwner::FromGSMLScope(owner_scope);
 			this->Owners.push_back(std::move(owner));
 		}

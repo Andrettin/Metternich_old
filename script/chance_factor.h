@@ -8,7 +8,7 @@
 namespace Metternich {
 
 class FactorModifier;
-class GSMLData;
+class gsml_data;
 class GSMLProperty;
 
 /**
@@ -21,7 +21,7 @@ public:
 	~ChanceFactor();
 
 	void ProcessGSMLProperty(const GSMLProperty &property);
-	void ProcessGSMLScope(const GSMLData &scope);
+	void ProcessGSMLScope(const gsml_data &scope);
 
 	template <typename T>
 	int Calculate(const T *scope) const

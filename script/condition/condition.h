@@ -2,7 +2,7 @@
 
 namespace Metternich {
 
-class GSMLData;
+class gsml_data;
 class GSMLProperty;
 class Holding;
 class Province;
@@ -14,12 +14,12 @@ class Condition
 {
 public:
 	static std::unique_ptr<Condition> FromGSMLProperty(const GSMLProperty &property);
-	static std::unique_ptr<Condition> FromGSMLScope(const GSMLData &scope);
+	static std::unique_ptr<Condition> FromGSMLScope(const gsml_data &scope);
 
 	virtual ~Condition() {}
 
 	virtual void ProcessGSMLProperty(const GSMLProperty &property);
-	virtual void ProcessGSMLScope(const GSMLData &scope);
+	virtual void ProcessGSMLScope(const gsml_data &scope);
 
 	virtual const std::string &GetIdentifier() const = 0;
 

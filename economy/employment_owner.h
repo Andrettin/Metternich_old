@@ -4,7 +4,7 @@
 
 namespace Metternich {
 
-class GSMLData;
+class gsml_data;
 class GSMLProperty;
 class PopulationType;
 
@@ -17,10 +17,10 @@ class EmploymentOwner : public QObject
 	Q_PROPERTY(int income_share MEMBER IncomeShare READ GetIncomeShare)
 
 public:
-	static std::unique_ptr<EmploymentOwner> FromGSMLScope(const GSMLData &scope);
+	static std::unique_ptr<EmploymentOwner> FromGSMLScope(const gsml_data &scope);
 
 	void ProcessGSMLProperty(const GSMLProperty &property);
-	void ProcessGSMLScope(const GSMLData &scope) { Q_UNUSED(scope); }
+	void ProcessGSMLScope(const gsml_data &scope) { Q_UNUSED(scope); }
 
 	std::unique_ptr<EmploymentOwner> Duplicate() const
 	{

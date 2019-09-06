@@ -6,7 +6,6 @@
 
 namespace Metternich {
 
-class GSMLData;
 class GSMLProperty;
 
 /**

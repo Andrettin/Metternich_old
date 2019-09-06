@@ -10,7 +10,7 @@
 namespace Metternich {
 
 class ChanceFactor;
-class GSMLData;
+class gsml_data;
 class Holding;
 
 class Commodity : public DataEntry, public DataType<Commodity>
@@ -28,7 +28,7 @@ public:
 	Commodity(const std::string &identifier);
 	virtual ~Commodity() override;
 
-	virtual void ProcessGSMLScope(const GSMLData &scope) override;
+	virtual void ProcessGSMLScope(const gsml_data &scope) override;
 
 	const std::string &GetIconPath() const
 	{

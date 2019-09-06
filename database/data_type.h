@@ -137,7 +137,7 @@ public:
 				continue;
 			}
 
-			T::GSMLDataToProcess.push_back(GSMLData::ParseFile(dir_entry.path()));
+			T::GSMLDataToProcess.push_back(gsml_data::parse_file(dir_entry.path()));
 		}
 	}
 
@@ -148,13 +148,13 @@ public:
 	*/
 	static void ProcessDatabase(const bool definition)
 	{
-		for (const GSMLData &gsml_data : T::GSMLDataToProcess) {
-			for (const GSMLData &data_entry : gsml_data.GetChildren()) {
+		for (const gsml_data &data : T::GSMLDataToProcess) {
+			for (const gsml_data &data_entry : data.get_children()) {
 				KEY identifier;
 				if constexpr (std::is_same_v<KEY, int>) {
-					identifier = std::stoi(data_entry.GetTag());
+					identifier = std::stoi(data_entry.get_tag());
 				} else {
-					identifier = data_entry.GetTag();
+					identifier = data_entry.get_tag();
 				}
 
 				T *instance = nullptr;
@@ -197,7 +197,7 @@ public:
 					continue;
 				}
 
-				T::GSMLHistoryDataToProcess.push_back(GSMLData::ParseFile(history_file_path));
+				T::gsml_history_data_to_process.push_back(gsml_data::parse_file(history_file_path));
 			}
 		} else {
 			std::filesystem::recursive_directory_iterator dir_iterator(history_path);
@@ -207,7 +207,7 @@ public:
 					continue;
 				}
 
-				T::GSMLHistoryDataToProcess.push_back(GSMLData::ParseFile(dir_entry.path()));
+				T::gsml_history_data_to_process.push_back(gsml_data::parse_file(dir_entry.path()));
 			}
 		}
 	}
@@ -225,19 +225,19 @@ public:
 				return;
 			}
 
-			for (GSMLData &gsml_data : T::GSMLHistoryDataToProcess) {
-				T *instance = T::Get(gsml_data.GetTag());
-				instance->LoadHistory(gsml_data);
+			for (gsml_data &data : T::gsml_history_data_to_process) {
+				T *instance = T::Get(data.get_tag());
+				instance->LoadHistory(data);
 			}
 		} else {
-			for (const GSMLData &gsml_data : T::GSMLHistoryDataToProcess) {
-				for (const GSMLData &data_entry : gsml_data.GetChildren()) {
+			for (const gsml_data &data : T::gsml_history_data_to_process) {
+				for (const gsml_data &data_entry : data.get_children()) {
 					//for history only data types, a new instance is created for history
 					KEY identifier;
 					if constexpr (std::is_same_v<KEY, int>) {
-						identifier = std::stoi(data_entry.GetTag());
+						identifier = std::stoi(data_entry.get_tag());
 					} else {
-						identifier = data_entry.GetTag();
+						identifier = data_entry.get_tag();
 					}
 
 					T *instance = nullptr;
@@ -245,14 +245,14 @@ public:
 						instance = T::Add(identifier);
 					} else {
 						instance = T::Get(identifier);
-						instance->LoadHistory(const_cast<GSMLData &>(data_entry));
+						instance->LoadHistory(const_cast<gsml_data &>(data_entry));
 					}
 				}
 			}
 		}
 
 		if (!definition) {
-			T::GSMLHistoryDataToProcess.clear();
+			T::gsml_history_data_to_process.clear();
 		}
 	}
 
@@ -309,7 +309,7 @@ private:
 	static inline std::vector<T *> Instances;
 	static inline std::map<KEY, std::unique_ptr<T>> InstancesByIdentifier;
 	static inline int LastNumericIdentifier = 1;
-	static inline std::vector<GSMLData> GSMLDataToProcess;
+	static inline std::vector<gsml_data> GSMLDataToProcess;
 #ifdef __GNUC__
 	//the "used" attribute is needed under GCC, or else this variable will be optimized away (even in debug builds)
 	static inline bool ClassInitialized [[gnu::used]] = DataType::InitializeClass();

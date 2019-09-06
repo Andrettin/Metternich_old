@@ -2,7 +2,6 @@
 
 namespace Metternich {
 
-class GSMLData;
 class GSMLProperty;
 class Holding;
 class Province;

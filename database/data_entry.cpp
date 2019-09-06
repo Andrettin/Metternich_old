@@ -18,32 +18,32 @@ void DataEntryBase::ProcessGSMLProperty(const GSMLProperty &property)
 	Database::ProcessGSMLPropertyForObject(this, property);
 }
 
-void DataEntryBase::ProcessGSMLScope(const GSMLData &scope)
+void DataEntryBase::ProcessGSMLScope(const gsml_data &scope)
 {
 	const QMetaObject *meta_object = this->metaObject();
-	throw std::runtime_error("Invalid \"" + PascalCaseToSnakeCase(meta_object->className()) + "\" field: \"" + scope.GetTag() + "\".");
+	throw std::runtime_error("Invalid \"" + PascalCaseToSnakeCase(meta_object->className()) + "\" field: \"" + scope.get_tag() + "\".");
 }
 
 /**
 **	@brief	Load history for the data entry
 */
-void DataEntryBase::LoadHistory(GSMLData &gsml_data)
+void DataEntryBase::LoadHistory(gsml_data &data)
 {
-	for (const GSMLProperty &property : gsml_data.GetProperties()) {
+	for (const GSMLProperty &property : data.get_properties()) {
 		this->ProcessGSMLProperty(property); //properties outside of a date scope, to be applied regardless of start date
 	}
 
-	gsml_data.SortChildren(); //sort by date, so that they are applied chronologically
+	data.sort_children(); //sort by date, so that they are applied chronologically
 
-	for (const GSMLData &history_entry : gsml_data.GetChildren()) {
-		QDateTime date = History::StringToDate(history_entry.GetTag());
+	for (const gsml_data &history_entry : data.get_children()) {
+		QDateTime date = History::StringToDate(history_entry.get_tag());
 
 		if (date <= Game::Get()->GetCurrentDate()) {
-			for (const GSMLProperty &property : history_entry.GetProperties()) {
+			for (const GSMLProperty &property : history_entry.get_properties()) {
 				this->ProcessGSMLDatedProperty(property, date);
 			}
 
-			for (const GSMLData &scope : history_entry.GetChildren()) {
+			for (const gsml_data &scope : history_entry.get_children()) {
 				this->ProcessGSMLDatedScope(scope, date);
 			}
 		}
