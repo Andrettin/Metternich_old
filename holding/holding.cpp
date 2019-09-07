@@ -4,6 +4,7 @@
 #include "culture/culture_group.h"
 #include "defines.h"
 #include "economy/commodity.h"
+#include "economy/employment_type.h"
 #include "engine_interface.h"
 #include "game/game.h"
 #include "holding/building.h"
@@ -407,6 +408,9 @@ void Holding::RemoveBuilding(Building *building)
 */
 void Holding::ApplyBuildingEffects(const Building *building, const int change)
 {
+	if (building->GetEmploymentType() != nullptr) {
+		this->ChangeEmploymentWorkforce(building->GetEmploymentType(), building->GetWorkforce() * change);
+	}
 }
 
 /**
@@ -497,6 +501,69 @@ void Holding::GenerateCommodity()
 	}
 
 	this->SetCommodity(chosen_commodity);
+}
+
+/**
+**	@brief	Set the employment workforce for a particular employment type
+**
+**	@param	employment_type	The employment type
+**	@param	workforce		The new workforce value
+*/
+void Holding::SetEmploymentWorkforce(const EmploymentType *employment_type, const int workforce)
+{
+	if (workforce == this->GetEmploymentWorkforce(employment_type)) {
+		return;
+	}
+
+	if (workforce < 0) {
+		throw std::runtime_error("Tried to set a negative employment workforce for employment type \"" + employment_type->GetIdentifier() + "\" for a holding.");
+	}
+
+	const int old_workforce = this->GetEmploymentWorkforce(employment_type);
+	if (workforce == 0) {
+		this->EmploymentWorkforces.erase(employment_type);
+	} else {
+		this->EmploymentWorkforces[employment_type] = workforce;
+	}
+
+	if (old_workforce > workforce) {
+		//the workforce has decreased, so we have to remove excess employment for the employment type
+		this->RemoveExcessEmployment(employment_type);
+	}
+}
+
+/**
+**	@brief	Remove excess employment for a given employment type
+**
+**	@param	employment_type	The employment type
+*/
+void Holding::RemoveExcessEmployment(const EmploymentType *employment_type)
+{
+	auto find_iterator = this->EmployedPopulationUnits.find(employment_type);
+	if (find_iterator == this->EmployedPopulationUnits.end()) {
+		return;
+	}
+
+	std::vector<PopulationUnit *> &population_units = find_iterator->second;
+
+	int employment = 0;
+	for (const PopulationUnit *population_unit : population_units) {
+		employment += population_unit->get_employment_size(employment_type);
+	}
+
+	const int maximum_employment = this->GetEmploymentWorkforce(employment_type);
+	int excess_employment = employment - maximum_employment;
+
+	for (int i = static_cast<int>(population_units.size()) - 1; i >= 0; --i) {
+		PopulationUnit *population_unit = population_units[static_cast<size_t>(i)];
+		const int pop_current_employment = population_unit->get_employment_size(employment_type);
+		const int pop_employment_change = -std::min(pop_current_employment, excess_employment);
+		population_unit->change_employment_size(employment_type, pop_employment_change);
+		excess_employment -= pop_employment_change;
+		if ((pop_current_employment - pop_employment_change) == 0) {
+			population_units.erase(population_units.begin() + i);
+		}
+	}
 }
 
 /**

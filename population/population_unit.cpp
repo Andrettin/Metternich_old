@@ -1,6 +1,7 @@
 #include "population/population_unit.h"
 
 #include "database/gsml_data.h"
+#include "economy/employment_type.h"
 #include "game/game.h"
 #include "holding/holding.h"
 #include "map/province.h"
@@ -191,6 +192,29 @@ void PopulationUnit::DistributeToHoldings(const std::vector<metternich::Holding 
 			population_unit->SetReligion(this->GetReligion());
 		}
 		holding->AddPopulationUnit(std::move(population_unit));
+	}
+}
+
+/**
+**	@brief	Set the population unit's employment size for a given employment typ
+**
+**	@param	employment_type	The employment type
+**	@param	size			The new employment size
+*/
+void PopulationUnit::set_employment_size(const EmploymentType *employment_type, const int size)
+{
+	if (size == this->get_employment_size(employment_type)) {
+		return;
+	}
+
+	if (size < 0) {
+		throw std::runtime_error("Tried to set a negative employment size for employment type \"" + employment_type->GetIdentifier() + "\" for a population unit.");
+	}
+
+	if (size == 0) {
+		this->EmploymentSizes.erase(employment_type);
+	} else {
+		this->EmploymentSizes[employment_type] = size;
 	}
 }
 

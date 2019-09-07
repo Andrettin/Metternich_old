@@ -404,6 +404,25 @@ public:
 		this->CalculatePopulationCapacity();
 	}
 
+	int GetEmploymentWorkforce(const EmploymentType *employment_type)
+	{
+		auto find_iterator = this->EmploymentWorkforces.find(employment_type);
+		if (find_iterator == this->EmploymentWorkforces.end()) {
+			return 0;
+		}
+
+		return find_iterator->second;
+	}
+
+	void SetEmploymentWorkforce(const EmploymentType *employment_type, const int workforce);
+
+	void ChangeEmploymentWorkforce(const EmploymentType *employment_type, const int change)
+	{
+		this->SetEmploymentWorkforce(employment_type, this->GetEmploymentWorkforce(employment_type) + change);
+	}
+
+	void RemoveExcessEmployment(const EmploymentType *employment_type);
+
 	bool IsSelected() const
 	{
 		return this->Selected;
@@ -457,6 +476,8 @@ private:
 	metternich::Religion *Religion = nullptr; //the holding's religion
 	std::set<IdentifiableModifier *> Modifiers; //modifiers applied to the holding
 	bool Selected = false;
+	std::map<const EmploymentType *, int> EmploymentWorkforces; //the allowed workforce amount for each employment type
+	std::map<const EmploymentType *, std::vector<PopulationUnit *>> EmployedPopulationUnits; //the population units employed for each employment type
 	std::map<PopulationType *, int> PopulationPerType; //the population for each population type
 	std::map<metternich::Culture *, int> PopulationPerCulture; //the population for each culture
 	std::map<metternich::Religion *, int> PopulationPerReligion; //the population for each religion

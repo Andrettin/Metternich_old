@@ -10,6 +10,7 @@
 namespace metternich {
 
 class Culture;
+class EmploymentType;
 class Holding;
 class PopulationType;
 class Province;
@@ -190,6 +191,23 @@ public:
 	bool CanDistributeToHolding(const Holding *holding) const;
 	void DistributeToHoldings(const std::vector<Holding *> &holdings);
 
+	int get_employment_size(const EmploymentType *employment_type) const
+	{
+		auto find_iterator = this->EmploymentSizes.find(employment_type);
+		if (find_iterator == this->EmploymentSizes.end()) {
+			return 0;
+		}
+
+		return find_iterator->second;
+	}
+
+	void set_employment_size(const EmploymentType *employment_type, const int size);
+
+	void change_employment_size(const EmploymentType *employment_type, const int change)
+	{
+		this->set_employment_size(employment_type, this->get_employment_size(employment_type) + change);
+	}
+
 signals:
 	void TypeChanged();
 	void CultureChanged();
@@ -212,6 +230,7 @@ private:
 	bool DiscountExisting = false; //whether to discount the size of existing population units (in this population unit's holding, province or region) of the types given in DiscountTypes from that of this one
 	bool DiscountAnyType = false; //whether to discount the size of any existing population units from that of this one
 	std::set<PopulationType *> DiscountTypes; //the sizes of population units belonging to these types will be discounted from that of this population unit
+	std::map<const EmploymentType *, int> EmploymentSizes; //the amount of people employed from this population unit per employment type
 };
 
 }
