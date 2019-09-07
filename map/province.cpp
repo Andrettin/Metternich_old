@@ -85,26 +85,26 @@ Province::~Province()
 **
 **	@param	property	The property
 */
-void Province::ProcessGSMLProperty(const GSMLProperty &property)
+void Province::ProcessGSMLProperty(const gsml_property &property)
 {
-	if (property.GetKey().substr(0, 2) == LandedTitle::BaronyPrefix) {
+	if (property.get_key().substr(0, 2) == LandedTitle::BaronyPrefix) {
 		//a property related to one of the province's holdings
-		LandedTitle *barony = LandedTitle::Get(property.GetKey());
+		LandedTitle *barony = LandedTitle::Get(property.get_key());
 		Holding *holding = this->GetHolding(barony);
-		if (property.GetOperator() == GSMLOperator::Assignment) {
+		if (property.get_operator() == gsml_operator::assignment) {
 			//the assignment operator sets the holding's type (creating the holding if it doesn't exist)
-			HoldingType *holding_type = HoldingType::Get(property.GetValue());
+			HoldingType *holding_type = HoldingType::Get(property.get_value());
 			if (holding != nullptr) {
 				holding->SetType(holding_type);
 			} else {
 				this->CreateHolding(barony, holding_type);
 			}
-		} else if (property.GetOperator() == GSMLOperator::Addition || property.GetOperator() == GSMLOperator::Subtraction) {
+		} else if (property.get_operator() == gsml_operator::addition || property.get_operator() == gsml_operator::subtraction) {
 			//the addition/subtraction operators add/remove buildings to/from the holding
-			Building *building = Building::Get(property.GetValue());
-			if (property.GetOperator() == GSMLOperator::Addition) {
+			Building *building = Building::Get(property.get_value());
+			if (property.get_operator() == gsml_operator::addition) {
 				holding->AddBuilding(building);
-			} else if (property.GetOperator() == GSMLOperator::Subtraction) {
+			} else if (property.get_operator() == gsml_operator::subtraction) {
 				holding->RemoveBuilding(building);
 			}
 		}
@@ -159,7 +159,7 @@ void Province::ProcessGSMLDatedScope(const gsml_data &scope, const QDateTime &da
 		LandedTitle *barony = LandedTitle::Get(tag);
 		Holding *holding = this->GetHolding(barony);
 		if (holding != nullptr) {
-			for (const GSMLProperty &property : scope.get_properties()) {
+			for (const gsml_property &property : scope.get_properties()) {
 				holding->ProcessGSMLDatedProperty(property, date);
 			}
 		} else {

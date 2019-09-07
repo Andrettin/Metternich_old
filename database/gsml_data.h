@@ -42,7 +42,7 @@ public:
 		return this->children;
 	}
 
-	const std::vector<GSMLProperty> &get_properties() const
+	const std::vector<gsml_property> &get_properties() const
 	{
 		return this->properties;
 	}
@@ -68,8 +68,8 @@ public:
 			ofstream << value << " ";
 		}
 
-		for (const GSMLProperty &property : this->get_properties()) {
-			property.Print(ofstream);
+		for (const gsml_property &property : this->get_properties()) {
+			property.print(ofstream);
 		}
 
 		for (const gsml_data &child_data : this->get_children()) {
@@ -83,7 +83,7 @@ private:
 	std::string tag;
 	gsml_data *parent = nullptr;
 	std::vector<gsml_data> children;
-	std::vector<GSMLProperty> properties;
+	std::vector<gsml_property> properties;
 	std::vector<std::string> values; //values directly attached to the GSML data scope, used for e.g. name arrays
 };
 

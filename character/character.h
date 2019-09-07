@@ -13,7 +13,7 @@ namespace metternich {
 
 class Culture;
 class Dynasty;
-class GSMLProperty;
+class gsml_property;
 class Holding;
 class LandedTitle;
 class Religion;
@@ -106,7 +106,7 @@ public:
 		}
 	}
 
-	virtual void ProcessGSMLDatedProperty(const GSMLProperty &property, const QDateTime &date) override;
+	virtual void ProcessGSMLDatedProperty(const gsml_property &property, const QDateTime &date) override;
 	virtual void InitializeHistory() override;
 
 	virtual void Check() const override

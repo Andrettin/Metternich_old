@@ -26,17 +26,17 @@ FactorModifier::~FactorModifier()
 **
 **	@param	property	The property
 */
-void FactorModifier::ProcessGSMLProperty(const GSMLProperty &property)
+void FactorModifier::ProcessGSMLProperty(const gsml_property &property)
 {
-	const std::string &key = property.GetKey();
-	const GSMLOperator gsml_operator = property.GetOperator();
-	const std::string &value = property.GetValue();
+	const std::string &key = property.get_key();
+	const gsml_operator gsml_operator = property.get_operator();
+	const std::string &value = property.get_value();
 
 	if (key == "factor") {
-		if (gsml_operator == GSMLOperator::Assignment) {
+		if (gsml_operator == gsml_operator::assignment) {
 			this->Factor = CentesimalNumberStringToInt(value);
 		} else {
-			throw std::runtime_error("Invalid operator for property (\"" + property.GetKey() + "\").");
+			throw std::runtime_error("Invalid operator for property (\"" + property.get_key() + "\").");
 		}
 	} else {
 		std::unique_ptr<Condition> condition = Condition::FromGSMLProperty(property);

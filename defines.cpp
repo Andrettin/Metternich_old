@@ -19,7 +19,7 @@ void Defines::Load()
 
 	gsml_data gsml_data = gsml_data::parse_file(defines_path);
 
-	for (const GSMLProperty &property : gsml_data.get_properties()) {
+	for (const gsml_property &property : gsml_data.get_properties()) {
 		this->ProcessGSMLProperty(property);
 	}
 }
@@ -29,7 +29,7 @@ void Defines::Load()
 **
 **	@param	property	The property
 */
-void Defines::ProcessGSMLProperty(const GSMLProperty &property)
+void Defines::ProcessGSMLProperty(const gsml_property &property)
 {
 	Database::ProcessGSMLPropertyForObject(this, property);
 }

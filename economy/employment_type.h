@@ -29,7 +29,7 @@ public:
 	EmploymentType(const std::string &identifier);
 	virtual ~EmploymentType() override;
 
-	virtual void ProcessGSMLProperty(const GSMLProperty &property) override;
+	virtual void ProcessGSMLProperty(const gsml_property &property) override;
 	virtual void ProcessGSMLScope(const gsml_data &scope) override;
 	virtual void Initialize() override;
 

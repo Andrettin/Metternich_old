@@ -28,7 +28,7 @@ std::unique_ptr<Employee> Employee::FromGSMLScope(const gsml_data &scope)
 **
 **	@param	property	The property
 */
-void Employee::ProcessGSMLProperty(const GSMLProperty &property)
+void Employee::ProcessGSMLProperty(const gsml_property &property)
 {
 	Database::ProcessGSMLPropertyForObject(this, property);
 }

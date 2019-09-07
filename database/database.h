@@ -22,7 +22,7 @@ public:
 	template <typename T>
 	static void ProcessGSMLData(T *instance, const gsml_data &data)
 	{
-		for (const GSMLProperty &property : data.get_properties()) {
+		for (const gsml_property &property : data.get_properties()) {
 			instance->ProcessGSMLProperty(property);
 		}
 
@@ -41,7 +41,7 @@ public:
 		}
 	}
 
-	static void ProcessGSMLPropertyForObject(QObject *object, const GSMLProperty &property);
+	static void ProcessGSMLPropertyForObject(QObject *object, const gsml_property &property);
 
 public:
 	void Load();

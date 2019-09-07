@@ -159,10 +159,10 @@ bool gsml_data::parse_escaped_character(std::string &current_string, const char 
 void gsml_data::parse_tokens(const std::vector<std::string> &tokens, gsml_data **current_gsml_data)
 {
 	std::string key;
-	GSMLOperator property_operator = GSMLOperator::None;
+	gsml_operator property_operator = gsml_operator::none;
 	std::string value;
 	for (const std::string &token : tokens) {
-		if (!key.empty() && property_operator == GSMLOperator::None && token != "=" && token != "+=" && token != "-=" && token != "{") {
+		if (!key.empty() && property_operator == gsml_operator::none && token != "=" && token != "+=" && token != "-=" && token != "{") {
 			//if the previously-given key isn't empty and no operator has been provided before or now, then the key was actually a value, part of a simple collection of values
 			(*current_gsml_data)->values.push_back(key);
 			key.clear();
@@ -186,13 +186,13 @@ void gsml_data::parse_tokens(const std::vector<std::string> &tokens, gsml_data *
 			continue;
 		}
 
-		if (property_operator == GSMLOperator::None) { //operator
+		if (property_operator == gsml_operator::none) { //operator
 			if (token == "=") {
-				property_operator = GSMLOperator::Assignment;
+				property_operator = gsml_operator::assignment;
 			} else if (token == "+=") {
-				property_operator = GSMLOperator::Addition;
+				property_operator = gsml_operator::addition;
 			} else if (token == "-=") {
-				property_operator = GSMLOperator::Subtraction;
+				property_operator = gsml_operator::subtraction;
 			} else {
 				throw std::runtime_error("Tried using operator \"" + token + "\" for key \"" + key + "\", but it is not a valid operator.");
 			}
@@ -202,7 +202,7 @@ void gsml_data::parse_tokens(const std::vector<std::string> &tokens, gsml_data *
 
 		//value
 		if (token == "{") { //opens tag
-			if (property_operator != GSMLOperator::Assignment) {
+			if (property_operator != gsml_operator::assignment) {
 				throw std::runtime_error("Only the assignment operator is valid after a tag!");
 			}
 
@@ -212,11 +212,11 @@ void gsml_data::parse_tokens(const std::vector<std::string> &tokens, gsml_data *
 			new_gsml_data.parent = *current_gsml_data;
 			(*current_gsml_data) = &new_gsml_data;
 		} else {
-			(*current_gsml_data)->properties.push_back(GSMLProperty(key, property_operator, token));
+			(*current_gsml_data)->properties.push_back(gsml_property(key, property_operator, token));
 		}
 
 		key.clear();
-		property_operator = GSMLOperator::None;
+		property_operator = gsml_operator::none;
 	}
 }
 

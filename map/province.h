@@ -69,7 +69,7 @@ public:
 	Province(const std::string &identifier);
 	virtual ~Province() override;
 
-	virtual void ProcessGSMLProperty(const GSMLProperty &property) override;
+	virtual void ProcessGSMLProperty(const gsml_property &property) override;
 	virtual void ProcessGSMLScope(const gsml_data &scope) override;
 	virtual void ProcessGSMLDatedScope(const gsml_data &scope, const QDateTime &date) override;
 	virtual void InitializeHistory() override;

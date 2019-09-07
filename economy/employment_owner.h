@@ -5,7 +5,7 @@
 namespace metternich {
 
 class gsml_data;
-class GSMLProperty;
+class gsml_property;
 class PopulationType;
 
 class EmploymentOwner : public QObject
@@ -19,7 +19,7 @@ class EmploymentOwner : public QObject
 public:
 	static std::unique_ptr<EmploymentOwner> FromGSMLScope(const gsml_data &scope);
 
-	void ProcessGSMLProperty(const GSMLProperty &property);
+	void ProcessGSMLProperty(const gsml_property &property);
 	void ProcessGSMLScope(const gsml_data &scope) { Q_UNUSED(scope); }
 
 	std::unique_ptr<EmploymentOwner> Duplicate() const

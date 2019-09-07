@@ -8,7 +8,7 @@
 namespace metternich {
 
 class gsml_data;
-class GSMLProperty;
+class gsml_property;
 
 /**
 **	@brief	The base class for a de(serializable) but not necessarily identifiable entry to the database
@@ -20,10 +20,10 @@ class DataEntryBase : public QObject
 public:
 	virtual ~DataEntryBase() {}
 
-	virtual void ProcessGSMLProperty(const GSMLProperty &property);
+	virtual void ProcessGSMLProperty(const gsml_property &property);
 	virtual void ProcessGSMLScope(const gsml_data &scope);
 
-	virtual void ProcessGSMLDatedProperty(const GSMLProperty &property, const QDateTime &date)
+	virtual void ProcessGSMLDatedProperty(const gsml_property &property, const QDateTime &date)
 	{
 		Q_UNUSED(date);
 		this->ProcessGSMLProperty(property);

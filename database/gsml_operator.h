@@ -2,12 +2,12 @@
 
 namespace metternich {
 
-enum class GSMLOperator : int
+enum class gsml_operator : int
 {
-	None,
-	Assignment,
-	Addition,
-	Subtraction
+	none,
+	assignment,
+	addition,
+	subtraction
 };
 
 }

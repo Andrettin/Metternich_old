@@ -73,12 +73,12 @@ void Translator::LoadLocale(const std::string &language)
 
 		gsml_data gsml_data = gsml_data::parse_file(dir_entry.path());
 
-		for (const GSMLProperty &property : gsml_data.get_properties()) {
-			if (property.GetOperator() != GSMLOperator::Assignment) {
+		for (const gsml_property &property : gsml_data.get_properties()) {
+			if (property.get_operator() != gsml_operator::assignment) {
 				throw std::runtime_error("Only assignment operators are allowed in translation files!");
 			}
 
-			this->AddTranslation(property.GetKey(), property.GetValue());
+			this->AddTranslation(property.get_key(), property.get_value());
 		}
 	}
 }

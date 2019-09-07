@@ -57,7 +57,7 @@ public:
 	static const char *GetTierIdentifier(const LandedTitleTier tier);
 	static const char *GetTierHolderIdentifier(const LandedTitleTier tier);
 
-	virtual void ProcessGSMLDatedProperty(const GSMLProperty &property, const QDateTime &date) override;
+	virtual void ProcessGSMLDatedProperty(const gsml_property &property, const QDateTime &date) override;
 	virtual void ProcessGSMLScope(const gsml_data &scope) override;
 	virtual void Initialize() override;
 	virtual void InitializeHistory() override;

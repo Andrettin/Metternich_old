@@ -92,25 +92,25 @@ const char *LandedTitle::GetTierHolderIdentifier(const LandedTitleTier tier)
 **	@param	property	The property
 **	@param	date		The date of the property change
 */
-void LandedTitle::ProcessGSMLDatedProperty(const GSMLProperty &property, const QDateTime &date)
+void LandedTitle::ProcessGSMLDatedProperty(const gsml_property &property, const QDateTime &date)
 {
 	Q_UNUSED(date);
 
-	if (property.GetKey() == "holder") {
-		if (property.GetOperator() != GSMLOperator::Assignment) {
-			throw std::runtime_error("Only the assignment operator is available for the \"" + property.GetKey() + "\" property.");
+	if (property.get_key() == "holder") {
+		if (property.get_operator() != gsml_operator::assignment) {
+			throw std::runtime_error("Only the assignment operator is available for the \"" + property.get_key() + "\" property.");
 		}
 
-		if (property.GetValue() == "random") {
+		if (property.get_value() == "random") {
 			//generate random holder
 			Character *holder = Character::Generate(this->GetCapitalProvince()->GetCulture(), this->GetCapitalProvince()->GetReligion());
 			this->SetHolder(holder);
 			return;
-		} else if (property.GetValue() == "none") {
+		} else if (property.get_value() == "none") {
 			this->SetHolder(nullptr);
 			return;
 		} else {
-			const Character *holder = Character::Get(std::stoi(property.GetValue()));
+			const Character *holder = Character::Get(std::stoi(property.get_value()));
 			if (holder != nullptr && !holder->IsAlive()) {
 				return;
 			}

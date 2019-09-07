@@ -13,17 +13,17 @@ namespace metternich {
 **
 **	@param	gsml_property	The GSML property
 */
-std::unique_ptr<ModifierEffect> ModifierEffect::FromGSMLProperty(const GSMLProperty &property)
+std::unique_ptr<ModifierEffect> ModifierEffect::FromGSMLProperty(const gsml_property &property)
 {
-	std::string identifier = property.GetKey();
+	std::string identifier = property.get_key();
 	std::unique_ptr<ModifierEffect> modifier_effect;
 
 	if (identifier == "population_capacity") {
-		modifier_effect = std::make_unique<PopulationCapacityModifierEffect>(std::stoi(property.GetValue()));
+		modifier_effect = std::make_unique<PopulationCapacityModifierEffect>(std::stoi(property.get_value()));
 	} else if (identifier == "population_capacity_modifier") {
-		modifier_effect = std::make_unique<PopulationCapacityModifierModifierEffect>(CentesimalNumberStringToInt(property.GetValue()));
+		modifier_effect = std::make_unique<PopulationCapacityModifierModifierEffect>(CentesimalNumberStringToInt(property.get_value()));
 	} else if (identifier == "population_growth") {
-		modifier_effect = std::make_unique<PopulationGrowthModifierEffect>(FractionalNumberStringToInt<4>(property.GetValue()));
+		modifier_effect = std::make_unique<PopulationGrowthModifierEffect>(FractionalNumberStringToInt<4>(property.get_value()));
 	} else {
 		throw std::runtime_error("Invalid modifier effect: \"" + identifier + "\".");
 	}

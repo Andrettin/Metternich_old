@@ -9,7 +9,7 @@ namespace metternich {
 
 class FactorModifier;
 class gsml_data;
-class GSMLProperty;
+class gsml_property;
 
 /**
 **	@brief	A chance factor, used e.g. for determining the probability of a settlement holding having a particular resource
@@ -20,7 +20,7 @@ public:
 	ChanceFactor();
 	~ChanceFactor();
 
-	void ProcessGSMLProperty(const GSMLProperty &property);
+	void ProcessGSMLProperty(const gsml_property &property);
 	void ProcessGSMLScope(const gsml_data &scope);
 
 	template <typename T>

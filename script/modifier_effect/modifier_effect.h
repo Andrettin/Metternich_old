@@ -2,7 +2,7 @@
 
 namespace metternich {
 
-class GSMLProperty;
+class gsml_property;
 class Holding;
 class Province;
 
@@ -12,7 +12,7 @@ class Province;
 class ModifierEffect
 {
 public:
-	static std::unique_ptr<ModifierEffect> FromGSMLProperty(const GSMLProperty &property);
+	static std::unique_ptr<ModifierEffect> FromGSMLProperty(const gsml_property &property);
 
 	virtual ~ModifierEffect() {}
 

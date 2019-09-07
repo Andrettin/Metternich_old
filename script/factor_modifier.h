@@ -9,7 +9,7 @@ namespace metternich {
 
 class Condition;
 class gsml_data;
-class GSMLProperty;
+class gsml_property;
 
 /**
 **	@brief	A modifier for a factor, e.g. a random chance, weight or mean-time-to-happen
@@ -20,7 +20,7 @@ public:
 	FactorModifier();
 	~FactorModifier();
 
-	void ProcessGSMLProperty(const GSMLProperty &property);
+	void ProcessGSMLProperty(const gsml_property &property);
 	void ProcessGSMLScope(const gsml_data &scope);
 
 	int GetFactor() const

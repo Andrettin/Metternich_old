@@ -3,7 +3,7 @@
 namespace metternich {
 
 class gsml_data;
-class GSMLProperty;
+class gsml_property;
 class Holding;
 class Province;
 
@@ -13,12 +13,12 @@ class Province;
 class Condition
 {
 public:
-	static std::unique_ptr<Condition> FromGSMLProperty(const GSMLProperty &property);
+	static std::unique_ptr<Condition> FromGSMLProperty(const gsml_property &property);
 	static std::unique_ptr<Condition> FromGSMLScope(const gsml_data &scope);
 
 	virtual ~Condition() {}
 
-	virtual void ProcessGSMLProperty(const GSMLProperty &property);
+	virtual void ProcessGSMLProperty(const gsml_property &property);
 	virtual void ProcessGSMLScope(const gsml_data &scope);
 
 	virtual const std::string &GetIdentifier() const = 0;

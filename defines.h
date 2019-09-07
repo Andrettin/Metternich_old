@@ -8,7 +8,7 @@
 
 namespace metternich {
 
-class GSMLProperty;
+class gsml_property;
 
 /**
 **	@brief	Defines for the engine which are loaded from the database
@@ -23,7 +23,7 @@ class Defines : public QObject, public Singleton<Defines>
 
 public:
 	void Load();
-	void ProcessGSMLProperty(const GSMLProperty &property);
+	void ProcessGSMLProperty(const gsml_property &property);
 
 	const QDateTime &GetStartDate() const
 	{

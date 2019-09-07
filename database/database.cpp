@@ -36,7 +36,7 @@ namespace metternich {
 **	@param	object		The object
 **	@param	property	The property
 */
-void Database::ProcessGSMLPropertyForObject(QObject *object, const GSMLProperty &property)
+void Database::ProcessGSMLPropertyForObject(QObject *object, const gsml_property &property)
 {
 	const QMetaObject *meta_object = object->metaObject();
 	const int property_count = meta_object->propertyCount();
@@ -44,7 +44,7 @@ void Database::ProcessGSMLPropertyForObject(QObject *object, const GSMLProperty 
 		QMetaProperty meta_property = meta_object->property(i);
 		const char *property_name = meta_property.name();
 
-		if (property_name != property.GetKey()) {
+		if (property_name != property.get_key()) {
 			continue;
 		}
 
@@ -52,108 +52,108 @@ void Database::ProcessGSMLPropertyForObject(QObject *object, const GSMLProperty 
 
 		QVariant new_property_value;
 		if (property_type == QVariant::Bool) {
-			if (property.GetOperator() != GSMLOperator::Assignment) {
+			if (property.get_operator() != gsml_operator::assignment) {
 				throw std::runtime_error("Only the assignment operator is available for boolean properties.");
 			}
 
-			new_property_value = StringToBool(property.GetValue());
+			new_property_value = StringToBool(property.get_value());
 		} else if (property_type == QVariant::Int) {
 			int value = 0;
 
-			if (property.GetKey() == "efficiency" || property.GetKey() == "output_value" || property.GetKey() == "output_modifier" || property.GetKey() == "workforce_proportion" || property.GetKey() == "proportion_to_workforce" || property.GetKey() == "income_share") {
-				value = CentesimalNumberStringToInt(property.GetValue());
-			} else if (property.GetKey() == "base_population_growth") {
-				value = FractionalNumberStringToInt<4>(property.GetValue());
+			if (property.get_key() == "efficiency" || property.get_key() == "output_value" || property.get_key() == "output_modifier" || property.get_key() == "workforce_proportion" || property.get_key() == "proportion_to_workforce" || property.get_key() == "income_share") {
+				value = CentesimalNumberStringToInt(property.get_value());
+			} else if (property.get_key() == "base_population_growth") {
+				value = FractionalNumberStringToInt<4>(property.get_value());
 			} else {
-				value = std::stoi(property.GetValue());
+				value = std::stoi(property.get_value());
 			}
 
-			if (property.GetOperator() == GSMLOperator::Addition) {
+			if (property.get_operator() == gsml_operator::addition) {
 				value = object->property(property_name).toInt() + value;
-			} else if (property.GetOperator() == GSMLOperator::Subtraction) {
+			} else if (property.get_operator() == gsml_operator::subtraction) {
 				value = object->property(property_name).toInt() - value;
 			}
 
 			new_property_value = value;
 		} else if (property_type == QVariant::String) {
-			if (property.GetOperator() != GSMLOperator::Assignment) {
+			if (property.get_operator() != gsml_operator::assignment) {
 				throw std::runtime_error("Only the assignment operator is available for string properties.");
 			}
 
-			new_property_value = QString::fromStdString(property.GetValue());
+			new_property_value = QString::fromStdString(property.get_value());
 		} else if (property_type == QVariant::DateTime) {
-			if (property.GetOperator() != GSMLOperator::Assignment) {
+			if (property.get_operator() != gsml_operator::assignment) {
 				throw std::runtime_error("Only the assignment operator is available for date-time properties.");
 			}
 
-			new_property_value = History::StringToDate(property.GetValue());
+			new_property_value = History::StringToDate(property.get_value());
 		} else if (property_type == QVariant::Type::UserType) {
-			if (property.GetOperator() != GSMLOperator::Assignment) {
+			if (property.get_operator() != gsml_operator::assignment) {
 				throw std::runtime_error("Only the assignment operator is available for object reference properties.");
 			}
 
-			if (property.GetKey() == "landed_title" || property.GetKey() == "barony" || property.GetKey() == "county" || property.GetKey() == "duchy" || property.GetKey() == "kingdom" || property.GetKey() == "empire" || property.GetKey() == "holder_title" || property.GetKey() == "liege_title" || property.GetKey() == "de_jure_liege_title") {
-				new_property_value = QVariant::fromValue(LandedTitle::Get(property.GetValue()));
-			} else if (property.GetKey() == "province" || property.GetKey() == "capital_province") {
-				Province *province = Province::Get(property.GetValue());
+			if (property.get_key() == "landed_title" || property.get_key() == "barony" || property.get_key() == "county" || property.get_key() == "duchy" || property.get_key() == "kingdom" || property.get_key() == "empire" || property.get_key() == "holder_title" || property.get_key() == "liege_title" || property.get_key() == "de_jure_liege_title") {
+				new_property_value = QVariant::fromValue(LandedTitle::Get(property.get_value()));
+			} else if (property.get_key() == "province" || property.get_key() == "capital_province") {
+				Province *province = Province::Get(property.get_value());
 				new_property_value = QVariant::fromValue(province);
-			} else if (property.GetKey() == "holding" || property.GetKey() == "capital_holding") {
-				const LandedTitle *barony = LandedTitle::Get(property.GetValue());
+			} else if (property.get_key() == "holding" || property.get_key() == "capital_holding") {
+				const LandedTitle *barony = LandedTitle::Get(property.get_value());
 				Holding *holding = barony->GetHolding();
 				if (holding == nullptr) {
-					throw std::runtime_error("Barony \"" + property.GetValue() + "\" has no holding, but a holding property is being set using the barony as the holding's identifier.");
+					throw std::runtime_error("Barony \"" + property.get_value() + "\" has no holding, but a holding property is being set using the barony as the holding's identifier.");
 				}
 				new_property_value = QVariant::fromValue(holding);
-			} else if (property.GetKey() == "region") {
-				new_property_value = QVariant::fromValue(Region::Get(property.GetValue()));
-			} else if (property.GetKey() == "terrain") {
-				new_property_value = QVariant::fromValue(Terrain::Get(property.GetValue()));
-			} else if (property.GetKey() == "culture") {
-				new_property_value = QVariant::fromValue(Culture::Get(property.GetValue()));
-			} else if (property.GetKey() == "culture_group") {
-				new_property_value = QVariant::fromValue(CultureGroup::Get(property.GetValue()));
-			} else if (property.GetKey() == "religion") {
-				new_property_value = QVariant::fromValue(Religion::Get(property.GetValue()));
-			} else if (property.GetKey() == "dynasty") {
-				new_property_value = QVariant::fromValue(Dynasty::Get(property.GetValue()));
-			} else if (property.GetKey() == "character" || property.GetKey() == "holder" || property.GetKey() == "father" || property.GetKey() == "mother" || property.GetKey() == "spouse" || property.GetKey() == "liege" || property.GetKey() == "employer") {
-				new_property_value = QVariant::fromValue(Character::Get(std::stoi(property.GetValue())));
-			} else if (property.GetKey() == "commodity" || property.GetKey() == "output_commodity") {
-				new_property_value = QVariant::fromValue(Commodity::Get(property.GetValue()));
-			} else if (property.GetKey() == "employment_type") {
-				new_property_value = QVariant::fromValue(EmploymentType::Get(property.GetValue()));
+			} else if (property.get_key() == "region") {
+				new_property_value = QVariant::fromValue(Region::Get(property.get_value()));
+			} else if (property.get_key() == "terrain") {
+				new_property_value = QVariant::fromValue(Terrain::Get(property.get_value()));
+			} else if (property.get_key() == "culture") {
+				new_property_value = QVariant::fromValue(Culture::Get(property.get_value()));
+			} else if (property.get_key() == "culture_group") {
+				new_property_value = QVariant::fromValue(CultureGroup::Get(property.get_value()));
+			} else if (property.get_key() == "religion") {
+				new_property_value = QVariant::fromValue(Religion::Get(property.get_value()));
+			} else if (property.get_key() == "dynasty") {
+				new_property_value = QVariant::fromValue(Dynasty::Get(property.get_value()));
+			} else if (property.get_key() == "character" || property.get_key() == "holder" || property.get_key() == "father" || property.get_key() == "mother" || property.get_key() == "spouse" || property.get_key() == "liege" || property.get_key() == "employer") {
+				new_property_value = QVariant::fromValue(Character::Get(std::stoi(property.get_value())));
+			} else if (property.get_key() == "commodity" || property.get_key() == "output_commodity") {
+				new_property_value = QVariant::fromValue(Commodity::Get(property.get_value()));
+			} else if (property.get_key() == "employment_type") {
+				new_property_value = QVariant::fromValue(EmploymentType::Get(property.get_value()));
 			} else {
 				throw std::runtime_error("Unknown type for object reference property \"" + std::string(property_name) + "\".");
 			}
 		} else if (property_type == QVariant::Type::List) {
-			if (property.GetOperator() == GSMLOperator::Assignment) {
+			if (property.get_operator() == gsml_operator::assignment) {
 				throw std::runtime_error("The assignment operator is not available for list properties.");
 			}
 
 			std::string method_name;
-			if (property.GetOperator() == GSMLOperator::Addition) {
+			if (property.get_operator() == gsml_operator::addition) {
 				method_name = "Add";
-			} else if (property.GetOperator() == GSMLOperator::Subtraction) {
+			} else if (property.get_operator() == gsml_operator::subtraction) {
 				method_name = "Remove";
 			}
 
-			method_name += GetSingularForm(SnakeCaseToPascalCase(property.GetKey()));
+			method_name += GetSingularForm(SnakeCaseToPascalCase(property.get_key()));
 
 			bool success = false;
-			if (property.GetKey() == "traits") {
-				Trait *trait = Trait::Get(property.GetValue());
+			if (property.get_key() == "traits") {
+				Trait *trait = Trait::Get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(Trait *, trait));
-			} else if (property.GetKey() == "holding_types") {
-				HoldingType *holding_type = HoldingType::Get(property.GetValue());
+			} else if (property.get_key() == "holding_types") {
+				HoldingType *holding_type = HoldingType::Get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(HoldingType *, holding_type));
-			} else if (property.GetKey() == "provinces") {
-				Province *province = Province::Get(property.GetValue());
+			} else if (property.get_key() == "provinces") {
+				Province *province = Province::Get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(Province *, province));
-			} else if (property.GetKey() == "subregions") {
-				Region *region = Region::Get(property.GetValue());
+			} else if (property.get_key() == "subregions") {
+				Region *region = Region::Get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(Region *, region));
-			} else if (property.GetKey() == "discount_types") {
-				PopulationType *type = PopulationType::Get(property.GetValue());
+			} else if (property.get_key() == "discount_types") {
+				PopulationType *type = PopulationType::Get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(PopulationType *, type));
 			} else {
 				throw std::runtime_error("Unknown type for list property \"" + std::string(property_name) + "\".");
@@ -176,7 +176,7 @@ void Database::ProcessGSMLPropertyForObject(QObject *object, const GSMLProperty 
 		return;
 	}
 
-	throw std::runtime_error("Invalid " + std::string(meta_object->className()) + " property: \"" + property.GetKey() + "\".");
+	throw std::runtime_error("Invalid " + std::string(meta_object->className()) + " property: \"" + property.get_key() + "\".");
 }
 
 /**

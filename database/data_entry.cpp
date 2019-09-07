@@ -13,7 +13,7 @@ namespace metternich {
 **
 **	@param	property	The property
 */
-void DataEntryBase::ProcessGSMLProperty(const GSMLProperty &property)
+void DataEntryBase::ProcessGSMLProperty(const gsml_property &property)
 {
 	Database::ProcessGSMLPropertyForObject(this, property);
 }
@@ -29,7 +29,7 @@ void DataEntryBase::ProcessGSMLScope(const gsml_data &scope)
 */
 void DataEntryBase::LoadHistory(gsml_data &data)
 {
-	for (const GSMLProperty &property : data.get_properties()) {
+	for (const gsml_property &property : data.get_properties()) {
 		this->ProcessGSMLProperty(property); //properties outside of a date scope, to be applied regardless of start date
 	}
 
@@ -39,7 +39,7 @@ void DataEntryBase::LoadHistory(gsml_data &data)
 		QDateTime date = History::StringToDate(history_entry.get_tag());
 
 		if (date <= Game::Get()->GetCurrentDate()) {
-			for (const GSMLProperty &property : history_entry.get_properties()) {
+			for (const gsml_property &property : history_entry.get_properties()) {
 				this->ProcessGSMLDatedProperty(property, date);
 			}
 

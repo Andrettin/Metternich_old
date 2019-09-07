@@ -42,23 +42,23 @@ Character *Character::Generate(metternich::Culture *culture, metternich::Religio
 **	@param	property	The property
 **	@param	date		The date of the property change
 */
-void Character::ProcessGSMLDatedProperty(const GSMLProperty &property, const QDateTime &date)
+void Character::ProcessGSMLDatedProperty(const gsml_property &property, const QDateTime &date)
 {
-	if (property.GetKey() == "birth") {
-		if (property.GetOperator() != GSMLOperator::Assignment) {
-			throw std::runtime_error("Only the assignment operator is available for the \"" + property.GetKey() + "\" property.");
+	if (property.get_key() == "birth") {
+		if (property.get_operator() != gsml_operator::assignment) {
+			throw std::runtime_error("Only the assignment operator is available for the \"" + property.get_key() + "\" property.");
 		}
 
-		if (StringToBool(property.GetValue())) {
+		if (StringToBool(property.get_value())) {
 			this->BirthDate = date;
 			this->Alive = true;
 		}
-	} else if (property.GetKey() == "death") {
-		if (property.GetOperator() != GSMLOperator::Assignment) {
-			throw std::runtime_error("Only the assignment operator is available for the \"" + property.GetKey() + "\" property.");
+	} else if (property.get_key() == "death") {
+		if (property.get_operator() != gsml_operator::assignment) {
+			throw std::runtime_error("Only the assignment operator is available for the \"" + property.get_key() + "\" property.");
 		}
 
-		if (StringToBool(property.GetValue())) {
+		if (StringToBool(property.get_value())) {
 			this->DeathDate = date;
 			this->Alive = false;
 		}

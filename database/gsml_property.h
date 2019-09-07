@@ -7,50 +7,50 @@
 
 namespace metternich {
 
-class GSMLProperty
+class gsml_property
 {
 public:
-	GSMLProperty(const std::string &key, GSMLOperator property_operator, const std::string &value) : Key(key), Operator(property_operator), Value(value)
+	gsml_property(const std::string &key, gsml_operator property_operator, const std::string &value) : key(key), property_operator(property_operator), value(value)
 	{
 	}
 
-	const std::string &GetKey() const
+	const std::string &get_key() const
 	{
-		return this->Key;
+		return this->key;
 	}
 
-	GSMLOperator GetOperator() const
+	gsml_operator get_operator() const
 	{
-		return this->Operator;
+		return this->property_operator;
 	}
 
-	const std::string &GetValue() const
+	const std::string &get_value() const
 	{
-		return this->Value;
+		return this->value;
 	}
 
-	void Print(std::ofstream &ofstream) const
+	void print(std::ofstream &ofstream) const
 	{
-		ofstream << this->GetKey() << " ";
+		ofstream << this->get_key() << " ";
 
-		switch (this->GetOperator()) {
-			case GSMLOperator::Assignment:
+		switch (this->get_operator()) {
+			case gsml_operator::assignment:
 				ofstream << "=";
-			case GSMLOperator::Addition:
+			case gsml_operator::addition:
 				ofstream << "+=";
-			case GSMLOperator::Subtraction:
+			case gsml_operator::subtraction:
 				ofstream << "-=";
-			case GSMLOperator::None:
+			case gsml_operator::none:
 				throw std::runtime_error("Cannot print the GSML \"none\" operator.");
 		}
 
-		ofstream << " " << this->GetValue() << "\n";
+		ofstream << " " << this->get_value() << "\n";
 	}
 
 private:
-	std::string Key;
-	GSMLOperator Operator;
-	std::string Value;
+	std::string key;
+	gsml_operator property_operator;
+	std::string value;
 };
 
 }

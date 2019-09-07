@@ -29,11 +29,11 @@ EmploymentType::~EmploymentType()
 **
 **	@param	property	The property
 */
-void EmploymentType::ProcessGSMLProperty(const GSMLProperty &property)
+void EmploymentType::ProcessGSMLProperty(const gsml_property &property)
 {
-	if (property.GetKey() == "template") {
-		if (property.GetOperator() == GSMLOperator::Assignment) {
-			this->Template = EmploymentType::Get(property.GetValue());
+	if (property.get_key() == "template") {
+		if (property.get_operator() == gsml_operator::assignment) {
+			this->Template = EmploymentType::Get(property.get_value());
 		} else {
 			throw std::runtime_error("Only the assignment operator may be used for the \"template\" property.");
 		}
@@ -52,13 +52,13 @@ void EmploymentType::ProcessGSMLScope(const gsml_data &scope)
 	const std::string &tag = scope.get_tag();
 
 	if (tag == "input_commodities") {
-		for (const GSMLProperty &property : scope.get_properties()) {
-			if (property.GetOperator() != GSMLOperator::Assignment) {
+		for (const gsml_property &property : scope.get_properties()) {
+			if (property.get_operator() != gsml_operator::assignment) {
 				throw std::runtime_error("Only the assignment operator may be used for properties in the \"" + tag + "\" scope.");
 			}
 
-			Commodity *commodity = Commodity::Get(property.GetKey());
-			const int input_quantity = std::stoi(property.GetValue());
+			Commodity *commodity = Commodity::Get(property.get_key());
+			const int input_quantity = std::stoi(property.get_value());
 			this->InputCommodities[commodity] = input_quantity;
 		}
 	} else if (tag == "employees") {

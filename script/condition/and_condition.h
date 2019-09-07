@@ -13,7 +13,7 @@ namespace metternich {
 class AndCondition : public Condition
 {
 public:
-	virtual void ProcessGSMLProperty(const GSMLProperty &property) override
+	virtual void ProcessGSMLProperty(const gsml_property &property) override
 	{
 		std::unique_ptr<Condition> condition = Condition::FromGSMLProperty(property);
 		this->Conditions.push_back(std::move(condition));

@@ -18,17 +18,17 @@ namespace metternich {
 **
 **	@param	gsml_property	The GSML property
 */
-std::unique_ptr<Condition> Condition::FromGSMLProperty(const GSMLProperty &property)
+std::unique_ptr<Condition> Condition::FromGSMLProperty(const gsml_property &property)
 {
-	std::string condition_identifier = ToLower(property.GetKey());
+	std::string condition_identifier = ToLower(property.get_key());
 	std::unique_ptr<Condition> condition;
 
 	if (condition_identifier == "borders_water") {
-		condition = std::make_unique<BordersWaterCondition>(StringToBool(property.GetValue()));
+		condition = std::make_unique<BordersWaterCondition>(StringToBool(property.get_value()));
 	} else if (condition_identifier == "commodity") {
-		condition = std::make_unique<CommodityCondition>(property.GetValue());
+		condition = std::make_unique<CommodityCondition>(property.get_value());
 	} else if (condition_identifier == "terrain") {
-		condition = std::make_unique<TerrainCondition>(property.GetValue());
+		condition = std::make_unique<TerrainCondition>(property.get_value());
 	} else {
 		throw std::runtime_error("Invalid property condition: \"" + condition_identifier + "\".");
 	}
@@ -71,9 +71,9 @@ std::unique_ptr<Condition> Condition::FromGSMLScope(const gsml_data &scope)
 **
 **	@param	property	The property
 */
-void Condition::ProcessGSMLProperty(const GSMLProperty &property)
+void Condition::ProcessGSMLProperty(const gsml_property &property)
 {
-	throw std::runtime_error("Invalid \"" + this->GetIdentifier() + "\" condition property: " + property.GetKey() + ".");
+	throw std::runtime_error("Invalid \"" + this->GetIdentifier() + "\" condition property: " + property.get_key() + ".");
 }
 
 /**
