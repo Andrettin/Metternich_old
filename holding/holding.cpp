@@ -374,7 +374,7 @@ void Holding::CalculatePopulationGroups()
 */
 QVariantList Holding::GetBuildingsQVariantList() const
 {
-	return ContainerToQVariantList(this->GetBuildings());
+	return util::container_to_qvariant_list(this->GetBuildings());
 }
 
 void Holding::AddBuilding(Building *building)
@@ -445,7 +445,7 @@ std::vector<Building *> Holding::GetAvailableBuildings() const
 */
 QVariantList Holding::GetAvailableBuildingsQVariantList() const
 {
-	return ContainerToQVariantList(this->GetAvailableBuildings());
+	return util::container_to_qvariant_list(this->GetAvailableBuildings());
 }
 
 /**

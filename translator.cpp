@@ -47,7 +47,7 @@ QString Translator::translate(const char *context, const char *source_text, cons
 		std::string base_suffix_str = disambiguation;
 
 		if (!base_suffix_str.empty()) {
-			suffixes = SplitString(base_suffix_str, ';');
+			suffixes = util::split_string(base_suffix_str, ';');
 		}
 	}
 

@@ -18,7 +18,7 @@ void Map::Load()
 
 QPoint Map::GetPixelPosition(const int index)
 {
-	return IndexToPoint(index, this->Size);
+	return util::index_to_point(index, this->Size);
 }
 
 void Map::LoadProvinces()

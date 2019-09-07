@@ -35,7 +35,7 @@ void ChanceFactor::ProcessGSMLProperty(const gsml_property &property)
 
 	if (key == "factor") {
 		if (gsml_operator == gsml_operator::assignment) {
-			this->Factor = CentesimalNumberStringToInt(value);
+			this->Factor = util::centesimal_number_string_to_int(value);
 		} else {
 			throw std::runtime_error("Invalid operator for property (\"" + property.get_key() + "\").");
 		}

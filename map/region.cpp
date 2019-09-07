@@ -30,7 +30,7 @@ void Region::InitializeHistory()
 
 QVariantList Region::GetProvincesQVariantList() const
 {
-	return ContainerToQVariantList(this->GetProvinces());
+	return util::container_to_qvariant_list(this->GetProvinces());
 }
 
 Q_INVOKABLE void Region::AddProvince(Province *province)
@@ -47,7 +47,7 @@ Q_INVOKABLE void Region::RemoveProvince(Province *province)
 
 QVariantList Region::GetSubregionsQVariantList() const
 {
-	return ContainerToQVariantList(this->Subregions);
+	return util::container_to_qvariant_list(this->Subregions);
 }
 
 std::vector<Holding *> Region::GetHoldings() const

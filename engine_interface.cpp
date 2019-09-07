@@ -17,7 +17,7 @@ Game *EngineInterface::GetGame() const
 
 QVariant EngineInterface::GetProvinces() const
 {
-	QObjectList province_list = VectorToQObjectList(Province::GetAll());
+	QObjectList province_list = util::vector_to_qobject_list(Province::GetAll());
 	return QVariant::fromValue(province_list);
 }
 

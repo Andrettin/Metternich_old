@@ -49,7 +49,7 @@ void Character::ProcessGSMLDatedProperty(const gsml_property &property, const QD
 			throw std::runtime_error("Only the assignment operator is available for the \"" + property.get_key() + "\" property.");
 		}
 
-		if (StringToBool(property.get_value())) {
+		if (util::string_to_bool(property.get_value())) {
 			this->BirthDate = date;
 			this->Alive = true;
 		}
@@ -58,7 +58,7 @@ void Character::ProcessGSMLDatedProperty(const gsml_property &property, const QD
 			throw std::runtime_error("Only the assignment operator is available for the \"" + property.get_key() + "\" property.");
 		}
 
-		if (StringToBool(property.get_value())) {
+		if (util::string_to_bool(property.get_value())) {
 			this->DeathDate = date;
 			this->Alive = false;
 		}
@@ -153,7 +153,7 @@ void Character::RemoveLandedTitle(LandedTitle *title)
 
 QVariantList Character::GetTraitsQVariantList() const
 {
-	return ContainerToQVariantList(this->GetTraits());
+	return util::container_to_qvariant_list(this->GetTraits());
 }
 
 /**

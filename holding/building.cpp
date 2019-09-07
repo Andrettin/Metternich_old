@@ -47,7 +47,7 @@ void Building::ProcessGSMLScope(const gsml_data &scope)
 */
 QVariantList Building::GetHoldingTypesQVariantList() const
 {
-	return ContainerToQVariantList(this->GetHoldingTypes());
+	return util::container_to_qvariant_list(this->GetHoldingTypes());
 }
 
 /**

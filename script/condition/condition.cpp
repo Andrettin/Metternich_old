@@ -20,11 +20,11 @@ namespace metternich {
 */
 std::unique_ptr<Condition> Condition::FromGSMLProperty(const gsml_property &property)
 {
-	std::string condition_identifier = ToLower(property.get_key());
+	std::string condition_identifier = util::to_lower(property.get_key());
 	std::unique_ptr<Condition> condition;
 
 	if (condition_identifier == "borders_water") {
-		condition = std::make_unique<BordersWaterCondition>(StringToBool(property.get_value()));
+		condition = std::make_unique<BordersWaterCondition>(util::string_to_bool(property.get_value()));
 	} else if (condition_identifier == "commodity") {
 		condition = std::make_unique<CommodityCondition>(property.get_value());
 	} else if (condition_identifier == "terrain") {
@@ -43,7 +43,7 @@ std::unique_ptr<Condition> Condition::FromGSMLProperty(const gsml_property &prop
 */
 std::unique_ptr<Condition> Condition::FromGSMLScope(const gsml_data &scope)
 {
-	std::string condition_identifier = ToLower(scope.get_tag());
+	std::string condition_identifier = util::to_lower(scope.get_tag());
 	std::unique_ptr<Condition> condition;
 
 	if (condition_identifier == "and") {

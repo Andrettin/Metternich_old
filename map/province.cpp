@@ -575,7 +575,7 @@ void Province::CalculatePopulationGroups()
 */
 QVariantList Province::GetHoldingsQVariantList() const
 {
-	return ContainerToQVariantList(this->GetHoldings());
+	return util::container_to_qvariant_list(this->GetHoldings());
 }
 
 /**

@@ -74,7 +74,7 @@ void PopulationUnit::SetSize(const int size)
 */
 QVariantList PopulationUnit::GetDiscountTypesQVariantList() const
 {
-	return ContainerToQVariantList(this->GetDiscountTypes());
+	return util::container_to_qvariant_list(this->GetDiscountTypes());
 }
 
 /**

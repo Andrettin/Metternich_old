@@ -21,7 +21,7 @@ void DataEntryBase::ProcessGSMLProperty(const gsml_property &property)
 void DataEntryBase::ProcessGSMLScope(const gsml_data &scope)
 {
 	const QMetaObject *meta_object = this->metaObject();
-	throw std::runtime_error("Invalid \"" + PascalCaseToSnakeCase(meta_object->className()) + "\" field: \"" + scope.get_tag() + "\".");
+	throw std::runtime_error("Invalid \"" + util::pascal_case_to_snake_case(meta_object->className()) + "\" field: \"" + scope.get_tag() + "\".");
 }
 
 /**

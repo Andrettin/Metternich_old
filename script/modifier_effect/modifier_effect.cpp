@@ -21,9 +21,9 @@ std::unique_ptr<ModifierEffect> ModifierEffect::FromGSMLProperty(const gsml_prop
 	if (identifier == "population_capacity") {
 		modifier_effect = std::make_unique<PopulationCapacityModifierEffect>(std::stoi(property.get_value()));
 	} else if (identifier == "population_capacity_modifier") {
-		modifier_effect = std::make_unique<PopulationCapacityModifierModifierEffect>(CentesimalNumberStringToInt(property.get_value()));
+		modifier_effect = std::make_unique<PopulationCapacityModifierModifierEffect>(util::centesimal_number_string_to_int(property.get_value()));
 	} else if (identifier == "population_growth") {
-		modifier_effect = std::make_unique<PopulationGrowthModifierEffect>(FractionalNumberStringToInt<4>(property.get_value()));
+		modifier_effect = std::make_unique<PopulationGrowthModifierEffect>(util::fractional_number_string_to_int<4>(property.get_value()));
 	} else {
 		throw std::runtime_error("Invalid modifier effect: \"" + identifier + "\".");
 	}

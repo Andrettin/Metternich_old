@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <string>
 
-namespace metternich {
+namespace metternich::util {
 
 /**
 **	@brief	Convert a fractional number string (i.e. a number with up to two decimal places) to an integer, multiplying it by 10 ^ the number of decimal places; the template argument is the number of decimal places
@@ -17,7 +17,7 @@ namespace metternich {
 **	@return	The integer
 */
 template <int N>
-inline int FractionalNumberStringToInt(const std::string &str)
+inline int fractional_number_string_to_int(const std::string &str)
 {
 	size_t decimal_point_pos = str.find('.');
 	int integer = 0;
@@ -48,12 +48,12 @@ inline int FractionalNumberStringToInt(const std::string &str)
 	return integer;
 }
 
-inline int CentesimalNumberStringToInt(const std::string &str)
+inline int centesimal_number_string_to_int(const std::string &str)
 {
-	return FractionalNumberStringToInt<2>(str);
+	return fractional_number_string_to_int<2>(str);
 }
 
-inline bool StringToBool(const std::string &str)
+inline bool string_to_bool(const std::string &str)
 {
 	if (str == "true" || str == "yes" || str == "1") {
 		return true;
@@ -64,7 +64,7 @@ inline bool StringToBool(const std::string &str)
 	throw std::runtime_error("Invalid string used for conversion to boolean: \"" + str + "\".");
 }
 
-inline std::vector<std::string> SplitString(const std::string &str, const char delimiter)
+inline std::vector<std::string> split_string(const std::string &str, const char delimiter)
 {
 	std::vector<std::string> string_list;
 
@@ -82,7 +82,7 @@ inline std::vector<std::string> SplitString(const std::string &str, const char d
 	return string_list;
 }
 
-inline std::string ToLower(const std::string &str)
+inline std::string to_lower(const std::string &str)
 {
 	std::string result(str);
 
@@ -93,7 +93,7 @@ inline std::string ToLower(const std::string &str)
 	return result;
 }
 
-inline std::string PascalCaseToSnakeCase(const std::string &str)
+inline std::string pascal_case_to_snake_case(const std::string &str)
 {
 	if (str.empty()) {
 		return str;
@@ -116,7 +116,7 @@ inline std::string PascalCaseToSnakeCase(const std::string &str)
 	return result;
 }
 
-inline std::string SnakeCaseToPascalCase(const std::string &str)
+inline std::string snake_case_to_pascal_case(const std::string &str)
 {
 	if (str.empty()) {
 		return str;
@@ -137,7 +137,7 @@ inline std::string SnakeCaseToPascalCase(const std::string &str)
 	return result;
 }
 
-inline std::string GetSingularForm(const std::string str)
+inline std::string get_singular_form(const std::string &str)
 {
 	std::string singular_form;
 
@@ -152,18 +152,18 @@ inline std::string GetSingularForm(const std::string str)
 	return singular_form;
 }
 
-inline int PointToIndex(const QPoint &point, const QSize &size)
+inline int point_to_index(const QPoint &point, const QSize &size)
 {
 	return point.x() + point.y() * size.width();
 }
 
-inline QPoint IndexToPoint(const int index, const QSize &size)
+inline QPoint index_to_point(const int index, const QSize &size)
 {
 	return QPoint(index % size.width(), index / size.width());
 }
 
 template <typename T>
-inline QVariantList ContainerToQVariantList(const T &container)
+inline QVariantList container_to_qvariant_list(const T &container)
 {
 	QVariantList list;
 
@@ -175,7 +175,7 @@ inline QVariantList ContainerToQVariantList(const T &container)
 }
 
 template <typename T>
-inline QObjectList VectorToQObjectList(const std::vector<T *> &vector)
+inline QObjectList vector_to_qobject_list(const std::vector<T *> &vector)
 {
 	QObjectList object_list;
 	for (T *element : vector) {

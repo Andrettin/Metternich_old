@@ -56,14 +56,14 @@ void Database::ProcessGSMLPropertyForObject(QObject *object, const gsml_property
 				throw std::runtime_error("Only the assignment operator is available for boolean properties.");
 			}
 
-			new_property_value = StringToBool(property.get_value());
+			new_property_value = util::string_to_bool(property.get_value());
 		} else if (property_type == QVariant::Int) {
 			int value = 0;
 
 			if (property.get_key() == "efficiency" || property.get_key() == "output_value" || property.get_key() == "output_modifier" || property.get_key() == "workforce_proportion" || property.get_key() == "proportion_to_workforce" || property.get_key() == "income_share") {
-				value = CentesimalNumberStringToInt(property.get_value());
+				value = util::centesimal_number_string_to_int(property.get_value());
 			} else if (property.get_key() == "base_population_growth") {
-				value = FractionalNumberStringToInt<4>(property.get_value());
+				value = util::fractional_number_string_to_int<4>(property.get_value());
 			} else {
 				value = std::stoi(property.get_value());
 			}
@@ -137,7 +137,7 @@ void Database::ProcessGSMLPropertyForObject(QObject *object, const gsml_property
 				method_name = "Remove";
 			}
 
-			method_name += GetSingularForm(SnakeCaseToPascalCase(property.get_key()));
+			method_name += util::get_singular_form(util::snake_case_to_pascal_case(property.get_key()));
 
 			bool success = false;
 			if (property.get_key() == "traits") {
