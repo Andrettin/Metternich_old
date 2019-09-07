@@ -276,7 +276,7 @@ public:
 	static void InitializeAllHistory()
 	{
 		for (T *instance : T::GetAll()) {
-			instance->InitializeHistory();
+			instance->initialize_history();
 		}
 	}
 

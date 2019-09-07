@@ -55,7 +55,7 @@ Holding::~Holding()
 /**
 **	@brief	Initialize the holding's history
 */
-void Holding::InitializeHistory()
+void Holding::initialize_history()
 {
 	if (this->GetCommodity() == nullptr) {
 		//generate a commodity for the holding if it produces none
@@ -72,19 +72,12 @@ void Holding::InitializeHistory()
 		}
 	}
 
-	for (const std::unique_ptr<PopulationUnit> &population_unit : this->GetPopulationUnits()) {
-		//set the culture and religion of population units without any set to those of the holding's province
-		if (population_unit->GetCulture() == nullptr) {
-			population_unit->SetCulture(this->GetCulture());
-		}
-
-		if (population_unit->GetReligion() == nullptr) {
-			population_unit->SetReligion(this->GetReligion());
-		}
+	for (const std::unique_ptr<population_unit> &population_unit : this->get_population_units()) {
+		population_unit->initialize_history();
 	}
 
-	this->RemoveEmptyPopulationUnits();
-	this->SortPopulationUnits();
+	this->remove_empty_population_units();
+	this->sort_population_units();
 	this->CalculatePopulation();
 	this->CalculatePopulationGroups();
 	this->CheckOverpopulation();
@@ -111,7 +104,7 @@ void Holding::DoDay()
 void Holding::DoMonth()
 {
 	this->DoPopulationGrowth();
-	this->RemoveEmptyPopulationUnits();
+	this->remove_empty_population_units();
 	this->CalculatePopulationGroups();
 }
 
@@ -182,11 +175,11 @@ void Holding::SetType(HoldingType *type)
 /**
 **	@brief	Add a population unit to the holding
 */
-void Holding::AddPopulationUnit(std::unique_ptr<PopulationUnit> &&population_unit)
+void Holding::add_population_unit(std::unique_ptr<population_unit> &&population_unit)
 {
-	this->ChangePopulation(population_unit->GetSize());
-	this->PopulationUnits.push_back(std::move(population_unit));
-	emit PopulationUnitsChanged();
+	this->ChangePopulation(population_unit->get_size());
+	this->population_units.push_back(std::move(population_unit));
+	emit population_units_changed();
 }
 
 /**
@@ -194,11 +187,11 @@ void Holding::AddPopulationUnit(std::unique_ptr<PopulationUnit> &&population_uni
 **
 **	@return	The population units as a QVariantList
 */
-QVariantList Holding::GetPopulationUnitsQVariantList() const
+QVariantList Holding::get_population_units_qvariant_list() const
 {
 	QVariantList list;
 
-	for (const std::unique_ptr<PopulationUnit> &population_unit : this->GetPopulationUnits()) {
+	for (const std::unique_ptr<population_unit> &population_unit : this->get_population_units()) {
 		list.append(QVariant::fromValue(population_unit.get()));
 	}
 
@@ -208,25 +201,25 @@ QVariantList Holding::GetPopulationUnitsQVariantList() const
 /**
 **	@brief	Sort the holding's population units
 */
-void Holding::SortPopulationUnits()
+void Holding::sort_population_units()
 {
-	std::sort(this->PopulationUnits.begin(), this->PopulationUnits.end(), [](const std::unique_ptr<PopulationUnit> &a, const std::unique_ptr<PopulationUnit> &b) {
+	std::sort(this->population_units.begin(), this->population_units.end(), [](const std::unique_ptr<population_unit> &a, const std::unique_ptr<population_unit> &b) {
 		//give priority to population units with greater size, so that they will be displayed first
-		return a->GetSize() > b->GetSize();
+		return a->get_size() > b->get_size();
 	});
 
-	emit PopulationUnitsChanged();
+	emit population_units_changed();
 }
 
 /**
 **	@brief	Remove population units that have size 0
 */
-void Holding::RemoveEmptyPopulationUnits()
+void Holding::remove_empty_population_units()
 {
-	for (size_t i = 0; i < this->PopulationUnits.size();) {
-		const std::unique_ptr<PopulationUnit> &population_unit = this->PopulationUnits[i];
-		if (population_unit->GetSize() == 0) {
-			this->PopulationUnits.erase(this->PopulationUnits.begin() + static_cast<int>(i));
+	for (size_t i = 0; i < this->population_units.size();) {
+		const std::unique_ptr<population_unit> &population_unit = this->population_units[i];
+		if (population_unit->get_size() == 0) {
+			this->population_units.erase(this->population_units.begin() + static_cast<int>(i));
 		} else {
 			++i;
 		}
@@ -261,8 +254,8 @@ void Holding::SetPopulation(const int population)
 void Holding::CalculatePopulation()
 {
 	int population = 0;
-	for (const std::unique_ptr<PopulationUnit> &population_unit : this->GetPopulationUnits()) {
-		population += population_unit->GetSize();
+	for (const std::unique_ptr<population_unit> &population_unit : this->get_population_units()) {
+		population += population_unit->get_size();
 	}
 	this->SetPopulation(population);
 }
@@ -278,10 +271,10 @@ void Holding::DoPopulationGrowth()
 		return;
 	}
 
-	for (const std::unique_ptr<PopulationUnit> &population_unit : this->GetPopulationUnits()) {
+	for (const std::unique_ptr<population_unit> &population_unit : this->get_population_units()) {
 		const int population_capacity_difference = this->GetPopulationCapacity() - this->GetPopulation();
 
-		int change = population_unit->GetSize() * population_growth / 10000;
+		int change = population_unit->get_size() * population_growth / 10000;
 		if (change == 0) {
 			if (population_growth != 0) {
 				//if the change is zero but population growth is non-zero, then make a change of 1
@@ -295,7 +288,7 @@ void Holding::DoPopulationGrowth()
 			change = population_capacity_difference; //don't grow the population beyond capacity
 		}
 
-		population_unit->ChangeSize(change);
+		population_unit->change_size(change);
 	}
 
 	this->CheckOverpopulation();
@@ -330,10 +323,10 @@ void Holding::CalculatePopulationGroups()
 	this->PopulationPerCulture.clear();
 	this->PopulationPerReligion.clear();
 
-	for (const std::unique_ptr<PopulationUnit> &population_unit : this->GetPopulationUnits()) {
-		this->PopulationPerType[population_unit->GetType()] += population_unit->GetSize();
-		this->PopulationPerCulture[population_unit->GetCulture()] += population_unit->GetSize();
-		this->PopulationPerReligion[population_unit->GetReligion()] += population_unit->GetSize();
+	for (const std::unique_ptr<population_unit> &population_unit : this->get_population_units()) {
+		this->PopulationPerType[population_unit->get_type()] += population_unit->get_size();
+		this->PopulationPerCulture[population_unit->get_culture()] += population_unit->get_size();
+		this->PopulationPerReligion[population_unit->get_religion()] += population_unit->get_size();
 	}
 
 	emit populationGroupsChanged();
@@ -539,15 +532,15 @@ void Holding::SetEmploymentWorkforce(const EmploymentType *employment_type, cons
 */
 void Holding::RemoveExcessEmployment(const EmploymentType *employment_type)
 {
-	auto find_iterator = this->EmployedPopulationUnits.find(employment_type);
-	if (find_iterator == this->EmployedPopulationUnits.end()) {
+	auto find_iterator = this->employed_population_units.find(employment_type);
+	if (find_iterator == this->employed_population_units.end()) {
 		return;
 	}
 
-	std::vector<PopulationUnit *> &population_units = find_iterator->second;
+	std::vector<population_unit *> &population_units = find_iterator->second;
 
 	int employment = 0;
-	for (const PopulationUnit *population_unit : population_units) {
+	for (const population_unit *population_unit : population_units) {
 		employment += population_unit->get_employment_size(employment_type);
 	}
 
@@ -555,7 +548,7 @@ void Holding::RemoveExcessEmployment(const EmploymentType *employment_type)
 	int excess_employment = employment - maximum_employment;
 
 	for (int i = static_cast<int>(population_units.size()) - 1; i >= 0; --i) {
-		PopulationUnit *population_unit = population_units[static_cast<size_t>(i)];
+		population_unit *population_unit = population_units[static_cast<size_t>(i)];
 		const int pop_current_employment = population_unit->get_employment_size(employment_type);
 		const int pop_employment_change = -std::min(pop_current_employment, excess_employment);
 		population_unit->change_employment_size(employment_type, pop_employment_change);

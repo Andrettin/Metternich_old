@@ -17,184 +17,186 @@ class Province;
 class Region;
 class Religion;
 
-class PopulationUnit : public DataEntryBase, public SimpleDataType<PopulationUnit>
+class population_unit : public DataEntryBase, public SimpleDataType<population_unit>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(metternich::PopulationType* type MEMBER Type READ GetType NOTIFY TypeChanged)
-	Q_PROPERTY(metternich::Culture* culture READ GetCulture WRITE SetCulture NOTIFY CultureChanged)
-	Q_PROPERTY(metternich::Religion* religion READ GetReligion WRITE SetReligion NOTIFY ReligionChanged)
-	Q_PROPERTY(int size READ GetSize WRITE SetSize NOTIFY SizeChanged)
-	Q_PROPERTY(metternich::Holding* holding READ GetHolding WRITE SetHolding NOTIFY HoldingChanged)
-	Q_PROPERTY(metternich::Province* province READ GetProvince WRITE SetProvince NOTIFY ProvinceChanged)
-	Q_PROPERTY(metternich::Region* region READ GetRegion WRITE SetRegion NOTIFY RegionChanged)
-	Q_PROPERTY(bool discount_existing READ DiscountsExisting WRITE SetDiscountExisting NOTIFY DiscountExistingChanged)
-	Q_PROPERTY(bool discount_any_type READ DiscountsAnyType WRITE SetDiscountAnyType NOTIFY DiscountAnyTypeChanged)
-	Q_PROPERTY(QVariantList discount_types READ GetDiscountTypesQVariantList)
+	Q_PROPERTY(metternich::PopulationType* type MEMBER type READ get_type NOTIFY type_changed)
+	Q_PROPERTY(metternich::Culture* culture READ get_culture WRITE set_culture NOTIFY culture_changed)
+	Q_PROPERTY(metternich::Religion* religion READ get_religion WRITE set_religion NOTIFY religion_changed)
+	Q_PROPERTY(int size READ get_size WRITE set_size NOTIFY size_changed)
+	Q_PROPERTY(metternich::Holding* holding READ get_holding WRITE set_holding NOTIFY holding_changed)
+	Q_PROPERTY(metternich::Province* province READ get_province WRITE set_province NOTIFY province_changed)
+	Q_PROPERTY(metternich::Region* region READ get_region WRITE set_region NOTIFY region_changed)
+	Q_PROPERTY(bool discount_existing READ discounts_existing WRITE set_discount_existing NOTIFY discount_existing_changed)
+	Q_PROPERTY(bool discount_any_type READ discounts_any_type WRITE set_discount_any_type NOTIFY discount_any_type_changed)
+	Q_PROPERTY(QVariantList discount_types READ get_discount_types_qvariant_list)
 
 public:
 	static constexpr const char *DatabaseFolder = "population_units";
 
-	static void ProcessHistoryDatabase();
+	static void process_history_database();
 
-	PopulationUnit(PopulationType *type) : Type(type) {}
+	population_unit(PopulationType *type) : type(type) {}
 
-	PopulationType *GetType() const
+	virtual void initialize_history() override;
+
+	PopulationType *get_type() const
 	{
-		return this->Type;
+		return this->type;
 	}
 
-	metternich::Culture *GetCulture() const
+	metternich::Culture *get_culture() const
 	{
-		return this->Culture;
+		return this->culture;
 	}
 
-	void SetCulture(Culture *culture)
+	void set_culture(Culture *culture)
 	{
-		if (culture == this->GetCulture()) {
+		if (culture == this->get_culture()) {
 			return;
 		}
 
-		this->Culture = culture;
-		emit CultureChanged();
+		this->culture = culture;
+		emit culture_changed();
 	}
 
-	metternich::Religion *GetReligion() const
+	metternich::Religion *get_religion() const
 	{
-		return this->Religion;
+		return this->religion;
 	}
 
-	void SetReligion(Religion *religion)
+	void set_religion(Religion *religion)
 	{
-		if (religion == this->GetReligion()) {
+		if (religion == this->get_religion()) {
 			return;
 		}
 
-		this->Religion = religion;
-		emit ReligionChanged();
+		this->religion = religion;
+		emit religion_changed();
 	}
 
-	int GetSize() const
+	int get_size() const
 	{
-		return this->Size;
+		return this->size;
 	}
 
-	void SetSize(const int size);
+	void set_size(const int size);
 
-	void ChangeSize(const int change)
+	void change_size(const int change)
 	{
-		this->SetSize(this->GetSize() + change);
+		this->set_size(this->get_size() + change);
 	}
 
-	metternich::Holding *GetHolding() const
+	metternich::Holding *get_holding() const
 	{
-		return this->Holding;
+		return this->holding;
 	}
 
-	void SetHolding(Holding *holding)
+	void set_holding(Holding *holding)
 	{
-		if (holding == this->GetHolding()) {
+		if (holding == this->get_holding()) {
 			return;
 		}
 
-		this->Holding = holding;
-		emit HoldingChanged();
+		this->holding = holding;
+		emit holding_changed();
 	}
 
-	metternich::Province *GetProvince() const
+	metternich::Province *get_province() const
 	{
-		return this->Province;
+		return this->province;
 	}
 
-	void SetProvince(Province *province)
+	void set_province(Province *province)
 	{
-		if (province == this->GetProvince()) {
+		if (province == this->get_province()) {
 			return;
 		}
 
-		this->Province = province;
-		emit ProvinceChanged();
+		this->province = province;
+		emit province_changed();
 	}
 
-	metternich::Region *GetRegion() const
+	metternich::Region *get_region() const
 	{
-		return this->Region;
+		return this->region;
 	}
 
-	void SetRegion(Region *region)
+	void set_region(Region *region)
 	{
-		if (region == this->GetRegion()) {
+		if (region == this->get_region()) {
 			return;
 		}
 
-		this->Region = region;
-		emit RegionChanged();
+		this->region = region;
+		emit region_changed();
 	}
 
-	bool DiscountsExisting() const
+	bool discounts_existing() const
 	{
-		return this->DiscountExisting;
+		return this->discount_existing;
 	}
 
-	void SetDiscountExisting(const bool discount_existing)
+	void set_discount_existing(const bool discount_existing)
 	{
-		if (discount_existing == this->DiscountsExisting()) {
+		if (discount_existing == this->discounts_existing()) {
 			return;
 		}
 
-		this->DiscountExisting = discount_existing;
+		this->discount_existing = discount_existing;
 		if (discount_existing) {
-			this->DiscountTypes.insert(this->GetType()); //this population unit's type is implicitly added to the discount types if DiscountExisting is set to true
+			this->discount_types.insert(this->get_type()); //this population unit's type is implicitly added to the discount types if DiscountExisting is set to true
 		} else {
 			//if is being set to false, set the DiscountAnyType to false as well, and clear the discount types, as both are no longer applicable
-			this->SetDiscountAnyType(false);
-			this->DiscountTypes.clear();
+			this->set_discount_any_type(false);
+			this->discount_types.clear();
 		}
-		emit DiscountExistingChanged();
+		emit discount_existing_changed();
 	}
 
-	bool DiscountsAnyType() const
+	bool discounts_any_type() const
 	{
-		return this->DiscountAnyType;
+		return this->discount_any_type;
 	}
 
-	void SetDiscountAnyType(const bool discount_any_type)
+	void set_discount_any_type(const bool discount_any_type)
 	{
-		if (discount_any_type == this->DiscountsAnyType()) {
+		if (discount_any_type == this->discounts_any_type()) {
 			return;
 		}
 
-		this->DiscountAnyType = discount_any_type;
-		emit DiscountAnyTypeChanged();
+		this->discount_any_type = discount_any_type;
+		emit discount_any_type_changed();
 	}
 
-	const std::set<PopulationType *> &GetDiscountTypes() const
+	const std::set<PopulationType *> &get_discount_types() const
 	{
-		return this->DiscountTypes;
+		return this->discount_types;
 	}
 
-	QVariantList GetDiscountTypesQVariantList() const;
+	QVariantList get_discount_types_qvariant_list() const;
 
-	Q_INVOKABLE void AddDiscountType(PopulationType *type)
+	Q_INVOKABLE void add_discount_type(PopulationType *type)
 	{
-		this->DiscountTypes.insert(type);
+		this->discount_types.insert(type);
 	}
 
-	Q_INVOKABLE void RemoveDiscountType(PopulationType *type)
+	Q_INVOKABLE void remove_discount_type(PopulationType *type)
 	{
-		this->DiscountTypes.erase(type);
+		this->discount_types.erase(type);
 	}
 
-	void SubtractExistingSizes();
-	void SubtractExistingSizesInHolding(const Holding *holding);
-	void SubtractExistingSizesInHoldings(const std::vector<Holding *> &holdings);
-	bool CanDistributeToHolding(const Holding *holding) const;
-	void DistributeToHoldings(const std::vector<Holding *> &holdings);
+	void subtract_existing_sizes();
+	void subtract_existing_sizes_in_holding(const Holding *holding);
+	void subtract_existing_sizes_in_holdings(const std::vector<Holding *> &holdings);
+	bool can_distribute_to_holding(const Holding *holding) const;
+	void distribute_to_holdings(const std::vector<Holding *> &holdings);
 
 	int get_employment_size(const EmploymentType *employment_type) const
 	{
-		auto find_iterator = this->EmploymentSizes.find(employment_type);
-		if (find_iterator == this->EmploymentSizes.end()) {
+		auto find_iterator = this->employment_sizes.find(employment_type);
+		if (find_iterator == this->employment_sizes.end()) {
 			return 0;
 		}
 
@@ -208,29 +210,49 @@ public:
 		this->set_employment_size(employment_type, this->get_employment_size(employment_type) + change);
 	}
 
+	int get_unemployed_size() const
+	{
+		return this->unemployed_size;
+	}
+
+	void set_unemployed_size(const int size)
+	{
+		if (size == this->get_unemployed_size()) {
+			return;
+		}
+
+		this->unemployed_size = size;
+	}
+
+	void change_unemployed_size(const int change)
+	{
+		this->set_unemployed_size(this->get_unemployed_size() + change);
+	}
+
 signals:
-	void TypeChanged();
-	void CultureChanged();
-	void ReligionChanged();
-	void SizeChanged();
-	void HoldingChanged();
-	void ProvinceChanged();
-	void RegionChanged();
-	void DiscountExistingChanged();
-	void DiscountAnyTypeChanged();
+	void type_changed();
+	void culture_changed();
+	void religion_changed();
+	void size_changed();
+	void holding_changed();
+	void province_changed();
+	void region_changed();
+	void discount_existing_changed();
+	void discount_any_type_changed();
 
 private:
-	PopulationType *Type = nullptr;
-	metternich::Culture *Culture = nullptr;
-	metternich::Religion *Religion = nullptr;
-	int Size = 0; //the size of the population unit, in number of individuals
-	metternich::Holding *Holding = nullptr; //the settlement holding where this population unit lives
-	metternich::Province *Province = nullptr; //the province where this population unit lives; used only during initialization to generate population units in settlements in the province
-	metternich::Region *Region = nullptr; //the region where this population unit lives; used only during initialization to generate population units in settlements in the region
-	bool DiscountExisting = false; //whether to discount the size of existing population units (in this population unit's holding, province or region) of the types given in DiscountTypes from that of this one
-	bool DiscountAnyType = false; //whether to discount the size of any existing population units from that of this one
-	std::set<PopulationType *> DiscountTypes; //the sizes of population units belonging to these types will be discounted from that of this population unit
-	std::map<const EmploymentType *, int> EmploymentSizes; //the amount of people employed from this population unit per employment type
+	PopulationType *type = nullptr;
+	metternich::Culture *culture = nullptr;
+	metternich::Religion *religion = nullptr;
+	int size = 0; //the size of the population unit, in number of individuals
+	metternich::Holding *holding = nullptr; //the settlement holding where this population unit lives
+	metternich::Province *province = nullptr; //the province where this population unit lives; used only during initialization to generate population units in settlements in the province
+	metternich::Region *region = nullptr; //the region where this population unit lives; used only during initialization to generate population units in settlements in the region
+	bool discount_existing = false; //whether to discount the size of existing population units (in this population unit's holding, province or region) of the types given in DiscountTypes from that of this one
+	bool discount_any_type = false; //whether to discount the size of any existing population units from that of this one
+	std::set<PopulationType *> discount_types; //the sizes of population units belonging to these types will be discounted from that of this population unit
+	std::map<const EmploymentType *, int> employment_sizes; //the amount of people employed from this population unit per employment type
+	int unemployed_size = 0; //the amount of people from this population unit which are unemployed
 };
 
 }

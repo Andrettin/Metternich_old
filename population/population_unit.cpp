@@ -16,34 +16,51 @@ namespace metternich {
 /**
 **	@brief	Process the history database for population units
 */
-void PopulationUnit::ProcessHistoryDatabase()
+void population_unit::process_history_database()
 {
 	//simple data types are only loaded in history, instanced directly based on their GSML data
-	for (const gsml_data &data : PopulationUnit::gsml_history_data_to_process) {
+	for (const gsml_data &data : population_unit::gsml_history_data_to_process) {
 		for (const gsml_data &data_entry : data.get_children()) {
 			const std::string type_identifier = data_entry.get_tag();
 			PopulationType *type = PopulationType::Get(type_identifier);
-			auto population_unit = std::make_unique<PopulationUnit>(type);
+			auto population_unit(std::make_unique<population_unit>(type));
 			population_unit->moveToThread(QApplication::instance()->thread());
 			population_unit->LoadHistory(const_cast<gsml_data &>(data_entry));
 
-			if (population_unit->GetSize() <= 0) {
+			if (population_unit->get_size() <= 0) {
 				continue; //don't add empty population units
 			}
 
-			if (population_unit->GetHolding() != nullptr) {
-				population_unit->GetHolding()->AddPopulationUnit(std::move(population_unit));
-			} else if (population_unit->GetProvince() != nullptr) {
-				population_unit->GetProvince()->AddPopulationUnit(std::move(population_unit));
-			} else if (population_unit->GetRegion() != nullptr) {
-				population_unit->GetRegion()->AddPopulationUnit(std::move(population_unit));
+			if (population_unit->get_holding() != nullptr) {
+				population_unit->get_holding()->add_population_unit(std::move(population_unit));
+			} else if (population_unit->get_province() != nullptr) {
+				population_unit->get_province()->add_population_unit(std::move(population_unit));
+			} else if (population_unit->get_region() != nullptr) {
+				population_unit->get_region()->add_population_unit(std::move(population_unit));
 			} else {
 				throw std::runtime_error("Population unit of type \"" + type_identifier + "\" belongs to neither a holding, nor a province, nor a region.");
 			}
 		}
 	}
 
-	PopulationUnit::gsml_history_data_to_process.clear();
+	population_unit::gsml_history_data_to_process.clear();
+}
+
+/**
+**	@brief	Initialize the population unit's history
+*/
+void population_unit::initialize_history()
+{
+	//set the culture and religion of population units without any set to those of their holding
+	if (this->get_culture() == nullptr) {
+		this->set_culture(this->get_holding()->GetCulture());
+	}
+
+	if (this->get_religion() == nullptr) {
+		this->set_religion(this->get_holding()->GetReligion());
+	}
+
+	this->set_unemployed_size(this->get_size());
 }
 
 /**
@@ -51,20 +68,36 @@ void PopulationUnit::ProcessHistoryDatabase()
 **
 **	@param	size	The size
 */
-void PopulationUnit::SetSize(const int size)
+void population_unit::set_size(const int size)
 {
-	if (size == this->GetSize()) {
+	if (size == this->get_size()) {
 		return;
 	}
 
-	int old_size = this->GetSize();
-	this->Size = std::max(size, 0);
-	emit SizeChanged();
+	const int old_size = this->get_size();
+	this->size = std::max(size, 0);
+	emit size_changed();
 
-	if (this->GetHolding() != nullptr) {
+	const int size_change = this->get_size() - old_size;
+
+	if (size_change > 0) {
+		this->change_unemployed_size(size_change);
+	} else {
+		int employment_size_change = size_change;
+		if (this->get_unemployed_size()) {
+			const int unemployed_size_change = -std::min(this->get_unemployed_size(), abs(employment_size_change));
+			this->change_unemployed_size(unemployed_size_change);
+			employment_size_change -= unemployed_size_change;
+		}
+
+		if (employment_size_change != 0) {
+			//FIXME: should remove employment size
+		}
+	}
+
+	if (this->get_holding() != nullptr) {
 		//change the population count for the population unit's holding
-		const int population_change = this->GetSize() - old_size;
-		this->GetHolding()->ChangePopulation(population_change);
+		this->get_holding()->ChangePopulation(size_change);
 	}
 }
 
@@ -73,22 +106,22 @@ void PopulationUnit::SetSize(const int size)
 **
 **	@return The variant list
 */
-QVariantList PopulationUnit::GetDiscountTypesQVariantList() const
+QVariantList population_unit::get_discount_types_qvariant_list() const
 {
-	return util::container_to_qvariant_list(this->GetDiscountTypes());
+	return util::container_to_qvariant_list(this->get_discount_types());
 }
 
 /**
 **	@brief	Subtract the sizes of applicable existing population units from that of this one
 */
-void PopulationUnit::SubtractExistingSizes()
+void population_unit::subtract_existing_sizes()
 {
-	if (this->GetHolding() != nullptr) {
-		this->SubtractExistingSizesInHolding(this->GetHolding());
-	} else if (this->GetProvince() != nullptr) {
-		this->SubtractExistingSizesInHoldings(this->GetProvince()->GetHoldings());
-	} else if (this->GetRegion() != nullptr) {
-		this->SubtractExistingSizesInHoldings(this->GetRegion()->GetHoldings());
+	if (this->get_holding() != nullptr) {
+		this->subtract_existing_sizes_in_holding(this->get_holding());
+	} else if (this->get_province() != nullptr) {
+		this->subtract_existing_sizes_in_holdings(this->get_province()->GetHoldings());
+	} else if (this->get_region() != nullptr) {
+		this->subtract_existing_sizes_in_holdings(this->get_region()->GetHoldings());
 	}
 }
 
@@ -97,18 +130,18 @@ void PopulationUnit::SubtractExistingSizes()
 **
 **	@param	holding	The holding
 */
-void PopulationUnit::SubtractExistingSizesInHolding(const metternich::Holding *holding)
+void population_unit::subtract_existing_sizes_in_holding(const metternich::Holding *holding)
 {
-	for (const std::unique_ptr<PopulationUnit> &population_unit : holding->GetPopulationUnits()) {
+	for (const std::unique_ptr<population_unit> &population_unit : holding->get_population_units()) {
 		if (&*population_unit == &*this) {
 			continue;
 		}
 
-		if (!this->DiscountsAnyType() && this->GetDiscountTypes().find(population_unit->GetType()) == this->GetDiscountTypes().end()) {
+		if (!this->discounts_any_type() && this->get_discount_types().find(population_unit->get_type()) == this->get_discount_types().end()) {
 			continue;
 		}
 
-		this->ChangeSize(-population_unit->GetSize());
+		this->change_size(-population_unit->get_size());
 	}
 }
 
@@ -117,10 +150,10 @@ void PopulationUnit::SubtractExistingSizesInHolding(const metternich::Holding *h
 **
 **	@param	holdings	The holdings
 */
-void PopulationUnit::SubtractExistingSizesInHoldings(const std::vector<metternich::Holding *> &holdings)
+void population_unit::subtract_existing_sizes_in_holdings(const std::vector<metternich::Holding *> &holdings)
 {
 	for (const metternich::Holding *holding : holdings) {
-		this->SubtractExistingSizesInHolding(holding);
+		this->subtract_existing_sizes_in_holding(holding);
 	}
 }
 
@@ -131,16 +164,16 @@ void PopulationUnit::SubtractExistingSizesInHoldings(const std::vector<metternic
 **
 **	@return	True if the population unit can be distributed to the holding, or false otherwise
 */
-bool PopulationUnit::CanDistributeToHolding(const metternich::Holding *holding) const
+bool population_unit::can_distribute_to_holding(const metternich::Holding *holding) const
 {
-	if (this->GetType()->GetHoldingTypes().find(holding->GetType()) == this->GetType()->GetHoldingTypes().end()) {
+	if (this->get_type()->GetHoldingTypes().find(holding->GetType()) == this->get_type()->GetHoldingTypes().end()) {
 		return false;
 	}
 
-	if (this->DiscountsExisting()) {
+	if (this->discounts_existing()) {
 		//the population unit can only be distributed to the given holding if there is no population unit there with the same type as this one, if discount existing is enabled
-		for (const std::unique_ptr<PopulationUnit> &population_unit : holding->GetPopulationUnits()) {
-			if (this->GetType() == population_unit->GetType()) {
+		for (const std::unique_ptr<population_unit> &population_unit : holding->get_population_units()) {
+			if (this->get_type() == population_unit->get_type()) {
 				return false;
 			}
 		}
@@ -154,13 +187,13 @@ bool PopulationUnit::CanDistributeToHolding(const metternich::Holding *holding) 
 **
 **	@param	holdings	The holdings
 */
-void PopulationUnit::DistributeToHoldings(const std::vector<metternich::Holding *> &holdings)
+void population_unit::distribute_to_holdings(const std::vector<metternich::Holding *> &holdings)
 {
 	//set population for settlement holdings without population data
 	int holding_count = 0; //count of settlement holdings for which the population will be applied
 
 	for (const metternich::Holding *holding : holdings) {
-		if (this->CanDistributeToHolding(holding)) {
+		if (this->can_distribute_to_holding(holding)) {
 			holding_count++;
 		}
 	}
@@ -170,28 +203,28 @@ void PopulationUnit::DistributeToHoldings(const std::vector<metternich::Holding 
 	}
 
 	//now, apply the remaining population to all settlement holdings without population set for them, in equal proportions
-	const int size_per_holding = this->GetSize() / holding_count;
+	const int size_per_holding = this->get_size() / holding_count;
 
 	if (size_per_holding <= 0) {
 		return;
 	}
 
 	for (metternich::Holding *holding : holdings) {
-		if (!this->CanDistributeToHolding(holding)) {
+		if (!this->can_distribute_to_holding(holding)) {
 			continue;
 		}
 
-		auto population_unit = std::make_unique<PopulationUnit>(this->GetType());
+		auto population_unit(std::make_unique<population_unit>(this->get_type()));
 		population_unit->moveToThread(QApplication::instance()->thread());
-		population_unit->SetHolding(holding);
-		population_unit->SetSize(size_per_holding);
-		if (this->GetCulture() != nullptr) {
-			population_unit->SetCulture(this->GetCulture());
+		population_unit->set_holding(holding);
+		population_unit->set_size(size_per_holding);
+		if (this->get_culture() != nullptr) {
+			population_unit->set_culture(this->get_culture());
 		}
-		if (this->GetReligion() != nullptr) {
-			population_unit->SetReligion(this->GetReligion());
+		if (this->get_religion() != nullptr) {
+			population_unit->set_religion(this->get_religion());
 		}
-		holding->AddPopulationUnit(std::move(population_unit));
+		holding->add_population_unit(std::move(population_unit));
 	}
 }
 
@@ -201,7 +234,7 @@ void PopulationUnit::DistributeToHoldings(const std::vector<metternich::Holding 
 **	@param	employment_type	The employment type
 **	@param	size			The new employment size
 */
-void PopulationUnit::set_employment_size(const EmploymentType *employment_type, const int size)
+void population_unit::set_employment_size(const EmploymentType *employment_type, const int size)
 {
 	if (size == this->get_employment_size(employment_type)) {
 		return;
@@ -212,9 +245,9 @@ void PopulationUnit::set_employment_size(const EmploymentType *employment_type, 
 	}
 
 	if (size == 0) {
-		this->EmploymentSizes.erase(employment_type);
+		this->employment_sizes.erase(employment_type);
 	} else {
-		this->EmploymentSizes[employment_type] = size;
+		this->employment_sizes[employment_type] = size;
 	}
 }
 

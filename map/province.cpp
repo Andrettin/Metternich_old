@@ -173,12 +173,12 @@ void Province::ProcessGSMLDatedScope(const gsml_data &scope, const QDateTime &da
 /**
 **	@brief	Initialize the province's history
 */
-void Province::InitializeHistory()
+void Province::initialize_history()
 {
-	this->PopulationUnits.clear();
+	this->population_units.clear();
 
 	for (Holding *holding : this->GetHoldings()) {
-		holding->InitializeHistory();
+		holding->initialize_history();
 	}
 
 	this->CalculatePopulation();
@@ -642,9 +642,9 @@ void Province::DestroyHolding(LandedTitle *barony)
 /**
 **	@brief	Add a population unit to the province
 */
-void Province::AddPopulationUnit(std::unique_ptr<PopulationUnit> &&population_unit)
+void Province::add_population_unit(std::unique_ptr<population_unit> &&population_unit)
 {
-	this->PopulationUnits.push_back(std::move(population_unit));
+	this->population_units.push_back(std::move(population_unit));
 }
 
 /**

@@ -46,7 +46,7 @@ public:
 public:
 	void Load();
 
-	void InitializeHistory()
+	void initialize_history()
 	{
 		//initialize data entries are valid for each data type
 		for (const std::function<void()> &function : this->HistoryInitializationFunctions) {

@@ -23,7 +23,7 @@ class Holding;
 class HoldingType;
 class LandedTitle;
 class PopulationType;
-class PopulationUnit;
+class population_unit;
 class Region;
 class Religion;
 class Terrain;
@@ -72,7 +72,7 @@ public:
 	virtual void ProcessGSMLProperty(const gsml_property &property) override;
 	virtual void ProcessGSMLScope(const gsml_data &scope) override;
 	virtual void ProcessGSMLDatedScope(const gsml_data &scope, const QDateTime &date) override;
-	virtual void InitializeHistory() override;
+	virtual void initialize_history() override;
 	virtual void Check() const override;
 
 	void DoDay();
@@ -256,12 +256,12 @@ public:
 	void SetSelected(const bool selected, const bool notify_engine_interface = true);
 	bool IsSelectable() const;
 
-	const std::vector<std::unique_ptr<PopulationUnit>> &GetPopulationUnits() const
+	const std::vector<std::unique_ptr<population_unit>> &get_population_units() const
 	{
-		return this->PopulationUnits;
+		return this->population_units;
 	}
 
-	void AddPopulationUnit(std::unique_ptr<PopulationUnit> &&population_unit);
+	void add_population_unit(std::unique_ptr<population_unit> &&population_unit);
 
 	Q_INVOKABLE QVariantList get_population_per_type() const;
 	Q_INVOKABLE QVariantList get_population_per_culture() const;
@@ -300,7 +300,7 @@ private:
 	std::vector<Region *> Regions; //the regions to which this province belongs
 	std::set<Province *> BorderProvinces; //provinces bordering this one
 	bool Selected = false;
-	std::vector<std::unique_ptr<PopulationUnit>> PopulationUnits; //population units set for this province in history, used during initialization to generate population units in the province's settlements
+	std::vector<std::unique_ptr<population_unit>> population_units; //population units set for this province in history, used during initialization to generate population units in the province's settlements
 	std::map<PopulationType *, int> PopulationPerType; //the population for each population type
 	std::map<metternich::Culture *, int> PopulationPerCulture; //the population for each culture
 	std::map<metternich::Religion *, int> PopulationPerReligion; //the population for each religion

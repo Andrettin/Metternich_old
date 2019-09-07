@@ -42,7 +42,7 @@ public:
 		this->Initialized = true;
 	}
 
-	virtual void InitializeHistory() { }
+	virtual void initialize_history() { }
 
 	virtual void Check() const {}
 

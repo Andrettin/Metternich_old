@@ -11,7 +11,7 @@
 namespace metternich {
 
 class Holding;
-class PopulationUnit;
+class population_unit;
 class Province;
 
 class Region : public DataEntry, public DataType<Region>
@@ -55,7 +55,7 @@ public:
 		DataEntryBase::Initialize();
 	}
 
-	virtual void InitializeHistory() override;
+	virtual void initialize_history() override;
 
 	const std::vector<Province *> &GetProvinces() const
 	{
@@ -80,12 +80,12 @@ public:
 
 	std::vector<Holding *> GetHoldings() const;
 
-	const std::vector<std::unique_ptr<PopulationUnit>> &GetPopulationUnits() const
+	const std::vector<std::unique_ptr<population_unit>> &get_population_units() const
 	{
-		return this->PopulationUnits;
+		return this->population_units;
 	}
 
-	void AddPopulationUnit(std::unique_ptr<PopulationUnit> &&population_unit);
+	void add_population_unit(std::unique_ptr<population_unit> &&population_unit);
 
 signals:
 	void ProvincesChanged();
@@ -93,7 +93,7 @@ signals:
 private:
 	std::vector<Province *> Provinces;
 	std::vector<Region *> Subregions; //subregions of this region
-	std::vector<std::unique_ptr<PopulationUnit>> PopulationUnits; //population units set for this region in history, used during initialization to generate population units in the region's settlements
+	std::vector<std::unique_ptr<population_unit>> population_units; //population units set for this region in history, used during initialization to generate population units in the region's settlements
 };
 
 }

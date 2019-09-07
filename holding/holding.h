@@ -20,7 +20,7 @@ class HoldingType;
 class IdentifiableModifier;
 class LandedTitle;
 class PopulationType;
-class PopulationUnit;
+class population_unit;
 class Province;
 class Religion;
 
@@ -35,7 +35,7 @@ class Holding : public DataEntry
 	Q_PROPERTY(int population READ GetPopulation WRITE SetPopulation NOTIFY PopulationChanged)
 	Q_PROPERTY(int population_capacity READ GetPopulationCapacity NOTIFY PopulationCapacityChanged)
 	Q_PROPERTY(int population_growth READ GetPopulationGrowth NOTIFY PopulationGrowthChanged)
-	Q_PROPERTY(QVariantList population_units READ GetPopulationUnitsQVariantList NOTIFY PopulationUnitsChanged)
+	Q_PROPERTY(QVariantList population_units READ get_population_units_qvariant_list NOTIFY population_units_changed)
 	Q_PROPERTY(QVariantList buildings READ GetBuildingsQVariantList NOTIFY BuildingsChanged)
 	Q_PROPERTY(QVariantList available_buildings READ GetAvailableBuildingsQVariantList NOTIFY AvailableBuildingsChanged)
 	Q_PROPERTY(metternich::Building* under_construction_building READ GetUnderConstructionBuilding NOTIFY UnderConstructionBuildingChanged)
@@ -59,7 +59,7 @@ public:
 	Holding(LandedTitle *barony, HoldingType *type, Province *province);
 	virtual ~Holding() override;
 
-	virtual void InitializeHistory() override;
+	virtual void initialize_history() override;
 
 	void DoDay();
 	void DoMonth();
@@ -111,15 +111,15 @@ public:
 		return this->Province;
 	}
 
-	const std::vector<std::unique_ptr<PopulationUnit>> &GetPopulationUnits() const
+	const std::vector<std::unique_ptr<population_unit>> &get_population_units() const
 	{
-		return this->PopulationUnits;
+		return this->population_units;
 	}
 
-	void AddPopulationUnit(std::unique_ptr<PopulationUnit> &&population_unit);
-	QVariantList GetPopulationUnitsQVariantList() const;
-	void SortPopulationUnits();
-	void RemoveEmptyPopulationUnits();
+	void add_population_unit(std::unique_ptr<population_unit> &&population_unit);
+	QVariantList get_population_units_qvariant_list() const;
+	void sort_population_units();
+	void remove_empty_population_units();
 
 	int GetPopulation() const
 	{
@@ -440,7 +440,7 @@ signals:
 	void TitledNameChanged();
 	void TypeChanged();
 	void OwnerChanged();
-	void PopulationUnitsChanged();
+	void population_units_changed();
 	void PopulationChanged();
 	void PopulationCapacityChanged();
 	void PopulationGrowthChanged();
@@ -460,7 +460,7 @@ private:
 	HoldingType *Type = nullptr;
 	Character *Owner = nullptr; //the owner of the holding
 	metternich::Province *Province = nullptr; //the province to which this holding belongs
-	std::vector<std::unique_ptr<PopulationUnit>> PopulationUnits;
+	std::vector<std::unique_ptr<population_unit>> population_units;
 	int BasePopulationCapacity = 0; //the base population capacity
 	int PopulationCapacityModifier = 100; //the population capacity modifier
 	int PopulationCapacity = 0; //the population capacity
@@ -477,7 +477,7 @@ private:
 	std::set<IdentifiableModifier *> Modifiers; //modifiers applied to the holding
 	bool Selected = false;
 	std::map<const EmploymentType *, int> EmploymentWorkforces; //the allowed workforce amount for each employment type
-	std::map<const EmploymentType *, std::vector<PopulationUnit *>> EmployedPopulationUnits; //the population units employed for each employment type
+	std::map<const EmploymentType *, std::vector<population_unit *>> employed_population_units; //the population units employed for each employment type
 	std::map<PopulationType *, int> PopulationPerType; //the population for each population type
 	std::map<metternich::Culture *, int> PopulationPerCulture; //the population for each culture
 	std::map<metternich::Religion *, int> PopulationPerReligion; //the population for each religion

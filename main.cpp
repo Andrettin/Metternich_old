@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 		qmlRegisterType<HoldingType>();
 		qmlRegisterType<LandedTitle>();
 		qmlRegisterType<PopulationType>();
-		qmlRegisterType<PopulationUnit>();
+		qmlRegisterType<population_unit>();
 		qmlRegisterType<Province>();
 		qmlRegisterType<Religion>();
 		qmlRegisterType<Terrain>();

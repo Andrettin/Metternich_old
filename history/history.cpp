@@ -23,7 +23,7 @@ void History::Load()
 	Province::ParseHistoryDatabase();
 	Character::ParseHistoryDatabase();
 	LandedTitle::ParseHistoryDatabase();
-	PopulationUnit::ParseHistoryDatabase();
+	population_unit::ParseHistoryDatabase();
 
 	Character::ProcessHistoryDatabase(true);
 
@@ -33,82 +33,82 @@ void History::Load()
 	LandedTitle::ProcessHistoryDatabase(false);
 
 	//process after the province history, so that holdings will have been created
-	PopulationUnit::ProcessHistoryDatabase();
+	population_unit::process_history_database();
 
-	History::GeneratePopulationUnits();
+	History::generate_population_units();
 
-	Database::Get()->InitializeHistory();
+	Database::Get()->initialize_history();
 }
 
 /**
 **	@brief	Create population units, based on population history for regions, provinces and settlement holdings
 */
-void History::GeneratePopulationUnits()
+void History::generate_population_units()
 {
-	std::vector<PopulationUnit *> base_population_units;
+	std::vector<population_unit *> base_population_units;
 
 	//add population units with discount existing enabled to the vector of population units used for generation (holding-level population units with that enabled are not used for generation per se, but generated population units may still be discounted from their size), as well as any population units in provinces or regions
 	for (Province *province : Province::GetAll()) {
 		for (Holding *holding : province->GetHoldings()) {
-			for (const std::unique_ptr<PopulationUnit> &population_unit : holding->GetPopulationUnits()) {
-				if (population_unit->DiscountsExisting()) {
+			for (const std::unique_ptr<population_unit> &population_unit : holding->get_population_units()) {
+				if (population_unit->discounts_existing()) {
 					base_population_units.push_back(population_unit.get());
 				}
 			}
 		}
 
-		for (const std::unique_ptr<PopulationUnit> &population_unit : province->GetPopulationUnits()) {
+		for (const std::unique_ptr<population_unit> &population_unit : province->get_population_units()) {
 			base_population_units.push_back(population_unit.get());
 		}
 	}
 
 	for (Region *region : Region::GetAll()) {
-		for (const std::unique_ptr<PopulationUnit> &population_unit : region->GetPopulationUnits()) {
+		for (const std::unique_ptr<population_unit> &population_unit : region->get_population_units()) {
 			base_population_units.push_back(population_unit.get());
 		}
 	}
 
 	//sort regions so that ones with less provinces are applied first
-	std::sort(base_population_units.begin(), base_population_units.end(), [](PopulationUnit *a, PopulationUnit *b) {
+	std::sort(base_population_units.begin(), base_population_units.end(), [](population_unit *a, population_unit *b) {
 		//give priority to population units which do not discount any type (i.e. ones that do not represent the general population, but specific population types)
-		if (a->DiscountsAnyType() != b->DiscountsAnyType()) {
-			return !a->DiscountsAnyType();
+		if (a->discounts_any_type() != b->discounts_any_type()) {
+			return !a->discounts_any_type();
 		}
 
 		//give priority to population units which discount less types
-		if (!a->DiscountsAnyType() && a->GetDiscountTypes().size() != b->GetDiscountTypes().size()) {
-			return a->GetDiscountTypes().size() < b->GetDiscountTypes().size();
+		if (!a->discounts_any_type() && a->get_discount_types().size() != b->get_discount_types().size()) {
+			return a->get_discount_types().size() < b->get_discount_types().size();
 		}
 
 		//give priority to population units located in holdings, then to provinces, then to smaller regions
-		if ((a->GetHolding() != nullptr) != (b->GetHolding() != nullptr)) {
-			return a->GetHolding() != nullptr;
-		} else if ((a->GetProvince() != nullptr) != (b->GetProvince() != nullptr)) {
-			return a->GetProvince() != nullptr;
-		} else if (a->GetRegion() != b->GetRegion()) {
-			return a->GetRegion()->GetProvinces().size() < b->GetRegion()->GetProvinces().size();
+		if ((a->get_holding() != nullptr) != (b->get_holding() != nullptr)) {
+			return a->get_holding() != nullptr;
+		} else if ((a->get_province() != nullptr) != (b->get_province() != nullptr)) {
+			return a->get_province() != nullptr;
+		} else if (a->get_region() != b->get_region()) {
+			return a->get_region()->GetProvinces().size() < b->get_region()->GetProvinces().size();
 		}
 
-		return a->GetSize() < b->GetSize();
+		return a->get_size() < b->get_size();
 	});
 
-	for (PopulationUnit *population_unit : base_population_units) {
+	for (population_unit *population_unit : base_population_units) {
 		//subtract the size of other population units for population units that have DiscountExisting enabled
-		if (population_unit->DiscountsExisting()) {
-			population_unit->SubtractExistingSizes();
+		if (population_unit->discounts_existing()) {
+			population_unit->subtract_existing_sizes();
 		}
 
 		//distribute province and region population units to the settlement holdings located in them
-		if (population_unit->GetProvince() != nullptr) {
-			population_unit->DistributeToHoldings(population_unit->GetProvince()->GetHoldings());
-		} else if (population_unit->GetRegion() != nullptr) {
-			population_unit->DistributeToHoldings(population_unit->GetRegion()->GetHoldings());
+		if (population_unit->get_province() != nullptr) {
+			population_unit->distribute_to_holdings(population_unit->get_province()->GetHoldings());
+		} else if (population_unit->get_region() != nullptr) {
+			population_unit->distribute_to_holdings(population_unit->get_region()->GetHoldings());
 		}
 	}
 
-	for (PopulationUnit *population_unit : base_population_units) {
-		if (population_unit->DiscountsExisting()) {
-			population_unit->SetDiscountExisting(false);
+	for (population_unit *population_unit : base_population_units) {
+		if (population_unit->discounts_existing()) {
+			population_unit->set_discount_existing(false);
 		}
 	}
 }

@@ -160,7 +160,7 @@ void LandedTitle::Initialize()
 /**
 **	@brief	Initialize the landed title's history
 */
-void LandedTitle::InitializeHistory()
+void LandedTitle::initialize_history()
 {
 	if (this->HolderTitle != nullptr) {
 		if (this->HolderTitle->GetHolder() == nullptr) {

@@ -23,9 +23,9 @@ Region::~Region()
 /**
 **	@brief	Initialize the region's history
 */
-void Region::InitializeHistory()
+void Region::initialize_history()
 {
-	this->PopulationUnits.clear();
+	this->population_units.clear();
 }
 
 QVariantList Region::GetProvincesQVariantList() const
@@ -66,9 +66,9 @@ std::vector<Holding *> Region::GetHoldings() const
 /**
 **	@brief	Add a population unit to the region
 */
-void Region::AddPopulationUnit(std::unique_ptr<PopulationUnit> &&population_unit)
+void Region::add_population_unit(std::unique_ptr<population_unit> &&population_unit)
 {
-	this->PopulationUnits.push_back(std::move(population_unit));
+	this->population_units.push_back(std::move(population_unit));
 }
 
 }
