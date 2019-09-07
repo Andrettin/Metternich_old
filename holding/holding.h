@@ -423,6 +423,16 @@ public:
 
 	void RemoveExcessEmployment(const EmploymentType *employment_type);
 
+	void add_employed_population_unit(const EmploymentType *employment_type, population_unit *population_unit)
+	{
+		this->employed_population_units[employment_type].push_back(population_unit);
+	}
+
+	void remove_employed_population_unit(const EmploymentType *employment_type, population_unit *population_unit)
+	{
+		this->employed_population_units[employment_type].erase(std::remove(this->employed_population_units[employment_type].begin(), this->employed_population_units[employment_type].end(), population_unit), this->employed_population_units[employment_type].end());
+	}
+
 	bool IsSelected() const
 	{
 		return this->Selected;

@@ -91,7 +91,21 @@ void population_unit::set_size(const int size)
 		}
 
 		if (employment_size_change != 0) {
-			//FIXME: should remove employment size
+			for (auto it = this->employment_sizes.rbegin(); it != this->employment_sizes.rend(); ++it) {
+				const EmploymentType *employment_type = it->first;
+				int &specific_employment_size = it->second;
+				const int specific_employment_size_change = -std::min(specific_employment_size, abs(employment_size_change));
+				specific_employment_size += specific_employment_size_change;
+				employment_size_change -= specific_employment_size_change;
+
+				if (specific_employment_size == 0) {
+					this->get_holding()->remove_employed_population_unit(employment_type, this);
+				}
+
+				if (employment_size_change == 0) {
+					break;
+				}
+			}
 		}
 	}
 
