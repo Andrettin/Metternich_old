@@ -11,50 +11,50 @@ namespace metternich {
 class Building;
 class Modifier;
 
-class HoldingType : public DataEntry, public DataType<HoldingType>
+class holding_type : public DataEntry, public DataType<holding_type>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(bool settlement MEMBER Settlement READ IsSettlement)
+	Q_PROPERTY(bool settlement MEMBER settlement READ is_settlement)
 
 public:
 	static constexpr const char *ClassIdentifier = "holding_type";
 	static constexpr const char *DatabaseFolder = "holding_types";
 
-	HoldingType(const std::string &identifier);
-	virtual ~HoldingType() override;
+	holding_type(const std::string &identifier);
+	virtual ~holding_type() override;
 
 	virtual void ProcessGSMLScope(const gsml_data &scope) override;
 
-	bool IsSettlement() const
+	bool is_settlement() const
 	{
-		return this->Settlement;
+		return this->settlement;
 	}
 
-	const std::vector<Building *> &GetBuildings() const
+	const std::vector<Building *> &get_buildings() const
 	{
-		return this->Buildings;
+		return this->buildings;
 	}
 
-	void AddBuilding(Building *building)
+	void add_building(Building *building)
 	{
-		this->Buildings.push_back(building);
+		this->buildings.push_back(building);
 	}
 
-	void RemoveBuilding(Building *building)
+	void remove_building(Building *building)
 	{
-		this->Buildings.erase(std::remove(this->Buildings.begin(), this->Buildings.end(), building), this->Buildings.end());
+		this->buildings.erase(std::remove(this->buildings.begin(), this->buildings.end(), building), this->buildings.end());
 	}
 
-	const std::unique_ptr<metternich::Modifier> &GetModifier() const
+	const std::unique_ptr<metternich::Modifier> &get_modifier() const
 	{
-		return this->Modifier;
+		return this->modifier;
 	}
 
 private:
-	bool Settlement = false;	//whether the holding type occupies a settlement slot
-	std::vector<Building *> Buildings;
-	std::unique_ptr<metternich::Modifier> Modifier; //the modifier applied to holdings of this type
+	bool settlement = false;	//whether the holding type occupies a settlement slot
+	std::vector<Building *> buildings;
+	std::unique_ptr<metternich::Modifier> modifier; //the modifier applied to holdings of this type
 };
 
 }

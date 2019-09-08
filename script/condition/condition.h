@@ -4,7 +4,7 @@ namespace metternich {
 
 class gsml_data;
 class gsml_property;
-class Holding;
+class holding;
 class Province;
 
 /**
@@ -29,7 +29,7 @@ public:
 		throw std::runtime_error("Invalid condition for province: \"" + this->GetIdentifier() + "\".");
 	}
 
-	virtual bool Check(const Holding *holding) const
+	virtual bool Check(const holding *holding) const
 	{
 		Q_UNUSED(holding);
 		throw std::runtime_error("Invalid condition for holding: \"" + this->GetIdentifier() + "\".");

@@ -31,9 +31,9 @@ public:
 		return province->GetTerrain() == this->Terrain;
 	}
 
-	virtual bool Check(const Holding *holding) const override
+	virtual bool Check(const holding *holding) const override
 	{
-		return this->Check(holding->GetProvince());
+		return this->Check(holding->get_province());
 	}
 
 private:

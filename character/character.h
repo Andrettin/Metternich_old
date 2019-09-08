@@ -14,7 +14,7 @@ namespace metternich {
 class Culture;
 class Dynasty;
 class gsml_property;
-class Holding;
+class holding;
 class LandedTitle;
 class Religion;
 class Trait;
@@ -23,7 +23,7 @@ class Character : public NumericDataEntry, public DataType<Character, int>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(QString name READ GetNameQString WRITE SetNameQString NOTIFY NameChanged)
+	Q_PROPERTY(QString name READ get_name_qstring WRITE set_name_qstring NOTIFY name_changed)
 	Q_PROPERTY(QString full_name READ GetFullNameQString NOTIFY FullNameChanged)
 	Q_PROPERTY(QString titled_name READ GetTitledNameQString NOTIFY TitledNameChanged)
 	Q_PROPERTY(bool female MEMBER Female READ IsFemale)
@@ -66,8 +66,8 @@ private:
 public:
 	Character(const int identifier) : NumericDataEntry(identifier)
 	{
-		connect(this, &Character::NameChanged, this, &Character::FullNameChanged);
-		connect(this, &Character::NameChanged, this, &Character::TitledNameChanged);
+		connect(this, &Character::name_changed, this, &Character::FullNameChanged);
+		connect(this, &Character::name_changed, this, &Character::TitledNameChanged);
 		connect(this, &Character::DynastyChanged, this, &Character::FullNameChanged);
 		connect(this, &Character::PrimaryTitleChanged, this, &Character::TitledNameChanged);
 
@@ -111,7 +111,7 @@ public:
 
 	virtual void Check() const override
 	{
-		if (this->GetName().empty()) {
+		if (this->get_name().empty()) {
 			throw std::runtime_error("Character \"" + std::to_string(this->GetIdentifier()) + "\" has no name.");
 		}
 
@@ -128,14 +128,14 @@ public:
 	{
 	}
 
-	virtual std::string GetName() const override
+	virtual std::string get_name() const override
 	{
-		return this->Name;
+		return this->name;
 	}
 
-	void SetNameQString(const QString &name)
+	void set_name_qstring(const QString &name)
 	{
-		this->Name = name.toStdString();
+		this->name = name.toStdString();
 	}
 
 	std::string GetFullName() const;
@@ -378,11 +378,11 @@ public:
 		this->SetWealth(this->GetWealth() + change);
 	}
 
-	bool CanBuildInHolding(const Holding *holding);
+	bool can_build_in_holding(const holding *holding);
 	Q_INVOKABLE bool can_build_in_holding(const QVariant &holding_variant);
 
 signals:
-	void NameChanged();
+	void name_changed();
 	void FullNameChanged();
 	void TitledNameChanged();
 	void AliveChanged();
@@ -394,7 +394,7 @@ signals:
 	void WealthChanged();
 
 private:
-	std::string Name;
+	std::string name;
 	bool Alive = true;
 	bool Female = false;
 	metternich::Dynasty *Dynasty = nullptr;

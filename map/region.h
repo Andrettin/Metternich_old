@@ -10,7 +10,7 @@
 
 namespace metternich {
 
-class Holding;
+class holding;
 class population_unit;
 class Province;
 
@@ -78,7 +78,7 @@ public:
 		this->Subregions.erase(std::remove(this->Subregions.begin(), this->Subregions.end(), subregion), this->Subregions.end());
 	}
 
-	std::vector<Holding *> GetHoldings() const;
+	std::vector<holding *> get_holdings() const;
 
 	const std::vector<std::unique_ptr<population_unit>> &get_population_units() const
 	{

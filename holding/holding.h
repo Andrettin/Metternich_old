@@ -17,7 +17,7 @@ class Commodity;
 class Culture;
 class employment;
 class EmploymentType;
-class HoldingType;
+class holding_type;
 class IdentifiableModifier;
 class LandedTitle;
 class PopulationType;
@@ -25,91 +25,91 @@ class population_unit;
 class Province;
 class Religion;
 
-class Holding : public DataEntry
+class holding : public DataEntry
 {
 	Q_OBJECT
 
-	Q_PROPERTY(QString name READ GetNameQString NOTIFY NameChanged)
-	Q_PROPERTY(QString titled_name READ GetTitledNameQString NOTIFY TitledNameChanged)
-	Q_PROPERTY(metternich::HoldingType* type READ GetType NOTIFY TypeChanged)
-	Q_PROPERTY(metternich::LandedTitle* barony READ GetBarony CONSTANT)
-	Q_PROPERTY(int population READ GetPopulation WRITE SetPopulation NOTIFY PopulationChanged)
-	Q_PROPERTY(int population_capacity READ GetPopulationCapacity NOTIFY PopulationCapacityChanged)
-	Q_PROPERTY(int population_growth READ GetPopulationGrowth NOTIFY PopulationGrowthChanged)
+	Q_PROPERTY(QString name READ get_name_qstring NOTIFY name_changed)
+	Q_PROPERTY(QString titled_name READ get_titled_name_qstring NOTIFY titled_name_changed)
+	Q_PROPERTY(metternich::holding_type* type READ get_type NOTIFY type_changed)
+	Q_PROPERTY(metternich::LandedTitle* barony READ get_barony CONSTANT)
+	Q_PROPERTY(int population READ get_population WRITE set_population NOTIFY population_changed)
+	Q_PROPERTY(int population_capacity READ get_population_capacity NOTIFY population_capacity_changed)
+	Q_PROPERTY(int population_growth READ get_population_growth NOTIFY population_growth_changed)
 	Q_PROPERTY(QVariantList population_units READ get_population_units_qvariant_list NOTIFY population_units_changed)
-	Q_PROPERTY(QVariantList buildings READ GetBuildingsQVariantList NOTIFY BuildingsChanged)
-	Q_PROPERTY(QVariantList available_buildings READ GetAvailableBuildingsQVariantList NOTIFY AvailableBuildingsChanged)
-	Q_PROPERTY(metternich::Building* under_construction_building READ GetUnderConstructionBuilding NOTIFY UnderConstructionBuildingChanged)
-	Q_PROPERTY(int construction_days READ GetConstructionDays NOTIFY ConstructionDaysChanged)
-	Q_PROPERTY(metternich::Commodity* commodity READ GetCommodity WRITE SetCommodity NOTIFY CommodityChanged)
-	Q_PROPERTY(metternich::Culture* culture READ GetCulture WRITE SetCulture NOTIFY CultureChanged)
-	Q_PROPERTY(metternich::Religion* religion READ GetReligion WRITE SetReligion NOTIFY ReligionChanged)
-	Q_PROPERTY(int holding_size READ GetHoldingSize WRITE SetHoldingSize NOTIFY HoldingSizeChanged)
-	Q_PROPERTY(bool selected READ IsSelected WRITE SetSelected NOTIFY SelectedChanged)
+	Q_PROPERTY(QVariantList buildings READ get_buildings_qvariant_list NOTIFY buildings_changed)
+	Q_PROPERTY(QVariantList available_buildings READ get_available_buildings_qvariant_list NOTIFY available_buildings_changed)
+	Q_PROPERTY(metternich::Building* under_construction_building READ get_under_construction_building NOTIFY under_construction_building_changed)
+	Q_PROPERTY(int construction_days READ get_construction_days NOTIFY construction_days_changed)
+	Q_PROPERTY(metternich::Commodity* commodity READ get_commodity WRITE set_commodity NOTIFY commodity_changed)
+	Q_PROPERTY(metternich::Culture* culture READ get_culture WRITE set_culture NOTIFY culture_changed)
+	Q_PROPERTY(metternich::Religion* religion READ get_religion WRITE set_religion NOTIFY religion_changed)
+	Q_PROPERTY(int holding_size READ get_holding_size WRITE set_holding_size NOTIFY holding_size_changed)
+	Q_PROPERTY(bool selected READ is_selected WRITE set_selected NOTIFY selected_changed)
 
 public:
-	static Holding *GetSelectedHolding()
+	static holding *get_selected_holding()
 	{
-		return Holding::SelectedHolding;
+		return holding::selected_holding;
 	}
 
 private:
-	static inline Holding *SelectedHolding = nullptr;
+	static inline holding *selected_holding = nullptr;
 
 public:
-	Holding(LandedTitle *barony, HoldingType *type, Province *province);
-	virtual ~Holding() override;
+	holding(LandedTitle *barony, holding_type *type, Province *province);
+	virtual ~holding() override;
 
 	virtual void initialize_history() override;
 
-	void DoDay();
-	void DoMonth();
+	void do_day();
+	void do_month();
 
-	LandedTitle *GetBarony() const
+	LandedTitle *get_barony() const
 	{
-		return this->Barony;
+		return this->barony;
 	}
 
-	virtual std::string GetName() const override;
+	virtual std::string get_name() const override;
 
-	QString GetNameQString() const
+	QString get_name_qstring() const
 	{
-		return QString::fromStdString(this->GetName());
+		return QString::fromStdString(this->get_name());
 	}
 
-	std::string GetTypeName() const;
-	std::string GetTitledName() const;
+	std::string get_type_name() const;
+	std::string get_titled_name() const;
 
-	QString GetTitledNameQString() const
+	QString get_titled_name_qstring() const
 	{
-		return QString::fromStdString(this->GetTitledName());
+		return QString::fromStdString(this->get_titled_name());
 	}
 
-	HoldingType *GetType() const
+	holding_type *get_type() const
 	{
-		return this->Type;
+		return this->type;
 	}
 
-	void SetType(HoldingType *type);
+	void set_type(holding_type *type);
 
-	Character *GetOwner() const
+	Character *get_owner() const
 	{
-		return this->Owner;
+		return this->owner;
 	}
 
-	void SetOwner(Character *character)
+	void set_owner(Character *character)
 	{
-		if (character == this->GetOwner()) {
+		if (character == this->get_owner()) {
 			return;
 		}
 
-		this->Owner = character;
-		emit OwnerChanged();
+		this->owner = character;
+		emit owner_changed();
 	}
 
-	metternich::Province *GetProvince() const
+	metternich::Province *get_province() const
 	{
-		return this->Province;
+		return this->province;
 	}
 
 	const std::vector<std::unique_ptr<population_unit>> &get_population_units() const
@@ -122,354 +122,354 @@ public:
 	void sort_population_units();
 	void remove_empty_population_units();
 
-	int GetPopulation() const
+	int get_population() const
 	{
-		return this->Population;
+		return this->population;
 	}
 
-	void SetPopulation(const int population);
+	void set_population(const int population);
 
-	void ChangePopulation(const int change)
+	void change_population(const int change)
 	{
-		this->SetPopulation(this->GetPopulation() + change);
+		this->set_population(this->get_population() + change);
 	}
 
-	void CalculatePopulation();
+	void calculate_population();
 
-	int GetBasePopulationCapacity() const
+	int get_base_population_capacity() const
 	{
-		return this->BasePopulationCapacity;
+		return this->base_population_capacity;
 	}
 
-	void SetBasePopulationCapacity(const int base_population_capacity)
+	void set_base_population_capacity(const int base_population_capacity)
 	{
-		if (base_population_capacity == this->GetBasePopulationCapacity()) {
+		if (base_population_capacity == this->get_base_population_capacity()) {
 			return;
 		}
 
-		this->BasePopulationCapacity = base_population_capacity;
-		this->CalculatePopulationCapacity();
+		this->base_population_capacity = base_population_capacity;
+		this->calculate_population_capacity();
 	}
 
-	void ChangeBasePopulationCapacity(const int change)
+	void change_base_population_capacity(const int change)
 	{
-		this->SetBasePopulationCapacity(this->GetBasePopulationCapacity() + change);
+		this->set_base_population_capacity(this->get_base_population_capacity() + change);
 	}
 
-	int GetPopulationCapacityModifier() const
+	int get_population_capacity_modifier() const
 	{
-		return this->PopulationCapacityModifier;
+		return this->population_capacity_modifier;
 	}
 
-	void SetPopulationCapacityModifier(const int population_capacity_modifier)
+	void set_population_capacity_modifier(const int population_capacity_modifier)
 	{
-		if (population_capacity_modifier == this->GetPopulationCapacityModifier()) {
+		if (population_capacity_modifier == this->get_population_capacity_modifier()) {
 			return;
 		}
 
-		this->PopulationCapacityModifier = population_capacity_modifier;
-		this->CalculatePopulationCapacity();
+		this->population_capacity_modifier = population_capacity_modifier;
+		this->calculate_population_capacity();
 	}
 
-	void ChangePopulationCapacityModifier(const int change)
+	void change_population_capacity_modifier(const int change)
 	{
-		this->SetPopulationCapacityModifier(this->GetPopulationCapacityModifier() + change);
+		this->set_population_capacity_modifier(this->get_population_capacity_modifier() + change);
 	}
 
-	int GetPopulationCapacity() const
+	int get_population_capacity() const
 	{
-		return this->PopulationCapacity;
+		return this->population_capacity;
 	}
 
-	void SetPopulationCapacity(const int population_capacity)
+	void set_population_capacity(const int population_capacity)
 	{
-		if (population_capacity == this->GetPopulationCapacity()) {
+		if (population_capacity == this->get_population_capacity()) {
 			return;
 		}
 
-		this->PopulationCapacity = population_capacity;
-		emit PopulationCapacityChanged();
-		this->CalculatePopulationGrowth(); //population growth depends on the population capacity
+		this->population_capacity = population_capacity;
+		emit population_capacity_changed();
+		this->calculate_population_growth(); //population growth depends on the population capacity
 	}
 
-	void CalculatePopulationCapacity()
+	void calculate_population_capacity()
 	{
-		int population_capacity = this->GetBasePopulationCapacity();
-		population_capacity *= this->GetPopulationCapacityModifier();
+		int population_capacity = this->get_base_population_capacity();
+		population_capacity *= this->get_population_capacity_modifier();
 		population_capacity /= 100;
-		population_capacity *= this->GetHoldingSize();
+		population_capacity *= this->get_holding_size();
 		population_capacity /= 100;
-		this->SetPopulationCapacity(population_capacity);
+		this->set_population_capacity(population_capacity);
 	}
 
-	int GetBasePopulationGrowth() const
+	int get_base_population_growth() const
 	{
-		return this->BasePopulationGrowth;
+		return this->base_population_growth;
 	}
 
-	void SetBasePopulationGrowth(const int base_population_growth)
+	void set_base_population_growth(const int base_population_growth)
 	{
-		if (base_population_growth == this->GetBasePopulationGrowth()) {
+		if (base_population_growth == this->get_base_population_growth()) {
 			return;
 		}
 
-		this->BasePopulationGrowth = base_population_growth;
-		this->CalculatePopulationGrowth();
+		this->base_population_growth = base_population_growth;
+		this->calculate_population_growth();
 	}
 
-	void ChangeBasePopulationGrowth(const int change)
+	void change_base_population_growth(const int change)
 	{
-		this->SetBasePopulationGrowth(this->GetBasePopulationGrowth() + change);
+		this->set_base_population_growth(this->get_base_population_growth() + change);
 	}
 
 
-	int GetPopulationGrowth() const
+	int get_population_growth() const
 	{
-		return this->PopulationGrowth;
+		return this->population_growth;
 	}
 
-	void SetPopulationGrowth(const int population_growth)
+	void set_population_growth(const int population_growth)
 	{
-		if (population_growth == this->GetPopulationGrowth()) {
+		if (population_growth == this->get_population_growth()) {
 			return;
 		}
 
-		this->PopulationGrowth = population_growth;
-		emit PopulationGrowthChanged();
+		this->population_growth = population_growth;
+		emit population_growth_changed();
 	}
 
-	void CalculatePopulationGrowth()
+	void calculate_population_growth()
 	{
-		if (this->GetPopulation() == 0) {
-			this->SetPopulationGrowth(0);
+		if (this->get_population() == 0) {
+			this->set_population_growth(0);
 			return;
 		}
 
-		int population_growth = this->GetBasePopulationGrowth();
-		if (population_growth > 0 && this->GetPopulation() >= this->GetPopulationCapacity()) {
+		int population_growth = this->get_base_population_growth();
+		if (population_growth > 0 && this->get_population() >= this->get_population_capacity()) {
 			population_growth = 0;
 		}
 
-		this->SetPopulationGrowth(population_growth);
+		this->set_population_growth(population_growth);
 	}
 
-	void DoPopulationGrowth();
-	void CheckOverpopulation();
+	void do_population_growth();
+	void check_overpopulation();
 
-	const std::map<PopulationType *, int> &GetPopulationPerType() const
+	const std::map<PopulationType *, int> &get_population_per_type() const
 	{
-		return this->PopulationPerType;
+		return this->population_per_type;
 	}
 
-	int GetPopulationTypePopulation(PopulationType *population_type) const
+	int get_population_type_population(PopulationType *population_type) const
 	{
-		auto find_iterator = this->PopulationPerType.find(population_type);
-		if (find_iterator == this->PopulationPerType.end()) {
+		auto find_iterator = this->population_per_type.find(population_type);
+		if (find_iterator == this->population_per_type.end()) {
 			return 0;
 		}
 
 		return find_iterator->second;
 	}
 
-	const std::map<metternich::Culture *, int> &GetPopulationPerCulture() const
+	const std::map<metternich::Culture *, int> &get_population_per_culture() const
 	{
-		return this->PopulationPerCulture;
+		return this->population_per_culture;
 	}
 
-	int GetCulturePopulation(metternich::Culture *culture) const
+	int get_culture_population(metternich::Culture *culture) const
 	{
-		auto find_iterator = this->PopulationPerCulture.find(culture);
-		if (find_iterator == this->PopulationPerCulture.end()) {
+		auto find_iterator = this->population_per_culture.find(culture);
+		if (find_iterator == this->population_per_culture.end()) {
 			return 0;
 		}
 
 		return find_iterator->second;
 	}
 
-	const std::map<metternich::Religion *, int> &GetPopulationPerReligion() const
+	const std::map<metternich::Religion *, int> &get_population_per_religion() const
 	{
-		return this->PopulationPerReligion;
+		return this->population_per_religion;
 	}
 
-	int GetReligionPopulation(metternich::Religion *religion) const
+	int get_religion_population(metternich::Religion *religion) const
 	{
-		auto find_iterator = this->PopulationPerReligion.find(religion);
-		if (find_iterator == this->PopulationPerReligion.end()) {
+		auto find_iterator = this->population_per_religion.find(religion);
+		if (find_iterator == this->population_per_religion.end()) {
 			return 0;
 		}
 
 		return find_iterator->second;
 	}
 
-	void CalculatePopulationGroups();
+	void calculate_population_groups();
 
-	const std::set<Building *> &GetBuildings() const
+	const std::set<Building *> &get_buildings() const
 	{
-		return this->Buildings;
+		return this->buildings;
 	}
 
-	QVariantList GetBuildingsQVariantList() const;
-	Q_INVOKABLE void AddBuilding(Building *building);
-	Q_INVOKABLE void RemoveBuilding(Building *building);
-	void ApplyBuildingEffects(const Building *building, const int change);
-	std::vector<Building *> GetAvailableBuildings() const;
-	QVariantList GetAvailableBuildingsQVariantList() const;
+	QVariantList get_buildings_qvariant_list() const;
+	Q_INVOKABLE void add_building(Building *building);
+	Q_INVOKABLE void remove_building(Building *building);
+	void apply_building_effects(const Building *building, const int change);
+	std::vector<Building *> get_available_buildings() const;
+	QVariantList get_available_buildings_qvariant_list() const;
 
-	Building *GetUnderConstructionBuilding() const
+	Building *get_under_construction_building() const
 	{
-		return this->UnderConstructionBuilding;
+		return this->under_construction_building;
 	}
 
-	void SetUnderConstructionBuilding(Building *building);
+	void set_under_construction_building(Building *building);
 
-	int GetConstructionDays() const
+	int get_construction_days() const
 	{
-		return this->ConstructionDays;
+		return this->construction_days;
 	}
 
-	void SetConstructionDays(const int construction_days)
+	void set_construction_days(const int construction_days)
 	{
-		if (construction_days == this->GetConstructionDays()) {
+		if (construction_days == this->get_construction_days()) {
 			return;
 		}
 
-		this->ConstructionDays = construction_days;
-		emit ConstructionDaysChanged();
+		this->construction_days = construction_days;
+		emit construction_days_changed();
 	}
 
-	void ChangeConstructionDays(const int change)
+	void change_construction_days(const int change)
 	{
-		this->SetConstructionDays(this->GetConstructionDays() + change);
+		this->set_construction_days(this->get_construction_days() + change);
 	}
 
-	metternich::Commodity *GetCommodity() const
+	metternich::Commodity *get_commodity() const
 	{
-		return this->Commodity;
+		return this->commodity;
 	}
 
-	void SetCommodity(Commodity *commodity)
+	void set_commodity(Commodity *commodity)
 	{
-		if (commodity == this->GetCommodity()) {
+		if (commodity == this->get_commodity()) {
 			return;
 		}
 
-		this->Commodity = commodity;
-		emit CommodityChanged();
+		this->commodity = commodity;
+		emit commodity_changed();
 	}
 
-	void GenerateCommodity();
+	void generate_commodity();
 
-	metternich::Culture *GetCulture() const
+	metternich::Culture *get_culture() const
 	{
-		return this->Culture;
+		return this->culture;
 	}
 
-	void SetCulture(Culture *culture)
+	void set_culture(Culture *culture)
 	{
-		if (culture == this->GetCulture()) {
+		if (culture == this->get_culture()) {
 			return;
 		}
 
-		this->Culture = culture;
-		emit CultureChanged();
+		this->culture = culture;
+		emit culture_changed();
 	}
 
-	metternich::Religion *GetReligion() const
+	metternich::Religion *get_religion() const
 	{
-		return this->Religion;
+		return this->religion;
 	}
 
-	void SetReligion(Religion *religion)
+	void set_religion(Religion *religion)
 	{
-		if (religion == this->GetReligion()) {
+		if (religion == this->get_religion()) {
 			return;
 		}
 
-		this->Religion = religion;
-		emit ReligionChanged();
+		this->religion = religion;
+		emit religion_changed();
 	}
 
-	int GetHoldingSize() const
+	int get_holding_size() const
 	{
-		return this->HoldingSize;
+		return this->holding_size;
 	}
 
-	void SetHoldingSize(const int holding_size)
+	void set_holding_size(const int holding_size)
 	{
-		if (holding_size == this->GetHoldingSize()) {
+		if (holding_size == this->get_holding_size()) {
 			return;
 		}
 
-		this->HoldingSize = holding_size;
-		emit HoldingSizeChanged();
-		this->CalculatePopulationCapacity();
+		this->holding_size = holding_size;
+		emit holding_size_changed();
+		this->calculate_population_capacity();
 	}
 
-	int GetEmploymentWorkforce(const EmploymentType *employment_type) const;
-	void SetEmploymentWorkforce(const EmploymentType *employment_type, const int workforce);
+	int get_employment_workforce(const EmploymentType *employment_type) const;
+	void set_employment_workforce(const EmploymentType *employment_type, const int workforce);
 
-	void ChangeEmploymentWorkforce(const EmploymentType *employment_type, const int change)
+	void change_employment_workforce(const EmploymentType *employment_type, const int change)
 	{
-		this->SetEmploymentWorkforce(employment_type, this->GetEmploymentWorkforce(employment_type) + change);
+		this->set_employment_workforce(employment_type, this->get_employment_workforce(employment_type) + change);
 	}
 
-	bool IsSelected() const
+	bool is_selected() const
 	{
-		return this->Selected;
+		return this->selected;
 	}
 
-	void SetSelected(const bool selected, const bool notify_engine_interface = true);
+	void set_selected(const bool selected, const bool notify_engine_interface = true);
 
-	Q_INVOKABLE QVariantList get_population_per_type() const;
-	Q_INVOKABLE QVariantList get_population_per_culture() const;
-	Q_INVOKABLE QVariantList get_population_per_religion() const;
+	Q_INVOKABLE QVariantList get_population_per_type_qvariant_list() const;
+	Q_INVOKABLE QVariantList get_population_per_culture_qvariant_list() const;
+	Q_INVOKABLE QVariantList get_population_per_religion_qvariant_list() const;
 	Q_INVOKABLE void order_construction(const QVariant &building_variant);
 
 signals:
-	void NameChanged();
-	void TitledNameChanged();
-	void TypeChanged();
-	void OwnerChanged();
+	void name_changed();
+	void titled_name_changed();
+	void type_changed();
+	void owner_changed();
 	void population_units_changed();
-	void PopulationChanged();
-	void PopulationCapacityChanged();
-	void PopulationGrowthChanged();
-	void populationGroupsChanged();
-	void BuildingsChanged();
-	void AvailableBuildingsChanged();
-	void UnderConstructionBuildingChanged();
-	void ConstructionDaysChanged();
-	void CommodityChanged();
-	void CultureChanged();
-	void ReligionChanged();
-	void HoldingSizeChanged();
-	void SelectedChanged();
+	void population_changed();
+	void population_capacity_changed();
+	void population_growth_changed();
+	void population_groups_changed();
+	void buildings_changed();
+	void available_buildings_changed();
+	void under_construction_building_changed();
+	void construction_days_changed();
+	void commodity_changed();
+	void culture_changed();
+	void religion_changed();
+	void holding_size_changed();
+	void selected_changed();
 
 private:
-	LandedTitle *Barony = nullptr;
-	HoldingType *Type = nullptr;
-	Character *Owner = nullptr; //the owner of the holding
-	metternich::Province *Province = nullptr; //the province to which this holding belongs
+	LandedTitle *barony = nullptr;
+	holding_type *type = nullptr;
+	Character *owner = nullptr; //the owner of the holding
+	metternich::Province *province = nullptr; //the province to which this holding belongs
 	std::vector<std::unique_ptr<population_unit>> population_units;
-	int BasePopulationCapacity = 0; //the base population capacity
-	int PopulationCapacityModifier = 100; //the population capacity modifier
-	int PopulationCapacity = 0; //the population capacity
-	int Population = 0; //the size of this holding's total population
-	int BasePopulationGrowth = 0; //the base population growth
-	int PopulationGrowth = 0; //the population growth, in permyriad (per 10,000)
-	std::set<Building *> Buildings;
-	Building *UnderConstructionBuilding = nullptr; //the building currently under construction
-	int ConstructionDays = 0; //the amount of days remaining to construct the building under construction
-	metternich::Commodity *Commodity = nullptr; //the commodity produced by the holding (if any)
-	int HoldingSize = 100; //the holding size, which affects population capacity (100 = normal size)
-	metternich::Culture *Culture = nullptr; //the holding's culture
-	metternich::Religion *Religion = nullptr; //the holding's religion
-	std::set<IdentifiableModifier *> Modifiers; //modifiers applied to the holding
-	bool Selected = false;
+	int base_population_capacity = 0; //the base population capacity
+	int population_capacity_modifier = 100; //the population capacity modifier
+	int population_capacity = 0; //the population capacity
+	int population = 0; //the size of this holding's total population
+	int base_population_growth = 0; //the base population growth
+	int population_growth = 0; //the population growth, in permyriad (per 10,000)
+	std::set<Building *> buildings;
+	Building *under_construction_building = nullptr; //the building currently under construction
+	int construction_days = 0; //the amount of days remaining to construct the building under construction
+	metternich::Commodity *commodity = nullptr; //the commodity produced by the holding (if any)
+	int holding_size = 100; //the holding size, which affects population capacity (100 = normal size)
+	metternich::Culture *culture = nullptr; //the holding's culture
+	metternich::Religion *religion = nullptr; //the holding's religion
+	std::set<IdentifiableModifier *> modifiers; //modifiers applied to the holding
+	bool selected = false;
 	std::map<const EmploymentType *, std::unique_ptr<employment>> employments; //employments, mapped to their respective employment types
-	std::map<PopulationType *, int> PopulationPerType; //the population for each population type
-	std::map<metternich::Culture *, int> PopulationPerCulture; //the population for each culture
-	std::map<metternich::Religion *, int> PopulationPerReligion; //the population for each religion
+	std::map<PopulationType *, int> population_per_type; //the population for each population type
+	std::map<metternich::Culture *, int> population_per_culture; //the population for each culture
+	std::map<metternich::Religion *, int> population_per_religion; //the population for each religion
 };
 
 }

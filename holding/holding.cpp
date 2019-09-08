@@ -32,44 +32,44 @@ namespace metternich {
 **	@param	type		The holding's type (e.g. city)
 **	@param	province	The province where the holding is located
 */
-Holding::Holding(LandedTitle *barony, HoldingType *type, metternich::Province *province) : DataEntry(barony->GetIdentifier()), Barony(barony), Province(province)
+holding::holding(LandedTitle *barony, holding_type *type, metternich::Province *province) : DataEntry(barony->GetIdentifier()), barony(barony), province(province)
 {
-	barony->SetHolding(this);
-	this->ChangeBasePopulationGrowth(Defines::Get()->GetBasePopulationGrowth());
-	this->SetType(type);
-	this->SetOwner(barony->GetHolder());
-	this->ChangeBasePopulationCapacity(province->GetPopulationCapacityAdditiveModifier());
-	this->ChangePopulationCapacityModifier(province->GetPopulationCapacityModifier());
-	this->ChangeBasePopulationGrowth(province->GetPopulationGrowthModifier());
+	barony->set_holding(this);
+	this->change_base_population_growth(Defines::Get()->GetBasePopulationGrowth());
+	this->set_type(type);
+	this->set_owner(barony->GetHolder());
+	this->change_base_population_capacity(province->GetPopulationCapacityAdditiveModifier());
+	this->change_population_capacity_modifier(province->GetPopulationCapacityModifier());
+	this->change_base_population_growth(province->GetPopulationGrowthModifier());
 
-	connect(this, &Holding::TypeChanged, this, &Holding::TitledNameChanged);
+	connect(this, &holding::type_changed, this, &holding::titled_name_changed);
 }
 
 /**
 **	@brief	Destructor
 */
-Holding::~Holding()
+holding::~holding()
 {
-	this->Barony->SetHolding(nullptr);
+	this->barony->set_holding(nullptr);
 }
 
 /**
 **	@brief	Initialize the holding's history
 */
-void Holding::initialize_history()
+void holding::initialize_history()
 {
-	if (this->GetCommodity() == nullptr) {
+	if (this->get_commodity() == nullptr) {
 		//generate a commodity for the holding if it produces none
-		this->GenerateCommodity();
+		this->generate_commodity();
 	}
 
-	if (this->GetProvince() != nullptr) {
-		if (this->GetCulture() == nullptr) {
-			this->SetCulture(this->GetProvince()->GetCulture());
+	if (this->get_province() != nullptr) {
+		if (this->get_culture() == nullptr) {
+			this->set_culture(this->get_province()->GetCulture());
 		}
 
-		if (this->GetReligion() == nullptr) {
-			this->SetReligion(this->GetProvince()->GetReligion());
+		if (this->get_religion() == nullptr) {
+			this->set_religion(this->get_province()->GetReligion());
 		}
 	}
 
@@ -79,22 +79,22 @@ void Holding::initialize_history()
 
 	this->remove_empty_population_units();
 	this->sort_population_units();
-	this->CalculatePopulation();
-	this->CalculatePopulationGroups();
-	this->CheckOverpopulation();
+	this->calculate_population();
+	this->calculate_population_groups();
+	this->check_overpopulation();
 }
 
 /**
 **	@brief	Do the holding's daily actions
 */
-void Holding::DoDay()
+void holding::do_day()
 {
 	//handle construction
-	if (this->GetUnderConstructionBuilding() != nullptr) {
-		this->ChangeConstructionDays(-1);
-		if (this->GetConstructionDays() <= 0) {
-			this->AddBuilding(this->GetUnderConstructionBuilding());
-			this->SetUnderConstructionBuilding(nullptr);
+	if (this->get_under_construction_building() != nullptr) {
+		this->change_construction_days(-1);
+		if (this->get_construction_days() <= 0) {
+			this->add_building(this->get_under_construction_building());
+			this->set_under_construction_building(nullptr);
 		}
 	}
 }
@@ -102,11 +102,11 @@ void Holding::DoDay()
 /**
 **	@brief	Do the holding's monthly actions
 */
-void Holding::DoMonth()
+void holding::do_month()
 {
-	this->DoPopulationGrowth();
+	this->do_population_growth();
 	this->remove_empty_population_units();
-	this->CalculatePopulationGroups();
+	this->calculate_population_groups();
 }
 
 /**
@@ -114,9 +114,9 @@ void Holding::DoMonth()
 **
 **	@return	The holding's name
 */
-std::string Holding::GetName() const
+std::string holding::get_name() const
 {
-	return Translator::Get()->Translate(this->GetBarony()->GetIdentifier(), {this->GetCulture()->GetIdentifier(), this->GetCulture()->GetCultureGroup()->GetIdentifier(), this->GetReligion()->GetIdentifier()});
+	return Translator::Get()->Translate(this->get_barony()->GetIdentifier(), {this->get_culture()->GetIdentifier(), this->get_culture()->GetCultureGroup()->GetIdentifier(), this->get_religion()->GetIdentifier()});
 }
 
 /**
@@ -124,17 +124,17 @@ std::string Holding::GetName() const
 **
 **	@return	The holding's type name
 */
-std::string Holding::GetTypeName() const
+std::string holding::get_type_name() const
 {
-	const metternich::Culture *culture = this->GetCulture();
-	const metternich::Religion *religion = this->GetReligion();
+	const metternich::Culture *culture = this->get_culture();
+	const metternich::Religion *religion = this->get_religion();
 
 	std::vector<std::string> suffixes;
 	suffixes.push_back(culture->GetIdentifier());
 	suffixes.push_back(culture->GetCultureGroup()->GetIdentifier());
 	suffixes.push_back(religion->GetIdentifier());
 
-	return Translator::Get()->Translate(this->GetType()->GetIdentifier(), suffixes);
+	return Translator::Get()->Translate(this->get_type()->GetIdentifier(), suffixes);
 }
 
 /**
@@ -142,10 +142,10 @@ std::string Holding::GetTypeName() const
 **
 **	@return	The holding's titled name
 */
-std::string Holding::GetTitledName() const
+std::string holding::get_titled_name() const
 {
-	std::string titled_name = this->GetTypeName() + " of ";
-	titled_name += this->GetName();
+	std::string titled_name = this->get_type_name() + " of ";
+	titled_name += this->get_name();
 	return titled_name;
 }
 
@@ -154,31 +154,31 @@ std::string Holding::GetTitledName() const
 **
 **	@param	type	The holding type
 */
-void Holding::SetType(HoldingType *type)
+void holding::set_type(holding_type *type)
 {
-	if (type == this->GetType()) {
+	if (type == this->get_type()) {
 		return;
 	}
 
-	if (this->GetType() != nullptr && this->GetType()->GetModifier() != nullptr) {
-		this->GetType()->GetModifier()->Remove(this);
+	if (this->get_type() != nullptr && this->get_type()->get_modifier() != nullptr) {
+		this->get_type()->get_modifier()->Remove(this);
 	}
 
-	this->Type = type;
+	this->type = type;
 
-	if (this->GetType() != nullptr && this->GetType()->GetModifier() != nullptr) {
-		this->GetType()->GetModifier()->Apply(this);
+	if (this->get_type() != nullptr && this->get_type()->get_modifier() != nullptr) {
+		this->get_type()->get_modifier()->Apply(this);
 	}
 
-	emit TypeChanged();
+	emit type_changed();
 }
 
 /**
 **	@brief	Add a population unit to the holding
 */
-void Holding::add_population_unit(std::unique_ptr<population_unit> &&population_unit)
+void holding::add_population_unit(std::unique_ptr<population_unit> &&population_unit)
 {
-	this->ChangePopulation(population_unit->get_size());
+	this->change_population(population_unit->get_size());
 	this->population_units.push_back(std::move(population_unit));
 	emit population_units_changed();
 }
@@ -188,7 +188,7 @@ void Holding::add_population_unit(std::unique_ptr<population_unit> &&population_
 **
 **	@return	The population units as a QVariantList
 */
-QVariantList Holding::get_population_units_qvariant_list() const
+QVariantList holding::get_population_units_qvariant_list() const
 {
 	QVariantList list;
 
@@ -202,7 +202,7 @@ QVariantList Holding::get_population_units_qvariant_list() const
 /**
 **	@brief	Sort the holding's population units
 */
-void Holding::sort_population_units()
+void holding::sort_population_units()
 {
 	std::sort(this->population_units.begin(), this->population_units.end(), [](const std::unique_ptr<population_unit> &a, const std::unique_ptr<population_unit> &b) {
 		//give priority to population units with greater size, so that they will be displayed first
@@ -215,7 +215,7 @@ void Holding::sort_population_units()
 /**
 **	@brief	Remove population units that have size 0
 */
-void Holding::remove_empty_population_units()
+void holding::remove_empty_population_units()
 {
 	for (size_t i = 0; i < this->population_units.size();) {
 		const std::unique_ptr<population_unit> &population_unit = this->population_units[i];
@@ -232,48 +232,48 @@ void Holding::remove_empty_population_units()
 **
 **	@param	population	The new population size for the holding
 */
-void Holding::SetPopulation(const int population)
+void holding::set_population(const int population)
 {
-	if (population == this->GetPopulation()) {
+	if (population == this->get_population()) {
 		return;
 	}
 
-	const int old_population = this->GetPopulation();
-	this->Population = population;
-	emit PopulationChanged();
+	const int old_population = this->get_population();
+	this->population = population;
+	emit population_changed();
 
-	this->CalculatePopulationGrowth(); //population growth depends on the current population
+	this->calculate_population_growth(); //population growth depends on the current population
 
 	//change the population count for the province as well
 	const int population_change = population - old_population;
-	this->GetProvince()->ChangePopulation(population_change);
+	this->get_province()->ChangePopulation(population_change);
 }
 
 /**
 **	@brief	Calculate the population size for the holding
 */
-void Holding::CalculatePopulation()
+void holding::calculate_population()
 {
 	int population = 0;
 	for (const std::unique_ptr<population_unit> &population_unit : this->get_population_units()) {
 		population += population_unit->get_size();
 	}
-	this->SetPopulation(population);
+	this->set_population(population);
 }
 
 /**
 **	@brief	Do the holding's population growth
 */
-void Holding::DoPopulationGrowth()
+void holding::do_population_growth()
 {
-	const int population_growth = this->GetPopulationGrowth();
+	const int population_growth = this->get_population_growth();
 
 	if (population_growth == 0) {
 		return;
 	}
 
 	for (const std::unique_ptr<population_unit> &population_unit : this->get_population_units()) {
-		const int population_capacity_difference = this->GetPopulationCapacity() - this->GetPopulation();
+		const int population_capacity_difference = this->get_population_capacity() - this->get_population();
 
 		int change = population_unit->get_size() * population_growth / 10000;
 		if (change == 0) {
@@ -292,25 +292,25 @@ void Holding::DoPopulationGrowth()
 		population_unit->change_size(change);
 	}
 
-	this->CheckOverpopulation();
+	this->check_overpopulation();
 }
 
 /**
 **	@brief	Check if the holding is overpopulated, and if so apply the "overpopulation" modifier
 */
-void Holding::CheckOverpopulation()
+void holding::check_overpopulation()
 {
 	//give the overpopulation modifier if the holding has become overpopulated, or remove it if it was overpopulated but isn't anymore
-	const bool overpopulated = this->GetPopulation() > this->GetPopulationCapacity();
+	const bool overpopulated = this->get_population() > this->get_population_capacity();
 	if (overpopulated) {
-		if (this->Modifiers.find(IdentifiableModifier::GetOverpopulationModifier()) == this->Modifiers.end()) {
+		if (this->modifiers.find(IdentifiableModifier::GetOverpopulationModifier()) == this->modifiers.end()) {
 			IdentifiableModifier::GetOverpopulationModifier()->Apply(this);
-			this->Modifiers.insert(IdentifiableModifier::GetOverpopulationModifier());
+			this->modifiers.insert(IdentifiableModifier::GetOverpopulationModifier());
 		}
 	} else {
-		if (this->Modifiers.find(IdentifiableModifier::GetOverpopulationModifier()) != this->Modifiers.end()) {
+		if (this->modifiers.find(IdentifiableModifier::GetOverpopulationModifier()) != this->modifiers.end()) {
 			IdentifiableModifier::GetOverpopulationModifier()->Remove(this);
-			this->Modifiers.erase(IdentifiableModifier::GetOverpopulationModifier());
+			this->modifiers.erase(IdentifiableModifier::GetOverpopulationModifier());
 		}
 	}
 }
@@ -318,26 +318,26 @@ void Holding::CheckOverpopulation()
 /**
 **	@brief	Calculate the population for each culture, religion and etc.
 */
-void Holding::CalculatePopulationGroups()
+void holding::calculate_population_groups()
 {
-	this->PopulationPerType.clear();
-	this->PopulationPerCulture.clear();
-	this->PopulationPerReligion.clear();
+	this->population_per_type.clear();
+	this->population_per_culture.clear();
+	this->population_per_religion.clear();
 
 	for (const std::unique_ptr<population_unit> &population_unit : this->get_population_units()) {
-		this->PopulationPerType[population_unit->get_type()] += population_unit->get_size();
-		this->PopulationPerCulture[population_unit->get_culture()] += population_unit->get_size();
-		this->PopulationPerReligion[population_unit->get_religion()] += population_unit->get_size();
+		this->population_per_type[population_unit->get_type()] += population_unit->get_size();
+		this->population_per_culture[population_unit->get_culture()] += population_unit->get_size();
+		this->population_per_religion[population_unit->get_religion()] += population_unit->get_size();
 	}
 
-	emit populationGroupsChanged();
+	emit population_groups_changed();
 
 	//update the holding's main culture and religion
 
 	metternich::Culture *plurality_culture = nullptr;
 	int plurality_culture_size = 0;
 
-	for (const auto &kv_pair : this->PopulationPerCulture) {
+	for (const auto &kv_pair : this->population_per_culture) {
 		metternich::Culture *culture = kv_pair.first;
 		const int culture_size = kv_pair.second;
 		if (plurality_culture == nullptr || culture_size > plurality_culture_size) {
@@ -349,7 +349,7 @@ void Holding::CalculatePopulationGroups()
 	metternich::Religion *plurality_religion = nullptr;
 	int plurality_religion_size = 0;
 
-	for (const auto &kv_pair : this->PopulationPerReligion) {
+	for (const auto &kv_pair : this->population_per_religion) {
 		metternich::Religion *religion = kv_pair.first;
 		const int religion_size = kv_pair.second;
 		if (plurality_religion == nullptr || religion_size > plurality_religion_size) {
@@ -358,8 +358,8 @@ void Holding::CalculatePopulationGroups()
 		}
 	}
 
-	this->SetCulture(plurality_culture);
-	this->SetReligion(plurality_religion);
+	this->set_culture(plurality_culture);
+	this->set_religion(plurality_religion);
 }
 
 /**
@@ -367,31 +367,31 @@ void Holding::CalculatePopulationGroups()
 **
 **	@return	The buildings as a QVariantList
 */
-QVariantList Holding::GetBuildingsQVariantList() const
+QVariantList holding::get_buildings_qvariant_list() const
 {
-	return util::container_to_qvariant_list(this->GetBuildings());
+	return util::container_to_qvariant_list(this->get_buildings());
 }
 
-void Holding::AddBuilding(Building *building)
+void holding::add_building(Building *building)
 {
-	if (this->Buildings.find(building) != this->Buildings.end()) {
+	if (this->buildings.find(building) != this->buildings.end()) {
 		throw std::runtime_error("Tried to add the \"" + building->GetIdentifier() + "\" building to a holding that already has it.");
 	}
 
-	this->Buildings.insert(building);
-	this->ApplyBuildingEffects(building, 1);
-	emit BuildingsChanged();
+	this->buildings.insert(building);
+	this->apply_building_effects(building, 1);
+	emit buildings_changed();
 }
 
-void Holding::RemoveBuilding(Building *building)
+void holding::remove_building(Building *building)
 {
-	if (this->Buildings.find(building) == this->Buildings.end()) {
+	if (this->buildings.find(building) == this->buildings.end()) {
 		throw std::runtime_error("Tried to remove the \"" + building->GetIdentifier() + "\" building to a holding that does not have it.");
 	}
 
-	this->Buildings.erase(building);
-	this->ApplyBuildingEffects(building, -1);
-	emit BuildingsChanged();
+	this->buildings.erase(building);
+	this->apply_building_effects(building, -1);
+	emit buildings_changed();
 }
 
 /**
@@ -400,10 +400,10 @@ void Holding::RemoveBuilding(Building *building)
 **	@param	building	The building
 **	@param	change		The multiplier for the change: 1 to apply, -1 to remove
 */
-void Holding::ApplyBuildingEffects(const Building *building, const int change)
+void holding::apply_building_effects(const Building *building, const int change)
 {
 	if (building->GetEmploymentType() != nullptr) {
-		this->ChangeEmploymentWorkforce(building->GetEmploymentType(), building->GetWorkforce() * change);
+		this->change_employment_workforce(building->GetEmploymentType(), building->GetWorkforce() * change);
 	}
 }
 
@@ -412,25 +412,25 @@ void Holding::ApplyBuildingEffects(const Building *building, const int change)
 **
 **	@return	The available buildings
 */
-std::vector<Building *> Holding::GetAvailableBuildings() const
+std::vector<Building *> holding::get_available_buildings() const
 {
 	std::vector<Building *> available_buildings;
 
-	for (Building *building : this->GetType()->GetBuildings()) {
-		if (building->IsAvailableForHolding(this)) {
+	for (Building *building : this->get_type()->get_buildings()) {
+		if (building->is_available_for_holding(this)) {
 			available_buildings.push_back(building);
 		}
 	}
 
 	std::sort(available_buildings.begin(), available_buildings.end(), [this](Building *a, Building *b) {
 		//give priority to buildings that have already been built, so that they will be displayed first
-		bool a_built = this->GetBuildings().find(a) != this->GetBuildings().end();
-		bool b_built = this->GetBuildings().find(b) != this->GetBuildings().end();
+		bool a_built = this->get_buildings().find(a) != this->get_buildings().end();
+		bool b_built = this->get_buildings().find(b) != this->get_buildings().end();
 		if (a_built != b_built) {
 			return a_built;
 		}
 
-		return a->GetName() < b->GetName();
+		return a->get_name() < b->get_name();
 	});
 
 	return available_buildings;
@@ -441,9 +441,9 @@ std::vector<Building *> Holding::GetAvailableBuildings() const
 **
 **	@return	The available buildings as a QVariantList
 */
-QVariantList Holding::GetAvailableBuildingsQVariantList() const
+QVariantList holding::get_available_buildings_qvariant_list() const
 {
-	return util::container_to_qvariant_list(this->GetAvailableBuildings());
+	return util::container_to_qvariant_list(this->get_available_buildings());
 }
 
 /**
@@ -451,23 +451,23 @@ QVariantList Holding::GetAvailableBuildingsQVariantList() const
 **
 **	@param	building	The building
 */
-void Holding::SetUnderConstructionBuilding(Building *building)
+void holding::set_under_construction_building(Building *building)
 {
-	if (building == this->GetUnderConstructionBuilding()) {
+	if (building == this->get_under_construction_building()) {
 		return;
 	}
 
-	this->UnderConstructionBuilding = building;
-	emit UnderConstructionBuildingChanged();
+	this->under_construction_building = building;
+	emit under_construction_building_changed();
 	if (building != nullptr) {
-		this->SetConstructionDays(building->GetConstructionDays());
+		this->set_construction_days(building->GetConstructionDays());
 	}
 }
 
 /**
 **	@brief	Generate a commodity for the holding to produce
 */
-void Holding::GenerateCommodity()
+void holding::generate_commodity()
 {
 	std::map<metternich::Commodity *, std::pair<int, int>> commodity_chance_ranges;
 	int total_chance_factor = 0;
@@ -494,7 +494,7 @@ void Holding::GenerateCommodity()
 		}
 	}
 
-	this->SetCommodity(chosen_commodity);
+	this->set_commodity(chosen_commodity);
 }
 
 /**
@@ -502,7 +502,7 @@ void Holding::GenerateCommodity()
 **
 **	@return	The workforce
 */
-int Holding::GetEmploymentWorkforce(const EmploymentType *employment_type) const
+int holding::get_employment_workforce(const EmploymentType *employment_type) const
 {
 	auto find_iterator = this->employments.find(employment_type);
 	if (find_iterator == this->employments.end()) {
@@ -518,9 +518,9 @@ int Holding::GetEmploymentWorkforce(const EmploymentType *employment_type) const
 **	@param	employment_type	The employment type
 **	@param	workforce		The new workforce value
 */
-void Holding::SetEmploymentWorkforce(const EmploymentType *employment_type, const int workforce)
+void holding::set_employment_workforce(const EmploymentType *employment_type, const int workforce)
 {
-	if (workforce == this->GetEmploymentWorkforce(employment_type)) {
+	if (workforce == this->get_employment_workforce(employment_type)) {
 		return;
 	}
 
@@ -545,34 +545,34 @@ void Holding::SetEmploymentWorkforce(const EmploymentType *employment_type, cons
 **	@param	selected	Whether the holding is being selected
 **	@param	notify_engine_interface	Whether to emit a signal notifying the engine interface of the change
 */
-void Holding::SetSelected(const bool selected, const bool notify_engine_interface)
+void holding::set_selected(const bool selected, const bool notify_engine_interface)
 {
-	if (selected == this->IsSelected()) {
+	if (selected == this->is_selected()) {
 		return;
 	}
 
 	if (selected) {
-		if (Holding::SelectedHolding != nullptr) {
-			Holding::SelectedHolding->SetSelected(false, false);
+		if (holding::selected_holding != nullptr) {
+			holding::selected_holding->set_selected(false, false);
 		}
-		Holding::SelectedHolding = this;
+		holding::selected_holding = this;
 	} else {
-		Holding::SelectedHolding = nullptr;
+		holding::selected_holding = nullptr;
 	}
 
-	this->Selected = selected;
-	emit SelectedChanged();
+	this->selected = selected;
+	emit selected_changed();
 
 	if (notify_engine_interface) {
-		EngineInterface::Get()->emit selectedHoldingChanged();
+		EngineInterface::Get()->emit selected_holding_changed();
 	}
 }
 
-Q_INVOKABLE QVariantList Holding::get_population_per_type() const
+Q_INVOKABLE QVariantList holding::get_population_per_type_qvariant_list() const
 {
 	QVariantList population_per_type;
 
-	for (const auto &kv_pair : this->PopulationPerType) {
+	for (const auto &kv_pair : this->population_per_type) {
 		QVariantMap type_population;
 		type_population["type"] = QVariant::fromValue(kv_pair.first);
 		type_population["population"] = QVariant::fromValue(kv_pair.second);
@@ -582,11 +582,11 @@ Q_INVOKABLE QVariantList Holding::get_population_per_type() const
 	return population_per_type;
 }
 
-Q_INVOKABLE QVariantList Holding::get_population_per_culture() const
+Q_INVOKABLE QVariantList holding::get_population_per_culture_qvariant_list() const
 {
 	QVariantList population_per_culture;
 
-	for (const auto &kv_pair : this->PopulationPerCulture) {
+	for (const auto &kv_pair : this->population_per_culture) {
 		QVariantMap culture_population;
 		culture_population["culture"] = QVariant::fromValue(kv_pair.first);
 		culture_population["population"] = QVariant::fromValue(kv_pair.second);
@@ -596,11 +596,11 @@ Q_INVOKABLE QVariantList Holding::get_population_per_culture() const
 	return population_per_culture;
 }
 
-Q_INVOKABLE QVariantList Holding::get_population_per_religion() const
+Q_INVOKABLE QVariantList holding::get_population_per_religion_qvariant_list() const
 {
 	QVariantList population_per_religion;
 
-	for (const auto &kv_pair : this->PopulationPerReligion) {
+	for (const auto &kv_pair : this->population_per_religion) {
 		QVariantMap religion_population;
 		religion_population["religion"] = QVariant::fromValue(kv_pair.first);
 		religion_population["population"] = QVariant::fromValue(kv_pair.second);
@@ -610,12 +610,12 @@ Q_INVOKABLE QVariantList Holding::get_population_per_religion() const
 	return population_per_religion;
 }
 
-void Holding::order_construction(const QVariant &building_variant)
+void holding::order_construction(const QVariant &building_variant)
 {
 	QObject *building_object = qvariant_cast<QObject *>(building_variant);
 	Building *building = static_cast<Building *>(building_object);
 	Game::Get()->PostOrder([this, building]() {
-		this->SetUnderConstructionBuilding(building);
+		this->set_under_construction_building(building);
 	});
 }
 

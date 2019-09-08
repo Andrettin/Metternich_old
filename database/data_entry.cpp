@@ -50,7 +50,7 @@ void DataEntryBase::LoadHistory(gsml_data &data)
 	}
 }
 
-std::string DataEntry::GetName() const
+std::string DataEntry::get_name() const
 {
 	return Translator::Get()->Translate(this->Identifier);
 }

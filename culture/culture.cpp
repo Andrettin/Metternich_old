@@ -93,7 +93,7 @@ std::string Culture::GenerateDynastyName() const
 		return std::string();
 	}
 
-	return this->Dynasties[Random::Generate(this->Dynasties.size())]->GetName();
+	return this->Dynasties[Random::Generate(this->Dynasties.size())]->get_name();
 }
 
 }

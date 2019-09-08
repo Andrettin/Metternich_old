@@ -25,9 +25,9 @@ public:
 		return province->BordersWater() == this->BordersWater;
 	}
 
-	virtual bool Check(const Holding *holding) const override
+	virtual bool Check(const holding *holding) const override
 	{
-		return this->Check(holding->GetProvince());
+		return this->Check(holding->get_province());
 	}
 
 private:

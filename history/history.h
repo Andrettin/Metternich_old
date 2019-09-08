@@ -8,8 +8,6 @@
 
 namespace metternich {
 
-class Holding;
-
 class History
 {
 public:

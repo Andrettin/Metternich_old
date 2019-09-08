@@ -11,7 +11,7 @@
 namespace metternich {
 
 class Character;
-class Holding;
+class holding;
 class Province;
 enum class LandedTitleTier : int;
 
@@ -63,7 +63,7 @@ public:
 	virtual void initialize_history() override;
 	virtual void Check() const override;
 
-	virtual std::string GetName() const override;
+	virtual std::string get_name() const override;
 	std::string GetTierTitleName() const;
 
 	std::string GetTitledName() const;
@@ -93,12 +93,12 @@ public:
 	void SetHolder(Character *character);
 	void SetHolderTitle(LandedTitle *title);
 
-	metternich::Holding *GetHolding() const
+	metternich::holding *get_holding() const
 	{
-		return this->Holding;
+		return this->holding;
 	}
 
-	void SetHolding(Holding *holding);
+	void set_holding(holding *holding);
 
 	metternich::Province *GetProvince() const
 	{
@@ -133,7 +133,7 @@ public:
 	bool IsTitular() const
 	{
 		//a title is not titular if it has de jure vassals, or if it is a county belonging to a province, or a barony belonging to a holding
-		return this->DeJureVassalTitles.empty() && this->GetProvince() == nullptr && this->GetHolding() == nullptr;
+		return this->DeJureVassalTitles.empty() && this->GetProvince() == nullptr && this->get_holding() == nullptr;
 	}
 
 	metternich::Province *GetCapitalProvince() const
@@ -151,7 +151,7 @@ private:
 	QColor Color;
 	LandedTitleTier Tier;
 	Character *Holder = nullptr;
-	metternich::Holding *Holding = nullptr; //this title's holding, if it is a non-titular barony
+	metternich::holding *holding = nullptr; //this title's holding, if it is a non-titular barony
 	metternich::Province *Province = nullptr; //this title's province, if it is a non-titular county
 	LandedTitle *DeJureLiegeTitle = nullptr;
 	std::vector<LandedTitle *> DeJureVassalTitles;

@@ -25,9 +25,9 @@ public:
 		province->ChangePopulationCapacityModifier(this->PopulationCapacityModifier * change);
 	}
 
-	virtual void Apply(Holding *holding, const int change) const override
+	virtual void Apply(holding *holding, const int change) const override
 	{
-		holding->ChangePopulationCapacityModifier(this->PopulationCapacityModifier * change);
+		holding->change_population_capacity_modifier(this->PopulationCapacityModifier * change);
 	}
 
 private:

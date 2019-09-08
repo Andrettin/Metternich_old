@@ -67,8 +67,8 @@ Province *Province::Add(const std::string &identifier)
 */
 Province::Province(const std::string &identifier) : DataEntry(identifier)
 {
-	connect(this, &Province::CultureChanged, this, &IdentifiableDataEntryBase::NameChanged);
-	connect(this, &Province::ReligionChanged, this, &IdentifiableDataEntryBase::NameChanged);
+	connect(this, &Province::CultureChanged, this, &IdentifiableDataEntryBase::name_changed);
+	connect(this, &Province::ReligionChanged, this, &IdentifiableDataEntryBase::name_changed);
 	connect(Game::Get(), &Game::RunningChanged, this, &Province::UpdateImage);
 	connect(this, &Province::SelectedChanged, this, &Province::UpdateImage);
 }
@@ -90,22 +90,22 @@ void Province::ProcessGSMLProperty(const gsml_property &property)
 	if (property.get_key().substr(0, 2) == LandedTitle::BaronyPrefix) {
 		//a property related to one of the province's holdings
 		LandedTitle *barony = LandedTitle::Get(property.get_key());
-		Holding *holding = this->GetHolding(barony);
+		holding *holding = this->get_holding(barony);
 		if (property.get_operator() == gsml_operator::assignment) {
 			//the assignment operator sets the holding's type (creating the holding if it doesn't exist)
-			HoldingType *holding_type = HoldingType::Get(property.get_value());
+			holding_type *holding_type = holding_type::Get(property.get_value());
 			if (holding != nullptr) {
-				holding->SetType(holding_type);
+				holding->set_type(holding_type);
 			} else {
-				this->CreateHolding(barony, holding_type);
+				this->create_holding(barony, holding_type);
 			}
 		} else if (property.get_operator() == gsml_operator::addition || property.get_operator() == gsml_operator::subtraction) {
 			//the addition/subtraction operators add/remove buildings to/from the holding
 			Building *building = Building::Get(property.get_value());
 			if (property.get_operator() == gsml_operator::addition) {
-				holding->AddBuilding(building);
+				holding->add_building(building);
 			} else if (property.get_operator() == gsml_operator::subtraction) {
-				holding->RemoveBuilding(building);
+				holding->remove_building(building);
 			}
 		}
 	} else {
@@ -157,7 +157,7 @@ void Province::ProcessGSMLDatedScope(const gsml_data &scope, const QDateTime &da
 		//a change to the data of one of the province's holdings
 
 		LandedTitle *barony = LandedTitle::Get(tag);
-		Holding *holding = this->GetHolding(barony);
+		holding *holding = this->get_holding(barony);
 		if (holding != nullptr) {
 			for (const gsml_property &property : scope.get_properties()) {
 				holding->ProcessGSMLDatedProperty(property, date);
@@ -177,7 +177,7 @@ void Province::initialize_history()
 {
 	this->population_units.clear();
 
-	for (Holding *holding : this->GetHoldings()) {
+	for (holding *holding : this->get_holdings()) {
 		holding->initialize_history();
 	}
 
@@ -211,8 +211,8 @@ void Province::Check() const
 				throw std::runtime_error("Province \"" + this->GetIdentifier() + "\" has no religion.");
 			}
 
-			if (this->GetCapitalHolding() != nullptr && this->GetCapitalHolding()->GetProvince() != this) {
-				throw std::runtime_error("Province \"" + this->GetIdentifier() + "\"'s capital holding (\"" + this->GetCapitalHolding()->GetBarony()->GetIdentifier() + "\") belongs to another province (\"" + this->GetCapitalHolding()->GetProvince()->GetIdentifier() + "\").");
+			if (this->get_capital_holding() != nullptr && this->get_capital_holding()->get_province() != this) {
+				throw std::runtime_error("Province \"" + this->GetIdentifier() + "\"'s capital holding (\"" + this->get_capital_holding()->get_barony()->GetIdentifier() + "\") belongs to another province (\"" + this->get_capital_holding()->get_province()->GetIdentifier() + "\").");
 			}
 		}
 	}
@@ -223,8 +223,8 @@ void Province::Check() const
 */
 void Province::DoDay()
 {
-	for (Holding *holding : this->GetHoldings()) {
-		holding->DoDay();
+	for (holding *holding : this->get_holdings()) {
+		holding->do_day();
 	}
 }
 
@@ -233,8 +233,8 @@ void Province::DoDay()
 */
 void Province::DoMonth()
 {
-	for (Holding *holding : this->GetHoldings()) {
-		holding->DoMonth();
+	for (holding *holding : this->get_holdings()) {
+		holding->do_month();
 	}
 
 	this->CalculatePopulationGroups();
@@ -245,7 +245,7 @@ void Province::DoMonth()
 **
 **	@return	The province's name
 */
-std::string Province::GetName() const
+std::string Province::get_name() const
 {
 	if (this->GetCounty() != nullptr) {
 		return Translator::Get()->Translate(this->GetCounty()->GetIdentifier(), {this->GetCulture()->GetIdentifier(), this->GetCulture()->GetCultureGroup()->GetIdentifier(), this->GetReligion()->GetIdentifier()});
@@ -445,8 +445,8 @@ void Province::SetPopulation(const int population)
 void Province::CalculatePopulation()
 {
 	int population = 0;
-	for (const Holding *holding : this->GetHoldings()) {
-		population += holding->GetPopulation();
+	for (const holding *holding : this->get_holdings()) {
+		population += holding->get_population();
 	}
 	this->SetPopulation(population);
 }
@@ -462,14 +462,14 @@ void Province::SetPopulationCapacityAdditiveModifier(const int population_capaci
 		return;
 	}
 
-	for (Holding *holding : this->GetHoldings()) {
-		holding->ChangeBasePopulationCapacity(-this->GetPopulationCapacityAdditiveModifier());
+	for (holding *holding : this->get_holdings()) {
+		holding->change_base_population_capacity(-this->GetPopulationCapacityAdditiveModifier());
 	}
 
 	this->PopulationCapacityAdditiveModifier = population_capacity_modifier;
 
-	for (Holding *holding : this->GetHoldings()) {
-		holding->ChangeBasePopulationCapacity(this->GetPopulationCapacityAdditiveModifier());
+	for (holding *holding : this->get_holdings()) {
+		holding->change_base_population_capacity(this->GetPopulationCapacityAdditiveModifier());
 	}
 }
 
@@ -484,14 +484,14 @@ void Province::SetPopulationCapacityModifier(const int population_capacity_modif
 		return;
 	}
 
-	for (Holding *holding : this->GetHoldings()) {
-		holding->ChangePopulationCapacityModifier(-this->GetPopulationCapacityModifier());
+	for (holding *holding : this->get_holdings()) {
+		holding->change_population_capacity_modifier(-this->GetPopulationCapacityModifier());
 	}
 
 	this->PopulationCapacityModifier = population_capacity_modifier;
 
-	for (Holding *holding : this->GetHoldings()) {
-		holding->ChangePopulationCapacityModifier(this->GetPopulationCapacityModifier());
+	for (holding *holding : this->get_holdings()) {
+		holding->change_population_capacity_modifier(this->GetPopulationCapacityModifier());
 	}
 }
 
@@ -506,14 +506,14 @@ void Province::SetPopulationGrowthModifier(const int population_growth_modifier)
 		return;
 	}
 
-	for (Holding *holding : this->GetHoldings()) {
-		holding->ChangeBasePopulationGrowth(-this->GetPopulationGrowthModifier());
+	for (holding *holding : this->get_holdings()) {
+		holding->change_base_population_growth(-this->GetPopulationGrowthModifier());
 	}
 
 	this->PopulationGrowthModifier = population_growth_modifier;
 
-	for (Holding *holding : this->GetHoldings()) {
-		holding->ChangeBasePopulationGrowth(this->GetPopulationGrowthModifier());
+	for (holding *holding : this->get_holdings()) {
+		holding->change_base_population_growth(this->GetPopulationGrowthModifier());
 	}
 }
 
@@ -526,14 +526,14 @@ void Province::CalculatePopulationGroups()
 	this->PopulationPerCulture.clear();
 	this->PopulationPerReligion.clear();
 
-	for (Holding *holding : this->GetHoldings()) {
-		for (const auto &kv_pair : holding->GetPopulationPerType()) {
+	for (holding *holding : this->get_holdings()) {
+		for (const auto &kv_pair : holding->get_population_per_type()) {
 			this->PopulationPerType[kv_pair.first] += kv_pair.second;
 		}
-		for (const auto &kv_pair : holding->GetPopulationPerCulture()) {
+		for (const auto &kv_pair : holding->get_population_per_culture()) {
 			this->PopulationPerCulture[kv_pair.first] += kv_pair.second;
 		}
-		for (const auto &kv_pair : holding->GetPopulationPerReligion()) {
+		for (const auto &kv_pair : holding->get_population_per_religion()) {
 			this->PopulationPerReligion[kv_pair.first] += kv_pair.second;
 		}
 	}
@@ -573,9 +573,9 @@ void Province::CalculatePopulationGroups()
 /**
 **	@brief	Get the province's holdings
 */
-QVariantList Province::GetHoldingsQVariantList() const
+QVariantList Province::get_holdings_qvariant_list() const
 {
-	return util::container_to_qvariant_list(this->GetHoldings());
+	return util::container_to_qvariant_list(this->get_holdings());
 }
 
 /**
@@ -583,10 +583,10 @@ QVariantList Province::GetHoldingsQVariantList() const
 **
 **	@param	barony	The holding's barony
 */
-Holding *Province::GetHolding(LandedTitle *barony) const
+holding *Province::get_holding(LandedTitle *barony) const
 {
-	auto find_iterator = this->HoldingsByBarony.find(barony);
-	if (find_iterator != this->HoldingsByBarony.end()) {
+	auto find_iterator = this->holdings_by_barony.find(barony);
+	if (find_iterator != this->holdings_by_barony.end()) {
 		return find_iterator->second.get();
 	}
 
@@ -600,20 +600,20 @@ Holding *Province::GetHolding(LandedTitle *barony) const
 **
 **	@param	type	The holding's type
 */
-void Province::CreateHolding(LandedTitle *barony, HoldingType *type)
+void Province::create_holding(LandedTitle *barony, holding_type *type)
 {
-	auto new_holding = std::make_unique<Holding>(barony, type, this);
+	auto new_holding = std::make_unique<holding>(barony, type, this);
 	new_holding->moveToThread(QApplication::instance()->thread());
-	this->Holdings.push_back(new_holding.get());
-	this->HoldingsByBarony.insert({barony, std::move(new_holding)});
-	emit HoldingsChanged();
-	if (this->GetCapitalHolding() == nullptr) {
-		this->SetCapitalHolding(this->Holdings.front());
+	this->holdings.push_back(new_holding.get());
+	this->holdings_by_barony.insert({barony, std::move(new_holding)});
+	emit holdings_changed();
+	if (this->get_capital_holding() == nullptr) {
+		this->set_capital_holding(this->holdings.front());
 	}
 
 	if (Game::Get()->IsRunning()) {
-		if (new_holding->GetCommodity() == nullptr) {
-			new_holding->GenerateCommodity();
+		if (new_holding->get_commodity() == nullptr) {
+			new_holding->generate_commodity();
 		}
 	}
 }
@@ -623,20 +623,20 @@ void Province::CreateHolding(LandedTitle *barony, HoldingType *type)
 **
 **	@param	barony	The holding's barony
 */
-void Province::DestroyHolding(LandedTitle *barony)
+void Province::destroy_holding(LandedTitle *barony)
 {
-	Holding *holding = this->GetHolding(barony);
-	if (holding == this->GetCapitalHolding()) {
+	holding *holding = this->get_holding(barony);
+	if (holding == this->get_capital_holding()) {
 		//if the capital holding is being destroyed, set the next holding as the capital, if any exists, or otherwise set the capital holding to null
-		if (this->Holdings.size() > 1) {
-			this->SetCapitalHolding(this->Holdings.at(1));
+		if (this->holdings.size() > 1) {
+			this->set_capital_holding(this->holdings.at(1));
 		} else {
-			this->SetCapitalHolding(nullptr);
+			this->set_capital_holding(nullptr);
 		}
 	}
-	this->Holdings.erase(std::remove(this->Holdings.begin(), this->Holdings.end(), holding), this->Holdings.end());
-	this->HoldingsByBarony.erase(barony);
-	emit HoldingsChanged();
+	this->holdings.erase(std::remove(this->holdings.begin(), this->holdings.end(), holding), this->holdings.end());
+	this->holdings_by_barony.erase(barony);
+	emit holdings_changed();
 }
 
 /**

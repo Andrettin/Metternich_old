@@ -62,22 +62,22 @@ class IdentifiableDataEntryBase : public DataEntryBase
 {
 	Q_OBJECT
 
-	Q_PROPERTY(QString name READ GetNameQString NOTIFY NameChanged)
+	Q_PROPERTY(QString name READ get_name_qstring NOTIFY name_changed)
 
 public:
 	virtual ~IdentifiableDataEntryBase() override {}
 
 	virtual std::string GetIdentifierString() const = 0;
 
-	virtual std::string GetName() const = 0;
+	virtual std::string get_name() const = 0;
 
-	QString GetNameQString() const
+	QString get_name_qstring() const
 	{
-		return QString::fromStdString(this->GetName());
+		return QString::fromStdString(this->get_name());
 	}
 
 signals:
-	void NameChanged();
+	void name_changed();
 };
 
 /**
@@ -108,7 +108,7 @@ public:
 		return this->GetIdentifier();
 	}
 
-	virtual std::string GetName() const override;
+	virtual std::string get_name() const override;
 
 private:
 	std::string Identifier;

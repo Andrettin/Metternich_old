@@ -3,7 +3,7 @@
 namespace metternich {
 
 class EmploymentType;
-class Holding;
+class holding;
 class population_unit;
 
 class employment
@@ -45,7 +45,7 @@ public:
 private:
 	const EmploymentType *type = nullptr; //the employment type
 	int workforce_capacity = 0; //the maximum workforce for the employment
-	const Holding *holding = nullptr; //the holding where the employment is located
+	const holding *holding = nullptr; //the holding where the employment is located
 	std::map<population_unit *, int> employee_sizes; //the employed population units, mapped to the quantity of people each of them has assigned for this employment
 };
 

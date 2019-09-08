@@ -175,21 +175,21 @@ void Game::GenerateMissingTitleHolders()
 		}
 
 		//generate missing title holders for county associated with provinces, or baronies associated with holdings
-		if (landed_title->GetProvince() == nullptr && landed_title->GetHolding() == nullptr) {
+		if (landed_title->GetProvince() == nullptr && landed_title->get_holding() == nullptr) {
 			continue;
 		}
 
 		const Province *province = landed_title->GetProvince();
 		if (province == nullptr) {
-			province = landed_title->GetHolding()->GetProvince();
+			province = landed_title->get_holding()->get_province();
 		}
 
 		Character *holder = Character::Generate(province->GetCulture(), province->GetReligion());
 		landed_title->SetHolder(holder);
 
 		//set the liege of generated holding owners to the county holder
-		if (landed_title->GetHolding() != nullptr) {
-			Character *county_holder = landed_title->GetHolding()->GetProvince()->GetCounty()->GetHolder();
+		if (landed_title->get_holding() != nullptr) {
+			Character *county_holder = landed_title->get_holding()->get_province()->GetCounty()->GetHolder();
 			holder->SetLiege(county_holder);
 		}
 	}

@@ -39,9 +39,9 @@ void PopulationType::Check() const
 	}
 }
 
-QVariantList PopulationType::GetHoldingTypesQVariantList() const
+QVariantList PopulationType::get_holding_types_qvariant_list() const
 {
-	return util::container_to_qvariant_list(this->GetHoldingTypes());
+	return util::container_to_qvariant_list(this->get_holding_types());
 }
 
 }

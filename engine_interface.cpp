@@ -26,9 +26,9 @@ Province *EngineInterface::GetSelectedProvince() const
 	return Province::GetSelectedProvince();
 }
 
-Holding *EngineInterface::GetSelectedHolding() const
+holding *EngineInterface::get_selected_holding() const
 {
-	return Holding::GetSelectedHolding();
+	return holding::get_selected_holding();
 }
 
 }

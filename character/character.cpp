@@ -29,7 +29,7 @@ Character *Character::Generate(metternich::Culture *culture, metternich::Religio
 	Character *character = Character::Add(identifier);
 	character->Culture = culture;
 	character->Religion = religion;
-	character->Name = culture->GenerateMaleName();
+	character->name = culture->GenerateMaleName();
 	//generate the character's birth date to be between 60 and 20 years before the current date
 	const QDateTime &current_date = Game::Get()->GetCurrentDate();
 	character->BirthDate = current_date.addDays(Random::GenerateInRange(-60 * 365, -20 * 365));
@@ -72,11 +72,11 @@ void Character::ProcessGSMLDatedProperty(const gsml_property &property, const QD
 */
 void Character::initialize_history()
 {
-	if (this->Name.empty() && this->GetCulture() != nullptr) {
+	if (this->name.empty() && this->GetCulture() != nullptr) {
 		if (this->IsFemale()) {
-			this->Name = this->GetCulture()->GenerateFemaleName();
+			this->name = this->GetCulture()->GenerateFemaleName();
 		} else {
-			this->Name = this->GetCulture()->GenerateMaleName();
+			this->name = this->GetCulture()->GenerateMaleName();
 		}
 	}
 }
@@ -88,9 +88,9 @@ void Character::initialize_history()
 */
 std::string Character::GetFullName() const
 {
-	std::string full_name = this->Name;
+	std::string full_name = this->name;
 	if (this->GetDynasty() != nullptr) {
-		full_name += " " + this->GetDynasty()->GetName();
+		full_name += " " + this->GetDynasty()->get_name();
 	}
 	return full_name;
 }
@@ -108,10 +108,10 @@ std::string Character::GetTitledName() const
 		titled_name += this->GetPrimaryTitle()->GetHolderTitleName() + " ";
 	}
 
-	titled_name += this->GetName();
+	titled_name += this->get_name();
 
 	if (this->GetPrimaryTitle() != nullptr) {
-		titled_name += " of " + this->GetPrimaryTitle()->GetName();
+		titled_name += " of " + this->GetPrimaryTitle()->get_name();
 	}
 
 	return titled_name;
@@ -161,16 +161,16 @@ QVariantList Character::GetTraitsQVariantList() const
 **
 **	@param	holding	The holding
 */
-bool Character::CanBuildInHolding(const Holding *holding)
+bool Character::can_build_in_holding(const holding *holding)
 {
-	return holding->GetOwner() == this || this->IsAnyLiegeOf(holding->GetOwner());
+	return holding->get_owner() == this || this->IsAnyLiegeOf(holding->get_owner());
 }
 
 bool Character::can_build_in_holding(const QVariant &holding_variant)
 {
 	QObject *holding_object = qvariant_cast<QObject *>(holding_variant);
-	const Holding *holding = static_cast<Holding *>(holding_object);
-	return this->CanBuildInHolding(holding);
+	const holding *holding = static_cast<metternich::holding *>(holding_object);
+	return this->can_build_in_holding(holding);
 }
 
 }

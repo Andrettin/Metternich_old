@@ -12,7 +12,7 @@ namespace metternich {
 class Culture;
 class employment;
 class EmploymentType;
-class Holding;
+class holding;
 class PopulationType;
 class Province;
 class Region;
@@ -26,7 +26,7 @@ class population_unit : public DataEntryBase, public SimpleDataType<population_u
 	Q_PROPERTY(metternich::Culture* culture READ get_culture WRITE set_culture NOTIFY culture_changed)
 	Q_PROPERTY(metternich::Religion* religion READ get_religion WRITE set_religion NOTIFY religion_changed)
 	Q_PROPERTY(int size READ get_size WRITE set_size NOTIFY size_changed)
-	Q_PROPERTY(metternich::Holding* holding READ get_holding WRITE set_holding NOTIFY holding_changed)
+	Q_PROPERTY(metternich::holding* holding READ get_holding WRITE set_holding NOTIFY holding_changed)
 	Q_PROPERTY(metternich::Province* province READ get_province WRITE set_province NOTIFY province_changed)
 	Q_PROPERTY(metternich::Region* region READ get_region WRITE set_region NOTIFY region_changed)
 	Q_PROPERTY(bool discount_existing READ discounts_existing WRITE set_discount_existing NOTIFY discount_existing_changed)
@@ -89,12 +89,12 @@ public:
 		this->set_size(this->get_size() + change);
 	}
 
-	metternich::Holding *get_holding() const
+	metternich::holding *get_holding() const
 	{
 		return this->holding;
 	}
 
-	void set_holding(Holding *holding)
+	void set_holding(holding *holding)
 	{
 		if (holding == this->get_holding()) {
 			return;
@@ -189,10 +189,10 @@ public:
 	}
 
 	void subtract_existing_sizes();
-	void subtract_existing_sizes_in_holding(const Holding *holding);
-	void subtract_existing_sizes_in_holdings(const std::vector<Holding *> &holdings);
-	bool can_distribute_to_holding(const Holding *holding) const;
-	void distribute_to_holdings(const std::vector<Holding *> &holdings);
+	void subtract_existing_sizes_in_holding(const holding *holding);
+	void subtract_existing_sizes_in_holdings(const std::vector<holding *> &holdings);
+	bool can_distribute_to_holding(const holding *holding) const;
+	void distribute_to_holdings(const std::vector<holding *> &holdings);
 
 	int get_unemployed_size() const
 	{
@@ -239,7 +239,7 @@ private:
 	metternich::Culture *culture = nullptr;
 	metternich::Religion *religion = nullptr;
 	int size = 0; //the size of the population unit, in number of individuals
-	metternich::Holding *holding = nullptr; //the settlement holding where this population unit lives
+	metternich::holding *holding = nullptr; //the settlement holding where this population unit lives
 	metternich::Province *province = nullptr; //the province where this population unit lives; used only during initialization to generate population units in settlements in the province
 	metternich::Region *region = nullptr; //the region where this population unit lives; used only during initialization to generate population units in settlements in the region
 	bool discount_existing = false; //whether to discount the size of existing population units (in this population unit's holding, province or region) of the types given in DiscountTypes from that of this one

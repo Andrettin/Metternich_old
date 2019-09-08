@@ -9,8 +9,8 @@ namespace metternich {
 
 class Condition;
 class EmploymentType;
-class Holding;
-class HoldingType;
+class holding;
+class holding_type;
 
 class Building : public DataEntry, public DataType<Building>
 {
@@ -18,7 +18,7 @@ class Building : public DataEntry, public DataType<Building>
 
 	Q_PROPERTY(QString icon READ GetIconPathQString WRITE SetIconPathQString NOTIFY IconPathChanged)
 	Q_PROPERTY(QString icon_path READ GetIconPathQString WRITE SetIconPathQString NOTIFY IconPathChanged)
-	Q_PROPERTY(QVariantList holding_types READ GetHoldingTypesQVariantList)
+	Q_PROPERTY(QVariantList holding_types READ get_holding_types_qvariant_list)
 	Q_PROPERTY(int construction_days MEMBER ConstructionDays READ GetConstructionDays)
 	Q_PROPERTY(metternich::EmploymentType* employment_type MEMBER EmploymentType READ GetEmploymentType)
 	Q_PROPERTY(int workforce MEMBER Workforce READ GetWorkforce)
@@ -57,14 +57,14 @@ public:
 		this->SetIconPath(icon_path.toStdString());
 	}
 
-	const std::vector<HoldingType *> &GetHoldingTypes() const
+	const std::vector<holding_type *> &get_holding_types() const
 	{
-		return this->HoldingTypes;
+		return this->holding_types;
 	}
 
-	QVariantList GetHoldingTypesQVariantList() const;
-	Q_INVOKABLE void AddHoldingType(HoldingType *holding_type);
-	Q_INVOKABLE void RemoveHoldingType(HoldingType *holding_type);
+	QVariantList get_holding_types_qvariant_list() const;
+	Q_INVOKABLE void add_holding_type(holding_type *holding_type);
+	Q_INVOKABLE void remove_holding_type(holding_type *holding_type);
 
 	int GetConstructionDays() const
 	{
@@ -81,15 +81,15 @@ public:
 		return this->Workforce;
 	}
 
-	bool IsAvailableForHolding(const Holding *holding) const;
-	bool IsBuildableInHolding(const Holding *holding) const;
+	bool is_available_for_holding(const holding *holding) const;
+	bool is_buildable_in_holding(const holding *holding) const;
 
 signals:
 	void IconPathChanged();
 
 private:
 	std::string IconPath;
-	std::vector<HoldingType *> HoldingTypes;
+	std::vector<holding_type *> holding_types;
 	int ConstructionDays = 0; //how many days does it take to construct this building
 	std::unique_ptr<Condition> Preconditions;
 	std::unique_ptr<Condition> Conditions;

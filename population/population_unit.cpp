@@ -54,11 +54,11 @@ void population_unit::initialize_history()
 {
 	//set the culture and religion of population units without any set to those of their holding
 	if (this->get_culture() == nullptr) {
-		this->set_culture(this->get_holding()->GetCulture());
+		this->set_culture(this->get_holding()->get_culture());
 	}
 
 	if (this->get_religion() == nullptr) {
-		this->set_religion(this->get_holding()->GetReligion());
+		this->set_religion(this->get_holding()->get_religion());
 	}
 
 	this->set_unemployed_size(this->get_size());
@@ -107,7 +107,7 @@ void population_unit::set_size(const int size)
 
 	if (this->get_holding() != nullptr) {
 		//change the population count for the population unit's holding
-		this->get_holding()->ChangePopulation(size_change);
+		this->get_holding()->change_population(size_change);
 	}
 }
 
@@ -129,9 +129,9 @@ void population_unit::subtract_existing_sizes()
 	if (this->get_holding() != nullptr) {
 		this->subtract_existing_sizes_in_holding(this->get_holding());
 	} else if (this->get_province() != nullptr) {
-		this->subtract_existing_sizes_in_holdings(this->get_province()->GetHoldings());
+		this->subtract_existing_sizes_in_holdings(this->get_province()->get_holdings());
 	} else if (this->get_region() != nullptr) {
-		this->subtract_existing_sizes_in_holdings(this->get_region()->GetHoldings());
+		this->subtract_existing_sizes_in_holdings(this->get_region()->get_holdings());
 	}
 }
 
@@ -140,7 +140,7 @@ void population_unit::subtract_existing_sizes()
 **
 **	@param	holding	The holding
 */
-void population_unit::subtract_existing_sizes_in_holding(const metternich::Holding *holding)
+void population_unit::subtract_existing_sizes_in_holding(const metternich::holding *holding)
 {
 	for (const std::unique_ptr<population_unit> &population_unit : holding->get_population_units()) {
 		if (&*population_unit == &*this) {
@@ -160,9 +160,9 @@ void population_unit::subtract_existing_sizes_in_holding(const metternich::Holdi
 **
 **	@param	holdings	The holdings
 */
-void population_unit::subtract_existing_sizes_in_holdings(const std::vector<metternich::Holding *> &holdings)
+void population_unit::subtract_existing_sizes_in_holdings(const std::vector<metternich::holding *> &holdings)
 {
-	for (const metternich::Holding *holding : holdings) {
+	for (const metternich::holding *holding : holdings) {
 		this->subtract_existing_sizes_in_holding(holding);
 	}
 }
@@ -174,9 +174,9 @@ void population_unit::subtract_existing_sizes_in_holdings(const std::vector<mett
 **
 **	@return	True if the population unit can be distributed to the holding, or false otherwise
 */
-bool population_unit::can_distribute_to_holding(const metternich::Holding *holding) const
+bool population_unit::can_distribute_to_holding(const metternich::holding *holding) const
 {
-	if (this->get_type()->GetHoldingTypes().find(holding->GetType()) == this->get_type()->GetHoldingTypes().end()) {
+	if (this->get_type()->get_holding_types().find(holding->get_type()) == this->get_type()->get_holding_types().end()) {
 		return false;
 	}
 
@@ -197,12 +197,12 @@ bool population_unit::can_distribute_to_holding(const metternich::Holding *holdi
 **
 **	@param	holdings	The holdings
 */
-void population_unit::distribute_to_holdings(const std::vector<metternich::Holding *> &holdings)
+void population_unit::distribute_to_holdings(const std::vector<metternich::holding *> &holdings)
 {
 	//set population for settlement holdings without population data
 	int holding_count = 0; //count of settlement holdings for which the population will be applied
 
-	for (const metternich::Holding *holding : holdings) {
+	for (const metternich::holding *holding : holdings) {
 		if (this->can_distribute_to_holding(holding)) {
 			holding_count++;
 		}
@@ -219,7 +219,7 @@ void population_unit::distribute_to_holdings(const std::vector<metternich::Holdi
 		return;
 	}
 
-	for (metternich::Holding *holding : holdings) {
+	for (metternich::holding *holding : holdings) {
 		if (!this->can_distribute_to_holding(holding)) {
 			continue;
 		}

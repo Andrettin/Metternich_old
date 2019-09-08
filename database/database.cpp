@@ -99,7 +99,7 @@ void Database::ProcessGSMLPropertyForObject(QObject *object, const gsml_property
 				new_property_value = QVariant::fromValue(province);
 			} else if (property.get_key() == "holding" || property.get_key() == "capital_holding") {
 				const LandedTitle *barony = LandedTitle::Get(property.get_value());
-				Holding *holding = barony->GetHolding();
+				holding *holding = barony->get_holding();
 				if (holding == nullptr) {
 					throw std::runtime_error("Barony \"" + property.get_value() + "\" has no holding, but a holding property is being set using the barony as the holding's identifier.");
 				}
@@ -144,8 +144,8 @@ void Database::ProcessGSMLPropertyForObject(QObject *object, const gsml_property
 				Trait *trait = Trait::Get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(Trait *, trait));
 			} else if (property.get_key() == "holding_types") {
-				HoldingType *holding_type = HoldingType::Get(property.get_value());
-				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(HoldingType *, holding_type));
+				holding_type *holding_type_value = holding_type::Get(property.get_value());
+				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(holding_type *, holding_type_value));
 			} else if (property.get_key() == "provinces") {
 				Province *province = Province::Get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(Province *, province));

@@ -26,10 +26,10 @@ public:
 		return identifier;
 	}
 
-	virtual bool Check(const Holding *holding) const override
+	virtual bool Check(const holding *holding) const override
 	{
 		//check whether the holding's commodity is the same as that for this condition
-		return holding->GetCommodity() == this->Commodity;
+		return holding->get_commodity() == this->Commodity;
 	}
 
 private:

@@ -45,7 +45,7 @@ void Commodity::ProcessGSMLScope(const gsml_data &scope)
 **
 **	@param	holding	The settlement holding
 */
-int Commodity::CalculateChance(Holding *holding) const
+int Commodity::CalculateChance(holding *holding) const
 {
 	if (!this->Chance) {
 		return 0;

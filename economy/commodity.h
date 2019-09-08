@@ -11,7 +11,7 @@ namespace metternich {
 
 class ChanceFactor;
 class gsml_data;
-class Holding;
+class holding;
 
 class Commodity : public DataEntry, public DataType<Commodity>
 {
@@ -55,7 +55,7 @@ public:
 		this->SetIconPath(icon_path.toStdString());
 	}
 
-	int CalculateChance(Holding *holding) const;
+	int CalculateChance(holding *holding) const;
 
 signals:
 	void IconPathChanged();

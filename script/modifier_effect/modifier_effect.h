@@ -3,7 +3,7 @@
 namespace metternich {
 
 class gsml_property;
-class Holding;
+class holding;
 class Province;
 
 /**
@@ -25,7 +25,7 @@ public:
 		throw std::runtime_error("Invalid modifier effect for province: \"" + this->GetIdentifier() + "\".");
 	}
 
-	virtual void Apply(Holding *holding, const int change) const
+	virtual void Apply(holding *holding, const int change) const
 	{
 		Q_UNUSED(holding);
 		Q_UNUSED(change);

@@ -12,7 +12,7 @@
 namespace metternich {
 
 class Game;
-class Holding;
+class holding;
 class Province;
 
 /**
@@ -25,14 +25,14 @@ class EngineInterface : public QObject, public Singleton<EngineInterface>
 	Q_PROPERTY(metternich::Game* game READ GetGame CONSTANT)
 	Q_PROPERTY(QVariant provinces READ GetProvinces CONSTANT)
 	Q_PROPERTY(metternich::Province* selected_province READ GetSelectedProvince NOTIFY SelectedProvinceChanged)
-	Q_PROPERTY(metternich::Holding* selected_holding READ GetSelectedHolding NOTIFY selectedHoldingChanged)
+	Q_PROPERTY(metternich::holding* selected_holding READ get_selected_holding NOTIFY selected_holding_changed)
 	Q_PROPERTY(QString loading_message READ GetLoadingMessage NOTIFY LoadingMessageChanged)
 
 public:
 	Game *GetGame() const;
 	QVariant GetProvinces() const;
 	Province *GetSelectedProvince() const;
-	Holding *GetSelectedHolding() const;
+	holding *get_selected_holding() const;
 
 	const QString &GetLoadingMessage() const
 	{
@@ -51,7 +51,7 @@ public:
 
 signals:
 	void SelectedProvinceChanged();
-	void selectedHoldingChanged();
+	void selected_holding_changed();
 	void LoadingMessageChanged();
 
 private:

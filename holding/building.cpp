@@ -45,9 +45,9 @@ void Building::ProcessGSMLScope(const gsml_data &scope)
 **
 **	@return	The holding types as a QVariantList
 */
-QVariantList Building::GetHoldingTypesQVariantList() const
+QVariantList Building::get_holding_types_qvariant_list() const
 {
-	return util::container_to_qvariant_list(this->GetHoldingTypes());
+	return util::container_to_qvariant_list(this->get_holding_types());
 }
 
 /**
@@ -55,10 +55,10 @@ QVariantList Building::GetHoldingTypesQVariantList() const
 **
 **	@param	holding_type	The holding type
 */
-Q_INVOKABLE void Building::AddHoldingType(HoldingType *holding_type)
+Q_INVOKABLE void Building::add_holding_type(holding_type *holding_type)
 {
-	this->HoldingTypes.push_back(holding_type);
-	holding_type->AddBuilding(this);
+	this->holding_types.push_back(holding_type);
+	holding_type->add_building(this);
 }
 
 /**
@@ -66,10 +66,10 @@ Q_INVOKABLE void Building::AddHoldingType(HoldingType *holding_type)
 **
 **	@param	holding_type	The holding type
 */
-Q_INVOKABLE void Building::RemoveHoldingType(HoldingType *holding_type)
+Q_INVOKABLE void Building::remove_holding_type(holding_type *holding_type)
 {
-	this->HoldingTypes.erase(std::remove(this->HoldingTypes.begin(), this->HoldingTypes.end(), holding_type), this->HoldingTypes.end());
-	holding_type->RemoveBuilding(this);
+	this->holding_types.erase(std::remove(this->holding_types.begin(), this->holding_types.end(), holding_type), this->holding_types.end());
+	holding_type->remove_building(this);
 }
 
 /**
@@ -79,7 +79,7 @@ Q_INVOKABLE void Building::RemoveHoldingType(HoldingType *holding_type)
 **
 **	@return	True if the building is available for the holding, or false otherwise
 */
-bool Building::IsAvailableForHolding(const Holding *holding) const
+bool Building::is_available_for_holding(const holding *holding) const
 {
 	if (!this->Preconditions) {
 		return true;
@@ -95,9 +95,9 @@ bool Building::IsAvailableForHolding(const Holding *holding) const
 **
 **	@return	True if the building is buildable in the holding, or false otherwise
 */
-bool Building::IsBuildableInHolding(const Holding *holding) const
+bool Building::is_buildable_in_holding(const holding *holding) const
 {
-	if (!this->IsAvailableForHolding(holding)) {
+	if (!this->is_available_for_holding(holding)) {
 		return false;
 	}
 

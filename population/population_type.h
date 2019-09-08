@@ -11,14 +11,14 @@
 
 namespace metternich {
 
-class HoldingType;
+class holding_type;
 
 class PopulationType : public DataEntry, public DataType<PopulationType>
 {
 	Q_OBJECT
 
 	Q_PROPERTY(QColor color MEMBER Color READ GetColor)
-	Q_PROPERTY(QVariantList holding_types READ GetHoldingTypesQVariantList)
+	Q_PROPERTY(QVariantList holding_types READ get_holding_types_qvariant_list)
 
 public:
 	static constexpr const char *ClassIdentifier = "population_type";
@@ -35,26 +35,26 @@ public:
 		return this->Color;
 	}
 
-	const std::set<HoldingType *> &GetHoldingTypes() const
+	const std::set<holding_type *> &get_holding_types() const
 	{
-		return this->HoldingTypes;
+		return this->holding_types;
 	}
 
-	QVariantList GetHoldingTypesQVariantList() const;
+	QVariantList get_holding_types_qvariant_list() const;
 
-	Q_INVOKABLE void AddHoldingType(HoldingType *holding_type)
+	Q_INVOKABLE void add_holding_type(holding_type *holding_type)
 	{
-		this->HoldingTypes.insert(holding_type);
+		this->holding_types.insert(holding_type);
 	}
 
-	Q_INVOKABLE void RemoveHoldingType(HoldingType *holding_type)
+	Q_INVOKABLE void remove_holding_type(holding_type *holding_type)
 	{
-		this->HoldingTypes.erase(holding_type);
+		this->holding_types.erase(holding_type);
 	}
 
 private:
 	QColor Color;
-	std::set<HoldingType *> HoldingTypes; //the holding types where this population type can live
+	std::set<holding_type *> holding_types; //the holding types where this population type can live
 };
 
 }

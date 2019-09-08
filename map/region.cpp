@@ -50,12 +50,12 @@ QVariantList Region::GetSubregionsQVariantList() const
 	return util::container_to_qvariant_list(this->Subregions);
 }
 
-std::vector<Holding *> Region::GetHoldings() const
+std::vector<holding *> Region::get_holdings() const
 {
-	std::vector<Holding *> holdings;
+	std::vector<holding *> holdings;
 
 	for (const Province *province : this->GetProvinces()) {
-		for (Holding *holding : province->GetHoldings()) {
+		for (holding *holding : province->get_holdings()) {
 			holdings.push_back(holding);
 		}
 	}

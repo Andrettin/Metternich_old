@@ -30,7 +30,7 @@ public:
 		return this->CheckInternal(province);
 	}
 
-	virtual bool Check(const Holding *holding) const override
+	virtual bool Check(const holding *holding) const override
 	{
 		return this->CheckInternal(holding);
 	}

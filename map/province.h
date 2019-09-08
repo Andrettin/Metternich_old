@@ -19,8 +19,8 @@ namespace metternich {
 
 class CSVData;
 class Culture;
-class Holding;
-class HoldingType;
+class holding;
+class holding_type;
 class LandedTitle;
 class PopulationType;
 class population_unit;
@@ -43,8 +43,8 @@ class Province : public DataEntry, public DataType<Province>
 	Q_PROPERTY(metternich::Culture* culture READ GetCulture WRITE SetCulture NOTIFY CultureChanged)
 	Q_PROPERTY(metternich::Religion* religion READ GetReligion WRITE SetReligion NOTIFY ReligionChanged)
 	Q_PROPERTY(int population READ GetPopulation WRITE SetPopulation NOTIFY PopulationChanged)
-	Q_PROPERTY(QVariantList holdings READ GetHoldingsQVariantList NOTIFY HoldingsChanged)
-	Q_PROPERTY(metternich::Holding* capital_holding READ GetCapitalHolding WRITE SetCapitalHolding NOTIFY CapitalHoldingChanged)
+	Q_PROPERTY(QVariantList holdings READ get_holdings_qvariant_list NOTIFY holdings_changed)
+	Q_PROPERTY(metternich::holding* capital_holding READ get_capital_holding WRITE set_capital_holding NOTIFY capital_holding_changed)
 	Q_PROPERTY(bool selected READ IsSelected WRITE SetSelected NOTIFY SelectedChanged)
 	Q_PROPERTY(bool selectable READ IsSelectable CONSTANT)
 
@@ -78,7 +78,7 @@ public:
 	void DoDay();
 	void DoMonth();
 
-	virtual std::string GetName() const override;
+	virtual std::string get_name() const override;
 
 	LandedTitle *GetCounty() const
 	{
@@ -199,29 +199,29 @@ public:
 
 	void CalculatePopulationGroups();
 
-	const std::vector<Holding *> &GetHoldings() const
+	const std::vector<holding *> &get_holdings() const
 	{
-		return this->Holdings;
+		return this->holdings;
 	}
 
-	QVariantList GetHoldingsQVariantList() const;
-	Holding *GetHolding(LandedTitle *barony) const;
-	void CreateHolding(LandedTitle *barony, HoldingType *type);
-	void DestroyHolding(LandedTitle *barony);
+	QVariantList get_holdings_qvariant_list() const;
+	holding *get_holding(LandedTitle *barony) const;
+	void create_holding(LandedTitle *barony, holding_type *type);
+	void destroy_holding(LandedTitle *barony);
 
-	Holding *GetCapitalHolding() const
+	holding *get_capital_holding() const
 	{
-		return this->CapitalHolding;
+		return this->capital_holding;
 	}
 
-	void SetCapitalHolding(Holding *holding)
+	void set_capital_holding(holding *holding)
 	{
-		if (holding == this->GetCapitalHolding()) {
+		if (holding == this->get_capital_holding()) {
 			return;
 		}
 
-		this->CapitalHolding = holding;
-		emit CapitalHoldingChanged();
+		this->capital_holding = holding;
+		emit capital_holding_changed();
 	}
 
 	const std::vector<Region *> &GetRegions() const
@@ -278,8 +278,8 @@ signals:
 	void ReligionChanged();
 	void PopulationChanged();
 	void populationGroupsChanged();
-	void HoldingsChanged();
-	void CapitalHoldingChanged();
+	void holdings_changed();
+	void capital_holding_changed();
 	void SelectedChanged();
 
 private:
@@ -294,9 +294,9 @@ private:
 	int PopulationCapacityAdditiveModifier = 0; //the population capacity additive modifier which the province provides to its holdings
 	int PopulationCapacityModifier = 0; //the population capacity modifier which the province provides to its holdings
 	int PopulationGrowthModifier = 0; //the population growth modifier which the province provides to its holdings
-	std::vector<Holding *> Holdings;
-	std::map<LandedTitle *, std::unique_ptr<Holding>> HoldingsByBarony; //the province's holdings, mapped to their respective baronies
-	Holding *CapitalHolding = nullptr;
+	std::vector<holding *> holdings;
+	std::map<LandedTitle *, std::unique_ptr<holding>> holdings_by_barony; //the province's holdings, mapped to their respective baronies
+	holding *capital_holding = nullptr;
 	std::vector<Region *> Regions; //the regions to which this province belongs
 	std::set<Province *> BorderProvinces; //provinces bordering this one
 	bool Selected = false;

@@ -203,7 +203,7 @@ void LandedTitle::Check() const
 			throw std::runtime_error("Landed title \"" + this->GetIdentifier() + "\" has no capital province.");
 		}
 
-		if (this->GetHolding() != nullptr && this->GetHolding()->GetProvince() != this->GetCapitalProvince()) {
+		if (this->get_holding() != nullptr && this->get_holding()->get_province() != this->GetCapitalProvince()) {
 			throw std::runtime_error("Landed title \"" + this->GetIdentifier() + "\" has its holding in a different province than its capital province.");
 		}
 
@@ -213,7 +213,7 @@ void LandedTitle::Check() const
 			}
 		}
 
-		if (this->GetHolding() != nullptr) {
+		if (this->get_holding() != nullptr) {
 			if (this->GetTier() != LandedTitleTier::Barony) {
 				throw std::runtime_error("Landed title \"" + this->GetIdentifier() + "\" has been assigned to a holding, but is not a barony.");
 			}
@@ -226,7 +226,7 @@ void LandedTitle::Check() const
 **
 **	@return	The landed title's name
 */
-std::string LandedTitle::GetName() const
+std::string LandedTitle::get_name() const
 {
 	const Culture *culture = nullptr;
 
@@ -268,9 +268,9 @@ std::string LandedTitle::GetTierTitleName() const
 
 	std::vector<std::string> suffixes;
 
-	if (this->GetHolding() != nullptr) {
+	if (this->get_holding() != nullptr) {
 		//for non-titular baronies, use the holding's type for the localization
-		suffixes.push_back(this->GetHolding()->GetType()->GetIdentifier());
+		suffixes.push_back(this->get_holding()->get_type()->GetIdentifier());
 	}
 
 	if (culture != nullptr) {
@@ -289,7 +289,7 @@ std::string LandedTitle::GetTierTitleName() const
 std::string LandedTitle::GetTitledName() const
 {
 	std::string titled_name = this->GetTierTitleName() + " of ";
-	titled_name += this->GetName();
+	titled_name += this->get_name();
 	return titled_name;
 }
 
@@ -310,9 +310,9 @@ std::string LandedTitle::GetHolderTitleName() const
 
 	std::vector<std::string> suffixes;
 
-	if (this->GetHolding() != nullptr) {
+	if (this->get_holding() != nullptr) {
 		//for non-titular baronies, use the holding's type for the localization, so that e.g. a city's holder title name will be "mayor", regardless of the character's actual government
-		suffixes.push_back(this->GetHolding()->GetType()->GetIdentifier());
+		suffixes.push_back(this->get_holding()->get_type()->GetIdentifier());
 	}
 
 	if (culture != nullptr) {
@@ -342,20 +342,20 @@ void LandedTitle::SetHolder(Character *character)
 
 	//if this is a non-titular county, then the character holding it must also possess the county's capital holding
 	if (this->GetProvince() != nullptr) {
-		this->GetProvince()->GetCapitalHolding()->GetBarony()->SetHolder(character);
+		this->GetProvince()->get_capital_holding()->get_barony()->SetHolder(character);
 	}
 
 	//if this title is associated with a holding (i.e. it is a non-titular barony), then its holder must also be the owner of the holding
-	if (this->GetHolding() != nullptr) {
-		this->GetHolding()->SetOwner(character);
+	if (this->get_holding() != nullptr) {
+		this->get_holding()->set_owner(character);
 	}
 
 	emit HolderChanged();
 }
 
-void LandedTitle::SetHolding(metternich::Holding *holding)
+void LandedTitle::set_holding(metternich::holding *holding)
 {
-	this->Holding = holding;
+	this->holding = holding;
 }
 
 LandedTitle *LandedTitle::GetRealm() const
