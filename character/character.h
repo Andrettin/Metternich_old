@@ -11,6 +11,7 @@
 
 namespace metternich {
 
+class Commodity;
 class Culture;
 class Dynasty;
 class gsml_property;
@@ -378,6 +379,16 @@ public:
 		this->SetWealth(this->GetWealth() + change);
 	}
 
+	int get_stored_commodity(const Commodity *commodity) const
+	{
+		auto find_iterator = this->stored_commodities.find(commodity);
+		if (find_iterator == this->stored_commodities.end()) {
+			return 0;
+		}
+
+		return find_iterator->second;
+	}
+
 	bool can_build_in_holding(const holding *holding);
 	Q_INVOKABLE bool can_build_in_holding(const QVariant &holding_variant);
 
@@ -412,6 +423,7 @@ private:
 	std::vector<Character *> Vassals;
 	std::vector<Trait *> Traits;
 	int Wealth = 0;
+	std::map<const Commodity *, int> stored_commodities; //the amount of each commodity stored by the character
 };
 
 }
