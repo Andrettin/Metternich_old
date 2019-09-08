@@ -15,6 +15,7 @@ class Building;
 class Character;
 class Commodity;
 class Culture;
+class employment;
 class EmploymentType;
 class HoldingType;
 class IdentifiableModifier;
@@ -404,33 +405,12 @@ public:
 		this->CalculatePopulationCapacity();
 	}
 
-	int GetEmploymentWorkforce(const EmploymentType *employment_type)
-	{
-		auto find_iterator = this->EmploymentWorkforces.find(employment_type);
-		if (find_iterator == this->EmploymentWorkforces.end()) {
-			return 0;
-		}
-
-		return find_iterator->second;
-	}
-
+	int GetEmploymentWorkforce(const EmploymentType *employment_type) const;
 	void SetEmploymentWorkforce(const EmploymentType *employment_type, const int workforce);
 
 	void ChangeEmploymentWorkforce(const EmploymentType *employment_type, const int change)
 	{
 		this->SetEmploymentWorkforce(employment_type, this->GetEmploymentWorkforce(employment_type) + change);
-	}
-
-	void RemoveExcessEmployment(const EmploymentType *employment_type);
-
-	void add_employed_population_unit(const EmploymentType *employment_type, population_unit *population_unit)
-	{
-		this->employed_population_units[employment_type].push_back(population_unit);
-	}
-
-	void remove_employed_population_unit(const EmploymentType *employment_type, population_unit *population_unit)
-	{
-		this->employed_population_units[employment_type].erase(std::remove(this->employed_population_units[employment_type].begin(), this->employed_population_units[employment_type].end(), population_unit), this->employed_population_units[employment_type].end());
 	}
 
 	bool IsSelected() const
@@ -486,8 +466,7 @@ private:
 	metternich::Religion *Religion = nullptr; //the holding's religion
 	std::set<IdentifiableModifier *> Modifiers; //modifiers applied to the holding
 	bool Selected = false;
-	std::map<const EmploymentType *, int> EmploymentWorkforces; //the allowed workforce amount for each employment type
-	std::map<const EmploymentType *, std::vector<population_unit *>> employed_population_units; //the population units employed for each employment type
+	std::map<const EmploymentType *, std::unique_ptr<employment>> employments; //employments, mapped to their respective employment types
 	std::map<PopulationType *, int> PopulationPerType; //the population for each population type
 	std::map<metternich::Culture *, int> PopulationPerCulture; //the population for each culture
 	std::map<metternich::Religion *, int> PopulationPerReligion; //the population for each religion

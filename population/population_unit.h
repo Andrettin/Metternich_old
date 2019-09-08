@@ -10,6 +10,7 @@
 namespace metternich {
 
 class Culture;
+class employment;
 class EmploymentType;
 class Holding;
 class PopulationType;
@@ -193,23 +194,6 @@ public:
 	bool can_distribute_to_holding(const Holding *holding) const;
 	void distribute_to_holdings(const std::vector<Holding *> &holdings);
 
-	int get_employment_size(const EmploymentType *employment_type) const
-	{
-		auto find_iterator = this->employment_sizes.find(employment_type);
-		if (find_iterator == this->employment_sizes.end()) {
-			return 0;
-		}
-
-		return find_iterator->second;
-	}
-
-	void set_employment_size(const EmploymentType *employment_type, const int size);
-
-	void change_employment_size(const EmploymentType *employment_type, const int change)
-	{
-		this->set_employment_size(employment_type, this->get_employment_size(employment_type) + change);
-	}
-
 	int get_unemployed_size() const
 	{
 		return this->unemployed_size;
@@ -227,6 +211,16 @@ public:
 	void change_unemployed_size(const int change)
 	{
 		this->set_unemployed_size(this->get_unemployed_size() + change);
+	}
+
+	void add_employment(employment *employment)
+	{
+		this->employments.insert(employment);
+	}
+
+	void remove_employment(employment *employment)
+	{
+		this->employments.erase(employment);
 	}
 
 signals:
@@ -251,7 +245,7 @@ private:
 	bool discount_existing = false; //whether to discount the size of existing population units (in this population unit's holding, province or region) of the types given in DiscountTypes from that of this one
 	bool discount_any_type = false; //whether to discount the size of any existing population units from that of this one
 	std::set<PopulationType *> discount_types; //the sizes of population units belonging to these types will be discounted from that of this population unit
-	std::map<const EmploymentType *, int> employment_sizes; //the amount of people employed from this population unit per employment type
+	std::set<employment *> employments;
 	int unemployed_size = 0; //the amount of people from this population unit which are unemployed
 };
 

@@ -24,6 +24,7 @@ SOURCES += \
         defines.cpp \
         economy/commodity.cpp \
         economy/employee.cpp \
+        economy/employment.cpp \
         economy/employment_owner.cpp \
         economy/employment_type.cpp \
         engine_interface.cpp \
@@ -88,6 +89,7 @@ HEADERS += \
     defines.h \
     economy/commodity.h \
     economy/employee.h \
+    economy/employment.h \
     economy/employment_owner.h \
     economy/employment_type.h \
     empty_image_provider.h \

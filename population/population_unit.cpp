@@ -1,6 +1,7 @@
 #include "population/population_unit.h"
 
 #include "database/gsml_data.h"
+#include "economy/employment.h"
 #include "economy/employment_type.h"
 #include "game/game.h"
 #include "holding/holding.h"
@@ -83,26 +84,21 @@ void population_unit::set_size(const int size)
 	if (size_change > 0) {
 		this->change_unemployed_size(size_change);
 	} else {
-		int employment_size_change = size_change;
+		int total_employment_size_change = size_change;
 		if (this->get_unemployed_size()) {
-			const int unemployed_size_change = -std::min(this->get_unemployed_size(), abs(employment_size_change));
+			const int unemployed_size_change = -std::min(this->get_unemployed_size(), abs(total_employment_size_change));
 			this->change_unemployed_size(unemployed_size_change);
-			employment_size_change -= unemployed_size_change;
+			total_employment_size_change -= unemployed_size_change;
 		}
 
-		if (employment_size_change != 0) {
-			for (auto it = this->employment_sizes.rbegin(); it != this->employment_sizes.rend(); ++it) {
-				const EmploymentType *employment_type = it->first;
-				int &specific_employment_size = it->second;
-				const int specific_employment_size_change = -std::min(specific_employment_size, abs(employment_size_change));
-				specific_employment_size += specific_employment_size_change;
-				employment_size_change -= specific_employment_size_change;
+		if (total_employment_size_change != 0) {
+			for (employment *employment : this->employments) {
+				int employment_size = employment->get_employee_size(this);
+				const int employment_size_change = -std::min(employment_size, abs(total_employment_size_change));
+				employment->change_employee_size(this, employment_size_change);
+				total_employment_size_change -= employment_size_change;
 
-				if (specific_employment_size == 0) {
-					this->get_holding()->remove_employed_population_unit(employment_type, this);
-				}
-
-				if (employment_size_change == 0) {
+				if (total_employment_size_change == 0) {
 					break;
 				}
 			}
@@ -239,29 +235,6 @@ void population_unit::distribute_to_holdings(const std::vector<metternich::Holdi
 			population_unit->set_religion(this->get_religion());
 		}
 		holding->add_population_unit(std::move(population_unit));
-	}
-}
-
-/**
-**	@brief	Set the population unit's employment size for a given employment typ
-**
-**	@param	employment_type	The employment type
-**	@param	size			The new employment size
-*/
-void population_unit::set_employment_size(const EmploymentType *employment_type, const int size)
-{
-	if (size == this->get_employment_size(employment_type)) {
-		return;
-	}
-
-	if (size < 0) {
-		throw std::runtime_error("Tried to set a negative employment size for employment type \"" + employment_type->GetIdentifier() + "\" for a population unit.");
-	}
-
-	if (size == 0) {
-		this->employment_sizes.erase(employment_type);
-	} else {
-		this->employment_sizes[employment_type] = size;
 	}
 }
 
