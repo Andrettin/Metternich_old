@@ -17,6 +17,7 @@ class Commodity : public DataEntry, public DataType<Commodity>
 {
 	Q_OBJECT
 
+	Q_PROPERTY(int base_price MEMBER base_price READ get_base_price)
 	Q_PROPERTY(QString icon READ GetIconPathQString WRITE SetIconPathQString NOTIFY IconPathChanged)
 	Q_PROPERTY(QString icon_path READ GetIconPathQString WRITE SetIconPathQString NOTIFY IconPathChanged)
 
@@ -29,6 +30,18 @@ public:
 	virtual ~Commodity() override;
 
 	virtual void ProcessGSMLScope(const gsml_data &scope) override;
+
+	virtual void Check() const override
+	{
+		if (this->get_base_price() == 0) {
+			throw std::runtime_error("Commodity \"" + this->GetIdentifier() + "\" has no base price.");
+		}
+	}
+
+	int get_base_price() const
+	{
+		return this->base_price;
+	}
 
 	const std::string &GetIconPath() const
 	{
@@ -61,6 +74,7 @@ signals:
 	void IconPathChanged();
 
 private:
+	int base_price = 0; //the commodity's base price
 	std::string IconPath;
 	std::unique_ptr<ChanceFactor> Chance; //the chance of the commodity being picked as the one for a given settlement holding
 };

@@ -60,7 +60,7 @@ void Database::ProcessGSMLPropertyForObject(QObject *object, const gsml_property
 		} else if (property_type == QVariant::Int) {
 			int value = 0;
 
-			if (property.get_key() == "efficiency" || property.get_key() == "output_value" || property.get_key() == "output_modifier" || property.get_key() == "workforce_proportion" || property.get_key() == "proportion_to_workforce" || property.get_key() == "income_share") {
+			if (property.get_key() == "efficiency" || property.get_key() == "output_value" || property.get_key() == "output_modifier" || property.get_key() == "workforce_proportion" || property.get_key() == "proportion_to_workforce" || property.get_key() == "income_share" || property.get_key() == "base_price") {
 				value = util::centesimal_number_string_to_int(property.get_value());
 			} else if (property.get_key() == "base_population_growth") {
 				value = util::fractional_number_string_to_int<4>(property.get_value());
