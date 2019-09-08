@@ -263,9 +263,9 @@ public:
 
 	void add_population_unit(std::unique_ptr<population_unit> &&population_unit);
 
-	Q_INVOKABLE QVariantList get_population_per_type() const;
-	Q_INVOKABLE QVariantList get_population_per_culture() const;
-	Q_INVOKABLE QVariantList get_population_per_religion() const;
+	Q_INVOKABLE QVariantList get_population_per_type_qvariant_list() const;
+	Q_INVOKABLE QVariantList get_population_per_culture_qvariant_list() const;
+	Q_INVOKABLE QVariantList get_population_per_religion_qvariant_list() const;
 
 signals:
 	void CountyChanged();

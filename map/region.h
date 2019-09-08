@@ -48,7 +48,7 @@ public:
 			}
 
 			for (Province *province : subregion->GetProvinces()) {
-				this->AddProvince(province);
+				this->add_province(province);
 			}
 		}
 
@@ -63,17 +63,17 @@ public:
 	}
 
 	QVariantList GetProvincesQVariantList() const;
-	Q_INVOKABLE void AddProvince(Province *province);
-	Q_INVOKABLE void RemoveProvince(Province *province);
+	Q_INVOKABLE void add_province(Province *province);
+	Q_INVOKABLE void remove_province(Province *province);
 
 	QVariantList GetSubregionsQVariantList() const;
 
-	Q_INVOKABLE void AddSubregion(Region *subregion)
+	Q_INVOKABLE void add_subregion(Region *subregion)
 	{
 		this->Subregions.push_back(subregion);
 	}
 
-	Q_INVOKABLE void RemoveSubregion(Region *subregion)
+	Q_INVOKABLE void remove_subregion(Region *subregion)
 	{
 		this->Subregions.erase(std::remove(this->Subregions.begin(), this->Subregions.end(), subregion), this->Subregions.end());
 	}

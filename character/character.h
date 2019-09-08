@@ -348,12 +348,12 @@ public:
 
 	QVariantList GetTraitsQVariantList() const;
 
-	Q_INVOKABLE void AddTrait(Trait *trait)
+	Q_INVOKABLE void add_trait(Trait *trait)
 	{
 		this->Traits.push_back(trait);
 	}
 
-	Q_INVOKABLE void RemoveTrait(Trait *trait)
+	Q_INVOKABLE void remove_trait(Trait *trait)
 	{
 		this->Traits.erase(std::remove(this->Traits.begin(), this->Traits.end(), trait), this->Traits.end());
 	}

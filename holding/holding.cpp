@@ -568,7 +568,7 @@ void holding::set_selected(const bool selected, const bool notify_engine_interfa
 	}
 }
 
-Q_INVOKABLE QVariantList holding::get_population_per_type_qvariant_list() const
+QVariantList holding::get_population_per_type_qvariant_list() const
 {
 	QVariantList population_per_type;
 
@@ -582,7 +582,7 @@ Q_INVOKABLE QVariantList holding::get_population_per_type_qvariant_list() const
 	return population_per_type;
 }
 
-Q_INVOKABLE QVariantList holding::get_population_per_culture_qvariant_list() const
+QVariantList holding::get_population_per_culture_qvariant_list() const
 {
 	QVariantList population_per_culture;
 
@@ -596,7 +596,7 @@ Q_INVOKABLE QVariantList holding::get_population_per_culture_qvariant_list() con
 	return population_per_culture;
 }
 
-Q_INVOKABLE QVariantList holding::get_population_per_religion_qvariant_list() const
+QVariantList holding::get_population_per_religion_qvariant_list() const
 {
 	QVariantList population_per_religion;
 

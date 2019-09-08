@@ -33,13 +33,13 @@ QVariantList Region::GetProvincesQVariantList() const
 	return util::container_to_qvariant_list(this->GetProvinces());
 }
 
-Q_INVOKABLE void Region::AddProvince(Province *province)
+void Region::add_province(Province *province)
 {
 	this->Provinces.push_back(province);
 	province->AddRegion(this);
 }
 
-Q_INVOKABLE void Region::RemoveProvince(Province *province)
+void Region::remove_province(Province *province)
 {
 	this->Provinces.erase(std::remove(this->Provinces.begin(), this->Provinces.end(), province), this->Provinces.end());
 	province->RemoveRegion(this);

@@ -735,7 +735,7 @@ bool Province::IsSelectable() const
 	return this->GetCounty() != nullptr;
 }
 
-Q_INVOKABLE QVariantList Province::get_population_per_type() const
+QVariantList Province::get_population_per_type_qvariant_list() const
 {
 	QVariantList population_per_type;
 
@@ -749,7 +749,7 @@ Q_INVOKABLE QVariantList Province::get_population_per_type() const
 	return population_per_type;
 }
 
-Q_INVOKABLE QVariantList Province::get_population_per_culture() const
+QVariantList Province::get_population_per_culture_qvariant_list() const
 {
 	QVariantList population_per_culture;
 
@@ -763,7 +763,7 @@ Q_INVOKABLE QVariantList Province::get_population_per_culture() const
 	return population_per_culture;
 }
 
-Q_INVOKABLE QVariantList Province::get_population_per_religion() const
+QVariantList Province::get_population_per_religion_qvariant_list() const
 {
 	QVariantList population_per_religion;
 

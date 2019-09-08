@@ -132,12 +132,12 @@ void Database::ProcessGSMLPropertyForObject(QObject *object, const gsml_property
 
 			std::string method_name;
 			if (property.get_operator() == gsml_operator::addition) {
-				method_name = "Add";
+				method_name = "add_";
 			} else if (property.get_operator() == gsml_operator::subtraction) {
-				method_name = "Remove";
+				method_name = "remove_";
 			}
 
-			method_name += util::get_singular_form(util::snake_case_to_pascal_case(property.get_key()));
+			method_name += util::get_singular_form(property.get_key());
 
 			bool success = false;
 			if (property.get_key() == "traits") {
