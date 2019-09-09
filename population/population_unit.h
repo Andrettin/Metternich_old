@@ -42,6 +42,8 @@ public:
 
 	virtual void initialize_history() override;
 
+	void do_month();
+
 	PopulationType *get_type() const
 	{
 		return this->type;
@@ -222,6 +224,8 @@ public:
 	{
 		this->employments.erase(employment);
 	}
+
+	void seek_employment();
 
 signals:
 	void type_changed();

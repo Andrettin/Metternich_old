@@ -48,6 +48,8 @@ public:
 		return this->OutputValue;
 	}
 
+	bool can_employ_population_type(PopulationType *population_type) const;
+
 private:
 	EmploymentType *Template = nullptr;
 	std::vector<std::unique_ptr<Employee>> Employees;

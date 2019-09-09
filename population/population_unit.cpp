@@ -65,6 +65,16 @@ void population_unit::initialize_history()
 }
 
 /**
+**	@brief	Do the population unit's monthly actions
+*/
+void population_unit::do_month()
+{
+	if (this->get_unemployed_size() > 0) {
+		this->seek_employment();
+	}
+}
+
+/**
 **	@brief	Set the population unit's size
 **
 **	@param	size	The size
@@ -235,6 +245,26 @@ void population_unit::distribute_to_holdings(const std::vector<metternich::holdi
 			population_unit->set_religion(this->get_religion());
 		}
 		holding->add_population_unit(std::move(population_unit));
+	}
+}
+
+/**
+**	@brief	Seek employment for the population unit
+*/
+void population_unit::seek_employment()
+{
+	for (auto &kv_pair : this->get_holding()->get_employments()) {
+		employment *employment = kv_pair.second.get();
+
+		if (employment->can_employ_population_unit(this)) {
+			const int unused_employment_capacity = employment->get_unused_workforce_capacity();
+			const int employee_size_change = std::min(this->get_unemployed_size(), unused_employment_capacity);
+			employment->change_employee_size(this, employee_size_change);
+
+			if (this->get_unemployed_size() == 0) {
+				break;
+			}
+		}
 	}
 }
 

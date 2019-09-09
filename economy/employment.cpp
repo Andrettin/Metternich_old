@@ -37,11 +37,30 @@ void employment::set_employee_size(population_unit *employee, const int size)
 		throw std::runtime_error("Tried to set a negative employment size for employment type \"" + this->get_type()->GetIdentifier() + "\" for a population unit of type \"" + employee->get_type()->GetIdentifier() + "\".");
 	}
 
+	const int old_size = this->get_employee_size(employee);
+
 	if (size == 0) {
 		this->employee_sizes.erase(employee);
 	} else {
 		this->employee_sizes[employee] = size;
 	}
+
+	const int diff = size - old_size;
+	this->workforce += diff;
+	employee->change_unemployed_size(-diff);
+}
+
+bool employment::can_employ_population_unit(const population_unit *population_unit) const
+{
+	if (this->get_unused_workforce_capacity() == 0) {
+		return false;
+	}
+
+	if (!this->get_type()->can_employ_population_type(population_unit->get_type())) {
+		return false;
+	}
+
+	return true;
 }
 
 /**
@@ -49,13 +68,7 @@ void employment::set_employee_size(population_unit *employee, const int size)
 */
 void employment::remove_excess_employees()
 {
-	int employment = 0;
-	for (const auto &kv_pair : this->employee_sizes) {
-		const int size = kv_pair.second;
-		employment += size;
-	}
-
-	int excess_employment = employment - this->get_workforce_capacity();
+	int excess_employment = this->get_workforce() - this->get_workforce_capacity();
 
 	if (excess_employment <= 0) {
 		return;
@@ -67,6 +80,8 @@ void employment::remove_excess_employees()
 		population_unit *population_unit = kv_pair.first;
 		int &pop_current_employment = kv_pair.second;
 		const int pop_employment_change = -std::min(pop_current_employment, excess_employment);
+		this->workforce += pop_employment_change;
+		population_unit->change_unemployed_size(-pop_employment_change);
 		pop_current_employment += pop_employment_change;
 		excess_employment += pop_employment_change;
 		if (pop_current_employment == 0) {

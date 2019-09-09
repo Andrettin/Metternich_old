@@ -405,6 +405,11 @@ public:
 		this->calculate_population_capacity();
 	}
 
+	const std::map<const EmploymentType *, std::unique_ptr<employment>> &get_employments() const
+	{
+		return this->employments;
+	}
+
 	int get_employment_workforce(const EmploymentType *employment_type) const;
 	void set_employment_workforce(const EmploymentType *employment_type, const int workforce);
 

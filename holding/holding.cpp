@@ -105,6 +105,11 @@ void holding::do_day()
 void holding::do_month()
 {
 	this->do_population_growth();
+
+	for (const std::unique_ptr<population_unit> &population_unit : this->get_population_units()) {
+		population_unit->do_month();
+	}
+
 	this->remove_empty_population_units();
 	this->calculate_population_groups();
 }

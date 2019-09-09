@@ -115,4 +115,15 @@ void EmploymentType::Initialize()
 	DataEntryBase::Initialize();
 }
 
+bool EmploymentType::can_employ_population_type(PopulationType *population_type) const
+{
+	for (const std::unique_ptr<Employee> &employee : this->Employees) {
+		if (employee->GetPopulationType() == population_type) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 }
