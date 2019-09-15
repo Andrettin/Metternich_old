@@ -48,7 +48,8 @@ public:
 		return this->OutputValue;
 	}
 
-	bool can_employ_population_type(PopulationType *population_type) const;
+	int get_employee_efficiency(const PopulationType *population_type) const;
+	bool can_employ_population_type(const PopulationType *population_type) const;
 
 private:
 	EmploymentType *Template = nullptr;

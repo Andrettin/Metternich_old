@@ -11,6 +11,8 @@ class employment
 public:
 	employment(const EmploymentType *type) : type(type) {}
 
+	void do_day();
+
 	const EmploymentType *get_type() const
 	{
 		return type;

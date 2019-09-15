@@ -29,6 +29,7 @@ class population_unit : public DataEntryBase, public SimpleDataType<population_u
 	Q_PROPERTY(metternich::holding* holding READ get_holding WRITE set_holding NOTIFY holding_changed)
 	Q_PROPERTY(metternich::Province* province READ get_province WRITE set_province NOTIFY province_changed)
 	Q_PROPERTY(metternich::Region* region READ get_region WRITE set_region NOTIFY region_changed)
+	Q_PROPERTY(int wealth READ get_wealth NOTIFY wealth_changed)
 	Q_PROPERTY(bool discount_existing READ discounts_existing WRITE set_discount_existing NOTIFY discount_existing_changed)
 	Q_PROPERTY(bool discount_any_type READ discounts_any_type WRITE set_discount_any_type NOTIFY discount_any_type_changed)
 	Q_PROPERTY(QVariantList discount_types READ get_discount_types_qvariant_list)
@@ -227,6 +228,26 @@ public:
 
 	void seek_employment();
 
+	int get_wealth() const
+	{
+		return this->wealth;
+	}
+
+	void set_wealth(const int wealth)
+	{
+		if (wealth == this->get_wealth()) {
+			return;
+		}
+
+		this->wealth = wealth;
+		emit wealth_changed();
+	}
+
+	void change_wealth(const int change)
+	{
+		this->set_wealth(this->get_wealth() + change);
+	}
+
 signals:
 	void type_changed();
 	void culture_changed();
@@ -237,6 +258,7 @@ signals:
 	void region_changed();
 	void discount_existing_changed();
 	void discount_any_type_changed();
+	void wealth_changed();
 
 private:
 	PopulationType *type = nullptr;
@@ -251,6 +273,7 @@ private:
 	std::set<PopulationType *> discount_types; //the sizes of population units belonging to these types will be discounted from that of this population unit
 	std::set<employment *> employments;
 	int unemployed_size = 0; //the amount of people from this population unit which are unemployed
+	int wealth = 0; //the wealth belonging to the population unit
 };
 
 }

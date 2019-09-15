@@ -97,6 +97,11 @@ void holding::do_day()
 			this->set_under_construction_building(nullptr);
 		}
 	}
+
+	for (auto &kv_pair : this->get_employments()) {
+		const std::unique_ptr<employment> &employment = kv_pair.second;
+		employment->do_day();
+	}
 }
 
 /**

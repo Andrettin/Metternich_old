@@ -115,7 +115,32 @@ void EmploymentType::Initialize()
 	DataEntryBase::Initialize();
 }
 
-bool EmploymentType::can_employ_population_type(PopulationType *population_type) const
+/**
+**	@brief	Get the employee efficiency for a given population type
+**
+**	@param	population_type	The population type
+**
+**	@return	The employee efficiency for the population type
+*/
+int EmploymentType::get_employee_efficiency(const PopulationType *population_type) const
+{
+	for (const std::unique_ptr<Employee> &employee : this->Employees) {
+		if (employee->GetPopulationType() == population_type) {
+			return employee->GetEfficiency();
+		}
+	}
+
+	return 0;
+}
+
+/**
+**	@brief	Get whether the employment type allows employment of a given population type
+**
+**	@param	population_type	The population type
+**
+**	@return	True if the employment type allows employing the population type, or false otherwise
+*/
+bool EmploymentType::can_employ_population_type(const PopulationType *population_type) const
 {
 	for (const std::unique_ptr<Employee> &employee : this->Employees) {
 		if (employee->GetPopulationType() == population_type) {

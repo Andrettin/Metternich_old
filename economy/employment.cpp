@@ -1,10 +1,35 @@
 #include "economy/employment.h"
 
+#include "economy/commodity.h"
 #include "economy/employment_type.h"
 #include "population/population_type.h"
 #include "population/population_unit.h"
 
 namespace metternich {
+
+
+/**
+**	@brief	Do the employment's daily actions
+*/
+void employment::do_day()
+{
+	for (auto &kv_pair : this->employee_sizes) {
+		population_unit *population_unit = kv_pair.first;
+		const int pop_current_employment = kv_pair.second;
+
+		long long int output = this->get_type()->GetOutputValue();
+		output *= pop_current_employment;
+		output /= this->get_type()->GetWorkforce();
+		output *= this->get_type()->get_employee_efficiency(population_unit->get_type());
+		output /= 100;
+
+		//add wealth as if the commodity had been sold immediately, this should be updated into a more sophisticated sale system later
+		int wealth_change = static_cast<int>(output);
+		wealth_change *= this->get_type()->GetOutputCommodity()->get_base_price();
+		wealth_change /= 100;
+		population_unit->change_wealth(wealth_change);
+	}
+}
 
 void employment::set_workforce_capacity(const int capacity)
 {
