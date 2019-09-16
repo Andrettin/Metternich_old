@@ -2,18 +2,18 @@
 
 namespace metternich {
 
-class EmploymentType;
+class employment_type;
 class holding;
 class population_unit;
 
 class employment
 {
 public:
-	employment(const EmploymentType *type) : type(type) {}
+	employment(const employment_type *type) : type(type) {}
 
 	void do_day();
 
-	const EmploymentType *get_type() const
+	const employment_type *get_type() const
 	{
 		return type;
 	}
@@ -56,7 +56,7 @@ public:
 	void remove_excess_employees();
 
 private:
-	const EmploymentType *type = nullptr; //the employment type
+	const employment_type *type = nullptr; //the employment type
 	int workforce = 0; //the current workforce for the employment
 	int workforce_capacity = 0; //the maximum workforce for the employment
 	const holding *holding = nullptr; //the holding where the employment is located

@@ -12,14 +12,14 @@ namespace metternich {
 **
 **	@param	identifier	The commodity's string identifier
 */
-Commodity::Commodity(const std::string &identifier) : DataEntry(identifier)
+commodity::commodity(const std::string &identifier) : DataEntry(identifier)
 {
 }
 
 /**
 **	@brief	Destructor
 */
-Commodity::~Commodity()
+commodity::~commodity()
 {
 }
 
@@ -28,13 +28,13 @@ Commodity::~Commodity()
 **
 **	@param	scope	The scope
 */
-void Commodity::ProcessGSMLScope(const gsml_data &scope)
+void commodity::ProcessGSMLScope(const gsml_data &scope)
 {
 	const std::string &tag = scope.get_tag();
 
 	if (tag == "chance") {
-		this->Chance = std::make_unique<ChanceFactor>();
-		Database::ProcessGSMLData(this->Chance, scope);
+		this->chance = std::make_unique<ChanceFactor>();
+		Database::ProcessGSMLData(this->chance, scope);
 	} else {
 		DataEntryBase::ProcessGSMLScope(scope);
 	}
@@ -45,14 +45,14 @@ void Commodity::ProcessGSMLScope(const gsml_data &scope)
 **
 **	@param	holding	The settlement holding
 */
-int Commodity::CalculateChance(holding *holding) const
+int commodity::calculate_chance(holding *holding) const
 {
-	if (!this->Chance) {
+	if (!this->chance) {
 		return 0;
 	}
 
 	//calculate the chance for the commodity to be generated as the produced one for a holding
-	return this->Chance->Calculate(holding);
+	return this->chance->Calculate(holding);
 }
 
 }

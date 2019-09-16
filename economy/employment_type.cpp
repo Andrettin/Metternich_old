@@ -13,14 +13,14 @@ namespace metternich {
 **
 **	@param	identifier	The employment type's string identifier
 */
-EmploymentType::EmploymentType(const std::string &identifier) : DataEntry(identifier)
+employment_type::employment_type(const std::string &identifier) : DataEntry(identifier)
 {
 }
 
 /**
 **	@brief	Destructor
 */
-EmploymentType::~EmploymentType()
+employment_type::~employment_type()
 {
 }
 
@@ -29,11 +29,11 @@ EmploymentType::~EmploymentType()
 **
 **	@param	property	The property
 */
-void EmploymentType::ProcessGSMLProperty(const gsml_property &property)
+void employment_type::ProcessGSMLProperty(const gsml_property &property)
 {
 	if (property.get_key() == "template") {
 		if (property.get_operator() == gsml_operator::assignment) {
-			this->Template = EmploymentType::Get(property.get_value());
+			this->template_type = employment_type::Get(property.get_value());
 		} else {
 			throw std::runtime_error("Only the assignment operator may be used for the \"template\" property.");
 		}
@@ -47,7 +47,7 @@ void EmploymentType::ProcessGSMLProperty(const gsml_property &property)
 **
 **	@param	scope	The scope
 */
-void EmploymentType::ProcessGSMLScope(const gsml_data &scope)
+void employment_type::ProcessGSMLScope(const gsml_data &scope)
 {
 	const std::string &tag = scope.get_tag();
 
@@ -57,19 +57,19 @@ void EmploymentType::ProcessGSMLScope(const gsml_data &scope)
 				throw std::runtime_error("Only the assignment operator may be used for properties in the \"" + tag + "\" scope.");
 			}
 
-			Commodity *commodity = Commodity::Get(property.get_key());
+			commodity *commodity = commodity::Get(property.get_key());
 			const int input_quantity = std::stoi(property.get_value());
-			this->InputCommodities[commodity] = input_quantity;
+			this->input_commodities[commodity] = input_quantity;
 		}
 	} else if (tag == "employees") {
 		for (const gsml_data &employee_scope : scope.get_children()) {
-			std::unique_ptr<Employee> employee = Employee::FromGSMLScope(employee_scope);
-			this->Employees.push_back(std::move(employee));
+			std::unique_ptr<employee> employee = employee::from_gsml_scope(employee_scope);
+			this->employees.push_back(std::move(employee));
 		}
 	} else if (tag == "owners") {
 		for (const gsml_data &owner_scope : scope.get_children()) {
-			std::unique_ptr<EmploymentOwner> owner = EmploymentOwner::FromGSMLScope(owner_scope);
-			this->Owners.push_back(std::move(owner));
+			std::unique_ptr<employment_owner> owner = employment_owner::from_gsml_scope(owner_scope);
+			this->owners.push_back(std::move(owner));
 		}
 	} else {
 		DataEntryBase::ProcessGSMLScope(scope);
@@ -79,35 +79,35 @@ void EmploymentType::ProcessGSMLScope(const gsml_data &scope)
 /**
 **	@brief	Initialize the employment type
 */
-void EmploymentType::Initialize()
+void employment_type::Initialize()
 {
 	//inherit the data from the template
-	if (this->Template != nullptr) {
-		if (!this->Template->IsInitialized()) {
-			this->Template->Initialize();
+	if (this->template_type != nullptr) {
+		if (!this->template_type->IsInitialized()) {
+			this->template_type->Initialize();
 		}
 
-		if (this->GetWorkforce() == 0) {
-			this->Workforce = this->Template->GetWorkforce();
+		if (this->get_workforce() == 0) {
+			this->workforce = this->template_type->get_workforce();
 		}
 
-		if (this->GetOutputCommodity() == nullptr) {
-			this->OutputCommodity = this->Template->GetOutputCommodity();
+		if (this->get_output_commodity() == nullptr) {
+			this->output_commodity = this->template_type->get_output_commodity();
 		}
 
-		if (this->GetOutputValue() == 0) {
-			this->OutputValue= this->Template->GetOutputValue();
+		if (this->get_output_value() == 0) {
+			this->output_value = this->template_type->get_output_value();
 		}
 
-		if (this->Employees.empty()) {
-			for (const std::unique_ptr<Employee> &employee : this->Template->Employees) {
-				this->Employees.push_back(employee->Duplicate());
+		if (this->employees.empty()) {
+			for (const std::unique_ptr<employee> &employee : this->template_type->employees) {
+				this->employees.push_back(employee->duplicate());
 			}
 		}
 
-		if (this->Owners.empty()) {
-			for (const std::unique_ptr<EmploymentOwner> &owner : this->Template->Owners) {
-				this->Owners.push_back(owner->Duplicate());
+		if (this->owners.empty()) {
+			for (const std::unique_ptr<employment_owner> &owner : this->template_type->owners) {
+				this->owners.push_back(owner->duplicate());
 			}
 		}
 	}
@@ -122,11 +122,11 @@ void EmploymentType::Initialize()
 **
 **	@return	The employee efficiency for the population type
 */
-int EmploymentType::get_employee_efficiency(const PopulationType *population_type) const
+int employment_type::get_employee_efficiency(const PopulationType *population_type) const
 {
-	for (const std::unique_ptr<Employee> &employee : this->Employees) {
-		if (employee->GetPopulationType() == population_type) {
-			return employee->GetEfficiency();
+	for (const std::unique_ptr<employee> &employee : this->employees) {
+		if (employee->get_population_type() == population_type) {
+			return employee->get_efficiency();
 		}
 	}
 
@@ -140,10 +140,10 @@ int EmploymentType::get_employee_efficiency(const PopulationType *population_typ
 **
 **	@return	True if the employment type allows employing the population type, or false otherwise
 */
-bool EmploymentType::can_employ_population_type(const PopulationType *population_type) const
+bool employment_type::can_employ_population_type(const PopulationType *population_type) const
 {
-	for (const std::unique_ptr<Employee> &employee : this->Employees) {
-		if (employee->GetPopulationType() == population_type) {
+	for (const std::unique_ptr<employee> &employee : this->employees) {
+		if (employee->get_population_type() == population_type) {
 			return true;
 		}
 	}

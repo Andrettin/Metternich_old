@@ -13,10 +13,10 @@ namespace metternich {
 **
 **	@param	scope	The GSML scope
 */
-std::unique_ptr<EmploymentOwner> EmploymentOwner::FromGSMLScope(const gsml_data &scope)
+std::unique_ptr<employment_owner> employment_owner::from_gsml_scope(const gsml_data &scope)
 {
-	auto owner = std::make_unique<EmploymentOwner>();
-	owner->PopulationType = PopulationType::Get(scope.get_tag());
+	auto owner = std::make_unique<employment_owner>();
+	owner->population_type = PopulationType::Get(scope.get_tag());
 
 	Database::ProcessGSMLData(owner, scope);
 
@@ -28,7 +28,7 @@ std::unique_ptr<EmploymentOwner> EmploymentOwner::FromGSMLScope(const gsml_data 
 **
 **	@param	property	The property
 */
-void EmploymentOwner::ProcessGSMLProperty(const gsml_property &property)
+void employment_owner::ProcessGSMLProperty(const gsml_property &property)
 {
 	Database::ProcessGSMLPropertyForObject(this, property);
 }

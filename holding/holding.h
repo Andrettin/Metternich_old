@@ -13,10 +13,10 @@ namespace metternich {
 
 class Building;
 class Character;
-class Commodity;
+class commodity;
 class Culture;
 class employment;
-class EmploymentType;
+class employment_type;
 class holding_type;
 class IdentifiableModifier;
 class LandedTitle;
@@ -41,7 +41,7 @@ class holding : public DataEntry
 	Q_PROPERTY(QVariantList available_buildings READ get_available_buildings_qvariant_list NOTIFY available_buildings_changed)
 	Q_PROPERTY(metternich::Building* under_construction_building READ get_under_construction_building NOTIFY under_construction_building_changed)
 	Q_PROPERTY(int construction_days READ get_construction_days NOTIFY construction_days_changed)
-	Q_PROPERTY(metternich::Commodity* commodity READ get_commodity WRITE set_commodity NOTIFY commodity_changed)
+	Q_PROPERTY(metternich::commodity* commodity READ get_commodity WRITE set_commodity NOTIFY commodity_changed)
 	Q_PROPERTY(metternich::Culture* culture READ get_culture WRITE set_culture NOTIFY culture_changed)
 	Q_PROPERTY(metternich::Religion* religion READ get_religion WRITE set_religion NOTIFY religion_changed)
 	Q_PROPERTY(int holding_size READ get_holding_size WRITE set_holding_size NOTIFY holding_size_changed)
@@ -342,12 +342,12 @@ public:
 		this->set_construction_days(this->get_construction_days() + change);
 	}
 
-	metternich::Commodity *get_commodity() const
+	metternich::commodity *get_commodity() const
 	{
 		return this->commodity;
 	}
 
-	void set_commodity(Commodity *commodity)
+	void set_commodity(commodity *commodity)
 	{
 		if (commodity == this->get_commodity()) {
 			return;
@@ -405,15 +405,15 @@ public:
 		this->calculate_population_capacity();
 	}
 
-	const std::map<const EmploymentType *, std::unique_ptr<employment>> &get_employments() const
+	const std::map<const employment_type *, std::unique_ptr<employment>> &get_employments() const
 	{
 		return this->employments;
 	}
 
-	int get_employment_workforce(const EmploymentType *employment_type) const;
-	void set_employment_workforce(const EmploymentType *employment_type, const int workforce);
+	int get_employment_workforce(const employment_type *employment_type) const;
+	void set_employment_workforce(const employment_type *employment_type, const int workforce);
 
-	void change_employment_workforce(const EmploymentType *employment_type, const int change)
+	void change_employment_workforce(const employment_type *employment_type, const int change)
 	{
 		this->set_employment_workforce(employment_type, this->get_employment_workforce(employment_type) + change);
 	}
@@ -465,13 +465,13 @@ private:
 	std::set<Building *> buildings;
 	Building *under_construction_building = nullptr; //the building currently under construction
 	int construction_days = 0; //the amount of days remaining to construct the building under construction
-	metternich::Commodity *commodity = nullptr; //the commodity produced by the holding (if any)
+	metternich::commodity *commodity = nullptr; //the commodity produced by the holding (if any)
 	int holding_size = 100; //the holding size, which affects population capacity (100 = normal size)
 	metternich::Culture *culture = nullptr; //the holding's culture
 	metternich::Religion *religion = nullptr; //the holding's religion
 	std::set<IdentifiableModifier *> modifiers; //modifiers applied to the holding
 	bool selected = false;
-	std::map<const EmploymentType *, std::unique_ptr<employment>> employments; //employments, mapped to their respective employment types
+	std::map<const employment_type *, std::unique_ptr<employment>> employments; //employments, mapped to their respective employment types
 	std::map<PopulationType *, int> population_per_type; //the population for each population type
 	std::map<metternich::Culture *, int> population_per_culture; //the population for each culture
 	std::map<metternich::Religion *, int> population_per_religion; //the population for each religion

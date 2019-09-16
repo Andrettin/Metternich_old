@@ -119,9 +119,9 @@ void Database::ProcessGSMLPropertyForObject(QObject *object, const gsml_property
 			} else if (property.get_key() == "character" || property.get_key() == "holder" || property.get_key() == "father" || property.get_key() == "mother" || property.get_key() == "spouse" || property.get_key() == "liege" || property.get_key() == "employer") {
 				new_property_value = QVariant::fromValue(Character::Get(std::stoi(property.get_value())));
 			} else if (property.get_key() == "commodity" || property.get_key() == "output_commodity") {
-				new_property_value = QVariant::fromValue(Commodity::Get(property.get_value()));
+				new_property_value = QVariant::fromValue(commodity::Get(property.get_value()));
 			} else if (property.get_key() == "employment_type") {
-				new_property_value = QVariant::fromValue(EmploymentType::Get(property.get_value()));
+				new_property_value = QVariant::fromValue(employment_type::Get(property.get_value()));
 			} else {
 				throw std::runtime_error("Unknown type for object reference property \"" + std::string(property_name) + "\".");
 			}

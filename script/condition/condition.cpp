@@ -26,7 +26,7 @@ std::unique_ptr<Condition> Condition::FromGSMLProperty(const gsml_property &prop
 	if (condition_identifier == "borders_water") {
 		condition = std::make_unique<BordersWaterCondition>(util::string_to_bool(property.get_value()));
 	} else if (condition_identifier == "commodity") {
-		condition = std::make_unique<CommodityCondition>(property.get_value());
+		condition = std::make_unique<commodity_condition>(property.get_value());
 	} else if (condition_identifier == "terrain") {
 		condition = std::make_unique<TerrainCondition>(property.get_value());
 	} else {

@@ -11,7 +11,7 @@
 
 namespace metternich {
 
-class Commodity;
+class commodity;
 class Culture;
 class Dynasty;
 class gsml_property;
@@ -379,7 +379,7 @@ public:
 		this->SetWealth(this->GetWealth() + change);
 	}
 
-	int get_stored_commodity(const Commodity *commodity) const
+	int get_stored_commodity(const commodity *commodity) const
 	{
 		auto find_iterator = this->stored_commodities.find(commodity);
 		if (find_iterator == this->stored_commodities.end()) {
@@ -423,7 +423,7 @@ private:
 	std::vector<Character *> Vassals;
 	std::vector<Trait *> Traits;
 	int Wealth = 0;
-	std::map<const Commodity *, int> stored_commodities; //the amount of each commodity stored by the character
+	std::map<const commodity *, int> stored_commodities; //the amount of each commodity stored by the character
 };
 
 }

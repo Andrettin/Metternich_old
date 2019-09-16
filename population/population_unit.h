@@ -11,7 +11,6 @@ namespace metternich {
 
 class Culture;
 class employment;
-class EmploymentType;
 class holding;
 class PopulationType;
 class Province;

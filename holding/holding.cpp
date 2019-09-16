@@ -412,8 +412,8 @@ void holding::remove_building(Building *building)
 */
 void holding::apply_building_effects(const Building *building, const int change)
 {
-	if (building->GetEmploymentType() != nullptr) {
-		this->change_employment_workforce(building->GetEmploymentType(), building->GetWorkforce() * change);
+	if (building->get_employment_type() != nullptr) {
+		this->change_employment_workforce(building->get_employment_type(), building->GetWorkforce() * change);
 	}
 }
 
@@ -479,10 +479,10 @@ void holding::set_under_construction_building(Building *building)
 */
 void holding::generate_commodity()
 {
-	std::map<metternich::Commodity *, std::pair<int, int>> commodity_chance_ranges;
+	std::map<metternich::commodity *, std::pair<int, int>> commodity_chance_ranges;
 	int total_chance_factor = 0;
-	for (metternich::Commodity *commodity : Commodity::GetAll()) {
-		const int commodity_chance = commodity->CalculateChance(this);
+	for (metternich::commodity *commodity : commodity::GetAll()) {
+		const int commodity_chance = commodity->calculate_chance(this);
 		if (commodity_chance > 0) {
 			commodity_chance_ranges[commodity] = std::pair<int, int>(total_chance_factor, total_chance_factor + commodity_chance);
 			total_chance_factor += commodity_chance;
@@ -493,11 +493,11 @@ void holding::generate_commodity()
 		return;
 	}
 
-	metternich::Commodity *chosen_commodity = nullptr;
+	metternich::commodity *chosen_commodity = nullptr;
 
 	const int random_number = Random::Generate(total_chance_factor);
 	for (const auto &element : commodity_chance_ranges) {
-		metternich::Commodity *commodity = element.first;
+		metternich::commodity *commodity = element.first;
 		const std::pair<int, int> range = element.second;
 		if (random_number >= range.first && random_number < range.second) {
 			chosen_commodity = commodity;
@@ -512,7 +512,7 @@ void holding::generate_commodity()
 **
 **	@return	The workforce
 */
-int holding::get_employment_workforce(const EmploymentType *employment_type) const
+int holding::get_employment_workforce(const employment_type *employment_type) const
 {
 	auto find_iterator = this->employments.find(employment_type);
 	if (find_iterator == this->employments.end()) {
@@ -528,7 +528,7 @@ int holding::get_employment_workforce(const EmploymentType *employment_type) con
 **	@param	employment_type	The employment type
 **	@param	workforce		The new workforce value
 */
-void holding::set_employment_workforce(const EmploymentType *employment_type, const int workforce)
+void holding::set_employment_workforce(const employment_type *employment_type, const int workforce)
 {
 	if (workforce == this->get_employment_workforce(employment_type)) {
 		return;

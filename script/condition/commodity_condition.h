@@ -6,17 +6,17 @@
 
 namespace metternich {
 
-class Commodity;
+class commodity;
 
 /**
 **	@brief	A scripted commodity condition
 */
-class CommodityCondition : public Condition
+class commodity_condition : public Condition
 {
 public:
-	CommodityCondition(const std::string &commodity_identifier)
+	commodity_condition(const std::string &commodity_identifier)
 	{
-		this->Commodity = Commodity::Get(commodity_identifier);
+		this->commodity = commodity::Get(commodity_identifier);
 	}
 
 
@@ -29,11 +29,11 @@ public:
 	virtual bool Check(const holding *holding) const override
 	{
 		//check whether the holding's commodity is the same as that for this condition
-		return holding->get_commodity() == this->Commodity;
+		return holding->get_commodity() == this->commodity;
 	}
 
 private:
-	metternich::Commodity *Commodity = nullptr;
+	metternich::commodity *commodity = nullptr;
 };
 
 }
