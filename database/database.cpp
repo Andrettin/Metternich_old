@@ -20,6 +20,7 @@
 #include "map/province.h"
 #include "map/region.h"
 #include "map/terrain.h"
+#include "phenotype.h"
 #include "population/population_type.h"
 #include "religion.h"
 #include "translator.h"
@@ -109,11 +110,13 @@ void Database::ProcessGSMLPropertyForObject(QObject *object, const gsml_property
 			} else if (property.get_key() == "terrain") {
 				new_property_value = QVariant::fromValue(Terrain::Get(property.get_value()));
 			} else if (property.get_key() == "culture") {
-				new_property_value = QVariant::fromValue(Culture::Get(property.get_value()));
+				new_property_value = QVariant::fromValue(culture::Get(property.get_value()));
 			} else if (property.get_key() == "culture_group") {
-				new_property_value = QVariant::fromValue(CultureGroup::Get(property.get_value()));
+				new_property_value = QVariant::fromValue(culture_group::Get(property.get_value()));
 			} else if (property.get_key() == "religion") {
 				new_property_value = QVariant::fromValue(Religion::Get(property.get_value()));
+			} else if (property.get_key() == "phenotype" || property.get_key() == "default_phenotype") {
+				new_property_value = QVariant::fromValue(phenotype::Get(property.get_value()));
 			} else if (property.get_key() == "dynasty") {
 				new_property_value = QVariant::fromValue(Dynasty::Get(property.get_value()));
 			} else if (property.get_key() == "character" || property.get_key() == "holder" || property.get_key() == "father" || property.get_key() == "mother" || property.get_key() == "spouse" || property.get_key() == "liege" || property.get_key() == "employer") {

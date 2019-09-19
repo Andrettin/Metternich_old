@@ -15,7 +15,7 @@ namespace metternich {
 /**
 **	@brief	Constructor
 */
-Game::Game() : Speed(GameSpeed::Normal)
+Game::Game() : Speed(GameSpeed::Fast)
 {
 }
 
@@ -184,7 +184,7 @@ void Game::GenerateMissingTitleHolders()
 			province = landed_title->get_holding()->get_province();
 		}
 
-		Character *holder = Character::Generate(province->GetCulture(), province->GetReligion());
+		Character *holder = Character::Generate(province->get_culture(), province->GetReligion());
 		landed_title->SetHolder(holder);
 
 		//set the liege of generated holding owners to the county holder

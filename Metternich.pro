@@ -108,6 +108,7 @@ HEADERS += \
     map/region.h \
     map/terrain.h \
     pch.h \
+    phenotype.h \
     population/population_type.h \
     population/population_unit.h \
     random.h \

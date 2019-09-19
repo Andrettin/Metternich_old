@@ -9,15 +9,15 @@ namespace metternich {
 **
 **	@param	scope	The scope
 */
-void CultureBase::ProcessGSMLScope(const gsml_data &scope)
+void culture_base::ProcessGSMLScope(const gsml_data &scope)
 {
 	const std::string &tag = scope.get_tag();
 	const std::vector<std::string> &values = scope.get_values();
 
 	if (tag == "male_names") {
-		this->MaleNames = values;
+		this->male_names = values;
 	} else if (tag == "female_names") {
-		this->FemaleNames = values;
+		this->female_names = values;
 	} else {
 		DataEntryBase::ProcessGSMLScope(scope);
 	}

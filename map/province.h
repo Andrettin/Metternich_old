@@ -18,7 +18,7 @@
 namespace metternich {
 
 class CSVData;
-class Culture;
+class culture;
 class holding;
 class holding_type;
 class LandedTitle;
@@ -40,7 +40,7 @@ class Province : public DataEntry, public DataType<Province>
 	Q_PROPERTY(QRect rect READ GetRect CONSTANT)
 	Q_PROPERTY(QImage image READ GetImage NOTIFY ImageChanged)
 	Q_PROPERTY(metternich::Terrain* terrain READ GetTerrain WRITE SetTerrain NOTIFY TerrainChanged)
-	Q_PROPERTY(metternich::Culture* culture READ GetCulture WRITE SetCulture NOTIFY CultureChanged)
+	Q_PROPERTY(metternich::culture* culture READ get_culture WRITE set_culture NOTIFY culture_changed)
 	Q_PROPERTY(metternich::Religion* religion READ GetReligion WRITE SetReligion NOTIFY ReligionChanged)
 	Q_PROPERTY(int population READ GetPopulation WRITE SetPopulation NOTIFY PopulationChanged)
 	Q_PROPERTY(QVariantList holdings READ get_holdings_qvariant_list NOTIFY holdings_changed)
@@ -117,19 +117,19 @@ public:
 
 	void SetTerrain(Terrain *terrain);
 
-	metternich::Culture *GetCulture() const
+	metternich::culture *get_culture() const
 	{
-		return this->Culture;
+		return this->culture;
 	}
 
-	void SetCulture(Culture *culture)
+	void set_culture(culture *culture)
 	{
-		if (culture == this->GetCulture()) {
+		if (culture == this->get_culture()) {
 			return;
 		}
 
-		this->Culture = culture;
-		emit CultureChanged();
+		this->culture = culture;
+		emit culture_changed();
 	}
 
 	metternich::Religion *GetReligion() const
@@ -274,7 +274,7 @@ signals:
 	void EmpireChanged();
 	void ImageChanged();
 	void TerrainChanged();
-	void CultureChanged();
+	void culture_changed();
 	void ReligionChanged();
 	void PopulationChanged();
 	void populationGroupsChanged();
@@ -288,7 +288,7 @@ private:
 	QRect Rect; //the rectangle that the province occupies
 	QImage Image; //the province's image to be drawn on-screen
 	metternich::Terrain *Terrain = nullptr;
-	metternich::Culture *Culture = nullptr;
+	metternich::culture *culture = nullptr;
 	metternich::Religion *Religion = nullptr;
 	int Population = 0; //the sum of the population of all of the province's settlement holdings
 	int PopulationCapacityAdditiveModifier = 0; //the population capacity additive modifier which the province provides to its holdings
@@ -302,7 +302,7 @@ private:
 	bool Selected = false;
 	std::vector<std::unique_ptr<population_unit>> population_units; //population units set for this province in history, used during initialization to generate population units in the province's settlements
 	std::map<PopulationType *, int> PopulationPerType; //the population for each population type
-	std::map<metternich::Culture *, int> PopulationPerCulture; //the population for each culture
+	std::map<metternich::culture *, int> population_per_culture; //the population for each culture
 	std::map<metternich::Religion *, int> PopulationPerReligion; //the population for each religion
 };
 

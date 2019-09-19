@@ -7,13 +7,13 @@
 
 namespace metternich {
 
-class Culture;
+class culture;
 
 class Dynasty : public DataEntry, public DataType<Dynasty>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(metternich::Culture* culture READ GetCulture WRITE SetCulture)
+	Q_PROPERTY(metternich::culture* culture READ get_culture WRITE set_culture)
 
 public:
 	Dynasty(const std::string &identifier) : DataEntry(identifier) {}
@@ -21,15 +21,15 @@ public:
 	static constexpr const char *ClassIdentifier = "dynasty";
 	static constexpr const char *DatabaseFolder = "dynasties";
 
-	metternich::Culture *GetCulture() const
+	metternich::culture *get_culture() const
 	{
-		return this->Culture;
+		return this->culture;
 	}
 
-	void SetCulture(Culture *culture);
+	void set_culture(culture *culture);
 
 private:
-	metternich::Culture *Culture = nullptr;
+	metternich::culture *culture = nullptr;
 };
 
 }

@@ -5,7 +5,7 @@
 
 namespace metternich {
 
-class CultureGroup : public CultureBase, public DataType<CultureGroup>
+class culture_group : public culture_base, public DataType<culture_group>
 {
 	Q_OBJECT
 
@@ -13,7 +13,7 @@ public:
 	static constexpr const char *ClassIdentifier = "culture_group";
 	static constexpr const char *DatabaseFolder = "culture_groups";
 
-	CultureGroup(const std::string &identifier) : CultureBase(identifier) {}
+	culture_group(const std::string &identifier) : culture_base(identifier) {}
 };
 
 }

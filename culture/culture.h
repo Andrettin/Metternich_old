@@ -10,51 +10,51 @@
 
 namespace metternich {
 
-class CultureGroup;
+class culture_group;
 class Dynasty;
 
-class Culture : public CultureBase, public DataType<Culture>
+class culture : public culture_base, public DataType<culture>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(metternich::CultureGroup* culture_group MEMBER CultureGroup READ GetCultureGroup NOTIFY CultureGroupChanged)
-	Q_PROPERTY(QColor color MEMBER Color READ GetColor)
+	Q_PROPERTY(metternich::culture_group* culture_group MEMBER culture_group READ get_culture_group NOTIFY culture_group_changed)
+	Q_PROPERTY(QColor color MEMBER color READ get_color)
 
 public:
 	static constexpr const char *ClassIdentifier = "culture";
 	static constexpr const char *DatabaseFolder = "cultures";
 
-	Culture(const std::string &identifier) : CultureBase(identifier) {}
+	culture(const std::string &identifier) : culture_base(identifier) {}
 
 	virtual void ProcessGSMLScope(const gsml_data &scope) override;
 	virtual void Check() const override;
 
-	metternich::CultureGroup *GetCultureGroup() const
+	metternich::culture_group *get_culture_group() const
 	{
-		return this->CultureGroup;
+		return this->culture_group;
 	}
 
-	const QColor &GetColor() const
+	const QColor &get_color() const
 	{
-		return this->Color;
+		return this->color;
 	}
 
-	void AddDynasty(Dynasty *dynasty)
+	void add_dynasty(Dynasty *dynasty)
 	{
-		this->Dynasties.push_back(dynasty);
+		this->dynasties.push_back(dynasty);
 	}
 
-	std::string GenerateMaleName() const;
-	std::string GenerateFemaleName() const;
-	std::string GenerateDynastyName() const;
+	std::string generate_male_name() const;
+	std::string generate_female_name() const;
+	std::string generate_dynasty_name() const;
 
 signals:
-	void CultureGroupChanged();
+	void culture_group_changed();
 
 private:
-	metternich::CultureGroup *CultureGroup = nullptr;
-	QColor Color;
-	std::vector<Dynasty *> Dynasties;
+	metternich::culture_group *culture_group = nullptr;
+	QColor color;
+	std::vector<Dynasty *> dynasties;
 };
 
 }

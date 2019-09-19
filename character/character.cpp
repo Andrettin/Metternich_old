@@ -3,6 +3,7 @@
 #include "character/dynasty.h"
 #include "character/trait.h"
 #include "culture/culture.h"
+#include "culture/culture_group.h"
 #include "database/gsml_property.h"
 #include "game/game.h"
 #include "holding/holding.h"
@@ -20,19 +21,22 @@ namespace metternich {
 **	@brief	Generate a character
 **
 **	@param	culture		The culture for the generated character
-**
 **	@param	religion	The religion for the generated character
+**	@param	phenotype	The phenotype for the generated character; if none is given then the default phenotype for the culture is used instead
 */
-Character *Character::Generate(metternich::Culture *culture, metternich::Religion *religion)
+Character *Character::Generate(metternich::culture *culture, metternich::Religion *religion, metternich::phenotype *phenotype)
 {
 	const int identifier = Character::GenerateNumericIdentifier();
 	Character *character = Character::Add(identifier);
-	character->Culture = culture;
+	character->culture = culture;
 	character->Religion = religion;
-	character->name = culture->GenerateMaleName();
+	if (phenotype != nullptr) {
+		character->phenotype = phenotype;
+	}
 	//generate the character's birth date to be between 60 and 20 years before the current date
 	const QDateTime &current_date = Game::Get()->GetCurrentDate();
 	character->BirthDate = current_date.addDays(Random::GenerateInRange(-60 * 365, -20 * 365));
+	character->initialize_history(); //generates a name and sets the phenotype if none was given
 	return character;
 }
 
@@ -72,11 +76,19 @@ void Character::ProcessGSMLDatedProperty(const gsml_property &property, const QD
 */
 void Character::initialize_history()
 {
-	if (this->name.empty() && this->GetCulture() != nullptr) {
+	if (this->get_phenotype() == nullptr) {
+		if (this->get_culture()->get_default_phenotype() != nullptr) {
+			this->phenotype = this->get_culture()->get_default_phenotype();
+		} else if (this->get_culture()->get_culture_group()->get_default_phenotype() != nullptr) {
+			this->phenotype = this->get_culture()->get_culture_group()->get_default_phenotype();
+		}
+	}
+
+	if (this->name.empty() && this->get_culture() != nullptr) {
 		if (this->IsFemale()) {
-			this->name = this->GetCulture()->GenerateFemaleName();
+			this->name = this->get_culture()->generate_female_name();
 		} else {
-			this->name = this->GetCulture()->GenerateMaleName();
+			this->name = this->get_culture()->generate_male_name();
 		}
 	}
 }

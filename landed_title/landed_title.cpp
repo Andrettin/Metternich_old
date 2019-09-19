@@ -103,7 +103,7 @@ void LandedTitle::ProcessGSMLDatedProperty(const gsml_property &property, const 
 
 		if (property.get_value() == "random") {
 			//generate random holder
-			Character *holder = Character::Generate(this->GetCapitalProvince()->GetCulture(), this->GetCapitalProvince()->GetReligion());
+			Character *holder = Character::Generate(this->GetCapitalProvince()->get_culture(), this->GetCapitalProvince()->GetReligion());
 			this->SetHolder(holder);
 			return;
 		} else if (property.get_value() == "none") {
@@ -228,19 +228,19 @@ void LandedTitle::Check() const
 */
 std::string LandedTitle::get_name() const
 {
-	const Culture *culture = nullptr;
+	const culture *culture = nullptr;
 
 	if (this->GetHolder() != nullptr) {
-		culture = this->GetHolder()->GetCulture();
+		culture = this->GetHolder()->get_culture();
 	} else if (this->GetCapitalProvince() != nullptr) {
-		culture = this->GetCapitalProvince()->GetCulture();
+		culture = this->GetCapitalProvince()->get_culture();
 	}
 
 	std::vector<std::string> suffixes;
 
 	if (culture != nullptr) {
 		suffixes.push_back(culture->GetIdentifier());
-		suffixes.push_back(culture->GetCultureGroup()->GetIdentifier());
+		suffixes.push_back(culture->get_culture_group()->GetIdentifier());
 	}
 
 	if (this->GetHolder() != nullptr && this->GetHolder()->GetDynasty() != nullptr) {
@@ -258,12 +258,12 @@ std::string LandedTitle::get_name() const
 */
 std::string LandedTitle::GetTierTitleName() const
 {
-	const Culture *culture = nullptr;
+	const culture *culture = nullptr;
 
 	if (this->GetHolder() != nullptr) {
-		culture = this->GetHolder()->GetCulture();
+		culture = this->GetHolder()->get_culture();
 	} else if (this->GetCapitalProvince() != nullptr) {
-		culture = this->GetCapitalProvince()->GetCulture();
+		culture = this->GetCapitalProvince()->get_culture();
 	}
 
 	std::vector<std::string> suffixes;
@@ -275,7 +275,7 @@ std::string LandedTitle::GetTierTitleName() const
 
 	if (culture != nullptr) {
 		suffixes.push_back(culture->GetIdentifier());
-		suffixes.push_back(culture->GetCultureGroup()->GetIdentifier());
+		suffixes.push_back(culture->get_culture_group()->GetIdentifier());
 	}
 
 	return Translator::Get()->Translate(LandedTitle::GetTierIdentifier(this->GetTier()), suffixes);
@@ -300,12 +300,12 @@ std::string LandedTitle::GetTitledName() const
 */
 std::string LandedTitle::GetHolderTitleName() const
 {
-	const Culture *culture = nullptr;
+	const culture *culture = nullptr;
 
 	if (this->GetHolder() != nullptr) {
-		culture = this->GetHolder()->GetCulture();
+		culture = this->GetHolder()->get_culture();
 	} else if (this->GetCapitalProvince() != nullptr) {
-		culture = this->GetCapitalProvince()->GetCulture();
+		culture = this->GetCapitalProvince()->get_culture();
 	}
 
 	std::vector<std::string> suffixes;
@@ -317,7 +317,7 @@ std::string LandedTitle::GetHolderTitleName() const
 
 	if (culture != nullptr) {
 		suffixes.push_back(culture->GetIdentifier());
-		suffixes.push_back(culture->GetCultureGroup()->GetIdentifier());
+		suffixes.push_back(culture->get_culture_group()->GetIdentifier());
 	}
 
 	return Translator::Get()->Translate(LandedTitle::GetTierHolderIdentifier(this->GetTier()), suffixes);

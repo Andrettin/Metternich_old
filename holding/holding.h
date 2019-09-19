@@ -14,7 +14,7 @@ namespace metternich {
 class Building;
 class Character;
 class commodity;
-class Culture;
+class culture;
 class employment;
 class employment_type;
 class holding_type;
@@ -42,7 +42,7 @@ class holding : public DataEntry
 	Q_PROPERTY(metternich::Building* under_construction_building READ get_under_construction_building NOTIFY under_construction_building_changed)
 	Q_PROPERTY(int construction_days READ get_construction_days NOTIFY construction_days_changed)
 	Q_PROPERTY(metternich::commodity* commodity READ get_commodity WRITE set_commodity NOTIFY commodity_changed)
-	Q_PROPERTY(metternich::Culture* culture READ get_culture WRITE set_culture NOTIFY culture_changed)
+	Q_PROPERTY(metternich::culture* culture READ get_culture WRITE set_culture NOTIFY culture_changed)
 	Q_PROPERTY(metternich::Religion* religion READ get_religion WRITE set_religion NOTIFY religion_changed)
 	Q_PROPERTY(int holding_size READ get_holding_size WRITE set_holding_size NOTIFY holding_size_changed)
 	Q_PROPERTY(bool selected READ is_selected WRITE set_selected NOTIFY selected_changed)
@@ -271,12 +271,12 @@ public:
 		return find_iterator->second;
 	}
 
-	const std::map<metternich::Culture *, int> &get_population_per_culture() const
+	const std::map<metternich::culture *, int> &get_population_per_culture() const
 	{
 		return this->population_per_culture;
 	}
 
-	int get_culture_population(metternich::Culture *culture) const
+	int get_culture_population(metternich::culture *culture) const
 	{
 		auto find_iterator = this->population_per_culture.find(culture);
 		if (find_iterator == this->population_per_culture.end()) {
@@ -359,12 +359,12 @@ public:
 
 	void generate_commodity();
 
-	metternich::Culture *get_culture() const
+	metternich::culture *get_culture() const
 	{
 		return this->culture;
 	}
 
-	void set_culture(Culture *culture)
+	void set_culture(culture *culture)
 	{
 		if (culture == this->get_culture()) {
 			return;
@@ -467,13 +467,13 @@ private:
 	int construction_days = 0; //the amount of days remaining to construct the building under construction
 	metternich::commodity *commodity = nullptr; //the commodity produced by the holding (if any)
 	int holding_size = 100; //the holding size, which affects population capacity (100 = normal size)
-	metternich::Culture *culture = nullptr; //the holding's culture
+	metternich::culture *culture = nullptr; //the holding's culture
 	metternich::Religion *religion = nullptr; //the holding's religion
 	std::set<IdentifiableModifier *> modifiers; //modifiers applied to the holding
 	bool selected = false;
 	std::map<const employment_type *, std::unique_ptr<employment>> employments; //employments, mapped to their respective employment types
 	std::map<PopulationType *, int> population_per_type; //the population for each population type
-	std::map<metternich::Culture *, int> population_per_culture; //the population for each culture
+	std::map<metternich::culture *, int> population_per_culture; //the population for each culture
 	std::map<metternich::Religion *, int> population_per_religion; //the population for each religion
 };
 

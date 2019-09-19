@@ -9,7 +9,7 @@
 
 namespace metternich {
 
-class Culture;
+class culture;
 class employment;
 class holding;
 class PopulationType;
@@ -22,7 +22,7 @@ class population_unit : public DataEntryBase, public SimpleDataType<population_u
 	Q_OBJECT
 
 	Q_PROPERTY(metternich::PopulationType* type MEMBER type READ get_type NOTIFY type_changed)
-	Q_PROPERTY(metternich::Culture* culture READ get_culture WRITE set_culture NOTIFY culture_changed)
+	Q_PROPERTY(metternich::culture* culture READ get_culture WRITE set_culture NOTIFY culture_changed)
 	Q_PROPERTY(metternich::Religion* religion READ get_religion WRITE set_religion NOTIFY religion_changed)
 	Q_PROPERTY(int size READ get_size WRITE set_size NOTIFY size_changed)
 	Q_PROPERTY(metternich::holding* holding READ get_holding WRITE set_holding NOTIFY holding_changed)
@@ -49,12 +49,12 @@ public:
 		return this->type;
 	}
 
-	metternich::Culture *get_culture() const
+	metternich::culture *get_culture() const
 	{
 		return this->culture;
 	}
 
-	void set_culture(Culture *culture)
+	void set_culture(culture *culture)
 	{
 		if (culture == this->get_culture()) {
 			return;
@@ -261,7 +261,7 @@ signals:
 
 private:
 	PopulationType *type = nullptr;
-	metternich::Culture *culture = nullptr;
+	metternich::culture *culture = nullptr;
 	metternich::Religion *religion = nullptr;
 	int size = 0; //the size of the population unit, in number of individuals
 	metternich::holding *holding = nullptr; //the settlement holding where this population unit lives

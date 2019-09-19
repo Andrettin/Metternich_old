@@ -65,7 +65,7 @@ void holding::initialize_history()
 
 	if (this->get_province() != nullptr) {
 		if (this->get_culture() == nullptr) {
-			this->set_culture(this->get_province()->GetCulture());
+			this->set_culture(this->get_province()->get_culture());
 		}
 
 		if (this->get_religion() == nullptr) {
@@ -126,7 +126,7 @@ void holding::do_month()
 */
 std::string holding::get_name() const
 {
-	return Translator::Get()->Translate(this->get_barony()->GetIdentifier(), {this->get_culture()->GetIdentifier(), this->get_culture()->GetCultureGroup()->GetIdentifier(), this->get_religion()->GetIdentifier()});
+	return Translator::Get()->Translate(this->get_barony()->GetIdentifier(), {this->get_culture()->GetIdentifier(), this->get_culture()->get_culture_group()->GetIdentifier(), this->get_religion()->GetIdentifier()});
 }
 
 /**
@@ -136,12 +136,12 @@ std::string holding::get_name() const
 */
 std::string holding::get_type_name() const
 {
-	const metternich::Culture *culture = this->get_culture();
+	const metternich::culture *culture = this->get_culture();
 	const metternich::Religion *religion = this->get_religion();
 
 	std::vector<std::string> suffixes;
 	suffixes.push_back(culture->GetIdentifier());
-	suffixes.push_back(culture->GetCultureGroup()->GetIdentifier());
+	suffixes.push_back(culture->get_culture_group()->GetIdentifier());
 	suffixes.push_back(religion->GetIdentifier());
 
 	return Translator::Get()->Translate(this->get_type()->GetIdentifier(), suffixes);
@@ -344,11 +344,11 @@ void holding::calculate_population_groups()
 
 	//update the holding's main culture and religion
 
-	metternich::Culture *plurality_culture = nullptr;
+	metternich::culture *plurality_culture = nullptr;
 	int plurality_culture_size = 0;
 
 	for (const auto &kv_pair : this->population_per_culture) {
-		metternich::Culture *culture = kv_pair.first;
+		metternich::culture *culture = kv_pair.first;
 		const int culture_size = kv_pair.second;
 		if (plurality_culture == nullptr || culture_size > plurality_culture_size) {
 			plurality_culture = culture;

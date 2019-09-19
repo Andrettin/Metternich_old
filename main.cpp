@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
 
 		qmlRegisterType<Building>();
 		qmlRegisterType<commodity>();
-		qmlRegisterType<Culture>();
+		qmlRegisterType<culture>();
 		qmlRegisterType<Game>();
 		qmlRegisterType<holding>();
 		qmlRegisterType<holding_type>();

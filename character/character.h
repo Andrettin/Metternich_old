@@ -12,11 +12,12 @@
 namespace metternich {
 
 class commodity;
-class Culture;
+class culture;
 class Dynasty;
 class gsml_property;
 class holding;
 class LandedTitle;
+class phenotype;
 class Religion;
 class Trait;
 
@@ -29,8 +30,9 @@ class Character : public NumericDataEntry, public DataType<Character, int>
 	Q_PROPERTY(QString titled_name READ GetTitledNameQString NOTIFY TitledNameChanged)
 	Q_PROPERTY(bool female MEMBER Female READ IsFemale)
 	Q_PROPERTY(metternich::Dynasty* dynasty READ GetDynasty WRITE SetDynasty NOTIFY DynastyChanged)
-	Q_PROPERTY(metternich::Culture* culture MEMBER Culture READ GetCulture NOTIFY CultureChanged)
+	Q_PROPERTY(metternich::culture* culture MEMBER culture READ get_culture NOTIFY culture_changed)
 	Q_PROPERTY(metternich::Religion* religion MEMBER Religion READ GetReligion NOTIFY ReligionChanged)
+	Q_PROPERTY(metternich::phenotype* phenotype MEMBER phenotype READ get_phenotype)
 	Q_PROPERTY(metternich::LandedTitle* primary_title READ GetPrimaryTitle WRITE SetPrimaryTitle NOTIFY PrimaryTitleChanged)
 	Q_PROPERTY(metternich::Character* father READ GetFather WRITE SetFather)
 	Q_PROPERTY(metternich::Character* mother READ GetMother WRITE SetMother)
@@ -59,7 +61,7 @@ public:
 		return Character::LivingCharacters;
 	}
 
-	static Character *Generate(Culture *culture, Religion *religion);
+	static Character *Generate(culture *culture, Religion *religion, phenotype *phenotype = nullptr);
 
 private:
 	static inline std::vector<Character *> LivingCharacters;
@@ -116,12 +118,16 @@ public:
 			throw std::runtime_error("Character \"" + std::to_string(this->GetIdentifier()) + "\" has no name.");
 		}
 
-		if (this->GetCulture() == nullptr) {
+		if (this->get_culture() == nullptr) {
 			throw std::runtime_error("Character \"" + std::to_string(this->GetIdentifier()) + "\" has no culture.");
 		}
 
 		if (this->GetReligion() == nullptr) {
 			throw std::runtime_error("Character \"" + std::to_string(this->GetIdentifier()) + "\" has no religion.");
+		}
+
+		if (this->get_phenotype() == nullptr) {
+			throw std::runtime_error("Character \"" + std::to_string(this->GetIdentifier()) + "\" has no phenotype.");
 		}
 	}
 
@@ -194,14 +200,19 @@ public:
 		emit DynastyChanged();
 	}
 
-	metternich::Culture *GetCulture() const
+	metternich::culture *get_culture() const
 	{
-		return this->Culture;
+		return this->culture;
 	}
 
 	metternich::Religion *GetReligion() const
 	{
 		return this->Religion;
+	}
+
+	metternich::phenotype *get_phenotype() const
+	{
+		return this->phenotype;
 	}
 
 	LandedTitle *GetPrimaryTitle() const
@@ -398,7 +409,7 @@ signals:
 	void TitledNameChanged();
 	void AliveChanged();
 	void DynastyChanged();
-	void CultureChanged();
+	void culture_changed();
 	void ReligionChanged();
 	void PrimaryTitleChanged();
 	void LiegeChanged();
@@ -409,8 +420,9 @@ private:
 	bool Alive = true;
 	bool Female = false;
 	metternich::Dynasty *Dynasty = nullptr;
-	metternich::Culture *Culture = nullptr;
+	metternich::culture *culture = nullptr;
 	metternich::Religion *Religion = nullptr;
+	metternich::phenotype *phenotype = nullptr;
 	LandedTitle *PrimaryTitle = nullptr;
 	std::vector<LandedTitle *> LandedTitles;
 	Character *Father = nullptr;

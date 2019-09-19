@@ -7,31 +7,41 @@
 
 namespace metternich {
 
+class phenotype;
+
 /**
 **	@brief	The base class for characteristics common to cultures and culture groups
 */
-class CultureBase : public DataEntry
+class culture_base : public DataEntry
 {
 	Q_OBJECT
 
+	Q_PROPERTY(metternich::phenotype* default_phenotype MEMBER default_phenotype)
+
 public:
-	CultureBase(const std::string &identifier) : DataEntry(identifier) {}
+	culture_base(const std::string &identifier) : DataEntry(identifier) {}
 
 	virtual void ProcessGSMLScope(const gsml_data &scope) override;
 
-	const std::vector<std::string> &GetMaleNames() const
+	phenotype *get_default_phenotype() const
 	{
-		return this->MaleNames;
+		return this->default_phenotype;
 	}
 
-	const std::vector<std::string> &GetFemaleNames() const
+	const std::vector<std::string> &get_male_names() const
 	{
-		return this->FemaleNames;
+		return this->male_names;
+	}
+
+	const std::vector<std::string> &get_female_names() const
+	{
+		return this->female_names;
 	}
 
 private:
-	std::vector<std::string> MaleNames;
-	std::vector<std::string> FemaleNames;
+	phenotype *default_phenotype = nullptr;
+	std::vector<std::string> male_names;
+	std::vector<std::string> female_names;
 };
 
 }
