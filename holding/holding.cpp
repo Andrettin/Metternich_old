@@ -287,9 +287,9 @@ void holding::do_population_growth()
 
 		int change = population_unit->get_size() * population_growth / 10000;
 		if (change == 0) {
-			if (population_growth != 0) {
+			if (population_growth != 0 && population_capacity_difference != 0) {
 				//if the change is zero but population growth is non-zero, then make a change of 1
-				if (population_growth > 0 && population_capacity_difference > 0) {
+				if (population_growth > 0) {
 					change = 1;
 				} else {
 					change = -1;
