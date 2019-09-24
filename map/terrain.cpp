@@ -29,7 +29,7 @@ Terrain *Terrain::GetByRGB(const QRgb &rgb, const bool should_find)
 /**
 **	@brief	Constructor
 */
-Terrain::Terrain(const std::string &identifier) : DataEntry(identifier)
+Terrain::Terrain(const std::string &identifier) : data_entry(identifier)
 {
 }
 
@@ -45,7 +45,7 @@ Terrain::~Terrain()
 **
 **	@param	scope	The scope
 */
-void Terrain::ProcessGSMLScope(const gsml_data &scope)
+void Terrain::process_gsml_scope(const gsml_data &scope)
 {
 	const std::string &tag = scope.get_tag();
 	const std::vector<std::string> &values = scope.get_values();
@@ -64,7 +64,7 @@ void Terrain::ProcessGSMLScope(const gsml_data &scope)
 		this->Modifier = std::make_unique<metternich::Modifier>();
 		Database::ProcessGSMLData(this->Modifier, scope);
 	} else {
-		DataEntryBase::ProcessGSMLScope(scope);
+		data_entry_base::process_gsml_scope(scope);
 	}
 }
 

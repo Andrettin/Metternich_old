@@ -11,7 +11,7 @@
 
 namespace metternich {
 
-class DataEntry;
+class data_entry;
 
 /**
 **	@brief	The database
@@ -23,11 +23,11 @@ public:
 	static void ProcessGSMLData(T *instance, const gsml_data &data)
 	{
 		for (const gsml_property &property : data.get_properties()) {
-			instance->ProcessGSMLProperty(property);
+			instance->process_gsml_property(property);
 		}
 
 		for (const gsml_data &child_data : data.get_children()) {
-			instance->ProcessGSMLScope(child_data);
+			instance->process_gsml_scope(child_data);
 		}
 	}
 

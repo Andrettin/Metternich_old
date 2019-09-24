@@ -26,7 +26,7 @@ void population_unit::process_history_database()
 			PopulationType *type = PopulationType::Get(type_identifier);
 			auto population_unit(std::make_unique<population_unit>(type));
 			population_unit->moveToThread(QApplication::instance()->thread());
-			population_unit->LoadHistory(const_cast<gsml_data &>(data_entry));
+			population_unit->load_history(const_cast<gsml_data &>(data_entry));
 
 			if (population_unit->get_size() <= 0) {
 				continue; //don't add empty population units

@@ -16,20 +16,20 @@ public:
 
 	virtual ~ModifierEffect() {}
 
-	virtual const std::string &GetIdentifier() const = 0;
+	virtual const std::string &get_identifier() const = 0;
 
 	virtual void Apply(Province *province, const int change) const
 	{
 		Q_UNUSED(province);
 		Q_UNUSED(change);
-		throw std::runtime_error("Invalid modifier effect for province: \"" + this->GetIdentifier() + "\".");
+		throw std::runtime_error("Invalid modifier effect for province: \"" + this->get_identifier() + "\".");
 	}
 
 	virtual void Apply(holding *holding, const int change) const
 	{
 		Q_UNUSED(holding);
 		Q_UNUSED(change);
-		throw std::runtime_error("Invalid modifier effect for holding: \"" + this->GetIdentifier() + "\".");
+		throw std::runtime_error("Invalid modifier effect for holding: \"" + this->get_identifier() + "\".");
 	}
 };
 

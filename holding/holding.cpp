@@ -32,7 +32,7 @@ namespace metternich {
 **	@param	type		The holding's type (e.g. city)
 **	@param	province	The province where the holding is located
 */
-holding::holding(LandedTitle *barony, holding_type *type, metternich::Province *province) : DataEntry(barony->GetIdentifier()), barony(barony), province(province)
+holding::holding(LandedTitle *barony, holding_type *type, metternich::Province *province) : data_entry(barony->get_identifier()), barony(barony), province(province)
 {
 	barony->set_holding(this);
 	this->change_base_population_growth(Defines::Get()->GetBasePopulationGrowth());
@@ -126,7 +126,7 @@ void holding::do_month()
 */
 std::string holding::get_name() const
 {
-	return Translator::Get()->Translate(this->get_barony()->GetIdentifier(), {this->get_culture()->GetIdentifier(), this->get_culture()->get_culture_group()->GetIdentifier(), this->get_religion()->GetIdentifier()});
+	return Translator::Get()->Translate(this->get_barony()->get_identifier(), {this->get_culture()->get_identifier(), this->get_culture()->get_culture_group()->get_identifier(), this->get_religion()->get_identifier()});
 }
 
 /**
@@ -140,11 +140,11 @@ std::string holding::get_type_name() const
 	const metternich::religion *religion = this->get_religion();
 
 	std::vector<std::string> suffixes;
-	suffixes.push_back(culture->GetIdentifier());
-	suffixes.push_back(culture->get_culture_group()->GetIdentifier());
-	suffixes.push_back(religion->GetIdentifier());
+	suffixes.push_back(culture->get_identifier());
+	suffixes.push_back(culture->get_culture_group()->get_identifier());
+	suffixes.push_back(religion->get_identifier());
 
-	return Translator::Get()->Translate(this->get_type()->GetIdentifier(), suffixes);
+	return Translator::Get()->Translate(this->get_type()->get_identifier(), suffixes);
 }
 
 /**
@@ -385,7 +385,7 @@ QVariantList holding::get_buildings_qvariant_list() const
 void holding::add_building(Building *building)
 {
 	if (this->buildings.find(building) != this->buildings.end()) {
-		throw std::runtime_error("Tried to add the \"" + building->GetIdentifier() + "\" building to a holding that already has it.");
+		throw std::runtime_error("Tried to add the \"" + building->get_identifier() + "\" building to a holding that already has it.");
 	}
 
 	this->buildings.insert(building);
@@ -396,7 +396,7 @@ void holding::add_building(Building *building)
 void holding::remove_building(Building *building)
 {
 	if (this->buildings.find(building) == this->buildings.end()) {
-		throw std::runtime_error("Tried to remove the \"" + building->GetIdentifier() + "\" building to a holding that does not have it.");
+		throw std::runtime_error("Tried to remove the \"" + building->get_identifier() + "\" building to a holding that does not have it.");
 	}
 
 	this->buildings.erase(building);
@@ -535,7 +535,7 @@ void holding::set_employment_workforce(const employment_type *employment_type, c
 	}
 
 	if (workforce < 0) {
-		throw std::runtime_error("Tried to set a negative employment workforce for employment type \"" + employment_type->GetIdentifier() + "\" for a holding.");
+		throw std::runtime_error("Tried to set a negative employment workforce for employment type \"" + employment_type->get_identifier() + "\" for a holding.");
 	}
 
 	if (workforce == 0) {

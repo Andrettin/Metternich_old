@@ -12,16 +12,16 @@ class phenotype;
 /**
 **	@brief	The base class for characteristics common to cultures and culture groups
 */
-class culture_base : public DataEntry
+class culture_base : public data_entry
 {
 	Q_OBJECT
 
 	Q_PROPERTY(metternich::phenotype* default_phenotype MEMBER default_phenotype)
 
 public:
-	culture_base(const std::string &identifier) : DataEntry(identifier) {}
+	culture_base(const std::string &identifier) : data_entry(identifier) {}
 
-	virtual void ProcessGSMLScope(const gsml_data &scope) override;
+	virtual void process_gsml_scope(const gsml_data &scope) override;
 
 	phenotype *get_default_phenotype() const
 	{

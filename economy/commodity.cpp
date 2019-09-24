@@ -12,7 +12,7 @@ namespace metternich {
 **
 **	@param	identifier	The commodity's string identifier
 */
-commodity::commodity(const std::string &identifier) : DataEntry(identifier)
+commodity::commodity(const std::string &identifier) : data_entry(identifier)
 {
 }
 
@@ -28,7 +28,7 @@ commodity::~commodity()
 **
 **	@param	scope	The scope
 */
-void commodity::ProcessGSMLScope(const gsml_data &scope)
+void commodity::process_gsml_scope(const gsml_data &scope)
 {
 	const std::string &tag = scope.get_tag();
 
@@ -36,7 +36,7 @@ void commodity::ProcessGSMLScope(const gsml_data &scope)
 		this->chance = std::make_unique<ChanceFactor>();
 		Database::ProcessGSMLData(this->chance, scope);
 	} else {
-		DataEntryBase::ProcessGSMLScope(scope);
+		data_entry_base::process_gsml_scope(scope);
 	}
 }
 

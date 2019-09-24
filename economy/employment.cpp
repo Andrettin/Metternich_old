@@ -59,7 +59,7 @@ void employment::set_employee_size(population_unit *employee, const int size)
 	}
 
 	if (size < 0) {
-		throw std::runtime_error("Tried to set a negative employment size for employment type \"" + this->get_type()->GetIdentifier() + "\" for a population unit of type \"" + employee->get_type()->GetIdentifier() + "\".");
+		throw std::runtime_error("Tried to set a negative employment size for employment type \"" + this->get_type()->get_identifier() + "\" for a population unit of type \"" + employee->get_type()->get_identifier() + "\".");
 	}
 
 	const int old_size = this->get_employee_size(employee);

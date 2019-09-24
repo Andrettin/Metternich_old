@@ -11,7 +11,7 @@ namespace metternich {
 class Building;
 class Modifier;
 
-class holding_type : public DataEntry, public DataType<holding_type>
+class holding_type : public data_entry, public DataType<holding_type>
 {
 	Q_OBJECT
 
@@ -24,7 +24,7 @@ public:
 	holding_type(const std::string &identifier);
 	virtual ~holding_type() override;
 
-	virtual void ProcessGSMLScope(const gsml_data &scope) override;
+	virtual void process_gsml_scope(const gsml_data &scope) override;
 
 	bool is_settlement() const
 	{

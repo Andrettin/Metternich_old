@@ -15,7 +15,7 @@ class holding;
 class Province;
 enum class LandedTitleTier : int;
 
-class LandedTitle : public DataEntry, public DataType<LandedTitle>
+class LandedTitle : public data_entry, public DataType<LandedTitle>
 {
 	Q_OBJECT
 
@@ -28,7 +28,7 @@ class LandedTitle : public DataEntry, public DataType<LandedTitle>
 	Q_PROPERTY(metternich::Province* capital_province MEMBER CapitalProvince READ GetCapitalProvince)
 
 public:
-	LandedTitle(const std::string &identifier) : DataEntry(identifier) {}
+	LandedTitle(const std::string &identifier) : data_entry(identifier) {}
 
 	static constexpr const char *ClassIdentifier = "landed_title";
 	static constexpr const char *DatabaseFolder = "landed_titles";
@@ -57,11 +57,11 @@ public:
 	static const char *GetTierIdentifier(const LandedTitleTier tier);
 	static const char *GetTierHolderIdentifier(const LandedTitleTier tier);
 
-	virtual void ProcessGSMLDatedProperty(const gsml_property &property, const QDateTime &date) override;
-	virtual void ProcessGSMLScope(const gsml_data &scope) override;
-	virtual void Initialize() override;
+	virtual void process_gsml_dated_property(const gsml_property &property, const QDateTime &date) override;
+	virtual void process_gsml_scope(const gsml_data &scope) override;
+	virtual void initialize() override;
 	virtual void initialize_history() override;
-	virtual void Check() const override;
+	virtual void check() const override;
 
 	virtual std::string get_name() const override;
 	std::string GetTierTitleName() const;

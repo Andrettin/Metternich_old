@@ -18,21 +18,21 @@ public:
 
 	virtual ~Condition() {}
 
-	virtual void ProcessGSMLProperty(const gsml_property &property);
-	virtual void ProcessGSMLScope(const gsml_data &scope);
+	virtual void process_gsml_property(const gsml_property &property);
+	virtual void process_gsml_scope(const gsml_data &scope);
 
-	virtual const std::string &GetIdentifier() const = 0;
+	virtual const std::string &get_identifier() const = 0;
 
 	virtual bool Check(const Province *province) const
 	{
 		Q_UNUSED(province);
-		throw std::runtime_error("Invalid condition for province: \"" + this->GetIdentifier() + "\".");
+		throw std::runtime_error("Invalid condition for province: \"" + this->get_identifier() + "\".");
 	}
 
 	virtual bool Check(const holding *holding) const
 	{
 		Q_UNUSED(holding);
-		throw std::runtime_error("Invalid condition for holding: \"" + this->GetIdentifier() + "\".");
+		throw std::runtime_error("Invalid condition for holding: \"" + this->get_identifier() + "\".");
 	}
 };
 

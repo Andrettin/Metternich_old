@@ -106,7 +106,7 @@ public:
 	*/
 	static void Remove(T *instance)
 	{
-		DataType::InstancesByIdentifier.erase(instance->GetIdentifier());
+		DataType::InstancesByIdentifier.erase(instance->get_identifier());
 		DataType::Instances.erase(std::remove(DataType::Instances.begin(), DataType::Instances.end(), instance), DataType::Instances.end());
 	}
 
@@ -191,7 +191,7 @@ public:
 		//non-history only data types have files with the same name as their identifiers, while for history only data types the file name is not relevant, with the identifier being scoped to within a file
 		if constexpr (T::HistoryOnly == false) {
 			for (T *instance : T::GetAll()) {
-				std::filesystem::path history_file_path(history_path.string() + "/" + instance->GetIdentifier() + ".txt");
+				std::filesystem::path history_file_path(history_path.string() + "/" + instance->get_identifier() + ".txt");
 
 				if (!std::filesystem::exists(history_file_path)) {
 					continue;
@@ -227,7 +227,7 @@ public:
 
 			for (gsml_data &data : T::gsml_history_data_to_process) {
 				T *instance = T::Get(data.get_tag());
-				instance->LoadHistory(data);
+				instance->load_history(data);
 			}
 		} else {
 			for (const gsml_data &data : T::gsml_history_data_to_process) {
@@ -245,7 +245,7 @@ public:
 						instance = T::Add(identifier);
 					} else {
 						instance = T::Get(identifier);
-						instance->LoadHistory(const_cast<gsml_data &>(data_entry));
+						instance->load_history(const_cast<gsml_data &>(data_entry));
 					}
 				}
 			}
@@ -262,11 +262,11 @@ public:
 	static void InitializeAll()
 	{
 		for (T *instance : T::GetAll()) {
-			if (instance->IsInitialized()) {
+			if (instance->is_initialized()) {
 				continue; //the instance might have been initialized already, e.g. in the initialization function of another instance which needs it to be initialized
 			}
 
-			instance->Initialize();
+			instance->initialize();
 		}
 	}
 
@@ -286,7 +286,7 @@ public:
 	static void CheckAll()
 	{
 		for (const T *instance : T::GetAll()) {
-			instance->Check();
+			instance->check();
 		}
 	}
 

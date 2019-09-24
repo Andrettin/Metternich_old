@@ -17,7 +17,7 @@ class Province;
 class Region;
 class religion;
 
-class population_unit : public DataEntryBase, public SimpleDataType<population_unit>
+class population_unit : public data_entry_base, public SimpleDataType<population_unit>
 {
 	Q_OBJECT
 

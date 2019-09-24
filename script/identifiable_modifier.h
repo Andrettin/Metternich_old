@@ -11,7 +11,7 @@ class gsml_property;
 /**
 **	@brief	An identifiable modifier
 */
-class IdentifiableModifier : public DataEntry, public DataType<IdentifiableModifier>, public ModifierBase
+class IdentifiableModifier : public data_entry, public DataType<IdentifiableModifier>, public ModifierBase
 {
 	Q_OBJECT
 
@@ -36,9 +36,9 @@ private:
 	static inline IdentifiableModifier *OverpopulationModifier = nullptr;
 
 public:
-	IdentifiableModifier(const std::string &identifier) : DataEntry(identifier) {}
+	IdentifiableModifier(const std::string &identifier) : data_entry(identifier) {}
 
-	virtual void ProcessGSMLProperty(const gsml_property &property) override;
+	virtual void process_gsml_property(const gsml_property &property) override;
 
 	template <typename T>
 	void Remove(T *scope) const //to prevent ambiguity for name lookup between ModifierBase::Remove and DataType::Remove

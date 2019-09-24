@@ -21,7 +21,7 @@ class phenotype;
 class religion;
 class Trait;
 
-class Character : public NumericDataEntry, public DataType<Character, int>
+class Character : public numeric_data_entry, public DataType<Character, int>
 {
 	Q_OBJECT
 
@@ -67,7 +67,7 @@ private:
 	static inline std::vector<Character *> LivingCharacters;
 
 public:
-	Character(const int identifier) : NumericDataEntry(identifier)
+	Character(const int identifier) : numeric_data_entry(identifier)
 	{
 		connect(this, &Character::name_changed, this, &Character::FullNameChanged);
 		connect(this, &Character::name_changed, this, &Character::TitledNameChanged);
@@ -109,25 +109,25 @@ public:
 		}
 	}
 
-	virtual void ProcessGSMLDatedProperty(const gsml_property &property, const QDateTime &date) override;
+	virtual void process_gsml_dated_property(const gsml_property &property, const QDateTime &date) override;
 	virtual void initialize_history() override;
 
-	virtual void Check() const override
+	virtual void check() const override
 	{
 		if (this->get_name().empty()) {
-			throw std::runtime_error("Character \"" + std::to_string(this->GetIdentifier()) + "\" has no name.");
+			throw std::runtime_error("Character \"" + std::to_string(this->get_identifier()) + "\" has no name.");
 		}
 
 		if (this->get_culture() == nullptr) {
-			throw std::runtime_error("Character \"" + std::to_string(this->GetIdentifier()) + "\" has no culture.");
+			throw std::runtime_error("Character \"" + std::to_string(this->get_identifier()) + "\" has no culture.");
 		}
 
 		if (this->get_religion() == nullptr) {
-			throw std::runtime_error("Character \"" + std::to_string(this->GetIdentifier()) + "\" has no religion.");
+			throw std::runtime_error("Character \"" + std::to_string(this->get_identifier()) + "\" has no religion.");
 		}
 
 		if (this->get_phenotype() == nullptr) {
-			throw std::runtime_error("Character \"" + std::to_string(this->GetIdentifier()) + "\" has no phenotype.");
+			throw std::runtime_error("Character \"" + std::to_string(this->get_identifier()) + "\" has no phenotype.");
 		}
 	}
 

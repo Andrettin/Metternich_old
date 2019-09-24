@@ -14,7 +14,7 @@ class PopulationCapacityModifierModifierEffect : public ModifierEffect
 public:
 	PopulationCapacityModifierModifierEffect(const int population_capacity_modifier) : PopulationCapacityModifier(population_capacity_modifier) {}
 
-	virtual const std::string &GetIdentifier() const override
+	virtual const std::string &get_identifier() const override
 	{
 		static std::string identifier = "population_capacity_modifier";
 		return identifier;

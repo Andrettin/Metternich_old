@@ -71,9 +71,9 @@ std::unique_ptr<Condition> Condition::FromGSMLScope(const gsml_data &scope)
 **
 **	@param	property	The property
 */
-void Condition::ProcessGSMLProperty(const gsml_property &property)
+void Condition::process_gsml_property(const gsml_property &property)
 {
-	throw std::runtime_error("Invalid \"" + this->GetIdentifier() + "\" condition property: " + property.get_key() + ".");
+	throw std::runtime_error("Invalid \"" + this->get_identifier() + "\" condition property: " + property.get_key() + ".");
 }
 
 /**
@@ -81,9 +81,9 @@ void Condition::ProcessGSMLProperty(const gsml_property &property)
 **
 **	@param	scope	The scope
 */
-void Condition::ProcessGSMLScope(const gsml_data &scope)
+void Condition::process_gsml_scope(const gsml_data &scope)
 {
-	throw std::runtime_error("Invalid \"" + this->GetIdentifier() + "\" condition scope: " + scope.get_tag() + ".");
+	throw std::runtime_error("Invalid \"" + this->get_identifier() + "\" condition scope: " + scope.get_tag() + ".");
 }
 
 }

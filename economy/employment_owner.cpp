@@ -28,7 +28,7 @@ std::unique_ptr<employment_owner> employment_owner::from_gsml_scope(const gsml_d
 **
 **	@param	property	The property
 */
-void employment_owner::ProcessGSMLProperty(const gsml_property &property)
+void employment_owner::process_gsml_property(const gsml_property &property)
 {
 	Database::ProcessGSMLPropertyForObject(this, property);
 }

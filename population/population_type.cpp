@@ -10,7 +10,7 @@ namespace metternich {
 **
 **	@param	scope	The scope
 */
-void PopulationType::ProcessGSMLScope(const gsml_data &scope)
+void PopulationType::process_gsml_scope(const gsml_data &scope)
 {
 	const std::string &tag = scope.get_tag();
 	const std::vector<std::string> &values = scope.get_values();
@@ -25,17 +25,17 @@ void PopulationType::ProcessGSMLScope(const gsml_data &scope)
 		const int blue = std::stoi(values.at(2));
 		this->Color.setRgb(red, green, blue);
 	} else {
-		DataEntryBase::ProcessGSMLScope(scope);
+		data_entry_base::process_gsml_scope(scope);
 	}
 }
 
 /**
 **	@brief	Check whether the population type is in a valid state
 */
-void PopulationType::Check() const
+void PopulationType::check() const
 {
 	if (!this->GetColor().isValid()) {
-		throw std::runtime_error("Population type \"" + this->GetIdentifier() + "\" has no valid color.");
+		throw std::runtime_error("Population type \"" + this->get_identifier() + "\" has no valid color.");
 	}
 }
 

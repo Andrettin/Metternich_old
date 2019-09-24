@@ -13,7 +13,7 @@ class employment_owner;
 class gsml_data;
 class PopulationType;
 
-class employment_type : public DataEntry, public DataType<employment_type>
+class employment_type : public data_entry, public DataType<employment_type>
 {
 	Q_OBJECT
 
@@ -29,9 +29,9 @@ public:
 	employment_type(const std::string &identifier);
 	virtual ~employment_type() override;
 
-	virtual void ProcessGSMLProperty(const gsml_property &property) override;
-	virtual void ProcessGSMLScope(const gsml_data &scope) override;
-	virtual void Initialize() override;
+	virtual void process_gsml_property(const gsml_property &property) override;
+	virtual void process_gsml_scope(const gsml_data &scope) override;
+	virtual void initialize() override;
 
 	int get_workforce() const
 	{

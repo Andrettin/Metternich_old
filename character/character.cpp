@@ -46,7 +46,7 @@ Character *Character::Generate(metternich::culture *culture, metternich::religio
 **	@param	property	The property
 **	@param	date		The date of the property change
 */
-void Character::ProcessGSMLDatedProperty(const gsml_property &property, const QDateTime &date)
+void Character::process_gsml_dated_property(const gsml_property &property, const QDateTime &date)
 {
 	if (property.get_key() == "birth") {
 		if (property.get_operator() != gsml_operator::assignment) {
@@ -67,7 +67,7 @@ void Character::ProcessGSMLDatedProperty(const gsml_property &property, const QD
 			this->Alive = false;
 		}
 	} else {
-		this->ProcessGSMLProperty(property);
+		this->process_gsml_property(property);
 	}
 }
 

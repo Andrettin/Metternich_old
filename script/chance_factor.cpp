@@ -27,7 +27,7 @@ ChanceFactor::~ChanceFactor()
 **
 **	@param	property	The property
 */
-void ChanceFactor::ProcessGSMLProperty(const gsml_property &property)
+void ChanceFactor::process_gsml_property(const gsml_property &property)
 {
 	const std::string &key = property.get_key();
 	const gsml_operator gsml_operator = property.get_operator();
@@ -49,7 +49,7 @@ void ChanceFactor::ProcessGSMLProperty(const gsml_property &property)
 **
 **	@param	scope	The scope
 */
-void ChanceFactor::ProcessGSMLScope(const gsml_data &scope)
+void ChanceFactor::process_gsml_scope(const gsml_data &scope)
 {
 	if (scope.get_tag() == "modifier") {
 		auto factor_modifier = std::make_unique<FactorModifier>();

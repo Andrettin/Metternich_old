@@ -9,7 +9,7 @@ namespace metternich {
 /**
 **	@brief	Constructor
 */
-Region::Region(const std::string &identifier) : DataEntry(identifier)
+Region::Region(const std::string &identifier) : data_entry(identifier)
 {
 }
 

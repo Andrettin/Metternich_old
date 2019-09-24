@@ -23,7 +23,7 @@ class Defines : public QObject, public Singleton<Defines>
 
 public:
 	void Load();
-	void ProcessGSMLProperty(const gsml_property &property);
+	void process_gsml_property(const gsml_property &property);
 
 	const QDateTime &GetStartDate() const
 	{

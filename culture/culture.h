@@ -26,8 +26,8 @@ public:
 
 	culture(const std::string &identifier) : culture_base(identifier) {}
 
-	virtual void ProcessGSMLScope(const gsml_data &scope) override;
-	virtual void Check() const override;
+	virtual void process_gsml_scope(const gsml_data &scope) override;
+	virtual void check() const override;
 
 	metternich::culture_group *get_culture_group() const
 	{

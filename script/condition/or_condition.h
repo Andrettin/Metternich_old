@@ -13,13 +13,13 @@ namespace metternich {
 class OrCondition : public Condition
 {
 public:
-	virtual void ProcessGSMLProperty(const gsml_property &property) override
+	virtual void process_gsml_property(const gsml_property &property) override
 	{
 		std::unique_ptr<Condition> condition = Condition::FromGSMLProperty(property);
 		this->Conditions.push_back(std::move(condition));
 	}
 
-	virtual const std::string &GetIdentifier() const override
+	virtual const std::string &get_identifier() const override
 	{
 		static std::string identifier = "or";
 		return identifier;

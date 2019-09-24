@@ -14,7 +14,7 @@ class holding;
 class population_unit;
 class Province;
 
-class Region : public DataEntry, public DataType<Region>
+class Region : public data_entry, public DataType<Region>
 {
 	Q_OBJECT
 
@@ -39,12 +39,12 @@ public:
 	Region(const std::string &identifier);
 	virtual ~Region() override;
 
-	virtual void Initialize() override
+	virtual void initialize() override
 	{
 		//add each subregion's provinces to this one
 		for (Region *subregion : this->Subregions) {
-			if (!subregion->IsInitialized()) {
-				subregion->Initialize();
+			if (!subregion->is_initialized()) {
+				subregion->initialize();
 			}
 
 			for (Province *province : subregion->GetProvinces()) {
@@ -52,7 +52,7 @@ public:
 			}
 		}
 
-		DataEntryBase::Initialize();
+		data_entry_base::initialize();
 	}
 
 	virtual void initialize_history() override;

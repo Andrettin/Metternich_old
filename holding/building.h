@@ -12,7 +12,7 @@ class employment_type;
 class holding;
 class holding_type;
 
-class Building : public DataEntry, public DataType<Building>
+class Building : public data_entry, public DataType<Building>
 {
 	Q_OBJECT
 
@@ -30,7 +30,7 @@ public:
 	Building(const std::string &identifier);
 	virtual ~Building() override;
 
-	virtual void ProcessGSMLScope(const gsml_data &scope) override;
+	virtual void process_gsml_scope(const gsml_data &scope) override;
 
 	const std::string &GetIconPath() const
 	{

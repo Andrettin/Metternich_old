@@ -13,7 +13,7 @@ class ChanceFactor;
 class gsml_data;
 class holding;
 
-class commodity : public DataEntry, public DataType<commodity>
+class commodity : public data_entry, public DataType<commodity>
 {
 	Q_OBJECT
 
@@ -29,12 +29,12 @@ public:
 	commodity(const std::string &identifier);
 	virtual ~commodity() override;
 
-	virtual void ProcessGSMLScope(const gsml_data &scope) override;
+	virtual void process_gsml_scope(const gsml_data &scope) override;
 
-	virtual void Check() const override
+	virtual void check() const override
 	{
 		if (this->get_base_price() == 0) {
-			throw std::runtime_error("Commodity \"" + this->GetIdentifier() + "\" has no base price.");
+			throw std::runtime_error("Commodity \"" + this->get_identifier() + "\" has no base price.");
 		}
 	}
 

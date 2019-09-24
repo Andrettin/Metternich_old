@@ -13,7 +13,7 @@ namespace metternich {
 **
 **	@param	identifier	The employment type's string identifier
 */
-employment_type::employment_type(const std::string &identifier) : DataEntry(identifier)
+employment_type::employment_type(const std::string &identifier) : data_entry(identifier)
 {
 }
 
@@ -29,7 +29,7 @@ employment_type::~employment_type()
 **
 **	@param	property	The property
 */
-void employment_type::ProcessGSMLProperty(const gsml_property &property)
+void employment_type::process_gsml_property(const gsml_property &property)
 {
 	if (property.get_key() == "template") {
 		if (property.get_operator() == gsml_operator::assignment) {
@@ -38,7 +38,7 @@ void employment_type::ProcessGSMLProperty(const gsml_property &property)
 			throw std::runtime_error("Only the assignment operator may be used for the \"template\" property.");
 		}
 	} else {
-		DataEntryBase::ProcessGSMLProperty(property);
+		data_entry_base::process_gsml_property(property);
 	}
 }
 
@@ -47,7 +47,7 @@ void employment_type::ProcessGSMLProperty(const gsml_property &property)
 **
 **	@param	scope	The scope
 */
-void employment_type::ProcessGSMLScope(const gsml_data &scope)
+void employment_type::process_gsml_scope(const gsml_data &scope)
 {
 	const std::string &tag = scope.get_tag();
 
@@ -72,19 +72,19 @@ void employment_type::ProcessGSMLScope(const gsml_data &scope)
 			this->owners.push_back(std::move(owner));
 		}
 	} else {
-		DataEntryBase::ProcessGSMLScope(scope);
+		data_entry_base::process_gsml_scope(scope);
 	}
 }
 
 /**
 **	@brief	Initialize the employment type
 */
-void employment_type::Initialize()
+void employment_type::initialize()
 {
 	//inherit the data from the template
 	if (this->template_type != nullptr) {
-		if (!this->template_type->IsInitialized()) {
-			this->template_type->Initialize();
+		if (!this->template_type->is_initialized()) {
+			this->template_type->initialize();
 		}
 
 		if (this->get_workforce() == 0) {
@@ -112,7 +112,7 @@ void employment_type::Initialize()
 		}
 	}
 
-	DataEntryBase::Initialize();
+	data_entry_base::initialize();
 }
 
 /**

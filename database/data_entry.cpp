@@ -13,12 +13,12 @@ namespace metternich {
 **
 **	@param	property	The property
 */
-void DataEntryBase::ProcessGSMLProperty(const gsml_property &property)
+void data_entry_base::process_gsml_property(const gsml_property &property)
 {
 	Database::ProcessGSMLPropertyForObject(this, property);
 }
 
-void DataEntryBase::ProcessGSMLScope(const gsml_data &scope)
+void data_entry_base::process_gsml_scope(const gsml_data &scope)
 {
 	const QMetaObject *meta_object = this->metaObject();
 	throw std::runtime_error("Invalid \"" + util::pascal_case_to_snake_case(meta_object->className()) + "\" field: \"" + scope.get_tag() + "\".");
@@ -27,10 +27,10 @@ void DataEntryBase::ProcessGSMLScope(const gsml_data &scope)
 /**
 **	@brief	Load history for the data entry
 */
-void DataEntryBase::LoadHistory(gsml_data &data)
+void data_entry_base::load_history(gsml_data &data)
 {
 	for (const gsml_property &property : data.get_properties()) {
-		this->ProcessGSMLProperty(property); //properties outside of a date scope, to be applied regardless of start date
+		this->process_gsml_property(property); //properties outside of a date scope, to be applied regardless of start date
 	}
 
 	data.sort_children(); //sort by date, so that they are applied chronologically
@@ -40,19 +40,19 @@ void DataEntryBase::LoadHistory(gsml_data &data)
 
 		if (date <= Game::Get()->GetCurrentDate()) {
 			for (const gsml_property &property : history_entry.get_properties()) {
-				this->ProcessGSMLDatedProperty(property, date);
+				this->process_gsml_dated_property(property, date);
 			}
 
 			for (const gsml_data &scope : history_entry.get_children()) {
-				this->ProcessGSMLDatedScope(scope, date);
+				this->process_gsml_dated_scope(scope, date);
 			}
 		}
 	}
 }
 
-std::string DataEntry::get_name() const
+std::string data_entry::get_name() const
 {
-	return Translator::Get()->Translate(this->Identifier);
+	return Translator::Get()->Translate(this->identifier);
 }
 
 }

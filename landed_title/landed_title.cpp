@@ -92,7 +92,7 @@ const char *LandedTitle::GetTierHolderIdentifier(const LandedTitleTier tier)
 **	@param	property	The property
 **	@param	date		The date of the property change
 */
-void LandedTitle::ProcessGSMLDatedProperty(const gsml_property &property, const QDateTime &date)
+void LandedTitle::process_gsml_dated_property(const gsml_property &property, const QDateTime &date)
 {
 	Q_UNUSED(date);
 
@@ -117,7 +117,7 @@ void LandedTitle::ProcessGSMLDatedProperty(const gsml_property &property, const 
 		}
 	}
 
-	this->ProcessGSMLProperty(property);
+	this->process_gsml_property(property);
 }
 
 /**
@@ -125,7 +125,7 @@ void LandedTitle::ProcessGSMLDatedProperty(const gsml_property &property, const 
 **
 **	@param	scope	The scope
 */
-void LandedTitle::ProcessGSMLScope(const gsml_data &scope)
+void LandedTitle::process_gsml_scope(const gsml_data &scope)
 {
 	const std::string &tag = scope.get_tag();
 	const std::vector<std::string> &values = scope.get_values();
@@ -140,14 +140,14 @@ void LandedTitle::ProcessGSMLScope(const gsml_data &scope)
 		const int blue = std::stoi(values.at(2));
 		this->Color.setRgb(red, green, blue);
 	} else {
-		DataEntryBase::ProcessGSMLScope(scope);
+		data_entry_base::process_gsml_scope(scope);
 	}
 }
 
 /**
 **	@brief	Initialize the landed title
 */
-void LandedTitle::Initialize()
+void LandedTitle::initialize()
 {
 	if (this->GetTier() == LandedTitleTier::Barony) {
 		if (this->GetDeJureLiegeTitle() != nullptr) {
@@ -164,7 +164,7 @@ void LandedTitle::initialize_history()
 {
 	if (this->HolderTitle != nullptr) {
 		if (this->HolderTitle->GetHolder() == nullptr) {
-			throw std::runtime_error("Tried to set the \"" + this->HolderTitle->GetIdentifier() + "\" holder title for \"" + this->GetIdentifier() + "\", but the former has no holder.");
+			throw std::runtime_error("Tried to set the \"" + this->HolderTitle->get_identifier() + "\" holder title for \"" + this->get_identifier() + "\", but the former has no holder.");
 		}
 
 		this->SetHolder(this->HolderTitle->GetHolder());
@@ -173,11 +173,11 @@ void LandedTitle::initialize_history()
 
 	if (this->LiegeTitle != nullptr) {
 		if (this->LiegeTitle->GetHolder() == nullptr) {
-			throw std::runtime_error("Tried to set the \"" + this->LiegeTitle->GetIdentifier() + "\" liege title for \"" + this->GetIdentifier() + "\", but the former has no holder.");
+			throw std::runtime_error("Tried to set the \"" + this->LiegeTitle->get_identifier() + "\" liege title for \"" + this->get_identifier() + "\", but the former has no holder.");
 		}
 
 		if (this->GetHolder() == nullptr) {
-			throw std::runtime_error("Tried to set the \"" + this->LiegeTitle->GetIdentifier() + "\" liege title for \"" + this->GetIdentifier() + "\", but the latter has no holder.");
+			throw std::runtime_error("Tried to set the \"" + this->LiegeTitle->get_identifier() + "\" liege title for \"" + this->get_identifier() + "\", but the latter has no holder.");
 		}
 
 		this->GetHolder()->SetLiege(this->LiegeTitle->GetHolder());
@@ -188,34 +188,34 @@ void LandedTitle::initialize_history()
 /**
 **	@brief	Check whether the landed title is in a valid state
 */
-void LandedTitle::Check() const
+void LandedTitle::check() const
 {
 	if (this->GetTier() != LandedTitleTier::Barony && !this->GetColor().isValid()) {
-		throw std::runtime_error("Landed title \"" + this->GetIdentifier() + "\" has no valid color.");
+		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has no valid color.");
 	}
 
 	if (this->GetProvince() != nullptr && this->GetProvince() != this->GetCapitalProvince()) {
-		throw std::runtime_error("Landed title \"" + this->GetIdentifier() + "\" has a different province and capital province.");
+		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has a different province and capital province.");
 	}
 
 	if (Game::Get()->IsStarting()) {
 		if (this->GetCapitalProvince() == nullptr) {
-			throw std::runtime_error("Landed title \"" + this->GetIdentifier() + "\" has no capital province.");
+			throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has no capital province.");
 		}
 
 		if (this->get_holding() != nullptr && this->get_holding()->get_province() != this->GetCapitalProvince()) {
-			throw std::runtime_error("Landed title \"" + this->GetIdentifier() + "\" has its holding in a different province than its capital province.");
+			throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has its holding in a different province than its capital province.");
 		}
 
 		if (this->GetProvince() != nullptr) {
 			if (this->GetTier() != LandedTitleTier::County) {
-				throw std::runtime_error("Landed title \"" + this->GetIdentifier() + "\" has been assigned to a province, but is not a county.");
+				throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has been assigned to a province, but is not a county.");
 			}
 		}
 
 		if (this->get_holding() != nullptr) {
 			if (this->GetTier() != LandedTitleTier::Barony) {
-				throw std::runtime_error("Landed title \"" + this->GetIdentifier() + "\" has been assigned to a holding, but is not a barony.");
+				throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has been assigned to a holding, but is not a barony.");
 			}
 		}
 	}
@@ -239,16 +239,16 @@ std::string LandedTitle::get_name() const
 	std::vector<std::string> suffixes;
 
 	if (culture != nullptr) {
-		suffixes.push_back(culture->GetIdentifier());
-		suffixes.push_back(culture->get_culture_group()->GetIdentifier());
+		suffixes.push_back(culture->get_identifier());
+		suffixes.push_back(culture->get_culture_group()->get_identifier());
 	}
 
 	if (this->GetHolder() != nullptr && this->GetHolder()->GetDynasty() != nullptr) {
 		//allow for different localizations depending on the title holder's dynasty
-		suffixes.push_back(this->GetHolder()->GetDynasty()->GetIdentifier());
+		suffixes.push_back(this->GetHolder()->GetDynasty()->get_identifier());
 	}
 
-	return Translator::Get()->Translate(this->GetIdentifier(), suffixes);
+	return Translator::Get()->Translate(this->get_identifier(), suffixes);
 }
 
 /**
@@ -270,12 +270,12 @@ std::string LandedTitle::GetTierTitleName() const
 
 	if (this->get_holding() != nullptr) {
 		//for non-titular baronies, use the holding's type for the localization
-		suffixes.push_back(this->get_holding()->get_type()->GetIdentifier());
+		suffixes.push_back(this->get_holding()->get_type()->get_identifier());
 	}
 
 	if (culture != nullptr) {
-		suffixes.push_back(culture->GetIdentifier());
-		suffixes.push_back(culture->get_culture_group()->GetIdentifier());
+		suffixes.push_back(culture->get_identifier());
+		suffixes.push_back(culture->get_culture_group()->get_identifier());
 	}
 
 	return Translator::Get()->Translate(LandedTitle::GetTierIdentifier(this->GetTier()), suffixes);
@@ -312,12 +312,12 @@ std::string LandedTitle::GetHolderTitleName() const
 
 	if (this->get_holding() != nullptr) {
 		//for non-titular baronies, use the holding's type for the localization, so that e.g. a city's holder title name will be "mayor", regardless of the character's actual government
-		suffixes.push_back(this->get_holding()->get_type()->GetIdentifier());
+		suffixes.push_back(this->get_holding()->get_type()->get_identifier());
 	}
 
 	if (culture != nullptr) {
-		suffixes.push_back(culture->GetIdentifier());
-		suffixes.push_back(culture->get_culture_group()->GetIdentifier());
+		suffixes.push_back(culture->get_identifier());
+		suffixes.push_back(culture->get_culture_group()->get_identifier());
 	}
 
 	return Translator::Get()->Translate(LandedTitle::GetTierHolderIdentifier(this->GetTier()), suffixes);
@@ -388,7 +388,7 @@ void LandedTitle::SetDeJureLiegeTitle(LandedTitle *title)
 	}
 
 	if (static_cast<int>(title->GetTier()) - static_cast<int>(this->GetTier()) != 1) {
-		throw std::runtime_error("Tried to set title \"" + title->GetIdentifier() + "\" as the de jure liege of \"" + this->GetIdentifier() + "\", but the former is not one title tier above the latter.");
+		throw std::runtime_error("Tried to set title \"" + title->get_identifier() + "\" as the de jure liege of \"" + this->get_identifier() + "\", but the former is not one title tier above the latter.");
 	}
 
 	this->DeJureLiegeTitle = title;

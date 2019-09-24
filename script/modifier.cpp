@@ -10,7 +10,7 @@ namespace metternich {
 **
 **	@param	property	The property
 */
-void Modifier::ProcessGSMLProperty(const gsml_property &property)
+void Modifier::process_gsml_property(const gsml_property &property)
 {
 	std::unique_ptr<ModifierEffect> modifier_effect = ModifierEffect::FromGSMLProperty(property);
 	this->AddModifierEffect(std::move(modifier_effect));

@@ -8,7 +8,7 @@ namespace metternich {
 /**
 **	@brief	Constructor
 */
-holding_type::holding_type(const std::string &identifier) : DataEntry(identifier)
+holding_type::holding_type(const std::string &identifier) : data_entry(identifier)
 {
 }
 
@@ -24,7 +24,7 @@ holding_type::~holding_type()
 **
 **	@param	scope	The scope
 */
-void holding_type::ProcessGSMLScope(const gsml_data &scope)
+void holding_type::process_gsml_scope(const gsml_data &scope)
 {
 	const std::string &tag = scope.get_tag();
 
@@ -32,7 +32,7 @@ void holding_type::ProcessGSMLScope(const gsml_data &scope)
 		this->modifier = std::make_unique<metternich::Modifier>();
 		Database::ProcessGSMLData(this->modifier, scope);
 	} else {
-		DataEntryBase::ProcessGSMLScope(scope);
+		data_entry_base::process_gsml_scope(scope);
 	}
 }
 

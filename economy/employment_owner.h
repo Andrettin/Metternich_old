@@ -19,8 +19,8 @@ class employment_owner : public QObject
 public:
 	static std::unique_ptr<employment_owner> from_gsml_scope(const gsml_data &scope);
 
-	void ProcessGSMLProperty(const gsml_property &property);
-	void ProcessGSMLScope(const gsml_data &scope) { Q_UNUSED(scope); }
+	void process_gsml_property(const gsml_property &property);
+	void process_gsml_scope(const gsml_data &scope) { Q_UNUSED(scope); }
 
 	std::unique_ptr<employment_owner> duplicate() const
 	{

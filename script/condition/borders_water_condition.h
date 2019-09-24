@@ -14,7 +14,7 @@ class BordersWaterCondition : public Condition
 public:
 	BordersWaterCondition(const bool borders_water) : BordersWater(borders_water) {}
 
-	virtual const std::string &GetIdentifier() const override
+	virtual const std::string &get_identifier() const override
 	{
 		static std::string identifier = "borders_water";
 		return identifier;

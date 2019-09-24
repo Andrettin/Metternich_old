@@ -26,7 +26,7 @@ FactorModifier::~FactorModifier()
 **
 **	@param	property	The property
 */
-void FactorModifier::ProcessGSMLProperty(const gsml_property &property)
+void FactorModifier::process_gsml_property(const gsml_property &property)
 {
 	const std::string &key = property.get_key();
 	const gsml_operator gsml_operator = property.get_operator();
@@ -49,7 +49,7 @@ void FactorModifier::ProcessGSMLProperty(const gsml_property &property)
 **
 **	@param	scope	The scope
 */
-void FactorModifier::ProcessGSMLScope(const gsml_data &scope)
+void FactorModifier::process_gsml_scope(const gsml_data &scope)
 {
 	std::unique_ptr<Condition> condition = Condition::FromGSMLScope(scope);
 	this->Conditions.push_back(std::move(condition));

@@ -28,7 +28,7 @@ class Region;
 class religion;
 class Terrain;
 
-class Province : public DataEntry, public DataType<Province>
+class Province : public data_entry, public DataType<Province>
 {
 	Q_OBJECT
 
@@ -69,11 +69,11 @@ public:
 	Province(const std::string &identifier);
 	virtual ~Province() override;
 
-	virtual void ProcessGSMLProperty(const gsml_property &property) override;
-	virtual void ProcessGSMLScope(const gsml_data &scope) override;
-	virtual void ProcessGSMLDatedScope(const gsml_data &scope, const QDateTime &date) override;
+	virtual void process_gsml_property(const gsml_property &property) override;
+	virtual void process_gsml_scope(const gsml_data &scope) override;
+	virtual void process_gsml_dated_scope(const gsml_data &scope, const QDateTime &date) override;
 	virtual void initialize_history() override;
-	virtual void Check() const override;
+	virtual void check() const override;
 
 	void DoDay();
 	void DoMonth();

@@ -20,7 +20,7 @@ public:
 		this->Terrain = Terrain::Get(terrain_identifier);
 	}
 
-	virtual const std::string &GetIdentifier() const override
+	virtual const std::string &get_identifier() const override
 	{
 		static std::string identifier = "terrain";
 		return identifier;

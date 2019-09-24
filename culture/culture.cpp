@@ -11,7 +11,7 @@ namespace metternich {
 **
 **	@param	scope	The scope
 */
-void culture::ProcessGSMLScope(const gsml_data &scope)
+void culture::process_gsml_scope(const gsml_data &scope)
 {
 	const std::string &tag = scope.get_tag();
 	const std::vector<std::string> &values = scope.get_values();
@@ -26,33 +26,33 @@ void culture::ProcessGSMLScope(const gsml_data &scope)
 		const int blue = std::stoi(values.at(2));
 		this->color.setRgb(red, green, blue);
 	} else {
-		culture_base::ProcessGSMLScope(scope);
+		culture_base::process_gsml_scope(scope);
 	}
 }
 
 /**
 **	@brief	Check whether the culture is in a valid state
 */
-void culture::Check() const
+void culture::check() const
 {
 	if (this->get_culture_group() == nullptr) {
-		throw std::runtime_error("Culture \"" + this->GetIdentifier() + "\" has no culture group.");
+		throw std::runtime_error("Culture \"" + this->get_identifier() + "\" has no culture group.");
 	}
 
 	if (!this->get_color().isValid()) {
-		throw std::runtime_error("Culture \"" + this->GetIdentifier() + "\" has no valid color.");
+		throw std::runtime_error("Culture \"" + this->get_identifier() + "\" has no valid color.");
 	}
 
 	if (this->get_default_phenotype() == nullptr && this->get_culture_group()->get_default_phenotype() == nullptr) {
-		throw std::runtime_error("Culture \"" + this->GetIdentifier() + "\" has no default phenotype, and neither does its culture group.");
+		throw std::runtime_error("Culture \"" + this->get_identifier() + "\" has no default phenotype, and neither does its culture group.");
 	}
 
 	if (this->get_male_names().empty() && this->get_culture_group()->get_male_names().empty()) {
-		throw std::runtime_error("Culture \"" + this->GetIdentifier() + "\" has no male names, and neither does its culture group (\"" + this->get_culture_group()->GetIdentifier() + "\").");
+		throw std::runtime_error("Culture \"" + this->get_identifier() + "\" has no male names, and neither does its culture group (\"" + this->get_culture_group()->get_identifier() + "\").");
 	}
 
 	if (this->get_female_names().empty() && this->get_culture_group()->get_female_names().empty()) {
-		throw std::runtime_error("Culture \"" + this->GetIdentifier() + "\" has no female names, and neither does its culture group (\"" + this->get_culture_group()->GetIdentifier() + "\").");
+		throw std::runtime_error("Culture \"" + this->get_identifier() + "\" has no female names, and neither does its culture group (\"" + this->get_culture_group()->get_identifier() + "\").");
 	}
 }
 

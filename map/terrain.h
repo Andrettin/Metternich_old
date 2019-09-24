@@ -9,7 +9,7 @@ namespace metternich {
 
 class Modifier;
 
-class Terrain : public DataEntry, public DataType<Terrain>
+class Terrain : public data_entry, public DataType<Terrain>
 {
 	Q_OBJECT
 
@@ -32,7 +32,7 @@ public:
 	Terrain(const std::string &identifier);
 	virtual ~Terrain() override;
 
-	virtual void ProcessGSMLScope(const gsml_data &scope) override;
+	virtual void process_gsml_scope(const gsml_data &scope) override;
 
 	const QColor &GetColor() const
 	{

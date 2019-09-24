@@ -7,7 +7,7 @@ namespace metternich {
 **
 **	@param	scope	The scope
 */
-void religion::ProcessGSMLScope(const gsml_data &scope)
+void religion::process_gsml_scope(const gsml_data &scope)
 {
 	const std::string &tag = scope.get_tag();
 	const std::vector<std::string> &values = scope.get_values();
@@ -22,17 +22,17 @@ void religion::ProcessGSMLScope(const gsml_data &scope)
 		const int blue = std::stoi(values.at(2));
 		this->color.setRgb(red, green, blue);
 	} else {
-		DataEntryBase::ProcessGSMLScope(scope);
+		data_entry_base::process_gsml_scope(scope);
 	}
 }
 
 /**
 **	@brief	Check whether the religion is in a valid state
 */
-void religion::Check() const
+void religion::check() const
 {
 	if (!this->get_color().isValid()) {
-		throw std::runtime_error("Religion \"" + this->GetIdentifier() + "\" has no valid color.");
+		throw std::runtime_error("Religion \"" + this->get_identifier() + "\" has no valid color.");
 	}
 }
 

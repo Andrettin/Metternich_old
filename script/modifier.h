@@ -13,8 +13,8 @@ class gsml_property;
 class Modifier : public ModifierBase
 {
 public:
-	void ProcessGSMLProperty(const gsml_property &property);
-	void ProcessGSMLScope(const gsml_data &scope) { Q_UNUSED(scope); }
+	void process_gsml_property(const gsml_property &property);
+	void process_gsml_scope(const gsml_data &scope) { Q_UNUSED(scope); }
 };
 
 }

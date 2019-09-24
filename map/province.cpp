@@ -65,10 +65,10 @@ Province *Province::Add(const std::string &identifier)
 /**
 **	@brief	Constructor
 */
-Province::Province(const std::string &identifier) : DataEntry(identifier)
+Province::Province(const std::string &identifier) : data_entry(identifier)
 {
-	connect(this, &Province::culture_changed, this, &IdentifiableDataEntryBase::name_changed);
-	connect(this, &Province::religion_changed, this, &IdentifiableDataEntryBase::name_changed);
+	connect(this, &Province::culture_changed, this, &identifiable_data_entry_base::name_changed);
+	connect(this, &Province::religion_changed, this, &identifiable_data_entry_base::name_changed);
 	connect(Game::Get(), &Game::RunningChanged, this, &Province::UpdateImage);
 	connect(this, &Province::SelectedChanged, this, &Province::UpdateImage);
 }
@@ -85,7 +85,7 @@ Province::~Province()
 **
 **	@param	property	The property
 */
-void Province::ProcessGSMLProperty(const gsml_property &property)
+void Province::process_gsml_property(const gsml_property &property)
 {
 	if (property.get_key().substr(0, 2) == LandedTitle::BaronyPrefix) {
 		//a property related to one of the province's holdings
@@ -109,7 +109,7 @@ void Province::ProcessGSMLProperty(const gsml_property &property)
 			}
 		}
 	} else {
-		DataEntryBase::ProcessGSMLProperty(property);
+		data_entry_base::process_gsml_property(property);
 	}
 }
 
@@ -118,7 +118,7 @@ void Province::ProcessGSMLProperty(const gsml_property &property)
 **
 **	@param	scope	The scope
 */
-void Province::ProcessGSMLScope(const gsml_data &scope)
+void Province::process_gsml_scope(const gsml_data &scope)
 {
 	const std::string &tag = scope.get_tag();
 	const std::vector<std::string> &values = scope.get_values();
@@ -134,12 +134,12 @@ void Province::ProcessGSMLScope(const gsml_data &scope)
 		this->Color.setRgb(red, green, blue);
 
 		if (Province::InstancesByRGB.find(this->Color.rgb()) != Province::InstancesByRGB.end()) {
-			throw std::runtime_error("The color set for province \"" + this->GetIdentifier() + "\" is already used by province \"" + Province::InstancesByRGB.find(this->Color.rgb())->second->GetIdentifier() + "\"");
+			throw std::runtime_error("The color set for province \"" + this->get_identifier() + "\" is already used by province \"" + Province::InstancesByRGB.find(this->Color.rgb())->second->get_identifier() + "\"");
 		}
 
 		Province::InstancesByRGB[this->Color.rgb()] = this;
 	} else {
-		DataEntryBase::ProcessGSMLScope(scope);
+		data_entry_base::process_gsml_scope(scope);
 	}
 }
 
@@ -149,7 +149,7 @@ void Province::ProcessGSMLScope(const gsml_data &scope)
 **	@param	scope	The scope
 **	@param	date	The date of the scope change
 */
-void Province::ProcessGSMLDatedScope(const gsml_data &scope, const QDateTime &date)
+void Province::process_gsml_dated_scope(const gsml_data &scope, const QDateTime &date)
 {
 	const std::string &tag = scope.get_tag();
 
@@ -160,13 +160,13 @@ void Province::ProcessGSMLDatedScope(const gsml_data &scope, const QDateTime &da
 		holding *holding = this->get_holding(barony);
 		if (holding != nullptr) {
 			for (const gsml_property &property : scope.get_properties()) {
-				holding->ProcessGSMLDatedProperty(property, date);
+				holding->process_gsml_dated_property(property, date);
 			}
 		} else {
-			throw std::runtime_error("Province \"" + this->GetIdentifier() + "\" has no constructed holding for barony \"" + tag + "\", while having history to change the holding's data.");
+			throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no constructed holding for barony \"" + tag + "\", while having history to change the holding's data.");
 		}
 	} else {
-		DataEntryBase::ProcessGSMLScope(scope);
+		data_entry_base::process_gsml_scope(scope);
 	}
 }
 
@@ -195,24 +195,24 @@ void Province::initialize_history()
 /**
 **	@brief	Check whether the province is in a valid state
 */
-void Province::Check() const
+void Province::check() const
 {
 	if (!this->GetColor().isValid()) {
-		throw std::runtime_error("Province \"" + this->GetIdentifier() + "\" has no valid color.");
+		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no valid color.");
 	}
 
 	if (Game::Get()->IsStarting()) {
 		if (this->GetCounty() != nullptr) {
 			if (this->get_culture() == nullptr) {
-				throw std::runtime_error("Province \"" + this->GetIdentifier() + "\" has no culture.");
+				throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no culture.");
 			}
 
 			if (this->get_religion() == nullptr) {
-				throw std::runtime_error("Province \"" + this->GetIdentifier() + "\" has no religion.");
+				throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no religion.");
 			}
 
 			if (this->get_capital_holding() != nullptr && this->get_capital_holding()->get_province() != this) {
-				throw std::runtime_error("Province \"" + this->GetIdentifier() + "\"'s capital holding (\"" + this->get_capital_holding()->get_barony()->GetIdentifier() + "\") belongs to another province (\"" + this->get_capital_holding()->get_province()->GetIdentifier() + "\").");
+				throw std::runtime_error("Province \"" + this->get_identifier() + "\"'s capital holding (\"" + this->get_capital_holding()->get_barony()->get_identifier() + "\") belongs to another province (\"" + this->get_capital_holding()->get_province()->get_identifier() + "\").");
 			}
 		}
 	}
@@ -248,10 +248,10 @@ void Province::DoMonth()
 std::string Province::get_name() const
 {
 	if (this->GetCounty() != nullptr) {
-		return Translator::Get()->Translate(this->GetCounty()->GetIdentifier(), {this->get_culture()->GetIdentifier(), this->get_culture()->get_culture_group()->GetIdentifier(), this->get_religion()->GetIdentifier()});
+		return Translator::Get()->Translate(this->GetCounty()->get_identifier(), {this->get_culture()->get_identifier(), this->get_culture()->get_culture_group()->get_identifier(), this->get_religion()->get_identifier()});
 	}
 
-	return Translator::Get()->Translate(this->GetIdentifier()); //province without a county; sea zone, river, lake or wasteland
+	return Translator::Get()->Translate(this->get_identifier()); //province without a county; sea zone, river, lake or wasteland
 }
 
 /**

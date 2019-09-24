@@ -25,7 +25,7 @@ class population_unit;
 class Province;
 class religion;
 
-class holding : public DataEntry
+class holding : public data_entry
 {
 	Q_OBJECT
 
