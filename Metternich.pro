@@ -109,6 +109,8 @@ HEADERS += \
     map/terrain.h \
     pch.h \
     phenotype.h \
+    politics/law.h \
+    politics/law_group.h \
     population/population_type.h \
     population/population_unit.h \
     random.h \

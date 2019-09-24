@@ -21,6 +21,7 @@
 #include "map/region.h"
 #include "map/terrain.h"
 #include "phenotype.h"
+#include "politics/law_group.h"
 #include "population/population_type.h"
 #include "religion.h"
 #include "translator.h"
@@ -40,6 +41,7 @@ namespace metternich {
 void Database::ProcessGSMLPropertyForObject(QObject *object, const gsml_property &property)
 {
 	const QMetaObject *meta_object = object->metaObject();
+	const std::string class_name = meta_object->className();
 	const int property_count = meta_object->propertyCount();
 	for (int i = 0; i < property_count; ++i) {
 		QMetaProperty meta_property = meta_object->property(i);
@@ -125,6 +127,12 @@ void Database::ProcessGSMLPropertyForObject(QObject *object, const gsml_property
 				new_property_value = QVariant::fromValue(commodity::Get(property.get_value()));
 			} else if (property.get_key() == "employment_type") {
 				new_property_value = QVariant::fromValue(employment_type::Get(property.get_value()));
+			} else if (property.get_key() == "group") {
+				if (class_name == "metternich::law") {
+					new_property_value = QVariant::fromValue(law_group::get_or_add(property.get_value()));
+				} else {
+					throw std::runtime_error("Unknown type for object reference property \"" + std::string(property_name) + "\".");
+				}
 			} else {
 				throw std::runtime_error("Unknown type for object reference property \"" + std::string(property_name) + "\".");
 			}

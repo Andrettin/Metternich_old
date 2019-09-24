@@ -61,6 +61,32 @@ public:
 	}
 
 	/**
+	**	@brief	Get an instance of the class by its identifier, or create it if it doesn't already exist
+	**	@param	identifier	The instance's identifier
+	**	@return	The instance if found, or a newly-created one otherwise
+	*/
+	static T *get_or_add(const KEY &identifier)
+	{
+		if constexpr (std::is_same_v<KEY, std::string>) {
+			if (identifier == "none") {
+				return nullptr;
+			}
+		} else if constexpr (std::is_arithmetic_v<KEY>) {
+			if (identifier == 0) {
+				return nullptr;
+			}
+		}
+
+		typename std::map<KEY, std::unique_ptr<T>>::const_iterator find_iterator = DataType::InstancesByIdentifier.find(identifier);
+
+		if (find_iterator != DataType::InstancesByIdentifier.end()) {
+			return find_iterator->second.get();
+		}
+
+		return T::Add(identifier);
+	}
+
+	/**
 	**	@brief	Gets all instances of the class
 	**
 	**	@return	All existing instances of the class
