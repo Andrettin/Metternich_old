@@ -68,7 +68,7 @@ Province *Province::Add(const std::string &identifier)
 Province::Province(const std::string &identifier) : DataEntry(identifier)
 {
 	connect(this, &Province::culture_changed, this, &IdentifiableDataEntryBase::name_changed);
-	connect(this, &Province::ReligionChanged, this, &IdentifiableDataEntryBase::name_changed);
+	connect(this, &Province::religion_changed, this, &IdentifiableDataEntryBase::name_changed);
 	connect(Game::Get(), &Game::RunningChanged, this, &Province::UpdateImage);
 	connect(this, &Province::SelectedChanged, this, &Province::UpdateImage);
 }
@@ -207,7 +207,7 @@ void Province::Check() const
 				throw std::runtime_error("Province \"" + this->GetIdentifier() + "\" has no culture.");
 			}
 
-			if (this->GetReligion() == nullptr) {
+			if (this->get_religion() == nullptr) {
 				throw std::runtime_error("Province \"" + this->GetIdentifier() + "\" has no religion.");
 			}
 
@@ -248,7 +248,7 @@ void Province::DoMonth()
 std::string Province::get_name() const
 {
 	if (this->GetCounty() != nullptr) {
-		return Translator::Get()->Translate(this->GetCounty()->GetIdentifier(), {this->get_culture()->GetIdentifier(), this->get_culture()->get_culture_group()->GetIdentifier(), this->GetReligion()->GetIdentifier()});
+		return Translator::Get()->Translate(this->GetCounty()->GetIdentifier(), {this->get_culture()->GetIdentifier(), this->get_culture()->get_culture_group()->GetIdentifier(), this->get_religion()->GetIdentifier()});
 	}
 
 	return Translator::Get()->Translate(this->GetIdentifier()); //province without a county; sea zone, river, lake or wasteland
@@ -524,7 +524,7 @@ void Province::CalculatePopulationGroups()
 {
 	this->PopulationPerType.clear();
 	this->population_per_culture.clear();
-	this->PopulationPerReligion.clear();
+	this->population_per_religion.clear();
 
 	for (holding *holding : this->get_holdings()) {
 		for (const auto &kv_pair : holding->get_population_per_type()) {
@@ -534,7 +534,7 @@ void Province::CalculatePopulationGroups()
 			this->population_per_culture[kv_pair.first] += kv_pair.second;
 		}
 		for (const auto &kv_pair : holding->get_population_per_religion()) {
-			this->PopulationPerReligion[kv_pair.first] += kv_pair.second;
+			this->population_per_religion[kv_pair.first] += kv_pair.second;
 		}
 	}
 
@@ -554,11 +554,11 @@ void Province::CalculatePopulationGroups()
 		}
 	}
 
-	metternich::Religion *plurality_religion = nullptr;
+	metternich::religion *plurality_religion = nullptr;
 	int plurality_religion_size = 0;
 
-	for (const auto &kv_pair : this->PopulationPerReligion) {
-		metternich::Religion *religion = kv_pair.first;
+	for (const auto &kv_pair : this->population_per_religion) {
+		metternich::religion *religion = kv_pair.first;
 		const int religion_size = kv_pair.second;
 		if (plurality_religion == nullptr || religion_size > plurality_religion_size) {
 			plurality_religion = religion;
@@ -567,7 +567,7 @@ void Province::CalculatePopulationGroups()
 	}
 
 	this->set_culture(plurality_culture);
-	this->SetReligion(plurality_religion);
+	this->set_religion(plurality_religion);
 }
 
 /**
@@ -767,7 +767,7 @@ QVariantList Province::get_population_per_religion_qvariant_list() const
 {
 	QVariantList population_per_religion;
 
-	for (const auto &kv_pair : this->PopulationPerReligion) {
+	for (const auto &kv_pair : this->population_per_religion) {
 		QVariantMap religion_population;
 		religion_population["religion"] = QVariant::fromValue(kv_pair.first);
 		religion_population["population"] = QVariant::fromValue(kv_pair.second);

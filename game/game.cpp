@@ -184,7 +184,7 @@ void Game::GenerateMissingTitleHolders()
 			province = landed_title->get_holding()->get_province();
 		}
 
-		Character *holder = Character::Generate(province->get_culture(), province->GetReligion());
+		Character *holder = Character::Generate(province->get_culture(), province->get_religion());
 		landed_title->SetHolder(holder);
 
 		//set the liege of generated holding owners to the county holder

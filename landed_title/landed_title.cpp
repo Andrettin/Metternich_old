@@ -103,7 +103,7 @@ void LandedTitle::ProcessGSMLDatedProperty(const gsml_property &property, const 
 
 		if (property.get_value() == "random") {
 			//generate random holder
-			Character *holder = Character::Generate(this->GetCapitalProvince()->get_culture(), this->GetCapitalProvince()->GetReligion());
+			Character *holder = Character::Generate(this->GetCapitalProvince()->get_culture(), this->GetCapitalProvince()->get_religion());
 			this->SetHolder(holder);
 			return;
 		} else if (property.get_value() == "none") {

@@ -23,7 +23,7 @@ class LandedTitle;
 class PopulationType;
 class population_unit;
 class Province;
-class Religion;
+class religion;
 
 class holding : public DataEntry
 {
@@ -43,7 +43,7 @@ class holding : public DataEntry
 	Q_PROPERTY(int construction_days READ get_construction_days NOTIFY construction_days_changed)
 	Q_PROPERTY(metternich::commodity* commodity READ get_commodity WRITE set_commodity NOTIFY commodity_changed)
 	Q_PROPERTY(metternich::culture* culture READ get_culture WRITE set_culture NOTIFY culture_changed)
-	Q_PROPERTY(metternich::Religion* religion READ get_religion WRITE set_religion NOTIFY religion_changed)
+	Q_PROPERTY(metternich::religion* religion READ get_religion WRITE set_religion NOTIFY religion_changed)
 	Q_PROPERTY(int holding_size READ get_holding_size WRITE set_holding_size NOTIFY holding_size_changed)
 	Q_PROPERTY(bool selected READ is_selected WRITE set_selected NOTIFY selected_changed)
 
@@ -286,12 +286,12 @@ public:
 		return find_iterator->second;
 	}
 
-	const std::map<metternich::Religion *, int> &get_population_per_religion() const
+	const std::map<metternich::religion *, int> &get_population_per_religion() const
 	{
 		return this->population_per_religion;
 	}
 
-	int get_religion_population(metternich::Religion *religion) const
+	int get_religion_population(metternich::religion *religion) const
 	{
 		auto find_iterator = this->population_per_religion.find(religion);
 		if (find_iterator == this->population_per_religion.end()) {
@@ -374,12 +374,12 @@ public:
 		emit culture_changed();
 	}
 
-	metternich::Religion *get_religion() const
+	metternich::religion *get_religion() const
 	{
 		return this->religion;
 	}
 
-	void set_religion(Religion *religion)
+	void set_religion(religion *religion)
 	{
 		if (religion == this->get_religion()) {
 			return;
@@ -468,13 +468,13 @@ private:
 	metternich::commodity *commodity = nullptr; //the commodity produced by the holding (if any)
 	int holding_size = 100; //the holding size, which affects population capacity (100 = normal size)
 	metternich::culture *culture = nullptr; //the holding's culture
-	metternich::Religion *religion = nullptr; //the holding's religion
+	metternich::religion *religion = nullptr; //the holding's religion
 	std::set<IdentifiableModifier *> modifiers; //modifiers applied to the holding
 	bool selected = false;
 	std::map<const employment_type *, std::unique_ptr<employment>> employments; //employments, mapped to their respective employment types
 	std::map<PopulationType *, int> population_per_type; //the population for each population type
 	std::map<metternich::culture *, int> population_per_culture; //the population for each culture
-	std::map<metternich::Religion *, int> population_per_religion; //the population for each religion
+	std::map<metternich::religion *, int> population_per_religion; //the population for each religion
 };
 
 }

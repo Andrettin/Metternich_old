@@ -15,7 +15,7 @@ class holding;
 class PopulationType;
 class Province;
 class Region;
-class Religion;
+class religion;
 
 class population_unit : public DataEntryBase, public SimpleDataType<population_unit>
 {
@@ -23,7 +23,7 @@ class population_unit : public DataEntryBase, public SimpleDataType<population_u
 
 	Q_PROPERTY(metternich::PopulationType* type MEMBER type READ get_type NOTIFY type_changed)
 	Q_PROPERTY(metternich::culture* culture READ get_culture WRITE set_culture NOTIFY culture_changed)
-	Q_PROPERTY(metternich::Religion* religion READ get_religion WRITE set_religion NOTIFY religion_changed)
+	Q_PROPERTY(metternich::religion* religion READ get_religion WRITE set_religion NOTIFY religion_changed)
 	Q_PROPERTY(int size READ get_size WRITE set_size NOTIFY size_changed)
 	Q_PROPERTY(metternich::holding* holding READ get_holding WRITE set_holding NOTIFY holding_changed)
 	Q_PROPERTY(metternich::Province* province READ get_province WRITE set_province NOTIFY province_changed)
@@ -64,12 +64,12 @@ public:
 		emit culture_changed();
 	}
 
-	metternich::Religion *get_religion() const
+	metternich::religion *get_religion() const
 	{
 		return this->religion;
 	}
 
-	void set_religion(Religion *religion)
+	void set_religion(religion *religion)
 	{
 		if (religion == this->get_religion()) {
 			return;
@@ -262,7 +262,7 @@ signals:
 private:
 	PopulationType *type = nullptr;
 	metternich::culture *culture = nullptr;
-	metternich::Religion *religion = nullptr;
+	metternich::religion *religion = nullptr;
 	int size = 0; //the size of the population unit, in number of individuals
 	metternich::holding *holding = nullptr; //the settlement holding where this population unit lives
 	metternich::Province *province = nullptr; //the province where this population unit lives; used only during initialization to generate population units in settlements in the province

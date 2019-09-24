@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
 		qmlRegisterType<PopulationType>();
 		qmlRegisterType<population_unit>();
 		qmlRegisterType<Province>();
-		qmlRegisterType<Religion>();
+		qmlRegisterType<religion>();
 		qmlRegisterType<Terrain>();
 		engine.rootContext()->setContextProperty("metternich", EngineInterface::Get());
 		engine.addImageProvider(QLatin1String("provinces"), new ProvinceImageProvider);

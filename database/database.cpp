@@ -114,7 +114,7 @@ void Database::ProcessGSMLPropertyForObject(QObject *object, const gsml_property
 			} else if (property.get_key() == "culture_group") {
 				new_property_value = QVariant::fromValue(culture_group::Get(property.get_value()));
 			} else if (property.get_key() == "religion") {
-				new_property_value = QVariant::fromValue(Religion::Get(property.get_value()));
+				new_property_value = QVariant::fromValue(religion::Get(property.get_value()));
 			} else if (property.get_key() == "phenotype" || property.get_key() == "default_phenotype") {
 				new_property_value = QVariant::fromValue(phenotype::Get(property.get_value()));
 			} else if (property.get_key() == "dynasty") {

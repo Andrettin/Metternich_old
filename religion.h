@@ -9,14 +9,14 @@
 
 namespace metternich {
 
-class Religion : public DataEntry, public DataType<Religion>
+class religion : public DataEntry, public DataType<religion>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(QColor color MEMBER Color READ GetColor)
+	Q_PROPERTY(QColor color MEMBER color READ get_color)
 
 public:
-	Religion(const std::string &identifier) : DataEntry(identifier) {}
+	religion(const std::string &identifier) : DataEntry(identifier) {}
 
 	static constexpr const char *ClassIdentifier = "religion";
 	static constexpr const char *DatabaseFolder = "religions";
@@ -24,13 +24,13 @@ public:
 	virtual void ProcessGSMLScope(const gsml_data &scope) override;
 	virtual void Check() const override;
 
-	const QColor &GetColor() const
+	const QColor &get_color() const
 	{
-		return this->Color;
+		return this->color;
 	}
 
 private:
-	QColor Color;
+	QColor color;
 };
 
 }

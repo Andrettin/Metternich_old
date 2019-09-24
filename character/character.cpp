@@ -24,12 +24,12 @@ namespace metternich {
 **	@param	religion	The religion for the generated character
 **	@param	phenotype	The phenotype for the generated character; if none is given then the default phenotype for the culture is used instead
 */
-Character *Character::Generate(metternich::culture *culture, metternich::Religion *religion, metternich::phenotype *phenotype)
+Character *Character::Generate(metternich::culture *culture, metternich::religion *religion, metternich::phenotype *phenotype)
 {
 	const int identifier = Character::GenerateNumericIdentifier();
 	Character *character = Character::Add(identifier);
 	character->culture = culture;
-	character->Religion = religion;
+	character->religion = religion;
 	if (phenotype != nullptr) {
 		character->phenotype = phenotype;
 	}

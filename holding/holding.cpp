@@ -69,7 +69,7 @@ void holding::initialize_history()
 		}
 
 		if (this->get_religion() == nullptr) {
-			this->set_religion(this->get_province()->GetReligion());
+			this->set_religion(this->get_province()->get_religion());
 		}
 	}
 
@@ -137,7 +137,7 @@ std::string holding::get_name() const
 std::string holding::get_type_name() const
 {
 	const metternich::culture *culture = this->get_culture();
-	const metternich::Religion *religion = this->get_religion();
+	const metternich::religion *religion = this->get_religion();
 
 	std::vector<std::string> suffixes;
 	suffixes.push_back(culture->GetIdentifier());
@@ -356,11 +356,11 @@ void holding::calculate_population_groups()
 		}
 	}
 
-	metternich::Religion *plurality_religion = nullptr;
+	metternich::religion *plurality_religion = nullptr;
 	int plurality_religion_size = 0;
 
 	for (const auto &kv_pair : this->population_per_religion) {
-		metternich::Religion *religion = kv_pair.first;
+		metternich::religion *religion = kv_pair.first;
 		const int religion_size = kv_pair.second;
 		if (plurality_religion == nullptr || religion_size > plurality_religion_size) {
 			plurality_religion = religion;

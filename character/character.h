@@ -18,7 +18,7 @@ class gsml_property;
 class holding;
 class LandedTitle;
 class phenotype;
-class Religion;
+class religion;
 class Trait;
 
 class Character : public NumericDataEntry, public DataType<Character, int>
@@ -31,7 +31,7 @@ class Character : public NumericDataEntry, public DataType<Character, int>
 	Q_PROPERTY(bool female MEMBER Female READ IsFemale)
 	Q_PROPERTY(metternich::Dynasty* dynasty READ GetDynasty WRITE SetDynasty NOTIFY DynastyChanged)
 	Q_PROPERTY(metternich::culture* culture MEMBER culture READ get_culture NOTIFY culture_changed)
-	Q_PROPERTY(metternich::Religion* religion MEMBER Religion READ GetReligion NOTIFY ReligionChanged)
+	Q_PROPERTY(metternich::religion* religion MEMBER religion READ get_religion NOTIFY religion_changed)
 	Q_PROPERTY(metternich::phenotype* phenotype MEMBER phenotype READ get_phenotype)
 	Q_PROPERTY(metternich::LandedTitle* primary_title READ GetPrimaryTitle WRITE SetPrimaryTitle NOTIFY PrimaryTitleChanged)
 	Q_PROPERTY(metternich::Character* father READ GetFather WRITE SetFather)
@@ -61,7 +61,7 @@ public:
 		return Character::LivingCharacters;
 	}
 
-	static Character *Generate(culture *culture, Religion *religion, phenotype *phenotype = nullptr);
+	static Character *Generate(culture *culture, religion *religion, phenotype *phenotype = nullptr);
 
 private:
 	static inline std::vector<Character *> LivingCharacters;
@@ -122,7 +122,7 @@ public:
 			throw std::runtime_error("Character \"" + std::to_string(this->GetIdentifier()) + "\" has no culture.");
 		}
 
-		if (this->GetReligion() == nullptr) {
+		if (this->get_religion() == nullptr) {
 			throw std::runtime_error("Character \"" + std::to_string(this->GetIdentifier()) + "\" has no religion.");
 		}
 
@@ -205,9 +205,9 @@ public:
 		return this->culture;
 	}
 
-	metternich::Religion *GetReligion() const
+	metternich::religion *get_religion() const
 	{
-		return this->Religion;
+		return this->religion;
 	}
 
 	metternich::phenotype *get_phenotype() const
@@ -410,7 +410,7 @@ signals:
 	void AliveChanged();
 	void DynastyChanged();
 	void culture_changed();
-	void ReligionChanged();
+	void religion_changed();
 	void PrimaryTitleChanged();
 	void LiegeChanged();
 	void WealthChanged();
@@ -421,7 +421,7 @@ private:
 	bool Female = false;
 	metternich::Dynasty *Dynasty = nullptr;
 	metternich::culture *culture = nullptr;
-	metternich::Religion *Religion = nullptr;
+	metternich::religion *religion = nullptr;
 	metternich::phenotype *phenotype = nullptr;
 	LandedTitle *PrimaryTitle = nullptr;
 	std::vector<LandedTitle *> LandedTitles;
