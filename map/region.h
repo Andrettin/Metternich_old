@@ -11,6 +11,7 @@
 namespace metternich {
 
 class holding;
+class LandedTitle;
 class population_unit;
 class Province;
 
@@ -18,6 +19,7 @@ class region : public data_entry, public data_type<region>
 {
 	Q_OBJECT
 
+	Q_PROPERTY(QVariantList holdings READ get_holdings_qvariant_list)
 	Q_PROPERTY(QVariantList provinces READ get_provinces_qvariant_list)
 	Q_PROPERTY(QVariantList subregions READ get_subregions_qvariant_list)
 
@@ -39,22 +41,7 @@ public:
 	region(const std::string &identifier);
 	virtual ~region() override;
 
-	virtual void initialize() override
-	{
-		//add each subregion's provinces to this one
-		for (region *subregion : this->subregions) {
-			if (!subregion->is_initialized()) {
-				subregion->initialize();
-			}
-
-			for (Province *province : subregion->get_provinces()) {
-				this->add_province(province);
-			}
-		}
-
-		data_entry_base::initialize();
-	}
-
+	virtual void initialize() override;
 	virtual void initialize_history() override;
 
 	const std::vector<Province *> &get_provinces() const
@@ -80,6 +67,18 @@ public:
 
 	std::vector<holding *> get_holdings() const;
 
+	QVariantList get_holdings_qvariant_list() const;
+
+	Q_INVOKABLE void add_holding(LandedTitle *barony)
+	{
+		this->baronies.push_back(barony);
+	}
+
+	Q_INVOKABLE void remove_holding(LandedTitle *barony)
+	{
+		this->baronies.erase(std::remove(this->baronies.begin(), this->baronies.end(), barony), this->baronies.end());
+	}
+
 	const std::vector<std::unique_ptr<population_unit>> &get_population_units() const
 	{
 		return this->population_units;
@@ -92,6 +91,7 @@ signals:
 
 private:
 	std::vector<Province *> provinces;
+	std::vector<LandedTitle *> baronies; //the baronies for the holdings contained by this region
 	std::vector<region *> subregions; //subregions of this region
 	std::vector<std::unique_ptr<population_unit>> population_units; //population units set for this region in history, used during initialization to generate population units in the region's settlements
 };

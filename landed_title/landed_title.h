@@ -123,20 +123,25 @@ public:
 
 	void SetDeJureLiegeTitle(LandedTitle *title);
 
+	const std::vector<LandedTitle *> &get_de_jure_vassal_titles() const
+	{
+		return this->de_jure_vassal_titles;
+	}
+
 	void add_de_jure_vassal_title(LandedTitle *title)
 	{
-		this->DeJureVassalTitles.push_back(title);
+		this->de_jure_vassal_titles.push_back(title);
 	}
 
 	void remove_de_jure_vassal_title(LandedTitle *title)
 	{
-		this->DeJureVassalTitles.erase(std::remove(this->DeJureVassalTitles.begin(), this->DeJureVassalTitles.end(), title), this->DeJureVassalTitles.end());
+		this->de_jure_vassal_titles.erase(std::remove(this->de_jure_vassal_titles.begin(), this->de_jure_vassal_titles.end(), title), this->de_jure_vassal_titles.end());
 	}
 
 	bool IsTitular() const
 	{
 		//a title is not titular if it has de jure vassals, or if it is a county belonging to a province, or a barony belonging to a holding
-		return this->DeJureVassalTitles.empty() && this->GetProvince() == nullptr && this->get_holding() == nullptr;
+		return this->get_de_jure_vassal_titles().empty() && this->GetProvince() == nullptr && this->get_holding() == nullptr;
 	}
 
 	metternich::Province *GetCapitalProvince() const
@@ -173,7 +178,7 @@ private:
 	metternich::holding *holding = nullptr; //this title's holding, if it is a non-titular barony
 	metternich::Province *Province = nullptr; //this title's province, if it is a non-titular county
 	LandedTitle *DeJureLiegeTitle = nullptr;
-	std::vector<LandedTitle *> DeJureVassalTitles;
+	std::vector<LandedTitle *> de_jure_vassal_titles;
 	metternich::Province *CapitalProvince = nullptr;
 	LandedTitle *HolderTitle = nullptr; //title of this title's holder; used only for initialization, and set to null afterwards
 	LandedTitle *LiegeTitle = nullptr; //title of this title's holder's liege; used only for initialization, and set to null afterwards

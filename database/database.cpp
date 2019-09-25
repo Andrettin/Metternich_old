@@ -155,6 +155,17 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 			if (property.get_key() == "traits") {
 				Trait *trait = Trait::get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(Trait *, trait));
+			} else if (property.get_key() == "holdings") {
+				LandedTitle *barony = LandedTitle::get(property.get_value());
+				if (class_name == "metternich::region") {
+					success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(LandedTitle *, barony));
+				} else {
+					holding *holding = barony->get_holding();
+					if (holding == nullptr) {
+						throw std::runtime_error("Barony \"" + property.get_value() + "\" has no holding, but a holding list property is being modified using the barony as a holding's identifier.");
+					}
+					success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(metternich::holding *, holding));
+				}
 			} else if (property.get_key() == "holding_types") {
 				holding_type *holding_type_value = holding_type::get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(holding_type *, holding_type_value));

@@ -32,7 +32,7 @@ class Province : public data_entry, public data_type<Province>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(metternich::LandedTitle* county READ GetCounty WRITE SetCounty NOTIFY CountyChanged)
+	Q_PROPERTY(metternich::LandedTitle* county READ get_county WRITE SetCounty NOTIFY CountyChanged)
 	Q_PROPERTY(metternich::LandedTitle* duchy READ GetDuchy NOTIFY DuchyChanged)
 	Q_PROPERTY(metternich::LandedTitle* kingdom READ GetKingdom NOTIFY KingdomChanged)
 	Q_PROPERTY(metternich::LandedTitle* empire READ GetEmpire NOTIFY EmpireChanged)
@@ -80,7 +80,7 @@ public:
 
 	virtual std::string get_name() const override;
 
-	LandedTitle *GetCounty() const
+	LandedTitle *get_county() const
 	{
 		return this->County;
 	}

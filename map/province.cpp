@@ -202,7 +202,7 @@ void Province::check() const
 	}
 
 	if (Game::get()->IsStarting()) {
-		if (this->GetCounty() != nullptr) {
+		if (this->get_county() != nullptr) {
 			if (this->get_culture() == nullptr) {
 				throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no culture.");
 			}
@@ -247,8 +247,8 @@ void Province::DoMonth()
 */
 std::string Province::get_name() const
 {
-	if (this->GetCounty() != nullptr) {
-		return Translator::get()->Translate(this->GetCounty()->get_identifier(), {this->get_culture()->get_identifier(), this->get_culture()->get_culture_group()->get_identifier(), this->get_religion()->get_identifier()});
+	if (this->get_county() != nullptr) {
+		return Translator::get()->Translate(this->get_county()->get_identifier(), {this->get_culture()->get_identifier(), this->get_culture()->get_culture_group()->get_identifier(), this->get_religion()->get_identifier()});
 	}
 
 	return Translator::get()->Translate(this->get_identifier()); //province without a county; sea zone, river, lake or wasteland
@@ -261,7 +261,7 @@ std::string Province::get_name() const
 */
 void Province::SetCounty(LandedTitle *county)
 {
-	if (county == this->GetCounty()) {
+	if (county == this->get_county()) {
 		return;
 	}
 
@@ -277,8 +277,8 @@ void Province::SetCounty(LandedTitle *county)
 */
 LandedTitle *Province::GetDuchy() const
 {
-	if (this->GetCounty() != nullptr) {
-		return this->GetCounty()->GetDeJureLiegeTitle();
+	if (this->get_county() != nullptr) {
+		return this->get_county()->GetDeJureLiegeTitle();
 	}
 
 	return nullptr;
@@ -371,12 +371,12 @@ void Province::SetBorderPixels(const std::vector<int> &pixel_indexes)
 void Province::UpdateImage()
 {
 	QColor province_color;
-	if (this->GetCounty() != nullptr) {
-		const LandedTitle *realm = this->GetCounty()->GetRealm();
+	if (this->get_county() != nullptr) {
+		const LandedTitle *realm = this->get_county()->GetRealm();
 		if (realm != nullptr) {
 			province_color = realm->GetColor();
 		} else {
-			province_color = this->GetCounty()->GetColor();
+			province_color = this->get_county()->GetColor();
 		}
 	} else if (this->GetTerrain()->IsWater()) {
 		province_color = QColor("#0080ff");
@@ -732,7 +732,7 @@ void Province::SetSelected(const bool selected, const bool notify_engine_interfa
 */
 bool Province::IsSelectable() const
 {
-	return this->GetCounty() != nullptr;
+	return this->get_county() != nullptr;
 }
 
 QVariantList Province::get_population_per_type_qvariant_list() const

@@ -1,5 +1,6 @@
 #include "map/region.h"
 
+#include "landed_title/landed_title.h"
 #include "map/province.h"
 #include "population/population_unit.h"
 #include "util.h"
@@ -18,6 +19,33 @@ region::region(const std::string &identifier) : data_entry(identifier)
 */
 region::~region()
 {
+}
+
+/**
+**	@brief	Initialize the region
+*/
+void region::initialize()
+{
+	//add each subregion's provinces to this one
+	for (region *subregion : this->subregions) {
+		if (!subregion->is_initialized()) {
+			subregion->initialize();
+		}
+
+		for (Province *province : subregion->get_provinces()) {
+			this->add_province(province);
+		}
+	}
+
+	//add the baronies of each of this region's provinces to it
+	for (Province *province : this->get_provinces()) {
+		LandedTitle *county = province->get_county();
+		for (LandedTitle *barony : county->get_de_jure_vassal_titles()) {
+			this->add_holding(barony);
+		}
+	}
+
+	data_entry_base::initialize();
 }
 
 /**
@@ -54,13 +82,18 @@ std::vector<holding *> region::get_holdings() const
 {
 	std::vector<holding *> holdings;
 
-	for (const Province *province : this->get_provinces()) {
-		for (holding *holding : province->get_holdings()) {
-			holdings.push_back(holding);
+	for (const LandedTitle *barony : this->baronies) {
+		if (barony->get_holding() != nullptr) {
+			holdings.push_back(barony->get_holding());
 		}
 	}
 
 	return holdings;
+}
+
+QVariantList region::get_holdings_qvariant_list() const
+{
+	return util::container_to_qvariant_list(this->baronies);
 }
 
 /**

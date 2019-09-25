@@ -124,7 +124,7 @@ void Game::DoTick()
 void Game::DoDay()
 {
 	for (Province *province : Province::get_all()) {
-		if (province->GetCounty() == nullptr) {
+		if (province->get_county() == nullptr) {
 			continue;
 		}
 
@@ -139,7 +139,7 @@ void Game::DoDay()
 void Game::DoMonth()
 {
 	for (Province *province : Province::get_all()) {
-		if (province->GetCounty() == nullptr) {
+		if (province->get_county() == nullptr) {
 			continue;
 		}
 
@@ -189,7 +189,7 @@ void Game::generate_missing_title_holders()
 
 		//set the liege of generated holding owners to the county holder
 		if (landed_title->get_holding() != nullptr) {
-			Character *county_holder = landed_title->get_holding()->get_province()->GetCounty()->GetHolder();
+			Character *county_holder = landed_title->get_holding()->get_province()->get_county()->GetHolder();
 			holder->SetLiege(county_holder);
 		}
 	}
