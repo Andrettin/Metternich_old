@@ -12,6 +12,8 @@ namespace metternich {
 
 class Character;
 class holding;
+class law;
+class law_group;
 class Province;
 enum class LandedTitleTier : int;
 
@@ -26,6 +28,7 @@ class LandedTitle : public data_entry, public DataType<LandedTitle>
 	Q_PROPERTY(metternich::LandedTitle* de_jure_liege_title READ GetDeJureLiegeTitle WRITE SetDeJureLiegeTitle NOTIFY DeJureLiegeTitleChanged)
 	Q_PROPERTY(metternich::LandedTitle* realm READ GetRealm NOTIFY RealmChanged)
 	Q_PROPERTY(metternich::Province* capital_province MEMBER CapitalProvince READ GetCapitalProvince)
+	Q_PROPERTY(QVariantList laws READ get_laws_qvariant_list)
 
 public:
 	LandedTitle(const std::string &identifier) : data_entry(identifier) {}
@@ -141,6 +144,22 @@ public:
 		return this->CapitalProvince;
 	}
 
+	std::vector<law *> get_laws() const
+	{
+		std::vector<law *> laws;
+
+		for (const auto &kv_pair : this->laws) {
+			laws.push_back(kv_pair.second);
+		}
+
+		return laws;
+	}
+
+	QVariantList get_laws_qvariant_list() const;
+	bool has_law(const law *law) const;
+	Q_INVOKABLE void add_law(metternich::law *law);
+	Q_INVOKABLE void remove_law(metternich::law *law);
+
 signals:
 	void TitledNameChanged();
 	void HolderChanged();
@@ -158,6 +177,7 @@ private:
 	metternich::Province *CapitalProvince = nullptr;
 	LandedTitle *HolderTitle = nullptr; //title of this title's holder; used only for initialization, and set to null afterwards
 	LandedTitle *LiegeTitle = nullptr; //title of this title's holder's liege; used only for initialization, and set to null afterwards
+	std::map<law_group *, law *> laws; //the laws pertaining to the title, mapped to the respective law group
 };
 
 }

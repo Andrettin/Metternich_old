@@ -9,7 +9,9 @@
 #include "holding/holding_type.h"
 #include "landed_title/landed_title_tier.h"
 #include "map/province.h"
+#include "politics/law.h"
 #include "translator.h"
+#include "util.h"
 
 #include <stdexcept>
 
@@ -395,6 +397,33 @@ void LandedTitle::SetDeJureLiegeTitle(LandedTitle *title)
 	title->AddDeJureVassalTitle(this);
 
 	emit DeJureLiegeTitleChanged();
+}
+
+QVariantList LandedTitle::get_laws_qvariant_list() const
+{
+	return util::container_to_qvariant_list(this->get_laws());
+}
+
+bool LandedTitle::has_law(const law *law) const
+{
+	auto find_iterator = this->laws.find(law->get_group());
+	if (find_iterator != this->laws.end() && find_iterator->second == law) {
+		return true;
+	}
+
+	return false;
+}
+
+Q_INVOKABLE void LandedTitle::add_law(law *law)
+{
+	this->laws[law->get_group()] = law;
+}
+
+Q_INVOKABLE void LandedTitle::remove_law(law *law)
+{
+	if (this->has_law(law)) {
+		this->laws.erase(law->get_group());
+	}
 }
 
 }

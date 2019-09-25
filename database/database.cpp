@@ -21,6 +21,7 @@
 #include "map/region.h"
 #include "map/terrain.h"
 #include "phenotype.h"
+#include "politics/law.h"
 #include "politics/law_group.h"
 #include "population/population_type.h"
 #include "religion.h"
@@ -166,6 +167,9 @@ void Database::ProcessGSMLPropertyForObject(QObject *object, const gsml_property
 			} else if (property.get_key() == "discount_types") {
 				PopulationType *type = PopulationType::Get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(PopulationType *, type));
+			} else if (property.get_key() == "laws") {
+				law *law = law::Get(property.get_value());
+				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(metternich::law *, law));
 			} else {
 				throw std::runtime_error("Unknown type for list property \"" + std::string(property_name) + "\".");
 			}
