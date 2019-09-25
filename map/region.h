@@ -14,40 +14,40 @@ class holding;
 class population_unit;
 class Province;
 
-class Region : public data_entry, public DataType<Region>
+class region : public data_entry, public data_type<region>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(QVariantList provinces READ GetProvincesQVariantList)
-	Q_PROPERTY(QVariantList subregions READ GetSubregionsQVariantList)
+	Q_PROPERTY(QVariantList provinces READ get_provinces_qvariant_list)
+	Q_PROPERTY(QVariantList subregions READ get_subregions_qvariant_list)
 
 public:
-	static constexpr const char *ClassIdentifier = "region";
-	static constexpr const char *DatabaseFolder = "regions";
-	static constexpr const char *Prefix = "r_";
+	static constexpr const char *class_identifier = "region";
+	static constexpr const char *database_folder = "regions";
+	static constexpr const char *prefix = "r_";
 
-	static Region *Add(const std::string &identifier)
+	static region *add(const std::string &identifier)
 	{
-		if (identifier.substr(0, 2) != Region::Prefix) {
-			throw std::runtime_error("Invalid identifier for new region: \"" + identifier + "\". Region identifiers must begin with \"" + Region::Prefix + "\".");
+		if (identifier.substr(0, 2) != region::prefix) {
+			throw std::runtime_error("Invalid identifier for new region: \"" + identifier + "\". Region identifiers must begin with \"" + region::prefix + "\".");
 		}
 
-		return DataType<Region>::Add(identifier);
+		return data_type<region>::add(identifier);
 	}
 
 public:
-	Region(const std::string &identifier);
-	virtual ~Region() override;
+	region(const std::string &identifier);
+	virtual ~region() override;
 
 	virtual void initialize() override
 	{
 		//add each subregion's provinces to this one
-		for (Region *subregion : this->Subregions) {
+		for (region *subregion : this->subregions) {
 			if (!subregion->is_initialized()) {
 				subregion->initialize();
 			}
 
-			for (Province *province : subregion->GetProvinces()) {
+			for (Province *province : subregion->get_provinces()) {
 				this->add_province(province);
 			}
 		}
@@ -57,25 +57,25 @@ public:
 
 	virtual void initialize_history() override;
 
-	const std::vector<Province *> &GetProvinces() const
+	const std::vector<Province *> &get_provinces() const
 	{
-		return this->Provinces;
+		return this->provinces;
 	}
 
-	QVariantList GetProvincesQVariantList() const;
+	QVariantList get_provinces_qvariant_list() const;
 	Q_INVOKABLE void add_province(Province *province);
 	Q_INVOKABLE void remove_province(Province *province);
 
-	QVariantList GetSubregionsQVariantList() const;
+	QVariantList get_subregions_qvariant_list() const;
 
-	Q_INVOKABLE void add_subregion(Region *subregion)
+	Q_INVOKABLE void add_subregion(metternich::region *subregion)
 	{
-		this->Subregions.push_back(subregion);
+		this->subregions.push_back(subregion);
 	}
 
-	Q_INVOKABLE void remove_subregion(Region *subregion)
+	Q_INVOKABLE void remove_subregion(metternich::region *subregion)
 	{
-		this->Subregions.erase(std::remove(this->Subregions.begin(), this->Subregions.end(), subregion), this->Subregions.end());
+		this->subregions.erase(std::remove(this->subregions.begin(), this->subregions.end(), subregion), this->subregions.end());
 	}
 
 	std::vector<holding *> get_holdings() const;
@@ -88,11 +88,11 @@ public:
 	void add_population_unit(std::unique_ptr<population_unit> &&population_unit);
 
 signals:
-	void ProvincesChanged();
+	void provinces_changed();
 
 private:
-	std::vector<Province *> Provinces;
-	std::vector<Region *> Subregions; //subregions of this region
+	std::vector<Province *> provinces;
+	std::vector<region *> subregions; //subregions of this region
 	std::vector<std::unique_ptr<population_unit>> population_units; //population units set for this region in history, used during initialization to generate population units in the region's settlements
 };
 

@@ -31,12 +31,12 @@ void Game::Start(const QDateTime &start_date)
 	this->CurrentDate = start_date;
 	emit CurrentDateChanged();
 
-	History::Load();
+	History::load();
 
-	this->GenerateMissingTitleHolders();
+	this->generate_missing_title_holders();
 	this->PurgeSuperfluousCharacters();
 
-	this->SetPlayerCharacter(Character::Get(Defines::Get()->GetPlayerCharacterID()));
+	this->SetPlayerCharacter(Character::get(Defines::get()->GetPlayerCharacterID()));
 
 	this->Starting = false;
 	this->Running = true;
@@ -123,7 +123,7 @@ void Game::DoTick()
 */
 void Game::DoDay()
 {
-	for (Province *province : Province::GetAll()) {
+	for (Province *province : Province::get_all()) {
 		if (province->GetCounty() == nullptr) {
 			continue;
 		}
@@ -138,7 +138,7 @@ void Game::DoDay()
 */
 void Game::DoMonth()
 {
-	for (Province *province : Province::GetAll()) {
+	for (Province *province : Province::get_all()) {
 		if (province->GetCounty() == nullptr) {
 			continue;
 		}
@@ -146,7 +146,7 @@ void Game::DoMonth()
 		province->DoMonth();
 	}
 
-	for (Character *character : Character::GetAllLiving()) {
+	for (Character *character : Character::get_all_living()) {
 		character->DoMonth();
 	}
 }
@@ -161,9 +161,9 @@ void Game::DoYear()
 /**
 **	@brief	Generate holders for (non-titular) counties which lack them
 */
-void Game::GenerateMissingTitleHolders()
+void Game::generate_missing_title_holders()
 {
-	std::vector<LandedTitle *> landed_titles = LandedTitle::GetAll();
+	std::vector<LandedTitle *> landed_titles = LandedTitle::get_all();
 	std::sort(landed_titles.begin(), landed_titles.end(), [](const LandedTitle *a, const LandedTitle *b) {
 		//give priority to landed titles with greater rank (so that counties will be processed before baronies)
 		return a->GetTier() > b->GetTier();
@@ -184,7 +184,7 @@ void Game::GenerateMissingTitleHolders()
 			province = landed_title->get_holding()->get_province();
 		}
 
-		Character *holder = Character::Generate(province->get_culture(), province->get_religion());
+		Character *holder = Character::generate(province->get_culture(), province->get_religion());
 		landed_title->SetHolder(holder);
 
 		//set the liege of generated holding owners to the county holder
@@ -202,7 +202,7 @@ void Game::PurgeSuperfluousCharacters()
 {
 	std::vector<Character *> characters_to_remove;
 
-	for (Character *character : Character::GetAll()) {
+	for (Character *character : Character::get_all()) {
 		//purge characters without a birth date, since this means that they were created during history loading, but haven't actually been born for the chosen start date (so that their birth wasn't loaded)
 		if (!character->GetBirthDate().isValid()) {
 			characters_to_remove.push_back(character);
@@ -210,7 +210,7 @@ void Game::PurgeSuperfluousCharacters()
 	}
 
 	for (Character *character : characters_to_remove) {
-		Character::Remove(character);
+		Character::remove(character);
 	}
 }
 

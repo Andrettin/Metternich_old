@@ -39,7 +39,7 @@ namespace metternich {
 **	@param	object		The object
 **	@param	property	The property
 */
-void Database::ProcessGSMLPropertyForObject(QObject *object, const gsml_property &property)
+void database::process_gsml_property_for_object(QObject *object, const gsml_property &property)
 {
 	const QMetaObject *meta_object = object->metaObject();
 	const std::string class_name = meta_object->className();
@@ -97,37 +97,37 @@ void Database::ProcessGSMLPropertyForObject(QObject *object, const gsml_property
 			}
 
 			if (property.get_key() == "landed_title" || property.get_key() == "barony" || property.get_key() == "county" || property.get_key() == "duchy" || property.get_key() == "kingdom" || property.get_key() == "empire" || property.get_key() == "holder_title" || property.get_key() == "liege_title" || property.get_key() == "de_jure_liege_title") {
-				new_property_value = QVariant::fromValue(LandedTitle::Get(property.get_value()));
+				new_property_value = QVariant::fromValue(LandedTitle::get(property.get_value()));
 			} else if (property.get_key() == "province" || property.get_key() == "capital_province") {
-				Province *province = Province::Get(property.get_value());
+				Province *province = Province::get(property.get_value());
 				new_property_value = QVariant::fromValue(province);
 			} else if (property.get_key() == "holding" || property.get_key() == "capital_holding") {
-				const LandedTitle *barony = LandedTitle::Get(property.get_value());
+				const LandedTitle *barony = LandedTitle::get(property.get_value());
 				holding *holding = barony->get_holding();
 				if (holding == nullptr) {
 					throw std::runtime_error("Barony \"" + property.get_value() + "\" has no holding, but a holding property is being set using the barony as the holding's identifier.");
 				}
 				new_property_value = QVariant::fromValue(holding);
 			} else if (property.get_key() == "region") {
-				new_property_value = QVariant::fromValue(Region::Get(property.get_value()));
+				new_property_value = QVariant::fromValue(region::get(property.get_value()));
 			} else if (property.get_key() == "terrain") {
-				new_property_value = QVariant::fromValue(Terrain::Get(property.get_value()));
+				new_property_value = QVariant::fromValue(Terrain::get(property.get_value()));
 			} else if (property.get_key() == "culture") {
-				new_property_value = QVariant::fromValue(culture::Get(property.get_value()));
+				new_property_value = QVariant::fromValue(culture::get(property.get_value()));
 			} else if (property.get_key() == "culture_group") {
-				new_property_value = QVariant::fromValue(culture_group::Get(property.get_value()));
+				new_property_value = QVariant::fromValue(culture_group::get(property.get_value()));
 			} else if (property.get_key() == "religion") {
-				new_property_value = QVariant::fromValue(religion::Get(property.get_value()));
+				new_property_value = QVariant::fromValue(religion::get(property.get_value()));
 			} else if (property.get_key() == "phenotype" || property.get_key() == "default_phenotype") {
-				new_property_value = QVariant::fromValue(phenotype::Get(property.get_value()));
+				new_property_value = QVariant::fromValue(phenotype::get(property.get_value()));
 			} else if (property.get_key() == "dynasty") {
-				new_property_value = QVariant::fromValue(Dynasty::Get(property.get_value()));
+				new_property_value = QVariant::fromValue(Dynasty::get(property.get_value()));
 			} else if (property.get_key() == "character" || property.get_key() == "holder" || property.get_key() == "father" || property.get_key() == "mother" || property.get_key() == "spouse" || property.get_key() == "liege" || property.get_key() == "employer") {
-				new_property_value = QVariant::fromValue(Character::Get(std::stoi(property.get_value())));
+				new_property_value = QVariant::fromValue(Character::get(std::stoi(property.get_value())));
 			} else if (property.get_key() == "commodity" || property.get_key() == "output_commodity") {
-				new_property_value = QVariant::fromValue(commodity::Get(property.get_value()));
+				new_property_value = QVariant::fromValue(commodity::get(property.get_value()));
 			} else if (property.get_key() == "employment_type") {
-				new_property_value = QVariant::fromValue(employment_type::Get(property.get_value()));
+				new_property_value = QVariant::fromValue(employment_type::get(property.get_value()));
 			} else if (property.get_key() == "group") {
 				if (class_name == "metternich::law") {
 					new_property_value = QVariant::fromValue(law_group::get_or_add(property.get_value()));
@@ -153,22 +153,22 @@ void Database::ProcessGSMLPropertyForObject(QObject *object, const gsml_property
 
 			bool success = false;
 			if (property.get_key() == "traits") {
-				Trait *trait = Trait::Get(property.get_value());
+				Trait *trait = Trait::get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(Trait *, trait));
 			} else if (property.get_key() == "holding_types") {
-				holding_type *holding_type_value = holding_type::Get(property.get_value());
+				holding_type *holding_type_value = holding_type::get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(holding_type *, holding_type_value));
 			} else if (property.get_key() == "provinces") {
-				Province *province = Province::Get(property.get_value());
+				Province *province = Province::get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(Province *, province));
 			} else if (property.get_key() == "subregions") {
-				Region *region = Region::Get(property.get_value());
-				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(Region *, region));
+				region *region = region::get(property.get_value());
+				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(metternich::region *, region));
 			} else if (property.get_key() == "discount_types") {
-				PopulationType *type = PopulationType::Get(property.get_value());
+				PopulationType *type = PopulationType::get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(PopulationType *, type));
 			} else if (property.get_key() == "laws") {
-				law *law = law::Get(property.get_value());
+				law *law = law::get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(metternich::law *, law));
 			} else {
 				throw std::runtime_error("Unknown type for list property \"" + std::string(property_name) + "\".");
@@ -197,34 +197,34 @@ void Database::ProcessGSMLPropertyForObject(QObject *object, const gsml_property
 /**
 **	@brief	Load the database
 */
-void Database::Load()
+void database::load()
 {
-	EngineInterface::Get()->SetLoadingMessage("Loading Database...");
+	EngineInterface::get()->set_loading_message("Loading Database...");
 
-	Defines::Get()->Load();
+	Defines::get()->load();
 
 	//parse the files for in each data type's folder
-	for (const std::function<void()> &function : this->ParsingFunctions) {
+	for (const std::function<void()> &function : this->parsing_functions) {
 		function();
 	}
 
 	//create data entries for each data type
-	for (const std::function<void(bool)> &function : this->ProcessingFunctions) {
+	for (const std::function<void(bool)> &function : this->processing_functions) {
 		function(true);
 	}
 
 	//actually define the data entries for each data type
-	for (const std::function<void(bool)> &function : this->ProcessingFunctions) {
+	for (const std::function<void(bool)> &function : this->processing_functions) {
 		function(false);
 	}
 
 	//initialize data entries for each data type
-	for (const std::function<void()> &function : this->InitializationFunctions) {
+	for (const std::function<void()> &function : this->initialization_functions) {
 		function();
 	}
 
 	//check if data entries are valid for each data type
-	for (const std::function<void()> &function : this->CheckingFunctions) {
+	for (const std::function<void()> &function : this->checking_functions) {
 		function();
 	}
 }

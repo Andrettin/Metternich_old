@@ -11,15 +11,15 @@ namespace metternich {
 class Building;
 class Modifier;
 
-class holding_type : public data_entry, public DataType<holding_type>
+class holding_type : public data_entry, public data_type<holding_type>
 {
 	Q_OBJECT
 
 	Q_PROPERTY(bool settlement MEMBER settlement READ is_settlement)
 
 public:
-	static constexpr const char *ClassIdentifier = "holding_type";
-	static constexpr const char *DatabaseFolder = "holding_types";
+	static constexpr const char *class_identifier = "holding_type";
+	static constexpr const char *database_folder = "holding_types";
 
 	holding_type(const std::string &identifier);
 	virtual ~holding_type() override;

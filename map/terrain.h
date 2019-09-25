@@ -9,7 +9,7 @@ namespace metternich {
 
 class Modifier;
 
-class Terrain : public data_entry, public DataType<Terrain>
+class Terrain : public data_entry, public data_type<Terrain>
 {
 	Q_OBJECT
 
@@ -20,8 +20,8 @@ class Terrain : public data_entry, public DataType<Terrain>
 	Q_PROPERTY(bool river MEMBER River READ IsRiver)
 
 public:
-	static constexpr const char *ClassIdentifier = "terrain";
-	static constexpr const char *DatabaseFolder = "terrains";
+	static constexpr const char *class_identifier = "terrain";
+	static constexpr const char *database_folder = "terrains";
 
 	static Terrain *GetByRGB(const QRgb &rgb, const bool should_find = true);
 

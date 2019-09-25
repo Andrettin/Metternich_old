@@ -16,11 +16,11 @@ class data_entry;
 /**
 **	@brief	The database
 */
-class Database : public Singleton<Database>
+class database : public singleton<database>
 {
 public:
 	template <typename T>
-	static void ProcessGSMLData(T *instance, const gsml_data &data)
+	static void process_gsml_data(T *instance, const gsml_data &data)
 	{
 		for (const gsml_property &property : data.get_properties()) {
 			instance->process_gsml_property(property);
@@ -32,64 +32,64 @@ public:
 	}
 
 	template <typename T>
-	static void ProcessGSMLData(T &instance, const gsml_data &data)
+	static void process_gsml_data(T &instance, const gsml_data &data)
 	{
 		if constexpr (is_specialization_of_v<T, std::unique_ptr>) {
-			Database::ProcessGSMLData(instance.get(), data);
+			database::process_gsml_data(instance.get(), data);
 		} else {
-			Database::ProcessGSMLData(&instance, data);
+			database::process_gsml_data(&instance, data);
 		}
 	}
 
-	static void ProcessGSMLPropertyForObject(QObject *object, const gsml_property &property);
+	static void process_gsml_property_for_object(QObject *object, const gsml_property &property);
 
 public:
-	void Load();
+	void load();
 
 	void initialize_history()
 	{
 		//initialize data entries are valid for each data type
-		for (const std::function<void()> &function : this->HistoryInitializationFunctions) {
+		for (const std::function<void()> &function : this->history_initialization_functions) {
 			function();
 		}
 
 		//check if data entries are valid for each data type
-		for (const std::function<void()> &function : this->CheckingFunctions) {
+		for (const std::function<void()> &function : this->checking_functions) {
 			function();
 		}
 	}
 
-	void AddParsingFunction(const std::function<void()> &function)
+	void add_parsing_function(const std::function<void()> &function)
 	{
-		this->ParsingFunctions.push_back(function);
+		this->parsing_functions.push_back(function);
 	}
 
-	void AddProcessingFunction(const std::function<void(bool)> &function)
+	void add_processing_function(const std::function<void(bool)> &function)
 	{
-		this->ProcessingFunctions.push_back(function);
+		this->processing_functions.push_back(function);
 	}
 
-	void AddCheckingFunction(const std::function<void()> &function)
+	void add_checking_function(const std::function<void()> &function)
 	{
-		this->CheckingFunctions.push_back(function);
+		this->checking_functions.push_back(function);
 	}
 
-	void AddInitializationFunction(const std::function<void()> &function)
+	void add_initialization_function(const std::function<void()> &function)
 	{
-		this->InitializationFunctions.push_back(function);
+		this->initialization_functions.push_back(function);
 	}
 
-	void AddHistoryInitializationFunction(const std::function<void()> &function)
+	void add_history_initialization_function(const std::function<void()> &function)
 	{
-		this->HistoryInitializationFunctions.push_back(function);
+		this->history_initialization_functions.push_back(function);
 	}
 
 private:
-	std::vector<std::function<void()>> ParsingFunctions; //parsing functions for each data type
-	std::vector<std::function<void(bool)>> ProcessingFunctions; //processing functions for each data type
-	std::vector<std::function<void()>> CheckingFunctions; //functions for each data type, to check if data entries are valid
-	std::vector<std::function<void()>> InitializationFunctions; //functions for each data type, to initialize their entries
-	std::vector<std::function<void()>> HistoryInitializationFunctions; //functions for each data type, to initialize their entries' history
+	std::vector<std::function<void()>> parsing_functions; //parsing functions for each data type
+	std::vector<std::function<void(bool)>> processing_functions; //processing functions for each data type
+	std::vector<std::function<void()>> checking_functions; //functions for each data type, to check if data entries are valid
+	std::vector<std::function<void()>> initialization_functions; //functions for each data type, to initialize their entries
+	std::vector<std::function<void()>> history_initialization_functions; //functions for each data type, to initialize their entries' history
 };
 
 }

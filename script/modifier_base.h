@@ -27,7 +27,7 @@ public:
 	}
 
 	template <typename T>
-	void Remove(T *scope) const
+	void remove(T *scope) const
 	{
 		for (const std::unique_ptr<ModifierEffect> &modifier_effect : this->ModifierEffects) {
 			modifier_effect->Apply(scope, -1);
@@ -35,7 +35,7 @@ public:
 	}
 
 protected:
-	void AddModifierEffect(std::unique_ptr<ModifierEffect> &&modifier_effect)
+	void add_modifier_effect(std::unique_ptr<ModifierEffect> &&modifier_effect)
 	{
 		this->ModifierEffects.push_back(std::move(modifier_effect));
 	}

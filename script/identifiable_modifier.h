@@ -11,20 +11,20 @@ class gsml_property;
 /**
 **	@brief	An identifiable modifier
 */
-class IdentifiableModifier : public data_entry, public DataType<IdentifiableModifier>, public ModifierBase
+class IdentifiableModifier : public data_entry, public data_type<IdentifiableModifier>, public ModifierBase
 {
 	Q_OBJECT
 
 public:
-	static constexpr const char *ClassIdentifier = "modifier";
-	static constexpr const char *DatabaseFolder = "modifiers";
+	static constexpr const char *class_identifier = "modifier";
+	static constexpr const char *database_folder = "modifiers";
 
-	static void InitializeAll()
+	static void initialize_all()
 	{
-		DataType<IdentifiableModifier>::InitializeAll();
+		data_type<IdentifiableModifier>::initialize_all();
 
 		//store pointers to the hardcoded modifiers
-		IdentifiableModifier::OverpopulationModifier = IdentifiableModifier::Get("overpopulation");
+		IdentifiableModifier::OverpopulationModifier = IdentifiableModifier::get("overpopulation");
 	}
 
 	static IdentifiableModifier *GetOverpopulationModifier()
@@ -41,9 +41,9 @@ public:
 	virtual void process_gsml_property(const gsml_property &property) override;
 
 	template <typename T>
-	void Remove(T *scope) const //to prevent ambiguity for name lookup between ModifierBase::Remove and DataType::Remove
+	void remove(T *scope) const //to prevent ambiguity for name lookup between ModifierBase::remove and data_type::remove
 	{
-		this->ModifierBase::Remove(scope);
+		this->ModifierBase::remove(scope);
 	}
 };
 

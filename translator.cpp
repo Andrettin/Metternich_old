@@ -54,7 +54,7 @@ QString Translator::translate(const char *context, const char *source_text, cons
 	return QString::fromStdString(this->Translate(source_text, suffixes));
 }
 
-void Translator::LoadLocale(const std::string &language)
+void Translator::load_locale(const std::string &language)
 {
 	this->Translations.clear();
 
@@ -78,7 +78,7 @@ void Translator::LoadLocale(const std::string &language)
 				throw std::runtime_error("Only assignment operators are allowed in translation files!");
 			}
 
-			this->AddTranslation(property.get_key(), property.get_value());
+			this->add_translation(property.get_key(), property.get_value());
 		}
 	}
 }

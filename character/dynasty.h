@@ -9,7 +9,7 @@ namespace metternich {
 
 class culture;
 
-class Dynasty : public data_entry, public DataType<Dynasty>
+class Dynasty : public data_entry, public data_type<Dynasty>
 {
 	Q_OBJECT
 
@@ -18,8 +18,8 @@ class Dynasty : public data_entry, public DataType<Dynasty>
 public:
 	Dynasty(const std::string &identifier) : data_entry(identifier) {}
 
-	static constexpr const char *ClassIdentifier = "dynasty";
-	static constexpr const char *DatabaseFolder = "dynasties";
+	static constexpr const char *class_identifier = "dynasty";
+	static constexpr const char *database_folder = "dynasties";
 
 	metternich::culture *get_culture() const
 	{

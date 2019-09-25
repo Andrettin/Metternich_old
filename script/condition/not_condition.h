@@ -32,22 +32,22 @@ public:
 		return identifier;
 	}
 
-	virtual bool Check(const Province *province) const override
+	virtual bool check(const Province *province) const override
 	{
-		return this->CheckInternal(province);
+		return this->check_internal(province);
 	}
 
-	virtual bool Check(const holding *holding) const override
+	virtual bool check(const holding *holding) const override
 	{
-		return this->CheckInternal(holding);
+		return this->check_internal(holding);
 	}
 
 private:
 	template <typename T>
-	bool CheckInternal(const T *scope) const
+	bool check_internal(const T *scope) const
 	{
 		for (const std::unique_ptr<Condition> &condition : this->Conditions) {
-			if (condition->Check(scope)) {
+			if (condition->check(scope)) {
 				return false;
 			}
 		}

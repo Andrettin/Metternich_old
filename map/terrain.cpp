@@ -62,7 +62,7 @@ void Terrain::process_gsml_scope(const gsml_data &scope)
 		Terrain::InstancesByRGB[this->Color.rgb()] = this;
 	} else if (tag == "modifier") {
 		this->Modifier = std::make_unique<metternich::Modifier>();
-		Database::ProcessGSMLData(this->Modifier, scope);
+		database::process_gsml_data(this->Modifier, scope);
 	} else {
 		data_entry_base::process_gsml_scope(scope);
 	}

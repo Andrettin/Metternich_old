@@ -20,10 +20,10 @@ namespace metternich {
 **	@brief	The class for the data types, which use identifiers to be referred to
 */
 template <typename T, typename KEY = std::string>
-class DataType : public DataTypeBase<T>
+class data_type : public data_type_base<T>
 {
 public:
-	static constexpr bool HistoryOnly = false; //whether the data type is defined in history only
+	static constexpr bool history_only = false; //whether the data type is defined in history only
 
 	/**
 	**	@brief	Get an instance of the class by its identifier
@@ -31,7 +31,7 @@ public:
 	**	@param	should_find	Whether it is expected that an instance should be found (i.e. if none is, then it is an error).
 	**	@return	The instance if found, or null otherwise
 	*/
-	static T *Get(const KEY &identifier, const bool should_find = true)
+	static T *get(const KEY &identifier, const bool should_find = true)
 	{
 		if constexpr (std::is_same_v<KEY, std::string>) {
 			if (identifier == "none") {
@@ -43,17 +43,17 @@ public:
 			}
 		}
 
-		typename std::map<KEY, std::unique_ptr<T>>::const_iterator find_iterator = DataType::InstancesByIdentifier.find(identifier);
+		auto find_iterator = data_type::instances_by_identifier.find(identifier);
 
-		if (find_iterator != DataType::InstancesByIdentifier.end()) {
+		if (find_iterator != data_type::instances_by_identifier.end()) {
 			return find_iterator->second.get();
 		}
 
 		if (should_find) {
 			if constexpr (std::is_arithmetic_v<KEY>) {
-				throw std::runtime_error("Invalid \"" + std::string(T::ClassIdentifier) + "\" instance: \"" + std::to_string(identifier) + "\".");
+				throw std::runtime_error("Invalid \"" + std::string(T::class_identifier) + "\" instance: \"" + std::to_string(identifier) + "\".");
 			} else {
-				throw std::runtime_error("Invalid \"" + std::string(T::ClassIdentifier) + "\" instance: \"" + identifier + "\".");
+				throw std::runtime_error("Invalid \"" + std::string(T::class_identifier) + "\" instance: \"" + identifier + "\".");
 			}
 		}
 
@@ -77,13 +77,13 @@ public:
 			}
 		}
 
-		typename std::map<KEY, std::unique_ptr<T>>::const_iterator find_iterator = DataType::InstancesByIdentifier.find(identifier);
+		typename std::map<KEY, std::unique_ptr<T>>::const_iterator find_iterator = data_type::instances_by_identifier.find(identifier);
 
-		if (find_iterator != DataType::InstancesByIdentifier.end()) {
+		if (find_iterator != data_type::instances_by_identifier.end()) {
 			return find_iterator->second.get();
 		}
 
-		return T::Add(identifier);
+		return T::add(identifier);
 	}
 
 	/**
@@ -91,9 +91,9 @@ public:
 	**
 	**	@return	All existing instances of the class
 	*/
-	static const std::vector<T *> &GetAll()
+	static const std::vector<T *> &get_all()
 	{
-		return DataType::Instances;
+		return data_type::instances;
 	}
 
 	/**
@@ -103,22 +103,22 @@ public:
 	**
 	**	@return	The new instance
 	*/
-	static T *Add(const KEY &identifier)
+	static T *add(const KEY &identifier)
 	{
 		if constexpr (std::is_same_v<KEY, std::string>) {
 			if (identifier.empty()) {
-				throw std::runtime_error("Tried to add a \"" + std::string(T::ClassIdentifier) + "\" instance with an empty string identifier.");
+				throw std::runtime_error("Tried to add a \"" + std::string(T::class_identifier) + "\" instance with an empty string identifier.");
 			}
 		}
 
-		DataType::InstancesByIdentifier[identifier] = std::make_unique<T>(identifier);
-		T *instance = DataType::InstancesByIdentifier.find(identifier)->second.get();
-		DataType::Instances.push_back(instance);
+		data_type::instances_by_identifier[identifier] = std::make_unique<T>(identifier);
+		T *instance = data_type::instances_by_identifier.find(identifier)->second.get();
+		data_type::instances.push_back(instance);
 		instance->moveToThread(QApplication::instance()->thread());
 
 		if constexpr (std::is_same_v<KEY, int>) {
-			if (identifier > DataType::LastNumericIdentifier) {
-				DataType::LastNumericIdentifier = identifier;
+			if (identifier > data_type::last_numeric_identifier) {
+				data_type::last_numeric_identifier = identifier;
 			}
 		}
 
@@ -130,27 +130,27 @@ public:
 	**
 	**	@param	instance	The instance
 	*/
-	static void Remove(T *instance)
+	static void remove(T *instance)
 	{
-		DataType::InstancesByIdentifier.erase(instance->get_identifier());
-		DataType::Instances.erase(std::remove(DataType::Instances.begin(), DataType::Instances.end(), instance), DataType::Instances.end());
+		data_type::instances_by_identifier.erase(instance->get_identifier());
+		data_type::instances.erase(std::remove(data_type::instances.begin(), data_type::instances.end(), instance), data_type::instances.end());
 	}
 
 	/**
 	**	@brief	Remove the existing class instances
 	*/
-	static void Clear()
+	static void clear()
 	{
-		DataType::Instances.clear();
-		DataType::InstancesByIdentifier.clear();
+		data_type::instances.clear();
+		data_type::instances_by_identifier.clear();
 	}
 
 	/**
 	**	@brief	Parse the database for the data type
 	*/
-	static void ParseDatabase()
+	static void parse_database()
 	{
-		std::filesystem::path database_path("./data/common/" + std::string(T::DatabaseFolder));
+		std::filesystem::path database_path("./data/common/" + std::string(T::database_folder));
 
 		if (!std::filesystem::exists(database_path)) {
 			return;
@@ -163,7 +163,7 @@ public:
 				continue;
 			}
 
-			T::GSMLDataToProcess.push_back(gsml_data::parse_file(dir_entry.path()));
+			T::gsml_data_to_process.push_back(gsml_data::parse_file(dir_entry.path()));
 		}
 	}
 
@@ -172,9 +172,9 @@ public:
 	**
 	**	@param	definition	Whether data entries are only being defined, or if their properties are actually being processed.
 	*/
-	static void ProcessDatabase(const bool definition)
+	static void process_database(const bool definition)
 	{
-		for (const gsml_data &data : T::GSMLDataToProcess) {
+		for (const gsml_data &data : T::gsml_data_to_process) {
 			for (const gsml_data &data_entry : data.get_children()) {
 				KEY identifier;
 				if constexpr (std::is_same_v<KEY, int>) {
@@ -185,38 +185,38 @@ public:
 
 				T *instance = nullptr;
 				if (definition) {
-					instance = T::Add(identifier);
+					instance = T::add(identifier);
 				} else {
-					instance = T::Get(identifier);
-					Database::ProcessGSMLData<T>(instance, data_entry);
+					instance = T::get(identifier);
+					database::process_gsml_data<T>(instance, data_entry);
 				}
 			}
 		}
 
 		if (!definition) {
-			T::GSMLDataToProcess.clear();
+			T::gsml_data_to_process.clear();
 		}
 	}
 
-	static int GenerateNumericIdentifier()
+	static int generate_numeric_identifier()
 	{
-		return ++DataType::LastNumericIdentifier;
+		return ++data_type::last_numeric_identifier;
 	}
 
 	/**
 	**	@brief	Parse the history database for the class
 	*/
-	static void ParseHistoryDatabase()
+	static void parse_history_database()
 	{
-		std::filesystem::path history_path("./data/history/" + std::string(T::DatabaseFolder));
+		std::filesystem::path history_path("./data/history/" + std::string(T::database_folder));
 
 		if (!std::filesystem::exists(history_path)) {
 			return;
 		}
 
 		//non-history only data types have files with the same name as their identifiers, while for history only data types the file name is not relevant, with the identifier being scoped to within a file
-		if constexpr (T::HistoryOnly == false) {
-			for (T *instance : T::GetAll()) {
+		if constexpr (T::history_only == false) {
+			for (T *instance : T::get_all()) {
 				std::filesystem::path history_file_path(history_path.string() + "/" + instance->get_identifier() + ".txt");
 
 				if (!std::filesystem::exists(history_file_path)) {
@@ -243,16 +243,16 @@ public:
 	**
 	**	@param	definition	Whether data entries are only being defined, or if their properties are actually being processed.
 	*/
-	static void ProcessHistoryDatabase(const bool definition)
+	static void process_history_database(const bool definition)
 	{
 		//non-history only data types have files with the same name as their identifiers, while for history only data types the file name is not relevant, with the identifier being scoped to within a file
-		if constexpr (T::HistoryOnly == false) {
+		if constexpr (T::history_only == false) {
 			if (definition) {
 				return;
 			}
 
 			for (gsml_data &data : T::gsml_history_data_to_process) {
-				T *instance = T::Get(data.get_tag());
+				T *instance = T::get(data.get_tag());
 				instance->load_history(data);
 			}
 		} else {
@@ -268,9 +268,9 @@ public:
 
 					T *instance = nullptr;
 					if (definition) {
-						instance = T::Add(identifier);
+						instance = T::add(identifier);
 					} else {
-						instance = T::Get(identifier);
+						instance = T::get(identifier);
 						instance->load_history(const_cast<gsml_data &>(data_entry));
 					}
 				}
@@ -285,9 +285,9 @@ public:
 	/**
 	**	@brief	Initialize all instances
 	*/
-	static void InitializeAll()
+	static void initialize_all()
 	{
-		for (T *instance : T::GetAll()) {
+		for (T *instance : T::get_all()) {
 			if (instance->is_initialized()) {
 				continue; //the instance might have been initialized already, e.g. in the initialization function of another instance which needs it to be initialized
 			}
@@ -299,9 +299,9 @@ public:
 	/**
 	**	@brief	Initialize all instances' history
 	*/
-	static void InitializeAllHistory()
+	static void initialize_all_history()
 	{
-		for (T *instance : T::GetAll()) {
+		for (T *instance : T::get_all()) {
 			instance->initialize_history();
 		}
 	}
@@ -309,9 +309,9 @@ public:
 	/**
 	**	@brief	Check whether all instances are valid
 	*/
-	static void CheckAll()
+	static void check_all()
 	{
-		for (const T *instance : T::GetAll()) {
+		for (const T *instance : T::get_all()) {
 			instance->check();
 		}
 	}
@@ -319,28 +319,28 @@ public:
 	/**
 	**	@brief	Initialize the class
 	*/
-	static inline bool InitializeClass()
+	static inline bool initialize_class()
 	{
 		//initialize the database parsing/processing functions for this data type
-		Database::Get()->AddParsingFunction(std::function<void()>(T::ParseDatabase));
-		Database::Get()->AddProcessingFunction(std::function<void(bool)>(T::ProcessDatabase));
-		Database::Get()->AddCheckingFunction(std::function<void()>(T::CheckAll));
-		Database::Get()->AddInitializationFunction(std::function<void()>(T::InitializeAll));
-		Database::Get()->AddHistoryInitializationFunction(std::function<void()>(T::InitializeAllHistory));
+		database::get()->add_parsing_function(std::function<void()>(T::parse_database));
+		database::get()->add_processing_function(std::function<void(bool)>(T::process_database));
+		database::get()->add_checking_function(std::function<void()>(T::check_all));
+		database::get()->add_initialization_function(std::function<void()>(T::initialize_all));
+		database::get()->add_history_initialization_function(std::function<void()>(T::initialize_all_history));
 
 		return true;
 	}
 
 private:
-	static inline std::vector<T *> Instances;
-	static inline std::map<KEY, std::unique_ptr<T>> InstancesByIdentifier;
-	static inline int LastNumericIdentifier = 1;
-	static inline std::vector<gsml_data> GSMLDataToProcess;
+	static inline std::vector<T *> instances;
+	static inline std::map<KEY, std::unique_ptr<T>> instances_by_identifier;
+	static inline int last_numeric_identifier = 1;
+	static inline std::vector<gsml_data> gsml_data_to_process;
 #ifdef __GNUC__
 	//the "used" attribute is needed under GCC, or else this variable will be optimized away (even in debug builds)
-	static inline bool ClassInitialized [[gnu::used]] = DataType::InitializeClass();
+	static inline bool class_initialized [[gnu::used]] = data_type::initialize_class();
 #else
-	static inline bool ClassInitialized = DataType::InitializeClass();
+	static inline bool class_initialized = data_type::initialize_class();
 #endif
 };
 

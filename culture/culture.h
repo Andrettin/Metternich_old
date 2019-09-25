@@ -13,7 +13,7 @@ namespace metternich {
 class culture_group;
 class Dynasty;
 
-class culture : public culture_base, public DataType<culture>
+class culture : public culture_base, public data_type<culture>
 {
 	Q_OBJECT
 
@@ -21,8 +21,8 @@ class culture : public culture_base, public DataType<culture>
 	Q_PROPERTY(QColor color MEMBER color READ get_color)
 
 public:
-	static constexpr const char *ClassIdentifier = "culture";
-	static constexpr const char *DatabaseFolder = "cultures";
+	static constexpr const char *class_identifier = "culture";
+	static constexpr const char *database_folder = "cultures";
 
 	culture(const std::string &identifier) : culture_base(identifier) {}
 

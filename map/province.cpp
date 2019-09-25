@@ -53,13 +53,13 @@ Province *Province::GetByRGB(const QRgb &rgb, const bool should_find)
 **
 **	@return	The new instance
 */
-Province *Province::Add(const std::string &identifier)
+Province *Province::add(const std::string &identifier)
 {
 	if (identifier.substr(0, 2) != Province::Prefix) {
 		throw std::runtime_error("Invalid identifier for new province: \"" + identifier + "\". Province identifiers must begin with \"" + Province::Prefix + "\".");
 	}
 
-	return DataType<Province>::Add(identifier);
+	return data_type<Province>::add(identifier);
 }
 
 /**
@@ -69,7 +69,7 @@ Province::Province(const std::string &identifier) : data_entry(identifier)
 {
 	connect(this, &Province::culture_changed, this, &identifiable_data_entry_base::name_changed);
 	connect(this, &Province::religion_changed, this, &identifiable_data_entry_base::name_changed);
-	connect(Game::Get(), &Game::RunningChanged, this, &Province::UpdateImage);
+	connect(Game::get(), &Game::RunningChanged, this, &Province::UpdateImage);
 	connect(this, &Province::SelectedChanged, this, &Province::UpdateImage);
 }
 
@@ -89,11 +89,11 @@ void Province::process_gsml_property(const gsml_property &property)
 {
 	if (property.get_key().substr(0, 2) == LandedTitle::BaronyPrefix) {
 		//a property related to one of the province's holdings
-		LandedTitle *barony = LandedTitle::Get(property.get_key());
+		LandedTitle *barony = LandedTitle::get(property.get_key());
 		holding *holding = this->get_holding(barony);
 		if (property.get_operator() == gsml_operator::assignment) {
 			//the assignment operator sets the holding's type (creating the holding if it doesn't exist)
-			holding_type *holding_type = holding_type::Get(property.get_value());
+			holding_type *holding_type = holding_type::get(property.get_value());
 			if (holding != nullptr) {
 				holding->set_type(holding_type);
 			} else {
@@ -101,7 +101,7 @@ void Province::process_gsml_property(const gsml_property &property)
 			}
 		} else if (property.get_operator() == gsml_operator::addition || property.get_operator() == gsml_operator::subtraction) {
 			//the addition/subtraction operators add/remove buildings to/from the holding
-			Building *building = Building::Get(property.get_value());
+			Building *building = Building::get(property.get_value());
 			if (property.get_operator() == gsml_operator::addition) {
 				holding->add_building(building);
 			} else if (property.get_operator() == gsml_operator::subtraction) {
@@ -156,7 +156,7 @@ void Province::process_gsml_dated_scope(const gsml_data &scope, const QDateTime 
 	if (tag.substr(0, 2) == LandedTitle::BaronyPrefix) {
 		//a change to the data of one of the province's holdings
 
-		LandedTitle *barony = LandedTitle::Get(tag);
+		LandedTitle *barony = LandedTitle::get(tag);
 		holding *holding = this->get_holding(barony);
 		if (holding != nullptr) {
 			for (const gsml_property &property : scope.get_properties()) {
@@ -201,7 +201,7 @@ void Province::check() const
 		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no valid color.");
 	}
 
-	if (Game::Get()->IsStarting()) {
+	if (Game::get()->IsStarting()) {
 		if (this->GetCounty() != nullptr) {
 			if (this->get_culture() == nullptr) {
 				throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no culture.");
@@ -248,10 +248,10 @@ void Province::DoMonth()
 std::string Province::get_name() const
 {
 	if (this->GetCounty() != nullptr) {
-		return Translator::Get()->Translate(this->GetCounty()->get_identifier(), {this->get_culture()->get_identifier(), this->get_culture()->get_culture_group()->get_identifier(), this->get_religion()->get_identifier()});
+		return Translator::get()->Translate(this->GetCounty()->get_identifier(), {this->get_culture()->get_identifier(), this->get_culture()->get_culture_group()->get_identifier(), this->get_religion()->get_identifier()});
 	}
 
-	return Translator::Get()->Translate(this->get_identifier()); //province without a county; sea zone, river, lake or wasteland
+	return Translator::get()->Translate(this->get_identifier()); //province without a county; sea zone, river, lake or wasteland
 }
 
 /**
@@ -323,7 +323,7 @@ void Province::CreateImage(const std::vector<int> &pixel_indexes)
 	QPoint end_pos(-1, -1);
 
 	for (const int index : pixel_indexes) {
-		QPoint pixel_pos = Map::Get()->GetPixelPosition(index);
+		QPoint pixel_pos = Map::get()->GetPixelPosition(index);
 		if (start_pos.x() == -1 || pixel_pos.x() < start_pos.x()) {
 			start_pos.setX(pixel_pos.x());
 		}
@@ -347,7 +347,7 @@ void Province::CreateImage(const std::vector<int> &pixel_indexes)
 	this->Image.fill(0);
 
 	for (const int index : pixel_indexes) {
-		QPoint pixel_pos = Map::Get()->GetPixelPosition(index) - this->Rect.topLeft();
+		QPoint pixel_pos = Map::get()->GetPixelPosition(index) - this->Rect.topLeft();
 		this->Image.setPixel(pixel_pos, 1);
 	}
 }
@@ -360,7 +360,7 @@ void Province::CreateImage(const std::vector<int> &pixel_indexes)
 void Province::SetBorderPixels(const std::vector<int> &pixel_indexes)
 {
 	for (const int index : pixel_indexes) {
-		QPoint pixel_pos = Map::Get()->GetPixelPosition(index) - this->Rect.topLeft();
+		QPoint pixel_pos = Map::get()->GetPixelPosition(index) - this->Rect.topLeft();
 		this->Image.setPixel(pixel_pos, 2);
 	}
 }
@@ -412,7 +412,7 @@ void Province::SetTerrain(metternich::Terrain *terrain)
 	const metternich::Terrain *old_terrain = this->GetTerrain();
 
 	if (old_terrain != nullptr && old_terrain->GetModifier() != nullptr) {
-		old_terrain->GetModifier()->Remove(this);
+		old_terrain->GetModifier()->remove(this);
 	}
 
 	this->Terrain = terrain;
@@ -611,7 +611,7 @@ void Province::create_holding(LandedTitle *barony, holding_type *type)
 		this->set_capital_holding(this->holdings.front());
 	}
 
-	if (Game::Get()->IsRunning()) {
+	if (Game::get()->IsRunning()) {
 		if (new_holding->get_commodity() == nullptr) {
 			new_holding->generate_commodity();
 		}
@@ -721,7 +721,7 @@ void Province::SetSelected(const bool selected, const bool notify_engine_interfa
 	emit SelectedChanged();
 
 	if (notify_engine_interface) {
-		EngineInterface::Get()->emit SelectedProvinceChanged();
+		EngineInterface::get()->emit SelectedProvinceChanged();
 	}
 }
 

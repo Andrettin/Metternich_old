@@ -16,7 +16,7 @@ class commodity_condition : public Condition
 public:
 	commodity_condition(const std::string &commodity_identifier)
 	{
-		this->commodity = commodity::Get(commodity_identifier);
+		this->commodity = commodity::get(commodity_identifier);
 	}
 
 
@@ -26,7 +26,7 @@ public:
 		return identifier;
 	}
 
-	virtual bool Check(const holding *holding) const override
+	virtual bool check(const holding *holding) const override
 	{
 		//check whether the holding's commodity is the same as that for this condition
 		return holding->get_commodity() == this->commodity;

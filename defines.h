@@ -13,7 +13,7 @@ class gsml_property;
 /**
 **	@brief	Defines for the engine which are loaded from the database
 */
-class Defines : public QObject, public Singleton<Defines>
+class Defines : public QObject, public singleton<Defines>
 {
 	Q_OBJECT
 
@@ -22,7 +22,7 @@ class Defines : public QObject, public Singleton<Defines>
 	Q_PROPERTY(int base_population_growth MEMBER BasePopulationGrowth READ GetBasePopulationGrowth)
 
 public:
-	void Load();
+	void load();
 	void process_gsml_property(const gsml_property &property);
 
 	const QDateTime &GetStartDate() const

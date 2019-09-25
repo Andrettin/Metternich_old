@@ -24,11 +24,11 @@ class holding_type;
 class LandedTitle;
 class PopulationType;
 class population_unit;
-class Region;
+class region;
 class religion;
 class Terrain;
 
-class Province : public data_entry, public DataType<Province>
+class Province : public data_entry, public data_type<Province>
 {
 	Q_OBJECT
 
@@ -49,11 +49,11 @@ class Province : public data_entry, public DataType<Province>
 	Q_PROPERTY(bool selectable READ IsSelectable CONSTANT)
 
 public:
-	static constexpr const char *ClassIdentifier = "province";
-	static constexpr const char *DatabaseFolder = "provinces";
+	static constexpr const char *class_identifier = "province";
+	static constexpr const char *database_folder = "provinces";
 	static constexpr const char *Prefix = "p_";
 
-	static Province *Add(const std::string &identifier);
+	static Province *add(const std::string &identifier);
 	static Province *GetByRGB(const QRgb &rgb, const bool should_find = true);
 
 	static Province *GetSelectedProvince()
@@ -224,22 +224,22 @@ public:
 		emit capital_holding_changed();
 	}
 
-	const std::vector<Region *> &GetRegions() const
+	const std::vector<region *> &get_regions() const
 	{
-		return this->Regions;
+		return this->regions;
 	}
 
-	void AddRegion(Region *region)
+	void add_region(region *region)
 	{
-		this->Regions.push_back(region);
+		this->regions.push_back(region);
 	}
 
-	void RemoveRegion(Region *region)
+	void remove_region(region *region)
 	{
-		this->Regions.erase(std::remove(this->Regions.begin(), this->Regions.end(), region), this->Regions.end());
+		this->regions.erase(std::remove(this->regions.begin(), this->regions.end(), region), this->regions.end());
 	}
 
-	void AddBorderProvince(Province *province)
+	void add_border_province(Province *province)
 	{
 		this->BorderProvinces.insert(province);
 	}
@@ -297,7 +297,7 @@ private:
 	std::vector<holding *> holdings;
 	std::map<LandedTitle *, std::unique_ptr<holding>> holdings_by_barony; //the province's holdings, mapped to their respective baronies
 	holding *capital_holding = nullptr;
-	std::vector<Region *> Regions; //the regions to which this province belongs
+	std::vector<region *> regions; //the regions to which this province belongs
 	std::set<Province *> BorderProvinces; //provinces bordering this one
 	bool Selected = false;
 	std::vector<std::unique_ptr<population_unit>> population_units; //population units set for this province in history, used during initialization to generate population units in the province's settlements

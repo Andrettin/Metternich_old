@@ -9,52 +9,52 @@ namespace metternich {
 /**
 **	@brief	Constructor
 */
-Region::Region(const std::string &identifier) : data_entry(identifier)
+region::region(const std::string &identifier) : data_entry(identifier)
 {
 }
 
 /**
 **	@brief	Destructor
 */
-Region::~Region()
+region::~region()
 {
 }
 
 /**
 **	@brief	Initialize the region's history
 */
-void Region::initialize_history()
+void region::initialize_history()
 {
 	this->population_units.clear();
 }
 
-QVariantList Region::GetProvincesQVariantList() const
+QVariantList region::get_provinces_qvariant_list() const
 {
-	return util::container_to_qvariant_list(this->GetProvinces());
+	return util::container_to_qvariant_list(this->get_provinces());
 }
 
-void Region::add_province(Province *province)
+void region::add_province(Province *province)
 {
-	this->Provinces.push_back(province);
-	province->AddRegion(this);
+	this->provinces.push_back(province);
+	province->add_region(this);
 }
 
-void Region::remove_province(Province *province)
+void region::remove_province(Province *province)
 {
-	this->Provinces.erase(std::remove(this->Provinces.begin(), this->Provinces.end(), province), this->Provinces.end());
-	province->RemoveRegion(this);
+	this->provinces.erase(std::remove(this->provinces.begin(), this->provinces.end(), province), this->provinces.end());
+	province->remove_region(this);
 }
 
-QVariantList Region::GetSubregionsQVariantList() const
+QVariantList region::get_subregions_qvariant_list() const
 {
-	return util::container_to_qvariant_list(this->Subregions);
+	return util::container_to_qvariant_list(this->subregions);
 }
 
-std::vector<holding *> Region::get_holdings() const
+std::vector<holding *> region::get_holdings() const
 {
 	std::vector<holding *> holdings;
 
-	for (const Province *province : this->GetProvinces()) {
+	for (const Province *province : this->get_provinces()) {
 		for (holding *holding : province->get_holdings()) {
 			holdings.push_back(holding);
 		}
@@ -66,7 +66,7 @@ std::vector<holding *> Region::get_holdings() const
 /**
 **	@brief	Add a population unit to the region
 */
-void Region::add_population_unit(std::unique_ptr<population_unit> &&population_unit)
+void region::add_population_unit(std::unique_ptr<population_unit> &&population_unit)
 {
 	this->population_units.push_back(std::move(population_unit));
 }

@@ -21,7 +21,7 @@ class phenotype;
 class religion;
 class Trait;
 
-class Character : public numeric_data_entry, public DataType<Character, int>
+class Character : public numeric_data_entry, public data_type<Character, int>
 {
 	Q_OBJECT
 
@@ -43,25 +43,25 @@ class Character : public numeric_data_entry, public DataType<Character, int>
 	Q_PROPERTY(int wealth READ GetWealth WRITE SetWealth NOTIFY WealthChanged)
 
 public:
-	static constexpr const char *ClassIdentifier = "character";
-	static constexpr const char *DatabaseFolder = "characters";
-	static constexpr bool HistoryOnly = true;
+	static constexpr const char *class_identifier = "character";
+	static constexpr const char *database_folder = "characters";
+	static constexpr bool history_only = true;
 
-	static void Remove(Character *character)
+	static void remove(Character *character)
 	{
 		if (character->IsAlive()) {
 			Character::LivingCharacters.erase(std::remove(Character::LivingCharacters.begin(), Character::LivingCharacters.end(), character), Character::LivingCharacters.end());
 		}
 
-		DataType<Character, int>::Remove(character);
+		data_type<Character, int>::remove(character);
 	}
 
-	static const std::vector<Character *> &GetAllLiving()
+	static const std::vector<Character *> &get_all_living()
 	{
 		return Character::LivingCharacters;
 	}
 
-	static Character *Generate(culture *culture, religion *religion, phenotype *phenotype = nullptr);
+	static Character *generate(culture *culture, religion *religion, phenotype *phenotype = nullptr);
 
 private:
 	static inline std::vector<Character *> LivingCharacters;
@@ -238,8 +238,8 @@ public:
 		return this->LandedTitles;
 	}
 
-	void AddLandedTitle(LandedTitle *title);
-	void RemoveLandedTitle(LandedTitle *title);
+	void add_landed_title(LandedTitle *title);
+	void remove_landed_title(LandedTitle *title);
 
 	Character *GetFather() const
 	{

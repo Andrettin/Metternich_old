@@ -10,10 +10,10 @@
 
 namespace metternich {
 
-void Map::Load()
+void Map::load()
 {
-	this->LoadProvinces();
-	this->LoadTerrain();
+	this->load_provinces();
+	this->load_terrain();
 }
 
 QPoint Map::GetPixelPosition(const int index)
@@ -21,9 +21,9 @@ QPoint Map::GetPixelPosition(const int index)
 	return util::index_to_point(index, this->Size);
 }
 
-void Map::LoadProvinces()
+void Map::load_provinces()
 {
-	EngineInterface::Get()->SetLoadingMessage("Loading Provinces... (0%)");
+	EngineInterface::get()->set_loading_message("Loading Provinces... (0%)");
 
 	QImage province_image("./map/provinces.png");
 	QImage terrain_image("./map/terrain.png"); //used to calculate each province's terrain
@@ -45,7 +45,7 @@ void Map::LoadProvinces()
 
 			//update the progress in the loading message
 			const long long int progress_percent = static_cast<long long int>(i) * 100 / pixel_count;
-			EngineInterface::Get()->SetLoadingMessage("Loading Provinces... (" + QString::number(progress_percent) + "%)");
+			EngineInterface::get()->set_loading_message("Loading Provinces... (" + QString::number(progress_percent) + "%)");
 		}
 
 		const QRgb &pixel_rgb = rgb_data[i];
@@ -57,8 +57,8 @@ void Map::LoadProvinces()
 			if (previous_pixel_province != pixel_province && previous_pixel_province != nullptr) {
 				province_border_pixel_indexes[pixel_province].push_back(i);
 				province_border_pixel_indexes[previous_pixel_province].push_back(i - 1);
-				pixel_province->AddBorderProvince(previous_pixel_province);
-				previous_pixel_province->AddBorderProvince(pixel_province);
+				pixel_province->add_border_province(previous_pixel_province);
+				previous_pixel_province->add_border_province(pixel_province);
 			}
 
 			if (i > province_image.width()) { //second line or below
@@ -68,8 +68,8 @@ void Map::LoadProvinces()
 				if (previous_vertical_pixel_province != pixel_province && previous_vertical_pixel_province != nullptr) {
 					province_border_pixel_indexes[pixel_province].push_back(i);
 					province_border_pixel_indexes[previous_vertical_pixel_province].push_back(i - province_image.width());
-					pixel_province->AddBorderProvince(previous_vertical_pixel_province);
-					previous_vertical_pixel_province->AddBorderProvince(pixel_province);
+					pixel_province->add_border_province(previous_vertical_pixel_province);
+					previous_vertical_pixel_province->add_border_province(pixel_province);
 				}
 			}
 
@@ -111,9 +111,9 @@ void Map::LoadProvinces()
 	}
 }
 
-void Map::LoadTerrain()
+void Map::load_terrain()
 {
-	EngineInterface::Get()->SetLoadingMessage("Loading Terrain...");
+	EngineInterface::get()->set_loading_message("Loading Terrain...");
 	QImage terrain_image("./map/terrain.png");
 }
 

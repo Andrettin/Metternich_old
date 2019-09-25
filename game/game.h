@@ -19,7 +19,7 @@ enum class GameSpeed : int;
 /**
 **	@brief	The game instance
 */
-class Game : public QObject, public Singleton<Game>
+class Game : public QObject, public singleton<Game>
 {
 	Q_OBJECT
 
@@ -90,7 +90,7 @@ public:
 		}
 	}
 
-	void GenerateMissingTitleHolders();
+	void generate_missing_title_holders();
 	void PurgeSuperfluousCharacters();
 
 signals:

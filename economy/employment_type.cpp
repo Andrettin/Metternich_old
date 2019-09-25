@@ -33,7 +33,7 @@ void employment_type::process_gsml_property(const gsml_property &property)
 {
 	if (property.get_key() == "template") {
 		if (property.get_operator() == gsml_operator::assignment) {
-			this->template_type = employment_type::Get(property.get_value());
+			this->template_type = employment_type::get(property.get_value());
 		} else {
 			throw std::runtime_error("Only the assignment operator may be used for the \"template\" property.");
 		}
@@ -57,7 +57,7 @@ void employment_type::process_gsml_scope(const gsml_data &scope)
 				throw std::runtime_error("Only the assignment operator may be used for properties in the \"" + tag + "\" scope.");
 			}
 
-			commodity *commodity = commodity::Get(property.get_key());
+			commodity *commodity = commodity::get(property.get_key());
 			const int input_quantity = std::stoi(property.get_value());
 			this->input_commodities[commodity] = input_quantity;
 		}

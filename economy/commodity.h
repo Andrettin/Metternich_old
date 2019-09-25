@@ -13,7 +13,7 @@ class ChanceFactor;
 class gsml_data;
 class holding;
 
-class commodity : public data_entry, public DataType<commodity>
+class commodity : public data_entry, public data_type<commodity>
 {
 	Q_OBJECT
 
@@ -22,8 +22,8 @@ class commodity : public data_entry, public DataType<commodity>
 	Q_PROPERTY(QString icon_path READ get_icon_path_qstring WRITE set_icon_path_qstring NOTIFY icon_path_changed)
 
 public:
-	static constexpr const char *ClassIdentifier = "commodity";
-	static constexpr const char *DatabaseFolder = "commodities";
+	static constexpr const char *class_identifier = "commodity";
+	static constexpr const char *database_folder = "commodities";
 
 public:
 	commodity(const std::string &identifier);

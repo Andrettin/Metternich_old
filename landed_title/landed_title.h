@@ -17,7 +17,7 @@ class law_group;
 class Province;
 enum class LandedTitleTier : int;
 
-class LandedTitle : public data_entry, public DataType<LandedTitle>
+class LandedTitle : public data_entry, public data_type<LandedTitle>
 {
 	Q_OBJECT
 
@@ -33,8 +33,8 @@ class LandedTitle : public data_entry, public DataType<LandedTitle>
 public:
 	LandedTitle(const std::string &identifier) : data_entry(identifier) {}
 
-	static constexpr const char *ClassIdentifier = "landed_title";
-	static constexpr const char *DatabaseFolder = "landed_titles";
+	static constexpr const char *class_identifier = "landed_title";
+	static constexpr const char *database_folder = "landed_titles";
 	static constexpr const char *BaronyPrefix = "b_";
 	static constexpr const char *CountyPrefix = "c_";
 	static constexpr const char *DuchyPrefix = "d_";
@@ -55,7 +55,7 @@ public:
 	static constexpr const char *KingIdentifier = "king";
 	static constexpr const char *EmperorIdentifier = "emperor";
 
-	static LandedTitle *Add(const std::string &identifier);
+	static LandedTitle *add(const std::string &identifier);
 
 	static const char *GetTierIdentifier(const LandedTitleTier tier);
 	static const char *GetTierHolderIdentifier(const LandedTitleTier tier);
@@ -123,12 +123,12 @@ public:
 
 	void SetDeJureLiegeTitle(LandedTitle *title);
 
-	void AddDeJureVassalTitle(LandedTitle *title)
+	void add_de_jure_vassal_title(LandedTitle *title)
 	{
 		this->DeJureVassalTitles.push_back(title);
 	}
 
-	void RemoveDeJureVassalTitle(LandedTitle *title)
+	void remove_de_jure_vassal_title(LandedTitle *title)
 	{
 		this->DeJureVassalTitles.erase(std::remove(this->DeJureVassalTitles.begin(), this->DeJureVassalTitles.end(), title), this->DeJureVassalTitles.end());
 	}

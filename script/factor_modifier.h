@@ -34,10 +34,10 @@ public:
 	}
 
 	template <typename T>
-	bool CheckConditions(T *scope) const
+	bool check_conditions(T *scope) const
 	{
 		for (const std::unique_ptr<Condition> &condition : this->Conditions) {
-			if (!condition->Check(scope)) {
+			if (!condition->check(scope)) {
 				return false;
 			}
 		}

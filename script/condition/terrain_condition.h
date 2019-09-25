@@ -17,7 +17,7 @@ class TerrainCondition : public Condition
 public:
 	TerrainCondition(const std::string &terrain_identifier)
 	{
-		this->Terrain = Terrain::Get(terrain_identifier);
+		this->Terrain = Terrain::get(terrain_identifier);
 	}
 
 	virtual const std::string &get_identifier() const override
@@ -26,14 +26,14 @@ public:
 		return identifier;
 	}
 
-	virtual bool Check(const Province *province) const override
+	virtual bool check(const Province *province) const override
 	{
 		return province->GetTerrain() == this->Terrain;
 	}
 
-	virtual bool Check(const holding *holding) const override
+	virtual bool check(const holding *holding) const override
 	{
-		return this->Check(holding->get_province());
+		return this->check(holding->get_province());
 	}
 
 private:

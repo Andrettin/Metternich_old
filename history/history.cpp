@@ -15,29 +15,29 @@ namespace metternich {
 /**
 **	@brief	Load history
 */
-void History::Load()
+void History::load()
 {
-	EngineInterface::Get()->SetLoadingMessage("Loading History...");
+	EngineInterface::get()->set_loading_message("Loading History...");
 
-	Region::ParseHistoryDatabase();
-	Province::ParseHistoryDatabase();
-	Character::ParseHistoryDatabase();
-	LandedTitle::ParseHistoryDatabase();
-	population_unit::ParseHistoryDatabase();
+	region::parse_history_database();
+	Province::parse_history_database();
+	Character::parse_history_database();
+	LandedTitle::parse_history_database();
+	population_unit::parse_history_database();
 
-	Character::ProcessHistoryDatabase(true);
+	Character::process_history_database(true);
 
-	Region::ProcessHistoryDatabase(false);
-	Province::ProcessHistoryDatabase(false);
-	Character::ProcessHistoryDatabase(false);
-	LandedTitle::ProcessHistoryDatabase(false);
+	region::process_history_database(false);
+	Province::process_history_database(false);
+	Character::process_history_database(false);
+	LandedTitle::process_history_database(false);
 
 	//process after the province history, so that holdings will have been created
 	population_unit::process_history_database();
 
 	History::generate_population_units();
 
-	Database::Get()->initialize_history();
+	database::get()->initialize_history();
 }
 
 /**
@@ -48,7 +48,7 @@ void History::generate_population_units()
 	std::vector<population_unit *> base_population_units;
 
 	//add population units with discount existing enabled to the vector of population units used for generation (holding-level population units with that enabled are not used for generation per se, but generated population units may still be discounted from their size), as well as any population units in provinces or regions
-	for (Province *province : Province::GetAll()) {
+	for (Province *province : Province::get_all()) {
 		for (holding *holding : province->get_holdings()) {
 			for (const std::unique_ptr<population_unit> &population_unit : holding->get_population_units()) {
 				if (population_unit->discounts_existing()) {
@@ -62,7 +62,7 @@ void History::generate_population_units()
 		}
 	}
 
-	for (Region *region : Region::GetAll()) {
+	for (region *region : region::get_all()) {
 		for (const std::unique_ptr<population_unit> &population_unit : region->get_population_units()) {
 			base_population_units.push_back(population_unit.get());
 		}
@@ -86,7 +86,7 @@ void History::generate_population_units()
 		} else if ((a->get_province() != nullptr) != (b->get_province() != nullptr)) {
 			return a->get_province() != nullptr;
 		} else if (a->get_region() != b->get_region()) {
-			return a->get_region()->GetProvinces().size() < b->get_region()->GetProvinces().size();
+			return a->get_region()->get_provinces().size() < b->get_region()->get_provinces().size();
 		}
 
 		return a->get_size() < b->get_size();

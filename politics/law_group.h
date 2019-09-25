@@ -7,15 +7,15 @@
 
 namespace metternich {
 
-class law_group : public data_entry, public DataType<law_group>
+class law_group : public data_entry, public data_type<law_group>
 {
 	Q_OBJECT
 
 public:
 	law_group(const std::string &identifier) : data_entry(identifier) {}
 
-	static constexpr const char *ClassIdentifier = "law_group";
-	static constexpr const char *DatabaseFolder = "law_groups";
+	static constexpr const char *class_identifier = "law_group";
+	static constexpr const char *database_folder = "law_groups";
 };
 
 }

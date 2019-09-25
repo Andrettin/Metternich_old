@@ -31,10 +31,10 @@ void Building::process_gsml_scope(const gsml_data &scope)
 {
 	if (scope.get_tag() == "preconditions") {
 		this->Preconditions = std::make_unique<AndCondition>();
-		Database::ProcessGSMLData(this->Preconditions.get(), scope);
+		database::process_gsml_data(this->Preconditions.get(), scope);
 	} else if (scope.get_tag() == "conditions") {
 		this->Conditions = std::make_unique<AndCondition>();
-		Database::ProcessGSMLData(this->Conditions.get(), scope);
+		database::process_gsml_data(this->Conditions.get(), scope);
 	} else {
 		data_entry_base::process_gsml_scope(scope);
 	}
@@ -85,7 +85,7 @@ bool Building::is_available_for_holding(const holding *holding) const
 		return true;
 	}
 
-	return this->Preconditions->Check(holding);
+	return this->Preconditions->check(holding);
 }
 
 /**
@@ -105,7 +105,7 @@ bool Building::is_buildable_in_holding(const holding *holding) const
 		return true;
 	}
 
-	return this->Conditions->Check(holding);
+	return this->Conditions->check(holding);
 }
 
 }

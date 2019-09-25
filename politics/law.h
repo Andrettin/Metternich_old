@@ -9,7 +9,7 @@ namespace metternich {
 
 class law_group;
 
-class law : public data_entry, public DataType<law>
+class law : public data_entry, public data_type<law>
 {
 	Q_OBJECT
 
@@ -18,8 +18,8 @@ class law : public data_entry, public DataType<law>
 public:
 	law(const std::string &identifier) : data_entry(identifier) {}
 
-	static constexpr const char *ClassIdentifier = "law";
-	static constexpr const char *DatabaseFolder = "laws";
+	static constexpr const char *class_identifier = "law";
+	static constexpr const char *database_folder = "laws";
 
 	metternich::law_group *get_group() const
 	{

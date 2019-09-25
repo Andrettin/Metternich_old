@@ -13,7 +13,7 @@ class employment_owner;
 class gsml_data;
 class PopulationType;
 
-class employment_type : public data_entry, public DataType<employment_type>
+class employment_type : public data_entry, public data_type<employment_type>
 {
 	Q_OBJECT
 
@@ -22,8 +22,8 @@ class employment_type : public data_entry, public DataType<employment_type>
 	Q_PROPERTY(int output_value MEMBER output_value READ get_output_value)
 
 public:
-	static constexpr const char *ClassIdentifier = "employment_type";
-	static constexpr const char *DatabaseFolder = "employment_types";
+	static constexpr const char *class_identifier = "employment_type";
+	static constexpr const char *database_folder = "employment_types";
 
 public:
 	employment_type(const std::string &identifier);

@@ -12,12 +12,12 @@ namespace metternich {
 
 Game *EngineInterface::GetGame() const
 {
-	return Game::Get();
+	return Game::get();
 }
 
 QVariant EngineInterface::GetProvinces() const
 {
-	QObjectList province_list = util::vector_to_qobject_list(Province::GetAll());
+	QObjectList province_list = util::vector_to_qobject_list(Province::get_all());
 	return QVariant::fromValue(province_list);
 }
 

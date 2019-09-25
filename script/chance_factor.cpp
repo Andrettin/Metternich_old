@@ -53,7 +53,7 @@ void ChanceFactor::process_gsml_scope(const gsml_data &scope)
 {
 	if (scope.get_tag() == "modifier") {
 		auto factor_modifier = std::make_unique<FactorModifier>();
-		Database::ProcessGSMLData(factor_modifier, scope);
+		database::process_gsml_data(factor_modifier, scope);
 		this->Modifiers.push_back(std::move(factor_modifier));
 	} else {
 		throw std::runtime_error("Invalid chance scope: " + scope.get_tag() + ".");

@@ -16,9 +16,9 @@ namespace metternich {
 std::unique_ptr<employee> employee::from_gsml_scope(const gsml_data &scope)
 {
 	auto employee = std::make_unique<metternich::employee>();
-	employee->population_type = PopulationType::Get(scope.get_tag());
+	employee->population_type = PopulationType::get(scope.get_tag());
 
-	Database::ProcessGSMLData(employee, scope);
+	database::process_gsml_data(employee, scope);
 
 	return employee;
 }
@@ -30,7 +30,7 @@ std::unique_ptr<employee> employee::from_gsml_scope(const gsml_data &scope)
 */
 void employee::process_gsml_property(const gsml_property &property)
 {
-	Database::ProcessGSMLPropertyForObject(this, property);
+	database::process_gsml_property_for_object(this, property);
 }
 
 }

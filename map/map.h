@@ -9,15 +9,15 @@ namespace metternich {
 
 class Province;
 
-class Map : public Singleton<Map>
+class Map : public singleton<Map>
 {
 public:
-	void Load();
+	void load();
 	QPoint GetPixelPosition(const int index);
 
 private:
-	void LoadProvinces();
-	void LoadTerrain();
+	void load_provinces();
+	void load_terrain();
 
 private:
 	QSize Size = QSize(0, 0);

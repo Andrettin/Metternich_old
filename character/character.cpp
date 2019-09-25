@@ -24,18 +24,18 @@ namespace metternich {
 **	@param	religion	The religion for the generated character
 **	@param	phenotype	The phenotype for the generated character; if none is given then the default phenotype for the culture is used instead
 */
-Character *Character::Generate(metternich::culture *culture, metternich::religion *religion, metternich::phenotype *phenotype)
+Character *Character::generate(metternich::culture *culture, metternich::religion *religion, metternich::phenotype *phenotype)
 {
-	const int identifier = Character::GenerateNumericIdentifier();
-	Character *character = Character::Add(identifier);
+	const int identifier = Character::generate_numeric_identifier();
+	Character *character = Character::add(identifier);
 	character->culture = culture;
 	character->religion = religion;
 	if (phenotype != nullptr) {
 		character->phenotype = phenotype;
 	}
 	//generate the character's birth date to be between 60 and 20 years before the current date
-	const QDateTime &current_date = Game::Get()->GetCurrentDate();
-	character->BirthDate = current_date.addDays(Random::GenerateInRange(-60 * 365, -20 * 365));
+	const QDateTime &current_date = Game::get()->GetCurrentDate();
+	character->BirthDate = current_date.addDays(Random::generate_in_range(-60 * 365, -20 * 365));
 	character->initialize_history(); //generates a name and sets the phenotype if none was given
 	return character;
 }
@@ -144,7 +144,7 @@ void Character::ChoosePrimaryTitle()
 	this->SetPrimaryTitle(best_title);
 }
 
-void Character::AddLandedTitle(LandedTitle *title)
+void Character::add_landed_title(LandedTitle *title)
 {
 	this->LandedTitles.push_back(title);
 
@@ -154,7 +154,7 @@ void Character::AddLandedTitle(LandedTitle *title)
 	}
 }
 
-void Character::RemoveLandedTitle(LandedTitle *title)
+void Character::remove_landed_title(LandedTitle *title)
 {
 	this->LandedTitles.erase(std::remove(this->LandedTitles.begin(), this->LandedTitles.end(), title), this->LandedTitles.end());
 

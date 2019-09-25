@@ -24,9 +24,9 @@ namespace metternich {
 **
 **	@return	The new instance
 */
-LandedTitle *LandedTitle::Add(const std::string &identifier)
+LandedTitle *LandedTitle::add(const std::string &identifier)
 {
-	LandedTitle *title = DataType<LandedTitle>::Add(identifier);
+	LandedTitle *title = data_type<LandedTitle>::add(identifier);
 
 	std::string identifier_prefix = identifier.substr(0, 2);
 
@@ -105,14 +105,14 @@ void LandedTitle::process_gsml_dated_property(const gsml_property &property, con
 
 		if (property.get_value() == "random") {
 			//generate random holder
-			Character *holder = Character::Generate(this->GetCapitalProvince()->get_culture(), this->GetCapitalProvince()->get_religion());
+			Character *holder = Character::generate(this->GetCapitalProvince()->get_culture(), this->GetCapitalProvince()->get_religion());
 			this->SetHolder(holder);
 			return;
 		} else if (property.get_value() == "none") {
 			this->SetHolder(nullptr);
 			return;
 		} else {
-			const Character *holder = Character::Get(std::stoi(property.get_value()));
+			const Character *holder = Character::get(std::stoi(property.get_value()));
 			if (holder != nullptr && !holder->IsAlive()) {
 				return;
 			}
@@ -200,7 +200,7 @@ void LandedTitle::check() const
 		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has a different province and capital province.");
 	}
 
-	if (Game::Get()->IsStarting()) {
+	if (Game::get()->IsStarting()) {
 		if (this->GetCapitalProvince() == nullptr) {
 			throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has no capital province.");
 		}
@@ -250,7 +250,7 @@ std::string LandedTitle::get_name() const
 		suffixes.push_back(this->GetHolder()->GetDynasty()->get_identifier());
 	}
 
-	return Translator::Get()->Translate(this->get_identifier(), suffixes);
+	return Translator::get()->Translate(this->get_identifier(), suffixes);
 }
 
 /**
@@ -280,7 +280,7 @@ std::string LandedTitle::GetTierTitleName() const
 		suffixes.push_back(culture->get_culture_group()->get_identifier());
 	}
 
-	return Translator::Get()->Translate(LandedTitle::GetTierIdentifier(this->GetTier()), suffixes);
+	return Translator::get()->Translate(LandedTitle::GetTierIdentifier(this->GetTier()), suffixes);
 }
 
 /**
@@ -322,7 +322,7 @@ std::string LandedTitle::GetHolderTitleName() const
 		suffixes.push_back(culture->get_culture_group()->get_identifier());
 	}
 
-	return Translator::Get()->Translate(LandedTitle::GetTierHolderIdentifier(this->GetTier()), suffixes);
+	return Translator::get()->Translate(LandedTitle::GetTierHolderIdentifier(this->GetTier()), suffixes);
 }
 
 void LandedTitle::SetHolder(Character *character)
@@ -332,13 +332,13 @@ void LandedTitle::SetHolder(Character *character)
 	}
 
 	if (this->GetHolder() != nullptr) {
-		this->GetHolder()->RemoveLandedTitle(this);
+		this->GetHolder()->remove_landed_title(this);
 	}
 
 	this->Holder = character;
 
 	if (character != nullptr) {
-		character->AddLandedTitle(this);
+		character->add_landed_title(this);
 	}
 	this->HolderTitle = nullptr; //set the holder title to null, so that the new holder (null or otherwise) isn't overwritten by a previous holder title
 
@@ -386,7 +386,7 @@ void LandedTitle::SetDeJureLiegeTitle(LandedTitle *title)
 	}
 
 	if (this->GetDeJureLiegeTitle() != nullptr) {
-		this->GetDeJureLiegeTitle()->RemoveDeJureVassalTitle(this);
+		this->GetDeJureLiegeTitle()->remove_de_jure_vassal_title(this);
 	}
 
 	if (static_cast<int>(title->GetTier()) - static_cast<int>(this->GetTier()) != 1) {
@@ -394,7 +394,7 @@ void LandedTitle::SetDeJureLiegeTitle(LandedTitle *title)
 	}
 
 	this->DeJureLiegeTitle = title;
-	title->AddDeJureVassalTitle(this);
+	title->add_de_jure_vassal_title(this);
 
 	emit DeJureLiegeTitleChanged();
 }

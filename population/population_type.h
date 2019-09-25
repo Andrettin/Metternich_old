@@ -13,7 +13,7 @@ namespace metternich {
 
 class holding_type;
 
-class PopulationType : public data_entry, public DataType<PopulationType>
+class PopulationType : public data_entry, public data_type<PopulationType>
 {
 	Q_OBJECT
 
@@ -21,8 +21,8 @@ class PopulationType : public data_entry, public DataType<PopulationType>
 	Q_PROPERTY(QVariantList holding_types READ get_holding_types_qvariant_list)
 
 public:
-	static constexpr const char *ClassIdentifier = "population_type";
-	static constexpr const char *DatabaseFolder = "population_types";
+	static constexpr const char *class_identifier = "population_type";
+	static constexpr const char *database_folder = "population_types";
 
 public:
 	PopulationType(const std::string &identifier) : data_entry(identifier) {}

@@ -13,15 +13,15 @@ namespace metternich {
 **	@brief	The class for simple data types, which don't use identifiers
 */
 template <typename T>
-class SimpleDataType : public DataTypeBase<T>
+class simple_data_type : public data_type_base<T>
 {
 public:
 	/**
 	**	@brief	Parse the history database for the class
 	*/
-	static void ParseHistoryDatabase()
+	static void parse_history_database()
 	{
-		std::filesystem::path history_path("./data/history/" + std::string(T::DatabaseFolder));
+		std::filesystem::path history_path("./data/history/" + std::string(T::database_folder));
 
 		if (!std::filesystem::exists(history_path)) {
 			return;

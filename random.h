@@ -11,13 +11,13 @@ class Random
 {
 public:
 	template <typename T = int>
-	static T Generate(const T modulo)
+	static T generate(const T modulo)
 	{
-		return Random::GenerateInRange(static_cast<T>(0), modulo - 1);
+		return Random::generate_in_range(static_cast<T>(0), modulo - 1);
 	}
 
 	template <typename T = int>
-	static T GenerateInRange(const T min_value, const T max_value)
+	static T generate_in_range(const T min_value, const T max_value)
 	{
 		std::uniform_int_distribution<T> distribution(min_value, max_value);
 		return distribution(Random::RandomDevice);

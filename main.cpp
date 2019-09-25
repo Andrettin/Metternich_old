@@ -33,12 +33,12 @@
 #include <stdexcept>
 
 namespace metternich {
-	static void LoadData()
+	static void load_data()
 	{
 		try {
-			Database::Get()->Load();
-			Map::Get()->Load();
-			Game::Get()->Start(Defines::Get()->GetStartDate());
+			database::get()->load();
+			Map::get()->load();
+			Game::get()->Start(Defines::get()->GetStartDate());
 		} catch (const std::exception &exception) {
 			std::cerr << exception.what() << '\n';
 			QApplication::exit(EXIT_FAILURE);
@@ -55,13 +55,13 @@ int main(int argc, char *argv[])
 
 		QApplication app(argc, argv);
 
-		Translator *translator = Translator::Get();
+		Translator *translator = Translator::get();
 
-		translator->LoadLocale("english");
+		translator->load_locale("english");
 
 		app.installTranslator(translator);
 
-		std::thread data_load_thread(LoadData);
+		std::thread data_load_thread(load_data);
 		data_load_thread.detach();
 
 		QQmlApplicationEngine engine;
@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
 		qmlRegisterType<Province>();
 		qmlRegisterType<religion>();
 		qmlRegisterType<Terrain>();
-		engine.rootContext()->setContextProperty("metternich", EngineInterface::Get());
+		engine.rootContext()->setContextProperty("metternich", EngineInterface::get());
 		engine.addImageProvider(QLatin1String("provinces"), new ProvinceImageProvider);
 		engine.addImageProvider(QLatin1String("empty"), new EmptyImageProvider);
 

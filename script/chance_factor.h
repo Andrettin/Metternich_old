@@ -30,7 +30,7 @@ public:
 		int result = this->Factor;
 
 		for (const std::unique_ptr<FactorModifier> &modifier : this->Modifiers) {
-			if (modifier->CheckConditions(scope)) {
+			if (modifier->check_conditions(scope)) {
 				result *= modifier->GetFactor();
 				result /= 100;
 			}

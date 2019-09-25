@@ -12,7 +12,7 @@ class employment_type;
 class holding;
 class holding_type;
 
-class Building : public data_entry, public DataType<Building>
+class Building : public data_entry, public data_type<Building>
 {
 	Q_OBJECT
 
@@ -24,8 +24,8 @@ class Building : public data_entry, public DataType<Building>
 	Q_PROPERTY(int workforce MEMBER Workforce READ GetWorkforce)
 
 public:
-	static constexpr const char *ClassIdentifier = "building";
-	static constexpr const char *DatabaseFolder = "buildings";
+	static constexpr const char *class_identifier = "building";
+	static constexpr const char *database_folder = "buildings";
 
 	Building(const std::string &identifier);
 	virtual ~Building() override;

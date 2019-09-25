@@ -23,7 +23,7 @@ void population_unit::process_history_database()
 	for (const gsml_data &data : population_unit::gsml_history_data_to_process) {
 		for (const gsml_data &data_entry : data.get_children()) {
 			const std::string type_identifier = data_entry.get_tag();
-			PopulationType *type = PopulationType::Get(type_identifier);
+			PopulationType *type = PopulationType::get(type_identifier);
 			auto population_unit(std::make_unique<population_unit>(type));
 			population_unit->moveToThread(QApplication::instance()->thread());
 			population_unit->load_history(const_cast<gsml_data &>(data_entry));

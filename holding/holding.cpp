@@ -35,7 +35,7 @@ namespace metternich {
 holding::holding(LandedTitle *barony, holding_type *type, metternich::Province *province) : data_entry(barony->get_identifier()), barony(barony), province(province)
 {
 	barony->set_holding(this);
-	this->change_base_population_growth(Defines::Get()->GetBasePopulationGrowth());
+	this->change_base_population_growth(Defines::get()->GetBasePopulationGrowth());
 	this->set_type(type);
 	this->set_owner(barony->GetHolder());
 	this->change_base_population_capacity(province->GetPopulationCapacityAdditiveModifier());
@@ -126,7 +126,7 @@ void holding::do_month()
 */
 std::string holding::get_name() const
 {
-	return Translator::Get()->Translate(this->get_barony()->get_identifier(), {this->get_culture()->get_identifier(), this->get_culture()->get_culture_group()->get_identifier(), this->get_religion()->get_identifier()});
+	return Translator::get()->Translate(this->get_barony()->get_identifier(), {this->get_culture()->get_identifier(), this->get_culture()->get_culture_group()->get_identifier(), this->get_religion()->get_identifier()});
 }
 
 /**
@@ -144,7 +144,7 @@ std::string holding::get_type_name() const
 	suffixes.push_back(culture->get_culture_group()->get_identifier());
 	suffixes.push_back(religion->get_identifier());
 
-	return Translator::Get()->Translate(this->get_type()->get_identifier(), suffixes);
+	return Translator::get()->Translate(this->get_type()->get_identifier(), suffixes);
 }
 
 /**
@@ -171,7 +171,7 @@ void holding::set_type(holding_type *type)
 	}
 
 	if (this->get_type() != nullptr && this->get_type()->get_modifier() != nullptr) {
-		this->get_type()->get_modifier()->Remove(this);
+		this->get_type()->get_modifier()->remove(this);
 	}
 
 	this->type = type;
@@ -319,7 +319,7 @@ void holding::check_overpopulation()
 		}
 	} else {
 		if (this->modifiers.find(IdentifiableModifier::GetOverpopulationModifier()) != this->modifiers.end()) {
-			IdentifiableModifier::GetOverpopulationModifier()->Remove(this);
+			IdentifiableModifier::GetOverpopulationModifier()->remove(this);
 			this->modifiers.erase(IdentifiableModifier::GetOverpopulationModifier());
 		}
 	}
@@ -481,7 +481,7 @@ void holding::generate_commodity()
 {
 	std::map<metternich::commodity *, std::pair<int, int>> commodity_chance_ranges;
 	int total_chance_factor = 0;
-	for (metternich::commodity *commodity : commodity::GetAll()) {
+	for (metternich::commodity *commodity : commodity::get_all()) {
 		const int commodity_chance = commodity->calculate_chance(this);
 		if (commodity_chance > 0) {
 			commodity_chance_ranges[commodity] = std::pair<int, int>(total_chance_factor, total_chance_factor + commodity_chance);
@@ -495,7 +495,7 @@ void holding::generate_commodity()
 
 	metternich::commodity *chosen_commodity = nullptr;
 
-	const int random_number = Random::Generate(total_chance_factor);
+	const int random_number = Random::generate(total_chance_factor);
 	for (const auto &element : commodity_chance_ranges) {
 		metternich::commodity *commodity = element.first;
 		const std::pair<int, int> range = element.second;
@@ -574,7 +574,7 @@ void holding::set_selected(const bool selected, const bool notify_engine_interfa
 	emit selected_changed();
 
 	if (notify_engine_interface) {
-		EngineInterface::Get()->emit selected_holding_changed();
+		EngineInterface::get()->emit selected_holding_changed();
 	}
 }
 
@@ -624,7 +624,7 @@ void holding::order_construction(const QVariant &building_variant)
 {
 	QObject *building_object = qvariant_cast<QObject *>(building_variant);
 	Building *building = static_cast<Building *>(building_object);
-	Game::Get()->PostOrder([this, building]() {
+	Game::get()->PostOrder([this, building]() {
 		this->set_under_construction_building(building);
 	});
 }

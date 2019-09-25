@@ -15,7 +15,7 @@ namespace metternich {
 */
 void data_entry_base::process_gsml_property(const gsml_property &property)
 {
-	Database::ProcessGSMLPropertyForObject(this, property);
+	database::process_gsml_property_for_object(this, property);
 }
 
 void data_entry_base::process_gsml_scope(const gsml_data &scope)
@@ -38,7 +38,7 @@ void data_entry_base::load_history(gsml_data &data)
 	for (const gsml_data &history_entry : data.get_children()) {
 		QDateTime date = History::StringToDate(history_entry.get_tag());
 
-		if (date <= Game::Get()->GetCurrentDate()) {
+		if (date <= Game::get()->GetCurrentDate()) {
 			for (const gsml_property &property : history_entry.get_properties()) {
 				this->process_gsml_dated_property(property, date);
 			}
@@ -52,7 +52,7 @@ void data_entry_base::load_history(gsml_data &data)
 
 std::string data_entry::get_name() const
 {
-	return Translator::Get()->Translate(this->identifier);
+	return Translator::get()->Translate(this->identifier);
 }
 
 }

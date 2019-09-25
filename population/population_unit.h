@@ -14,10 +14,10 @@ class employment;
 class holding;
 class PopulationType;
 class Province;
-class Region;
+class region;
 class religion;
 
-class population_unit : public data_entry_base, public SimpleDataType<population_unit>
+class population_unit : public data_entry_base, public simple_data_type<population_unit>
 {
 	Q_OBJECT
 
@@ -27,14 +27,14 @@ class population_unit : public data_entry_base, public SimpleDataType<population
 	Q_PROPERTY(int size READ get_size WRITE set_size NOTIFY size_changed)
 	Q_PROPERTY(metternich::holding* holding READ get_holding WRITE set_holding NOTIFY holding_changed)
 	Q_PROPERTY(metternich::Province* province READ get_province WRITE set_province NOTIFY province_changed)
-	Q_PROPERTY(metternich::Region* region READ get_region WRITE set_region NOTIFY region_changed)
+	Q_PROPERTY(metternich::region* region READ get_region WRITE set_region NOTIFY region_changed)
 	Q_PROPERTY(int wealth READ get_wealth NOTIFY wealth_changed)
 	Q_PROPERTY(bool discount_existing READ discounts_existing WRITE set_discount_existing NOTIFY discount_existing_changed)
 	Q_PROPERTY(bool discount_any_type READ discounts_any_type WRITE set_discount_any_type NOTIFY discount_any_type_changed)
 	Q_PROPERTY(QVariantList discount_types READ get_discount_types_qvariant_list)
 
 public:
-	static constexpr const char *DatabaseFolder = "population_units";
+	static constexpr const char *database_folder = "population_units";
 
 	static void process_history_database();
 
@@ -121,12 +121,12 @@ public:
 		emit province_changed();
 	}
 
-	metternich::Region *get_region() const
+	metternich::region *get_region() const
 	{
 		return this->region;
 	}
 
-	void set_region(Region *region)
+	void set_region(region *region)
 	{
 		if (region == this->get_region()) {
 			return;
@@ -266,7 +266,7 @@ private:
 	int size = 0; //the size of the population unit, in number of individuals
 	metternich::holding *holding = nullptr; //the settlement holding where this population unit lives
 	metternich::Province *province = nullptr; //the province where this population unit lives; used only during initialization to generate population units in settlements in the province
-	metternich::Region *region = nullptr; //the region where this population unit lives; used only during initialization to generate population units in settlements in the region
+	metternich::region *region = nullptr; //the region where this population unit lives; used only during initialization to generate population units in settlements in the region
 	bool discount_existing = false; //whether to discount the size of existing population units (in this population unit's holding, province or region) of the types given in DiscountTypes from that of this one
 	bool discount_any_type = false; //whether to discount the size of any existing population units from that of this one
 	std::set<PopulationType *> discount_types; //the sizes of population units belonging to these types will be discounted from that of this population unit

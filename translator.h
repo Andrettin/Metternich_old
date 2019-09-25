@@ -15,18 +15,18 @@ namespace metternich {
 /**
 **	@brief	Custom translator class
 */
-class Translator : public QTranslator, public Singleton<Translator>
+class Translator : public QTranslator, public singleton<Translator>
 {
 	Q_OBJECT
 
 public:
-	void LoadLocale(const std::string &language);
+	void load_locale(const std::string &language);
 	std::string Translate(const std::string &source_text, const std::vector<std::string> &suffixes = std::vector<std::string>()) const;
 
 	virtual QString translate(const char *context, const char *source_text, const char *disambiguation = nullptr, int n = -1) const override;
 
 private:
-	void AddTranslation(const std::string &source_text, const std::string &translation)
+	void add_translation(const std::string &source_text, const std::string &translation)
 	{
 		this->Translations[source_text] = translation;
 	}
