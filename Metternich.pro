@@ -81,6 +81,7 @@ HEADERS += \
     database/data_entry.h \
     database/data_type.h \
     database/data_type_base.h \
+    database/data_type_metadata.h \
     database/database.h \
     database/gsml_data.h \
     database/gsml_operator.h \

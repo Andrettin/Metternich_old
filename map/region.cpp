@@ -1,11 +1,25 @@
 #include "map/region.h"
 
+#include "database/database.h"
 #include "landed_title/landed_title.h"
 #include "map/province.h"
 #include "population/population_unit.h"
 #include "util.h"
 
 namespace metternich {
+
+/**
+**	@brief	Constructor
+*/
+std::set<std::string> region::get_database_dependencies()
+{
+	return {
+		//because regions have to be processed after baronies' de jure lieges have been set
+		LandedTitle::class_identifier,
+		//so that when regions are processed provinces already have their counties set
+		Province::class_identifier
+	};
+}
 
 /**
 **	@brief	Constructor
@@ -37,14 +51,6 @@ void region::initialize()
 		}
 	}
 
-	//add the baronies of each of this region's provinces to it
-	for (Province *province : this->get_provinces()) {
-		LandedTitle *county = province->get_county();
-		for (LandedTitle *barony : county->get_de_jure_vassal_titles()) {
-			this->add_holding(barony);
-		}
-	}
-
 	data_entry_base::initialize();
 }
 
@@ -65,12 +71,24 @@ void region::add_province(Province *province)
 {
 	this->provinces.push_back(province);
 	province->add_region(this);
+
+	//add the holdings belonging to the provinces to the region
+	LandedTitle *county = province->get_county();
+	for (LandedTitle *barony : county->get_de_jure_vassal_titles()) {
+		this->add_holding(barony);
+	}
 }
 
 void region::remove_province(Province *province)
 {
 	this->provinces.erase(std::remove(this->provinces.begin(), this->provinces.end(), province), this->provinces.end());
 	province->remove_region(this);
+
+	//add the holdings belonging to the provinces to the region
+	LandedTitle *county = province->get_county();
+	for (LandedTitle *barony : county->get_de_jure_vassal_titles()) {
+		this->remove_holding(barony);
+	}
 }
 
 QVariantList region::get_subregions_qvariant_list() const

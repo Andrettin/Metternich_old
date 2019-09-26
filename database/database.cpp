@@ -5,6 +5,7 @@
 #include "character/trait.h"
 #include "culture/culture.h"
 #include "culture/culture_group.h"
+#include "database/data_type_metadata.h"
 #include "database/gsml_data.h"
 #include "database/gsml_operator.h"
 #include "database/gsml_property.h"
@@ -206,6 +207,20 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 }
 
 /**
+**	@brief	Constructor
+*/
+database::database()
+{
+}
+
+/**
+**	@brief	Destructor
+*/
+database::~database()
+{
+}
+
+/**
 **	@brief	Load the database
 */
 void database::load()
@@ -214,30 +229,59 @@ void database::load()
 
 	Defines::get()->load();
 
+	//sort the metadata instances so they are placed after their class' dependencies' metadata
+	std::sort(this->metadata.begin(), this->metadata.end(), [](const std::unique_ptr<data_type_metadata> &a, const std::unique_ptr<data_type_metadata> &b) {
+		if (a->has_database_dependency_on(b)) {
+			return false;
+		} else if (b->has_database_dependency_on(a)) {
+			return true;
+		}
+
+		return a.get() < b.get();
+	});
+
 	//parse the files for in each data type's folder
-	for (const std::function<void()> &function : this->parsing_functions) {
-		function();
+	for (const std::unique_ptr<data_type_metadata> &metadata : this->metadata) {
+		metadata->get_parsing_function()();
 	}
 
 	//create data entries for each data type
-	for (const std::function<void(bool)> &function : this->processing_functions) {
-		function(true);
+	for (const std::unique_ptr<data_type_metadata> &metadata : this->metadata) {
+		metadata->get_processing_function()(true);
 	}
 
 	//actually define the data entries for each data type
-	for (const std::function<void(bool)> &function : this->processing_functions) {
-		function(false);
+	for (const std::unique_ptr<data_type_metadata> &metadata : this->metadata) {
+		metadata->get_processing_function()(false);
 	}
 
 	//initialize data entries for each data type
-	for (const std::function<void()> &function : this->initialization_functions) {
-		function();
+	for (const std::unique_ptr<data_type_metadata> &metadata : this->metadata) {
+		metadata->get_initialization_function()();
 	}
 
 	//check if data entries are valid for each data type
-	for (const std::function<void()> &function : this->checking_functions) {
-		function();
+	for (const std::unique_ptr<data_type_metadata> &metadata : this->metadata) {
+		metadata->get_checking_function()();
 	}
+}
+
+void database::initialize_history()
+{
+	//initialize data entries are valid for each data type
+	for (const std::unique_ptr<data_type_metadata> &metadata : this->metadata) {
+		metadata->get_history_initialization_function()();
+	}
+
+	//check if data entries are valid for each data type
+	for (const std::unique_ptr<data_type_metadata> &metadata : this->metadata) {
+		metadata->get_checking_function()();
+	}
+}
+
+void database::register_metadata(std::unique_ptr<data_type_metadata> &&metadata)
+{
+	this->metadata.push_back(std::move(metadata));
 }
 
 }

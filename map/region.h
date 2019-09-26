@@ -37,6 +37,8 @@ public:
 		return data_type<region>::add(identifier);
 	}
 
+	static std::set<std::string> get_database_dependencies();
+
 public:
 	region(const std::string &identifier);
 	virtual ~region() override;

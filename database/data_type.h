@@ -2,6 +2,7 @@
 
 #include "database/database.h"
 #include "database/data_type_base.h"
+#include "database/data_type_metadata.h"
 #include "database/gsml_data.h"
 
 #include <QApplication>
@@ -316,17 +317,23 @@ public:
 		}
 	}
 
+private:
+	/**
+	**	@brief	Get the database dependencies for this class
+	*/
+	static inline std::set<std::string> get_database_dependencies()
+	{
+		return {};
+	}
+
 	/**
 	**	@brief	Initialize the class
 	*/
 	static inline bool initialize_class()
 	{
-		//initialize the database parsing/processing functions for this data type
-		database::get()->add_parsing_function(std::function<void()>(T::parse_database));
-		database::get()->add_processing_function(std::function<void(bool)>(T::process_database));
-		database::get()->add_checking_function(std::function<void()>(T::check_all));
-		database::get()->add_initialization_function(std::function<void()>(T::initialize_all));
-		database::get()->add_history_initialization_function(std::function<void()>(T::initialize_all_history));
+		//initialize the metadata (including database parsing/processing functions) for this data type
+		auto metadata = std::make_unique<data_type_metadata>(T::class_identifier, T::get_database_dependencies(), T::parse_database, T::process_database, T::check_all, T::initialize_all, T::initialize_all_history);
+		database::get()->register_metadata(std::move(metadata));
 
 		return true;
 	}
@@ -336,6 +343,7 @@ private:
 	static inline std::map<KEY, std::unique_ptr<T>> instances_by_identifier;
 	static inline int last_numeric_identifier = 1;
 	static inline std::vector<gsml_data> gsml_data_to_process;
+	static inline std::set<std::string> database_dependencies; //the other classes on which this one depends, i.e. after which this class' database can be processed
 #ifdef __GNUC__
 	//the "used" attribute is needed under GCC, or else this variable will be optimized away (even in debug builds)
 	static inline bool class_initialized [[gnu::used]] = data_type::initialize_class();

@@ -12,6 +12,7 @@
 namespace metternich {
 
 class data_entry;
+class data_type_metadata;
 
 /**
 **	@brief	The database
@@ -44,52 +45,15 @@ public:
 	static void process_gsml_property_for_object(QObject *object, const gsml_property &property);
 
 public:
+	database();
+	~database();
+
 	void load();
-
-	void initialize_history()
-	{
-		//initialize data entries are valid for each data type
-		for (const std::function<void()> &function : this->history_initialization_functions) {
-			function();
-		}
-
-		//check if data entries are valid for each data type
-		for (const std::function<void()> &function : this->checking_functions) {
-			function();
-		}
-	}
-
-	void add_parsing_function(const std::function<void()> &function)
-	{
-		this->parsing_functions.push_back(function);
-	}
-
-	void add_processing_function(const std::function<void(bool)> &function)
-	{
-		this->processing_functions.push_back(function);
-	}
-
-	void add_checking_function(const std::function<void()> &function)
-	{
-		this->checking_functions.push_back(function);
-	}
-
-	void add_initialization_function(const std::function<void()> &function)
-	{
-		this->initialization_functions.push_back(function);
-	}
-
-	void add_history_initialization_function(const std::function<void()> &function)
-	{
-		this->history_initialization_functions.push_back(function);
-	}
+	void initialize_history();
+	void register_metadata(std::unique_ptr<data_type_metadata> &&metadata);
 
 private:
-	std::vector<std::function<void()>> parsing_functions; //parsing functions for each data type
-	std::vector<std::function<void(bool)>> processing_functions; //processing functions for each data type
-	std::vector<std::function<void()>> checking_functions; //functions for each data type, to check if data entries are valid
-	std::vector<std::function<void()>> initialization_functions; //functions for each data type, to initialize their entries
-	std::vector<std::function<void()>> history_initialization_functions; //functions for each data type, to initialize their entries' history
+	std::vector<std::unique_ptr<data_type_metadata>> metadata;
 };
 
 }
