@@ -122,6 +122,37 @@ void population_unit::set_size(const int size)
 }
 
 /**
+**	@brief	Get whether the population unit discounts any type
+**
+**	@return True if the population unit discounts any type, or false otherwise
+*/
+bool population_unit::discounts_any_type() const
+{
+	return this->get_discount_types().size() == PopulationType::get_all().size();
+}
+
+/**
+**	@brief	Set whether the population unit discounts any type
+**
+**	@param	discount_any_type	True if the population unit should discount any type, or false otherwise
+*/
+void population_unit::set_discount_any_type(const bool discount_any_type)
+{
+	if (discount_any_type == this->discounts_any_type()) {
+		return;
+	}
+
+	if (discount_any_type) {
+		for (PopulationType *population_type : PopulationType::get_all()) {
+			this->discount_types.insert(population_type);
+		}
+	} else {
+		this->discount_types.clear();
+	}
+	emit discount_types_changed();
+}
+
+/**
 **	@brief	Get the population unit's discount types as a QVariantList
 **
 **	@return The variant list
@@ -157,7 +188,7 @@ void population_unit::subtract_existing_sizes_in_holding(const metternich::holdi
 			continue;
 		}
 
-		if (!this->discounts_any_type() && this->get_discount_types().find(population_unit->get_type()) == this->get_discount_types().end()) {
+		if (this->get_discount_types().find(population_unit->get_type()) == this->get_discount_types().end()) {
 			continue;
 		}
 

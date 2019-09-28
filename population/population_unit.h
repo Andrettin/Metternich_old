@@ -30,8 +30,8 @@ class population_unit : public data_entry_base, public simple_data_type<populati
 	Q_PROPERTY(metternich::region* region READ get_region WRITE set_region NOTIFY region_changed)
 	Q_PROPERTY(int wealth READ get_wealth NOTIFY wealth_changed)
 	Q_PROPERTY(bool discount_existing READ discounts_existing WRITE set_discount_existing NOTIFY discount_existing_changed)
-	Q_PROPERTY(bool discount_any_type READ discounts_any_type WRITE set_discount_any_type NOTIFY discount_any_type_changed)
-	Q_PROPERTY(QVariantList discount_types READ get_discount_types_qvariant_list)
+	Q_PROPERTY(bool discount_any_type READ discounts_any_type WRITE set_discount_any_type NOTIFY discount_types_changed)
+	Q_PROPERTY(QVariantList discount_types READ get_discount_types_qvariant_list NOTIFY discount_types_changed)
 
 public:
 	static constexpr const char *database_folder = "population_units";
@@ -149,29 +149,16 @@ public:
 
 		this->discount_existing = discount_existing;
 		if (discount_existing) {
-			this->discount_types.insert(this->get_type()); //this population unit's type is implicitly added to the discount types if DiscountExisting is set to true
+			this->discount_types.insert(this->get_type()); //this population unit's type is implicitly added to the discount types if discount_existing is set to true
 		} else {
-			//if is being set to false, set the DiscountAnyType to false as well, and clear the discount types, as both are no longer applicable
-			this->set_discount_any_type(false);
+			//if is being set to false, set the discount_any_type to false as well, and clear the discount types, as both are no longer applicable
 			this->discount_types.clear();
 		}
 		emit discount_existing_changed();
 	}
 
-	bool discounts_any_type() const
-	{
-		return this->discount_any_type;
-	}
-
-	void set_discount_any_type(const bool discount_any_type)
-	{
-		if (discount_any_type == this->discounts_any_type()) {
-			return;
-		}
-
-		this->discount_any_type = discount_any_type;
-		emit discount_any_type_changed();
-	}
+	bool discounts_any_type() const;
+	void set_discount_any_type(const bool discount_any_type);
 
 	const std::set<PopulationType *> &get_discount_types() const
 	{
@@ -183,11 +170,13 @@ public:
 	Q_INVOKABLE void add_discount_type(PopulationType *type)
 	{
 		this->discount_types.insert(type);
+		emit discount_types_changed();
 	}
 
 	Q_INVOKABLE void remove_discount_type(PopulationType *type)
 	{
 		this->discount_types.erase(type);
+		emit discount_types_changed();
 	}
 
 	void subtract_existing_sizes();
@@ -256,7 +245,7 @@ signals:
 	void province_changed();
 	void region_changed();
 	void discount_existing_changed();
-	void discount_any_type_changed();
+	void discount_types_changed();
 	void wealth_changed();
 
 private:

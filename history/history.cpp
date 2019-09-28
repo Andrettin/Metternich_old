@@ -70,13 +70,8 @@ void History::generate_population_units()
 
 	//sort regions so that ones with less provinces are applied first
 	std::sort(base_population_units.begin(), base_population_units.end(), [](population_unit *a, population_unit *b) {
-		//give priority to population units which do not discount any type (i.e. ones that do not represent the general population, but specific population types)
-		if (a->discounts_any_type() != b->discounts_any_type()) {
-			return !a->discounts_any_type();
-		}
-
 		//give priority to population units which discount less types
-		if (!a->discounts_any_type() && a->get_discount_types().size() != b->get_discount_types().size()) {
+		if (a->get_discount_types().size() != b->get_discount_types().size()) {
 			return a->get_discount_types().size() < b->get_discount_types().size();
 		}
 
