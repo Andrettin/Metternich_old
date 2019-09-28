@@ -215,27 +215,21 @@ public:
 			return;
 		}
 
-		//non-history only data types have files with the same name as their identifiers, while for history only data types the file name is not relevant, with the identifier being scoped to within a file
-		if constexpr (T::history_only == false) {
-			for (T *instance : T::get_all()) {
-				std::filesystem::path history_file_path(history_path.string() + "/" + instance->get_identifier() + ".txt");
+		std::filesystem::recursive_directory_iterator dir_iterator(history_path);
 
-				if (!std::filesystem::exists(history_file_path)) {
-					continue;
-				}
-
-				T::gsml_history_data_to_process.push_back(gsml_data::parse_file(history_file_path));
+		for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
+			if (!dir_entry.is_regular_file()) {
+				continue;
 			}
-		} else {
-			std::filesystem::recursive_directory_iterator dir_iterator(history_path);
 
-			for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
-				if (!dir_entry.is_regular_file()) {
-					continue;
+			if constexpr (T::history_only == false) {
+				//non-history only data types have files with the same name as their identifiers, while for history only data types the file name is not relevant, with the identifier being scoped to within a file
+				if (T::get(dir_entry.path().stem().string(), false) == nullptr) {
+					throw std::runtime_error(dir_entry.path().stem().string() + " is not a valid \"" + T::class_identifier + "\" instance identifier.");
 				}
-
-				T::gsml_history_data_to_process.push_back(gsml_data::parse_file(dir_entry.path()));
 			}
+
+			T::gsml_history_data_to_process.push_back(gsml_data::parse_file(dir_entry.path()));
 		}
 	}
 
