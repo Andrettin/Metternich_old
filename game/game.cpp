@@ -123,12 +123,12 @@ void Game::DoTick()
 */
 void Game::DoDay()
 {
-	for (Province *province : Province::get_all()) {
+	for (province *province : province::get_all()) {
 		if (province->get_county() == nullptr) {
 			continue;
 		}
 
-		province->DoDay();
+		province->do_day();
 	}
 
 }
@@ -138,12 +138,12 @@ void Game::DoDay()
 */
 void Game::DoMonth()
 {
-	for (Province *province : Province::get_all()) {
+	for (province *province : province::get_all()) {
 		if (province->get_county() == nullptr) {
 			continue;
 		}
 
-		province->DoMonth();
+		province->do_month();
 	}
 
 	for (Character *character : Character::get_all_living()) {
@@ -175,11 +175,11 @@ void Game::generate_missing_title_holders()
 		}
 
 		//generate missing title holders for county associated with provinces, or baronies associated with holdings
-		if (landed_title->GetProvince() == nullptr && landed_title->get_holding() == nullptr) {
+		if (landed_title->get_province() == nullptr && landed_title->get_holding() == nullptr) {
 			continue;
 		}
 
-		const Province *province = landed_title->GetProvince();
+		const province *province = landed_title->get_province();
 		if (province == nullptr) {
 			province = landed_title->get_holding()->get_province();
 		}

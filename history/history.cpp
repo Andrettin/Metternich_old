@@ -20,7 +20,7 @@ void History::load()
 	EngineInterface::get()->set_loading_message("Loading History...");
 
 	region::parse_history_database();
-	Province::parse_history_database();
+	province::parse_history_database();
 	Character::parse_history_database();
 	LandedTitle::parse_history_database();
 	population_unit::parse_history_database();
@@ -28,7 +28,7 @@ void History::load()
 	Character::process_history_database(true);
 
 	region::process_history_database(false);
-	Province::process_history_database(false);
+	province::process_history_database(false);
 	Character::process_history_database(false);
 	LandedTitle::process_history_database(false);
 
@@ -48,7 +48,7 @@ void History::generate_population_units()
 	std::vector<population_unit *> base_population_units;
 
 	//add population units with discount existing enabled to the vector of population units used for generation (holding-level population units with that enabled are not used for generation per se, but generated population units may still be discounted from their size), as well as any population units in provinces or regions
-	for (Province *province : Province::get_all()) {
+	for (province *province : province::get_all()) {
 		for (holding *holding : province->get_holdings()) {
 			for (const std::unique_ptr<population_unit> &population_unit : holding->get_population_units()) {
 				if (population_unit->discounts_existing()) {

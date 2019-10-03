@@ -14,7 +14,7 @@ class Character;
 class holding;
 class law;
 class law_group;
-class Province;
+class province;
 enum class LandedTitleTier : int;
 
 class LandedTitle : public data_entry, public data_type<LandedTitle>
@@ -27,7 +27,7 @@ class LandedTitle : public data_entry, public data_type<LandedTitle>
 	Q_PROPERTY(metternich::LandedTitle* liege_title MEMBER LiegeTitle)
 	Q_PROPERTY(metternich::LandedTitle* de_jure_liege_title READ GetDeJureLiegeTitle WRITE SetDeJureLiegeTitle NOTIFY DeJureLiegeTitleChanged)
 	Q_PROPERTY(metternich::LandedTitle* realm READ GetRealm NOTIFY RealmChanged)
-	Q_PROPERTY(metternich::Province* capital_province MEMBER CapitalProvince READ GetCapitalProvince)
+	Q_PROPERTY(metternich::province* capital_province MEMBER capital_province READ get_capital_province)
 	Q_PROPERTY(QVariantList laws READ get_laws_qvariant_list)
 
 public:
@@ -103,15 +103,15 @@ public:
 
 	void set_holding(holding *holding);
 
-	metternich::Province *GetProvince() const
+	metternich::province *get_province() const
 	{
-		return this->Province;
+		return this->province;
 	}
 
-	void SetProvince(Province *province)
+	void set_province(province *province)
 	{
-		this->Province = province;
-		this->CapitalProvince = province;
+		this->province = province;
+		this->capital_province = province;
 	}
 
 	LandedTitle *GetRealm() const;
@@ -141,12 +141,12 @@ public:
 	bool IsTitular() const
 	{
 		//a title is not titular if it has de jure vassals, or if it is a county belonging to a province, or a barony belonging to a holding
-		return this->get_de_jure_vassal_titles().empty() && this->GetProvince() == nullptr && this->get_holding() == nullptr;
+		return this->get_de_jure_vassal_titles().empty() && this->get_province() == nullptr && this->get_holding() == nullptr;
 	}
 
-	metternich::Province *GetCapitalProvince() const
+	metternich::province *get_capital_province() const
 	{
-		return this->CapitalProvince;
+		return this->capital_province;
 	}
 
 	std::vector<law *> get_laws() const
@@ -176,10 +176,10 @@ private:
 	LandedTitleTier Tier;
 	Character *Holder = nullptr;
 	metternich::holding *holding = nullptr; //this title's holding, if it is a non-titular barony
-	metternich::Province *Province = nullptr; //this title's province, if it is a non-titular county
+	metternich::province *province = nullptr; //this title's province, if it is a non-titular county
 	LandedTitle *DeJureLiegeTitle = nullptr;
 	std::vector<LandedTitle *> de_jure_vassal_titles;
-	metternich::Province *CapitalProvince = nullptr;
+	metternich::province *capital_province = nullptr;
 	LandedTitle *HolderTitle = nullptr; //title of this title's holder; used only for initialization, and set to null afterwards
 	LandedTitle *LiegeTitle = nullptr; //title of this title's holder's liege; used only for initialization, and set to null afterwards
 	std::map<law_group *, law *> laws; //the laws pertaining to the title, mapped to the respective law group

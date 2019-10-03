@@ -4,7 +4,7 @@ namespace metternich {
 
 class gsml_property;
 class holding;
-class Province;
+class province;
 
 /**
 **	@brief	A modifier effect
@@ -18,7 +18,7 @@ public:
 
 	virtual const std::string &get_identifier() const = 0;
 
-	virtual void Apply(Province *province, const int change) const
+	virtual void Apply(province *province, const int change) const
 	{
 		Q_UNUSED(province);
 		Q_UNUSED(change);

@@ -30,14 +30,14 @@ void Map::load_provinces()
 	this->Size = province_image.size(); //set the map's size to that of the province map
 	const int pixel_count = province_image.width() * province_image.height();
 
-	std::map<Province *, std::vector<int>> province_pixel_indexes;
-	std::map<Province *, std::vector<int>> province_border_pixel_indexes;
-	std::map<Province *, std::map<Terrain *, int>> province_terrain_counts;
+	std::map<province *, std::vector<int>> province_pixel_indexes;
+	std::map<province *, std::vector<int>> province_border_pixel_indexes;
+	std::map<province *, std::map<Terrain *, int>> province_terrain_counts;
 
 	const QRgb *rgb_data = reinterpret_cast<const QRgb *>(province_image.constBits());
 	const QRgb *terrain_rgb_data = reinterpret_cast<const QRgb *>(terrain_image.constBits());
 
-	Province *previous_pixel_province = nullptr; //used to see which provinces border which horizontally
+	province *previous_pixel_province = nullptr; //used to see which provinces border which horizontally
 	for (int i = 0; i < pixel_count; ++i) {
 		if ((i % province_image.width()) == 0) {
 			//new line, set the previous pixel province to null
@@ -50,7 +50,7 @@ void Map::load_provinces()
 
 		const QRgb &pixel_rgb = rgb_data[i];
 
-		Province *pixel_province = Province::GetByRGB(pixel_rgb, false);
+		province *pixel_province = province::get_by_rgb(pixel_rgb, false);
 		if (pixel_province != nullptr) {
 			province_pixel_indexes[pixel_province].push_back(i);
 
@@ -64,7 +64,7 @@ void Map::load_provinces()
 			if (i > province_image.width()) { //second line or below
 				//the pixel just above this one
 				const QRgb &previous_vertical_pixel_rgb = rgb_data[i - province_image.width()];
-				Province *previous_vertical_pixel_province = Province::GetByRGB(previous_vertical_pixel_rgb, false);
+				province *previous_vertical_pixel_province = province::get_by_rgb(previous_vertical_pixel_rgb, false);
 				if (previous_vertical_pixel_province != pixel_province && previous_vertical_pixel_province != nullptr) {
 					province_border_pixel_indexes[pixel_province].push_back(i);
 					province_border_pixel_indexes[previous_vertical_pixel_province].push_back(i - province_image.width());
@@ -86,7 +86,7 @@ void Map::load_provinces()
 	}
 
 	for (const auto &province_terrain_count : province_terrain_counts) {
-		Province *province = province_terrain_count.first;
+		province *province = province_terrain_count.first;
 		Terrain *best_terrain = nullptr;
 		int best_terrain_count = 0;
 		for (const auto &kv_pair : province_terrain_count.second) {
@@ -97,17 +97,17 @@ void Map::load_provinces()
 				best_terrain_count = count;
 			}
 		}
-		province->SetTerrain(best_terrain);
+		province->set_terrain(best_terrain);
 	}
 
 	for (const auto &kv_pair : province_pixel_indexes) {
-		Province *province = kv_pair.first;
-		province->CreateImage(kv_pair.second);
+		province *province = kv_pair.first;
+		province->create_image(kv_pair.second);
 	}
 
 	for (const auto &kv_pair : province_border_pixel_indexes) {
-		Province *province = kv_pair.first;
-		province->SetBorderPixels(kv_pair.second);
+		province *province = kv_pair.first;
+		province->set_border_pixels(kv_pair.second);
 	}
 }
 

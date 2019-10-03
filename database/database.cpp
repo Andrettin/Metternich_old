@@ -100,7 +100,7 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 			if (property.get_key() == "landed_title" || property.get_key() == "barony" || property.get_key() == "county" || property.get_key() == "duchy" || property.get_key() == "kingdom" || property.get_key() == "empire" || property.get_key() == "holder_title" || property.get_key() == "liege_title" || property.get_key() == "de_jure_liege_title") {
 				new_property_value = QVariant::fromValue(LandedTitle::get(property.get_value()));
 			} else if (property.get_key() == "province" || property.get_key() == "capital_province") {
-				Province *province = Province::get(property.get_value());
+				province *province = province::get(property.get_value());
 				new_property_value = QVariant::fromValue(province);
 			} else if (property.get_key() == "holding" || property.get_key() == "capital_holding") {
 				const LandedTitle *barony = LandedTitle::get(property.get_value());
@@ -171,8 +171,8 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 				holding_type *holding_type_value = holding_type::get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(holding_type *, holding_type_value));
 			} else if (property.get_key() == "provinces") {
-				Province *province = Province::get(property.get_value());
-				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(Province *, province));
+				province *province_value = province::get(property.get_value());
+				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(province *, province_value));
 			} else if (property.get_key() == "subregions") {
 				region *region = region::get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(metternich::region *, region));

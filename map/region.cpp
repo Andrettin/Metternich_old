@@ -17,7 +17,7 @@ std::set<std::string> region::get_database_dependencies()
 		//because regions have to be processed after baronies' de jure lieges have been set
 		LandedTitle::class_identifier,
 		//so that when regions are processed provinces already have their counties set
-		Province::class_identifier
+		province::class_identifier
 	};
 }
 
@@ -46,7 +46,7 @@ void region::initialize()
 			subregion->initialize();
 		}
 
-		for (Province *province : subregion->get_provinces()) {
+		for (province *province : subregion->get_provinces()) {
 			this->add_province(province);
 		}
 	}
@@ -67,7 +67,7 @@ QVariantList region::get_provinces_qvariant_list() const
 	return util::container_to_qvariant_list(this->get_provinces());
 }
 
-void region::add_province(Province *province)
+void region::add_province(province *province)
 {
 	this->provinces.push_back(province);
 	province->add_region(this);
@@ -79,7 +79,7 @@ void region::add_province(Province *province)
 	}
 }
 
-void region::remove_province(Province *province)
+void region::remove_province(province *province)
 {
 	this->provinces.erase(std::remove(this->provinces.begin(), this->provinces.end(), province), this->provinces.end());
 	province->remove_region(this);

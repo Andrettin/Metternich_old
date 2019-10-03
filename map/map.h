@@ -7,8 +7,6 @@
 
 namespace metternich {
 
-class Province;
-
 class Map : public singleton<Map>
 {
 public:

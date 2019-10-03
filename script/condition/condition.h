@@ -5,7 +5,7 @@ namespace metternich {
 class gsml_data;
 class gsml_property;
 class holding;
-class Province;
+class province;
 
 /**
 **	@brief	A scripted condition
@@ -23,7 +23,7 @@ public:
 
 	virtual const std::string &get_identifier() const = 0;
 
-	virtual bool check(const Province *province) const
+	virtual bool check(const province *province) const
 	{
 		Q_UNUSED(province);
 		throw std::runtime_error("Invalid condition for province: \"" + this->get_identifier() + "\".");

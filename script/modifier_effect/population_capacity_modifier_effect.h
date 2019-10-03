@@ -20,9 +20,9 @@ public:
 		return identifier;
 	}
 
-	virtual void Apply(Province *province, const int change) const override
+	virtual void Apply(province *province, const int change) const override
 	{
-		province->ChangePopulationCapacityAdditiveModifier(this->PopulationCapacity * change);
+		province->change_population_capacity_additive_modifier(this->PopulationCapacity * change);
 	}
 
 	virtual void Apply(holding *holding, const int change) const override

@@ -4,16 +4,16 @@
 
 namespace metternich {
 
-QImage ProvinceImageProvider::requestImage(const QString &id, QSize *size, const QSize &)
+QImage province_image_provider::requestImage(const QString &id, QSize *size, const QSize &)
 {
 	std::string identifier = id.toStdString();
-	const Province *province = Province::get(identifier);
+	const province *province = province::get(identifier);
 
 	if (size != nullptr) {
-		*size = province->GetImage().size();
+		*size = province->get_image().size();
 	}
 
-	return province->GetImage();
+	return province->get_image();
 }
 
 }

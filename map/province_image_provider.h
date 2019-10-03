@@ -4,10 +4,10 @@
 
 namespace metternich {
 
-class ProvinceImageProvider : public QQuickImageProvider
+class province_image_provider : public QQuickImageProvider
 {
 public:
-	ProvinceImageProvider() : QQuickImageProvider(QQuickImageProvider::Image) {}
+	province_image_provider() : QQuickImageProvider(QQuickImageProvider::Image) {}
 
 	virtual QImage requestImage(const QString &id, QSize *size, const QSize &requested_size) override;
 };

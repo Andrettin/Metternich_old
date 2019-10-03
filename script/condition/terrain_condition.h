@@ -26,9 +26,9 @@ public:
 		return identifier;
 	}
 
-	virtual bool check(const Province *province) const override
+	virtual bool check(const province *province) const override
 	{
-		return province->GetTerrain() == this->Terrain;
+		return province->get_terrain() == this->Terrain;
 	}
 
 	virtual bool check(const holding *holding) const override

@@ -28,46 +28,46 @@ class region;
 class religion;
 class Terrain;
 
-class Province : public data_entry, public data_type<Province>
+class province : public data_entry, public data_type<province>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(metternich::LandedTitle* county READ get_county WRITE SetCounty NOTIFY CountyChanged)
-	Q_PROPERTY(metternich::LandedTitle* duchy READ GetDuchy NOTIFY DuchyChanged)
-	Q_PROPERTY(metternich::LandedTitle* kingdom READ GetKingdom NOTIFY KingdomChanged)
-	Q_PROPERTY(metternich::LandedTitle* empire READ GetEmpire NOTIFY EmpireChanged)
-	Q_PROPERTY(QColor color READ GetColor CONSTANT)
-	Q_PROPERTY(QRect rect READ GetRect CONSTANT)
-	Q_PROPERTY(QImage image READ GetImage NOTIFY ImageChanged)
-	Q_PROPERTY(metternich::Terrain* terrain READ GetTerrain WRITE SetTerrain NOTIFY TerrainChanged)
+	Q_PROPERTY(metternich::LandedTitle* county READ get_county WRITE set_county NOTIFY county_changed)
+	Q_PROPERTY(metternich::LandedTitle* duchy READ get_duchy NOTIFY duchy_changed)
+	Q_PROPERTY(metternich::LandedTitle* kingdom READ get_kingdom NOTIFY kingdom_changed)
+	Q_PROPERTY(metternich::LandedTitle* empire READ get_empire NOTIFY empire_changed)
+	Q_PROPERTY(QColor color READ get_color CONSTANT)
+	Q_PROPERTY(QRect rect READ get_rect CONSTANT)
+	Q_PROPERTY(QImage image READ get_image NOTIFY image_changed)
+	Q_PROPERTY(metternich::Terrain* terrain READ get_terrain WRITE set_terrain NOTIFY terrain_changed)
 	Q_PROPERTY(metternich::culture* culture READ get_culture WRITE set_culture NOTIFY culture_changed)
 	Q_PROPERTY(metternich::religion* religion READ get_religion WRITE set_religion NOTIFY religion_changed)
-	Q_PROPERTY(int population READ GetPopulation WRITE SetPopulation NOTIFY PopulationChanged)
+	Q_PROPERTY(int population READ get_population WRITE set_population NOTIFY population_changed)
 	Q_PROPERTY(QVariantList holdings READ get_holdings_qvariant_list NOTIFY holdings_changed)
 	Q_PROPERTY(metternich::holding* capital_holding READ get_capital_holding WRITE set_capital_holding NOTIFY capital_holding_changed)
-	Q_PROPERTY(bool selected READ IsSelected WRITE SetSelected NOTIFY SelectedChanged)
-	Q_PROPERTY(bool selectable READ IsSelectable CONSTANT)
+	Q_PROPERTY(bool selected READ is_selected WRITE set_selected NOTIFY selected_changed)
+	Q_PROPERTY(bool selectable READ is_selectable CONSTANT)
 
 public:
 	static constexpr const char *class_identifier = "province";
 	static constexpr const char *database_folder = "provinces";
-	static constexpr const char *Prefix = "p_";
+	static constexpr const char *prefix = "p_";
 
-	static Province *add(const std::string &identifier);
-	static Province *GetByRGB(const QRgb &rgb, const bool should_find = true);
+	static province *add(const std::string &identifier);
+	static province *get_by_rgb(const QRgb &rgb, const bool should_find = true);
 
-	static Province *GetSelectedProvince()
+	static province *get_selected_province()
 	{
-		return Province::SelectedProvince;
+		return province::selected_province;
 	}
 
 private:
-	static inline std::map<QRgb, Province *> InstancesByRGB;
-	static inline Province *SelectedProvince = nullptr;
+	static inline std::map<QRgb, province *> instances_by_rgb;
+	static inline province *selected_province = nullptr;
 
 public:
-	Province(const std::string &identifier);
-	virtual ~Province() override;
+	province(const std::string &identifier);
+	virtual ~province() override;
 
 	virtual void process_gsml_property(const gsml_property &property) override;
 	virtual void process_gsml_scope(const gsml_data &scope) override;
@@ -75,47 +75,47 @@ public:
 	virtual void initialize_history() override;
 	virtual void check() const override;
 
-	void DoDay();
-	void DoMonth();
+	void do_day();
+	void do_month();
 
 	virtual std::string get_name() const override;
 
 	LandedTitle *get_county() const
 	{
-		return this->County;
+		return this->county;
 	}
 
-	void SetCounty(LandedTitle *county);
+	void set_county(LandedTitle *county);
 
-	LandedTitle *GetDuchy() const;
-	LandedTitle *GetKingdom() const;
-	LandedTitle *GetEmpire() const;
+	LandedTitle *get_duchy() const;
+	LandedTitle *get_kingdom() const;
+	LandedTitle *get_empire() const;
 
-	const QColor &GetColor() const
+	const QColor &get_color() const
 	{
-		return this->Color;
+		return this->color;
 	}
 
-	const QRect &GetRect() const
+	const QRect &get_rect() const
 	{
-		return this->Rect;
+		return this->rect;
 	}
 
-	void CreateImage(const std::vector<int> &pixel_indexes);
-	void SetBorderPixels(const std::vector<int> &pixel_indexes);
-	void UpdateImage();
+	void create_image(const std::vector<int> &pixel_indexes);
+	void set_border_pixels(const std::vector<int> &pixel_indexes);
+	void update_image();
 
-	const QImage &GetImage() const
+	const QImage &get_image() const
 	{
-		return this->Image;
+		return this->image;
 	}
 
-	metternich::Terrain *GetTerrain() const
+	metternich::Terrain *get_terrain() const
 	{
-		return this->Terrain;
+		return this->terrain;
 	}
 
-	void SetTerrain(Terrain *terrain);
+	void set_terrain(Terrain *terrain);
 
 	metternich::culture *get_culture() const
 	{
@@ -147,57 +147,57 @@ public:
 		emit religion_changed();
 	}
 
-	int GetPopulation() const
+	int get_population() const
 	{
-		return this->Population;
+		return this->population;
 	}
 
-	void SetPopulation(const int population);
+	void set_population(const int population);
 
-	void ChangePopulation(const int change)
+	void change_population(const int change)
 	{
-		this->SetPopulation(this->GetPopulation() + change);
+		this->set_population(this->get_population() + change);
 	}
 
-	void CalculatePopulation();
+	void calculate_population();
 
-	int GetPopulationCapacityAdditiveModifier() const
+	int get_population_capacity_additive_modifier() const
 	{
-		return this->PopulationCapacityAdditiveModifier;
+		return this->population_capacity_additive_modifier;
 	}
 
-	void SetPopulationCapacityAdditiveModifier(const int population_capacity_modifier);
+	void set_population_capacity_additive_modifier(const int population_capacity_modifier);
 
-	void ChangePopulationCapacityAdditiveModifier(const int change)
+	void change_population_capacity_additive_modifier(const int change)
 	{
-		this->SetPopulationCapacityAdditiveModifier(this->GetPopulationCapacityAdditiveModifier() + change);
+		this->set_population_capacity_additive_modifier(this->get_population_capacity_additive_modifier() + change);
 	}
 
-	int GetPopulationCapacityModifier() const
+	int get_population_capacity_modifier() const
 	{
-		return this->PopulationCapacityModifier;
+		return this->population_capacity_modifier;
 	}
 
-	void SetPopulationCapacityModifier(const int population_capacity_modifier);
+	void set_population_capacity_modifier(const int population_capacity_modifier);
 
-	void ChangePopulationCapacityModifier(const int change)
+	void change_population_capacity_modifier(const int change)
 	{
-		this->SetPopulationCapacityModifier(this->GetPopulationCapacityModifier() + change);
+		this->set_population_capacity_modifier(this->get_population_capacity_modifier() + change);
 	}
 
-	int GetPopulationGrowthModifier() const
+	int get_population_growth_modifier() const
 	{
-		return this->PopulationGrowthModifier;
+		return this->population_growth_modifier;
 	}
 
-	void SetPopulationGrowthModifier(const int population_capacity_modifier);
+	void set_population_growth_modifier(const int population_capacity_modifier);
 
-	void ChangePopulationGrowthModifier(const int change)
+	void change_population_growth_modifier(const int change)
 	{
-		this->SetPopulationGrowthModifier(this->GetPopulationGrowthModifier() + change);
+		this->set_population_growth_modifier(this->get_population_growth_modifier() + change);
 	}
 
-	void CalculatePopulationGroups();
+	void calculate_population_groups();
 
 	const std::vector<holding *> &get_holdings() const
 	{
@@ -239,22 +239,22 @@ public:
 		this->regions.erase(std::remove(this->regions.begin(), this->regions.end(), region), this->regions.end());
 	}
 
-	void add_border_province(Province *province)
+	void add_border_province(province *province)
 	{
-		this->BorderProvinces.insert(province);
+		this->border_provinces.insert(province);
 	}
 
-	bool BordersWater() const;
-	bool BordersRiver() const;
-	bool IsCoastal() const;
+	bool borders_water() const;
+	bool borders_river() const;
+	bool is_coastal() const;
 
-	bool IsSelected() const
+	bool is_selected() const
 	{
-		return this->Selected;
+		return this->selected;
 	}
 
-	void SetSelected(const bool selected, const bool notify_engine_interface = true);
-	bool IsSelectable() const;
+	void set_selected(const bool selected, const bool notify_engine_interface = true);
+	bool is_selectable() const;
 
 	const std::vector<std::unique_ptr<population_unit>> &get_population_units() const
 	{
@@ -268,40 +268,40 @@ public:
 	Q_INVOKABLE QVariantList get_population_per_religion_qvariant_list() const;
 
 signals:
-	void CountyChanged();
-	void DuchyChanged();
-	void KingdomChanged();
-	void EmpireChanged();
-	void ImageChanged();
-	void TerrainChanged();
+	void county_changed();
+	void duchy_changed();
+	void kingdom_changed();
+	void empire_changed();
+	void image_changed();
+	void terrain_changed();
 	void culture_changed();
 	void religion_changed();
-	void PopulationChanged();
-	void populationGroupsChanged();
+	void population_changed();
+	void population_groups_changed();
 	void holdings_changed();
 	void capital_holding_changed();
-	void SelectedChanged();
+	void selected_changed();
 
 private:
-	LandedTitle *County = nullptr;
-	QColor Color; //the color used to identify the province in the province map
-	QRect Rect; //the rectangle that the province occupies
-	QImage Image; //the province's image to be drawn on-screen
-	metternich::Terrain *Terrain = nullptr;
+	LandedTitle *county = nullptr;
+	QColor color; //the color used to identify the province in the province map
+	QRect rect; //the rectangle that the province occupies
+	QImage image; //the province's image to be drawn on-screen
+	metternich::Terrain *terrain = nullptr;
 	metternich::culture *culture = nullptr;
 	metternich::religion *religion = nullptr;
-	int Population = 0; //the sum of the population of all of the province's settlement holdings
-	int PopulationCapacityAdditiveModifier = 0; //the population capacity additive modifier which the province provides to its holdings
-	int PopulationCapacityModifier = 0; //the population capacity modifier which the province provides to its holdings
-	int PopulationGrowthModifier = 0; //the population growth modifier which the province provides to its holdings
+	int population = 0; //the sum of the population of all of the province's settlement holdings
+	int population_capacity_additive_modifier = 0; //the population capacity additive modifier which the province provides to its holdings
+	int population_capacity_modifier = 0; //the population capacity modifier which the province provides to its holdings
+	int population_growth_modifier = 0; //the population growth modifier which the province provides to its holdings
 	std::vector<holding *> holdings;
 	std::map<LandedTitle *, std::unique_ptr<holding>> holdings_by_barony; //the province's holdings, mapped to their respective baronies
 	holding *capital_holding = nullptr;
 	std::vector<region *> regions; //the regions to which this province belongs
-	std::set<Province *> BorderProvinces; //provinces bordering this one
-	bool Selected = false;
+	std::set<province *> border_provinces; //provinces bordering this one
+	bool selected = false;
 	std::vector<std::unique_ptr<population_unit>> population_units; //population units set for this province in history, used during initialization to generate population units in the province's settlements
-	std::map<PopulationType *, int> PopulationPerType; //the population for each population type
+	std::map<PopulationType *, int> population_per_type; //the population for each population type
 	std::map<metternich::culture *, int> population_per_culture; //the population for each culture
 	std::map<metternich::religion *, int> population_per_religion; //the population for each religion
 };

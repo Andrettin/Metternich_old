@@ -105,7 +105,7 @@ void LandedTitle::process_gsml_dated_property(const gsml_property &property, con
 
 		if (property.get_value() == "random") {
 			//generate random holder
-			Character *holder = Character::generate(this->GetCapitalProvince()->get_culture(), this->GetCapitalProvince()->get_religion());
+			Character *holder = Character::generate(this->get_capital_province()->get_culture(), this->get_capital_province()->get_religion());
 			this->SetHolder(holder);
 			return;
 		} else if (property.get_value() == "none") {
@@ -154,7 +154,7 @@ void LandedTitle::initialize()
 	if (this->GetTier() == LandedTitleTier::Barony) {
 		if (this->GetDeJureLiegeTitle() != nullptr) {
 			//set the barony's capital province to its county's province
-			this->CapitalProvince = this->GetDeJureLiegeTitle()->GetProvince();
+			this->capital_province = this->GetDeJureLiegeTitle()->get_province();
 		}
 	}
 }
@@ -196,20 +196,20 @@ void LandedTitle::check() const
 		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has no valid color.");
 	}
 
-	if (this->GetProvince() != nullptr && this->GetProvince() != this->GetCapitalProvince()) {
+	if (this->get_province() != nullptr && this->get_province() != this->get_capital_province()) {
 		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has a different province and capital province.");
 	}
 
 	if (Game::get()->IsStarting()) {
-		if (this->GetCapitalProvince() == nullptr) {
+		if (this->get_capital_province() == nullptr) {
 			throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has no capital province.");
 		}
 
-		if (this->get_holding() != nullptr && this->get_holding()->get_province() != this->GetCapitalProvince()) {
+		if (this->get_holding() != nullptr && this->get_holding()->get_province() != this->get_capital_province()) {
 			throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has its holding in a different province than its capital province.");
 		}
 
-		if (this->GetProvince() != nullptr) {
+		if (this->get_province() != nullptr) {
 			if (this->GetTier() != LandedTitleTier::County) {
 				throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has been assigned to a province, but is not a county.");
 			}
@@ -234,8 +234,8 @@ std::string LandedTitle::get_name() const
 
 	if (this->GetHolder() != nullptr) {
 		culture = this->GetHolder()->get_culture();
-	} else if (this->GetCapitalProvince() != nullptr) {
-		culture = this->GetCapitalProvince()->get_culture();
+	} else if (this->get_capital_province() != nullptr) {
+		culture = this->get_capital_province()->get_culture();
 	}
 
 	std::vector<std::string> suffixes;
@@ -264,8 +264,8 @@ std::string LandedTitle::GetTierTitleName() const
 
 	if (this->GetHolder() != nullptr) {
 		culture = this->GetHolder()->get_culture();
-	} else if (this->GetCapitalProvince() != nullptr) {
-		culture = this->GetCapitalProvince()->get_culture();
+	} else if (this->get_capital_province() != nullptr) {
+		culture = this->get_capital_province()->get_culture();
 	}
 
 	std::vector<std::string> suffixes;
@@ -306,8 +306,8 @@ std::string LandedTitle::GetHolderTitleName() const
 
 	if (this->GetHolder() != nullptr) {
 		culture = this->GetHolder()->get_culture();
-	} else if (this->GetCapitalProvince() != nullptr) {
-		culture = this->GetCapitalProvince()->get_culture();
+	} else if (this->get_capital_province() != nullptr) {
+		culture = this->get_capital_province()->get_culture();
 	}
 
 	std::vector<std::string> suffixes;
@@ -343,8 +343,8 @@ void LandedTitle::SetHolder(Character *character)
 	this->HolderTitle = nullptr; //set the holder title to null, so that the new holder (null or otherwise) isn't overwritten by a previous holder title
 
 	//if this is a non-titular county, then the character holding it must also possess the county's capital holding
-	if (this->GetProvince() != nullptr) {
-		this->GetProvince()->get_capital_holding()->get_barony()->SetHolder(character);
+	if (this->get_province() != nullptr) {
+		this->get_province()->get_capital_holding()->get_barony()->SetHolder(character);
 	}
 
 	//if this title is associated with a holding (i.e. it is a non-titular barony), then its holder must also be the owner of the holding

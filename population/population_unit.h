@@ -13,7 +13,7 @@ class culture;
 class employment;
 class holding;
 class PopulationType;
-class Province;
+class province;
 class region;
 class religion;
 
@@ -26,7 +26,7 @@ class population_unit : public data_entry_base, public simple_data_type<populati
 	Q_PROPERTY(metternich::religion* religion READ get_religion WRITE set_religion NOTIFY religion_changed)
 	Q_PROPERTY(int size READ get_size WRITE set_size NOTIFY size_changed)
 	Q_PROPERTY(metternich::holding* holding READ get_holding WRITE set_holding NOTIFY holding_changed)
-	Q_PROPERTY(metternich::Province* province READ get_province WRITE set_province NOTIFY province_changed)
+	Q_PROPERTY(metternich::province* province READ get_province WRITE set_province NOTIFY province_changed)
 	Q_PROPERTY(metternich::region* region READ get_region WRITE set_region NOTIFY region_changed)
 	Q_PROPERTY(int wealth READ get_wealth NOTIFY wealth_changed)
 	Q_PROPERTY(bool discount_existing READ discounts_existing WRITE set_discount_existing NOTIFY discount_existing_changed)
@@ -106,12 +106,12 @@ public:
 		emit holding_changed();
 	}
 
-	metternich::Province *get_province() const
+	metternich::province *get_province() const
 	{
 		return this->province;
 	}
 
-	void set_province(Province *province)
+	void set_province(province *province)
 	{
 		if (province == this->get_province()) {
 			return;
@@ -254,7 +254,7 @@ private:
 	metternich::religion *religion = nullptr;
 	int size = 0; //the size of the population unit, in number of individuals
 	metternich::holding *holding = nullptr; //the settlement holding where this population unit lives
-	metternich::Province *province = nullptr; //the province where this population unit lives; used only during initialization to generate population units in settlements in the province
+	metternich::province *province = nullptr; //the province where this population unit lives; used only during initialization to generate population units in settlements in the province
 	metternich::region *region = nullptr; //the region where this population unit lives; used only during initialization to generate population units in settlements in the region
 	bool discount_existing = false; //whether to discount the size of existing population units (in this population unit's holding, province or region) of the types given in DiscountTypes from that of this one
 	bool discount_any_type = false; //whether to discount the size of any existing population units from that of this one

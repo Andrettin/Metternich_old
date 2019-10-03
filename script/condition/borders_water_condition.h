@@ -20,9 +20,9 @@ public:
 		return identifier;
 	}
 
-	virtual bool check(const Province *province) const override
+	virtual bool check(const province *province) const override
 	{
-		return province->BordersWater() == this->BordersWater;
+		return province->borders_water() == this->BordersWater;
 	}
 
 	virtual bool check(const holding *holding) const override

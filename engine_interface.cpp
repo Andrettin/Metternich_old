@@ -15,15 +15,15 @@ Game *EngineInterface::GetGame() const
 	return Game::get();
 }
 
-QVariant EngineInterface::GetProvinces() const
+QVariant EngineInterface::get_provinces() const
 {
-	QObjectList province_list = util::vector_to_qobject_list(Province::get_all());
+	QObjectList province_list = util::vector_to_qobject_list(province::get_all());
 	return QVariant::fromValue(province_list);
 }
 
-Province *EngineInterface::GetSelectedProvince() const
+province *EngineInterface::get_selected_province() const
 {
-	return Province::GetSelectedProvince();
+	return province::get_selected_province();
 }
 
 holding *EngineInterface::get_selected_holding() const

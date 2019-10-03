@@ -25,7 +25,7 @@ public:
 		return identifier;
 	}
 
-	virtual bool check(const Province *province) const override
+	virtual bool check(const province *province) const override
 	{
 		return this->check_internal(province);
 	}

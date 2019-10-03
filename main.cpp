@@ -77,11 +77,11 @@ int main(int argc, char *argv[])
 		qmlRegisterType<LandedTitle>();
 		qmlRegisterType<PopulationType>();
 		qmlRegisterType<population_unit>();
-		qmlRegisterType<Province>();
+		qmlRegisterType<province>();
 		qmlRegisterType<religion>();
 		qmlRegisterType<Terrain>();
 		engine.rootContext()->setContextProperty("metternich", EngineInterface::get());
-		engine.addImageProvider(QLatin1String("provinces"), new ProvinceImageProvider);
+		engine.addImageProvider(QLatin1String("provinces"), new province_image_provider);
 		engine.addImageProvider(QLatin1String("empty"), new EmptyImageProvider);
 
 		const QUrl url(QStringLiteral("./interface/main.qml"));

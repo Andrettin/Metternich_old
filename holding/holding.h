@@ -22,7 +22,7 @@ class IdentifiableModifier;
 class LandedTitle;
 class PopulationType;
 class population_unit;
-class Province;
+class province;
 class religion;
 
 class holding : public data_entry
@@ -57,7 +57,7 @@ private:
 	static inline holding *selected_holding = nullptr;
 
 public:
-	holding(LandedTitle *barony, holding_type *type, Province *province);
+	holding(LandedTitle *barony, holding_type *type, province *province);
 	virtual ~holding() override;
 
 	virtual void initialize_history() override;
@@ -107,7 +107,7 @@ public:
 		emit owner_changed();
 	}
 
-	metternich::Province *get_province() const
+	metternich::province *get_province() const
 	{
 		return this->province;
 	}
@@ -454,7 +454,7 @@ private:
 	LandedTitle *barony = nullptr;
 	holding_type *type = nullptr;
 	Character *owner = nullptr; //the owner of the holding
-	metternich::Province *province = nullptr; //the province to which this holding belongs
+	metternich::province *province = nullptr; //the province to which this holding belongs
 	std::vector<std::unique_ptr<population_unit>> population_units;
 	int base_population_capacity = 0; //the base population capacity
 	int population_capacity_modifier = 100; //the population capacity modifier

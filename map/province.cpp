@@ -31,11 +31,11 @@ namespace metternich {
 **	@param	should_find	Whether it is expected that an instance should be found (i.e. if none is, then it is an error).
 **	@return	The instance if found, or null otherwise
 */
-Province *Province::GetByRGB(const QRgb &rgb, const bool should_find)
+province *province::get_by_rgb(const QRgb &rgb, const bool should_find)
 {
-	typename std::map<QRgb, Province *>::const_iterator find_iterator = Province::InstancesByRGB.find(rgb);
+	typename std::map<QRgb, province *>::const_iterator find_iterator = province::instances_by_rgb.find(rgb);
 
-	if (find_iterator != Province::InstancesByRGB.end()) {
+	if (find_iterator != province::instances_by_rgb.end()) {
 		return find_iterator->second;
 	}
 
@@ -53,30 +53,30 @@ Province *Province::GetByRGB(const QRgb &rgb, const bool should_find)
 **
 **	@return	The new instance
 */
-Province *Province::add(const std::string &identifier)
+province *province::add(const std::string &identifier)
 {
-	if (identifier.substr(0, 2) != Province::Prefix) {
-		throw std::runtime_error("Invalid identifier for new province: \"" + identifier + "\". Province identifiers must begin with \"" + Province::Prefix + "\".");
+	if (identifier.substr(0, 2) != province::prefix) {
+		throw std::runtime_error("Invalid identifier for new province: \"" + identifier + "\". Province identifiers must begin with \"" + province::prefix + "\".");
 	}
 
-	return data_type<Province>::add(identifier);
+	return data_type<province>::add(identifier);
 }
 
 /**
 **	@brief	Constructor
 */
-Province::Province(const std::string &identifier) : data_entry(identifier)
+province::province(const std::string &identifier) : data_entry(identifier)
 {
-	connect(this, &Province::culture_changed, this, &identifiable_data_entry_base::name_changed);
-	connect(this, &Province::religion_changed, this, &identifiable_data_entry_base::name_changed);
-	connect(Game::get(), &Game::RunningChanged, this, &Province::UpdateImage);
-	connect(this, &Province::SelectedChanged, this, &Province::UpdateImage);
+	connect(this, &province::culture_changed, this, &identifiable_data_entry_base::name_changed);
+	connect(this, &province::religion_changed, this, &identifiable_data_entry_base::name_changed);
+	connect(Game::get(), &Game::RunningChanged, this, &province::update_image);
+	connect(this, &province::selected_changed, this, &province::update_image);
 }
 
 /**
 **	@brief	Destructor
 */
-Province::~Province()
+province::~province()
 {
 }
 
@@ -85,7 +85,7 @@ Province::~Province()
 **
 **	@param	property	The property
 */
-void Province::process_gsml_property(const gsml_property &property)
+void province::process_gsml_property(const gsml_property &property)
 {
 	if (property.get_key().substr(0, 2) == LandedTitle::BaronyPrefix) {
 		//a property related to one of the province's holdings
@@ -118,7 +118,7 @@ void Province::process_gsml_property(const gsml_property &property)
 **
 **	@param	scope	The scope
 */
-void Province::process_gsml_scope(const gsml_data &scope)
+void province::process_gsml_scope(const gsml_data &scope)
 {
 	const std::string &tag = scope.get_tag();
 	const std::vector<std::string> &values = scope.get_values();
@@ -131,13 +131,13 @@ void Province::process_gsml_scope(const gsml_data &scope)
 		const int red = std::stoi(values.at(0));
 		const int green = std::stoi(values.at(1));
 		const int blue = std::stoi(values.at(2));
-		this->Color.setRgb(red, green, blue);
+		this->color.setRgb(red, green, blue);
 
-		if (Province::InstancesByRGB.find(this->Color.rgb()) != Province::InstancesByRGB.end()) {
-			throw std::runtime_error("The color set for province \"" + this->get_identifier() + "\" is already used by province \"" + Province::InstancesByRGB.find(this->Color.rgb())->second->get_identifier() + "\"");
+		if (province::instances_by_rgb.find(this->color.rgb()) != province::instances_by_rgb.end()) {
+			throw std::runtime_error("The color set for province \"" + this->get_identifier() + "\" is already used by province \"" + province::instances_by_rgb.find(this->color.rgb())->second->get_identifier() + "\"");
 		}
 
-		Province::InstancesByRGB[this->Color.rgb()] = this;
+		province::instances_by_rgb[this->color.rgb()] = this;
 	} else {
 		data_entry_base::process_gsml_scope(scope);
 	}
@@ -149,7 +149,7 @@ void Province::process_gsml_scope(const gsml_data &scope)
 **	@param	scope	The scope
 **	@param	date	The date of the scope change
 */
-void Province::process_gsml_dated_scope(const gsml_data &scope, const QDateTime &date)
+void province::process_gsml_dated_scope(const gsml_data &scope, const QDateTime &date)
 {
 	const std::string &tag = scope.get_tag();
 
@@ -173,7 +173,7 @@ void Province::process_gsml_dated_scope(const gsml_data &scope, const QDateTime 
 /**
 **	@brief	Initialize the province's history
 */
-void Province::initialize_history()
+void province::initialize_history()
 {
 	this->population_units.clear();
 
@@ -181,23 +181,23 @@ void Province::initialize_history()
 		holding->initialize_history();
 	}
 
-	this->CalculatePopulation();
-	this->CalculatePopulationGroups();
+	this->calculate_population();
+	this->calculate_population_groups();
 
-	if (this->BordersRiver()) {
-		this->ChangePopulationCapacityAdditiveModifier(10000); //increase population capacity if this province borders a river
+	if (this->borders_river()) {
+		this->change_population_capacity_additive_modifier(10000); //increase population capacity if this province borders a river
 	}
-	if (this->IsCoastal()) {
-		this->ChangePopulationCapacityAdditiveModifier(10000); //increase population capacity if this province is coastal
+	if (this->is_coastal()) {
+		this->change_population_capacity_additive_modifier(10000); //increase population capacity if this province is coastal
 	}
 }
 
 /**
 **	@brief	Check whether the province is in a valid state
 */
-void Province::check() const
+void province::check() const
 {
-	if (!this->GetColor().isValid()) {
+	if (!this->get_color().isValid()) {
 		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no valid color.");
 	}
 
@@ -221,7 +221,7 @@ void Province::check() const
 /**
 **	@brief	Do the province's daily actions
 */
-void Province::DoDay()
+void province::do_day()
 {
 	for (holding *holding : this->get_holdings()) {
 		holding->do_day();
@@ -231,13 +231,13 @@ void Province::DoDay()
 /**
 **	@brief	Do the province's monthly actions
 */
-void Province::DoMonth()
+void province::do_month()
 {
 	for (holding *holding : this->get_holdings()) {
 		holding->do_month();
 	}
 
-	this->CalculatePopulationGroups();
+	this->calculate_population_groups();
 }
 
 /**
@@ -245,7 +245,7 @@ void Province::DoMonth()
 **
 **	@return	The province's name
 */
-std::string Province::get_name() const
+std::string province::get_name() const
 {
 	if (this->get_county() != nullptr) {
 		return Translator::get()->Translate(this->get_county()->get_identifier(), {this->get_culture()->get_identifier(), this->get_culture()->get_culture_group()->get_identifier(), this->get_religion()->get_identifier()});
@@ -259,15 +259,15 @@ std::string Province::get_name() const
 **
 **	@param	county	The new county for the province
 */
-void Province::SetCounty(LandedTitle *county)
+void province::set_county(LandedTitle *county)
 {
 	if (county == this->get_county()) {
 		return;
 	}
 
-	this->County = county;
-	county->SetProvince(this);
-	emit CountyChanged();
+	this->county = county;
+	county->set_province(this);
+	emit county_changed();
 }
 
 /**
@@ -275,7 +275,7 @@ void Province::SetCounty(LandedTitle *county)
 **
 **	@return	The province's (de jure) duchy
 */
-LandedTitle *Province::GetDuchy() const
+LandedTitle *province::get_duchy() const
 {
 	if (this->get_county() != nullptr) {
 		return this->get_county()->GetDeJureLiegeTitle();
@@ -289,10 +289,10 @@ LandedTitle *Province::GetDuchy() const
 **
 **	@return	The province's (de jure) kingdom
 */
-LandedTitle *Province::GetKingdom() const
+LandedTitle *province::get_kingdom() const
 {
-	if (this->GetDuchy() != nullptr) {
-		return this->GetDuchy()->GetDeJureLiegeTitle();
+	if (this->get_duchy() != nullptr) {
+		return this->get_duchy()->GetDeJureLiegeTitle();
 	}
 
 	return nullptr;
@@ -303,10 +303,10 @@ LandedTitle *Province::GetKingdom() const
 **
 **	@return	The province's (de jure) empire
 */
-LandedTitle *Province::GetEmpire() const
+LandedTitle *province::get_empire() const
 {
-	if (this->GetKingdom() != nullptr) {
-		return this->GetKingdom()->GetDeJureLiegeTitle();
+	if (this->get_kingdom() != nullptr) {
+		return this->get_kingdom()->GetDeJureLiegeTitle();
 	}
 
 	return nullptr;
@@ -317,7 +317,7 @@ LandedTitle *Province::GetEmpire() const
 **
 **	@param	pixel_indexes	The indexes of the province's pixels
 */
-void Province::CreateImage(const std::vector<int> &pixel_indexes)
+void province::create_image(const std::vector<int> &pixel_indexes)
 {
 	QPoint start_pos(-1, -1);
 	QPoint end_pos(-1, -1);
@@ -338,17 +338,17 @@ void Province::CreateImage(const std::vector<int> &pixel_indexes)
 		}
 	}
 
-	this->Rect = QRect(start_pos, end_pos);
+	this->rect = QRect(start_pos, end_pos);
 
-	this->Image = QImage(this->Rect.size(), QImage::Format_Indexed8);
+	this->image = QImage(this->rect.size(), QImage::Format_Indexed8);
 
 	//index 0 = transparency, index 1 = the main color for the province, index 2 = province border
-	this->Image.setColorTable({qRgba(0, 0, 0, 0), this->GetColor().rgb(), QColor(Qt::darkGray).rgb()});
-	this->Image.fill(0);
+	this->image.setColorTable({qRgba(0, 0, 0, 0), this->get_color().rgb(), QColor(Qt::darkGray).rgb()});
+	this->image.fill(0);
 
 	for (const int index : pixel_indexes) {
-		QPoint pixel_pos = Map::get()->GetPixelPosition(index) - this->Rect.topLeft();
-		this->Image.setPixel(pixel_pos, 1);
+		QPoint pixel_pos = Map::get()->GetPixelPosition(index) - this->rect.topLeft();
+		this->image.setPixel(pixel_pos, 1);
 	}
 }
 
@@ -357,18 +357,18 @@ void Province::CreateImage(const std::vector<int> &pixel_indexes)
 **
 **	@param	pixel_indexes	The indexes of the province's border pixels
 */
-void Province::SetBorderPixels(const std::vector<int> &pixel_indexes)
+void province::set_border_pixels(const std::vector<int> &pixel_indexes)
 {
 	for (const int index : pixel_indexes) {
-		QPoint pixel_pos = Map::get()->GetPixelPosition(index) - this->Rect.topLeft();
-		this->Image.setPixel(pixel_pos, 2);
+		QPoint pixel_pos = Map::get()->GetPixelPosition(index) - this->rect.topLeft();
+		this->image.setPixel(pixel_pos, 2);
 	}
 }
 
 /**
 **	@brief	Update the province's image
 */
-void Province::UpdateImage()
+void province::update_image()
 {
 	QColor province_color;
 	if (this->get_county() != nullptr) {
@@ -378,24 +378,24 @@ void Province::UpdateImage()
 		} else {
 			province_color = this->get_county()->GetColor();
 		}
-	} else if (this->GetTerrain()->IsWater()) {
+	} else if (this->get_terrain()->IsWater()) {
 		province_color = QColor("#0080ff");
 	} else {
 		province_color = QColor(Qt::darkGray); //wasteland
 	}
 
 	QColor border_color;
-	if (this->IsSelected()) {
+	if (this->is_selected()) {
 		//if the province is selected, highlight its border pixels
 		border_color = QColor(Qt::yellow);
 	} else {
 		border_color = QColor(province_color.red() / 2, province_color.green() / 2, province_color.blue() / 2);
 	}
 
-	this->Image.setColor(1, province_color.rgb());
-	this->Image.setColor(2, border_color.rgb());
+	this->image.setColor(1, province_color.rgb());
+	this->image.setColor(2, border_color.rgb());
 
-	emit ImageChanged();
+	emit image_changed();
 }
 
 /**
@@ -403,25 +403,25 @@ void Province::UpdateImage()
 **
 **	@param	terrain	The new terrain
 */
-void Province::SetTerrain(metternich::Terrain *terrain)
+void province::set_terrain(metternich::Terrain *terrain)
 {
-	if (terrain == this->GetTerrain()) {
+	if (terrain == this->get_terrain()) {
 		return;
 	}
 
-	const metternich::Terrain *old_terrain = this->GetTerrain();
+	const metternich::Terrain *old_terrain = this->get_terrain();
 
 	if (old_terrain != nullptr && old_terrain->GetModifier() != nullptr) {
 		old_terrain->GetModifier()->remove(this);
 	}
 
-	this->Terrain = terrain;
+	this->terrain = terrain;
 
 	if (terrain != nullptr && terrain->GetModifier() != nullptr) {
 		terrain->GetModifier()->Apply(this);
 	}
 
-	emit TerrainChanged();
+	emit terrain_changed();
 }
 
 /**
@@ -429,26 +429,26 @@ void Province::SetTerrain(metternich::Terrain *terrain)
 **
 **	@param	population	The new population size for the province
 */
-void Province::SetPopulation(const int population)
+void province::set_population(const int population)
 {
-	if (population == this->GetPopulation()) {
+	if (population == this->get_population()) {
 		return;
 	}
 
-	this->Population = population;
-	emit PopulationChanged();
+	this->population = population;
+	emit population_changed();
 }
 
 /**
 **	@brief	Calculate the population size for the province
 */
-void Province::CalculatePopulation()
+void province::calculate_population()
 {
 	int population = 0;
 	for (const holding *holding : this->get_holdings()) {
 		population += holding->get_population();
 	}
-	this->SetPopulation(population);
+	this->set_population(population);
 }
 
 /**
@@ -456,20 +456,20 @@ void Province::CalculatePopulation()
 **
 **	@param	population	The new population capacity additive modifier for the province
 */
-void Province::SetPopulationCapacityAdditiveModifier(const int population_capacity_modifier)
+void province::set_population_capacity_additive_modifier(const int population_capacity_modifier)
 {
-	if (population_capacity_modifier == this->GetPopulationCapacityAdditiveModifier()) {
+	if (population_capacity_modifier == this->get_population_capacity_additive_modifier()) {
 		return;
 	}
 
 	for (holding *holding : this->get_holdings()) {
-		holding->change_base_population_capacity(-this->GetPopulationCapacityAdditiveModifier());
+		holding->change_base_population_capacity(-this->get_population_capacity_additive_modifier());
 	}
 
-	this->PopulationCapacityAdditiveModifier = population_capacity_modifier;
+	this->population_capacity_additive_modifier = population_capacity_modifier;
 
 	for (holding *holding : this->get_holdings()) {
-		holding->change_base_population_capacity(this->GetPopulationCapacityAdditiveModifier());
+		holding->change_base_population_capacity(this->get_population_capacity_additive_modifier());
 	}
 }
 
@@ -478,20 +478,20 @@ void Province::SetPopulationCapacityAdditiveModifier(const int population_capaci
 **
 **	@param	population	The new population capacity modifier for the province
 */
-void Province::SetPopulationCapacityModifier(const int population_capacity_modifier)
+void province::set_population_capacity_modifier(const int population_capacity_modifier)
 {
-	if (population_capacity_modifier == this->GetPopulationCapacityModifier()) {
+	if (population_capacity_modifier == this->get_population_capacity_modifier()) {
 		return;
 	}
 
 	for (holding *holding : this->get_holdings()) {
-		holding->change_population_capacity_modifier(-this->GetPopulationCapacityModifier());
+		holding->change_population_capacity_modifier(-this->get_population_capacity_modifier());
 	}
 
-	this->PopulationCapacityModifier = population_capacity_modifier;
+	this->population_capacity_modifier = population_capacity_modifier;
 
 	for (holding *holding : this->get_holdings()) {
-		holding->change_population_capacity_modifier(this->GetPopulationCapacityModifier());
+		holding->change_population_capacity_modifier(this->get_population_capacity_modifier());
 	}
 }
 
@@ -500,35 +500,35 @@ void Province::SetPopulationCapacityModifier(const int population_capacity_modif
 **
 **	@param	population	The new population growth modifier for the province
 */
-void Province::SetPopulationGrowthModifier(const int population_growth_modifier)
+void province::set_population_growth_modifier(const int population_growth_modifier)
 {
-	if (population_growth_modifier == this->GetPopulationGrowthModifier()) {
+	if (population_growth_modifier == this->get_population_growth_modifier()) {
 		return;
 	}
 
 	for (holding *holding : this->get_holdings()) {
-		holding->change_base_population_growth(-this->GetPopulationGrowthModifier());
+		holding->change_base_population_growth(-this->get_population_growth_modifier());
 	}
 
-	this->PopulationGrowthModifier = population_growth_modifier;
+	this->population_growth_modifier = population_growth_modifier;
 
 	for (holding *holding : this->get_holdings()) {
-		holding->change_base_population_growth(this->GetPopulationGrowthModifier());
+		holding->change_base_population_growth(this->get_population_growth_modifier());
 	}
 }
 
 /**
 **	@brief	Calculate the population for each culture, religion and etc.
 */
-void Province::CalculatePopulationGroups()
+void province::calculate_population_groups()
 {
-	this->PopulationPerType.clear();
+	this->population_per_type.clear();
 	this->population_per_culture.clear();
 	this->population_per_religion.clear();
 
 	for (holding *holding : this->get_holdings()) {
 		for (const auto &kv_pair : holding->get_population_per_type()) {
-			this->PopulationPerType[kv_pair.first] += kv_pair.second;
+			this->population_per_type[kv_pair.first] += kv_pair.second;
 		}
 		for (const auto &kv_pair : holding->get_population_per_culture()) {
 			this->population_per_culture[kv_pair.first] += kv_pair.second;
@@ -538,7 +538,7 @@ void Province::CalculatePopulationGroups()
 		}
 	}
 
-	emit populationGroupsChanged();
+	emit population_groups_changed();
 
 	//update the province's main culture and religion
 
@@ -573,7 +573,7 @@ void Province::CalculatePopulationGroups()
 /**
 **	@brief	Get the province's holdings
 */
-QVariantList Province::get_holdings_qvariant_list() const
+QVariantList province::get_holdings_qvariant_list() const
 {
 	return util::container_to_qvariant_list(this->get_holdings());
 }
@@ -583,7 +583,7 @@ QVariantList Province::get_holdings_qvariant_list() const
 **
 **	@param	barony	The holding's barony
 */
-holding *Province::get_holding(LandedTitle *barony) const
+holding *province::get_holding(LandedTitle *barony) const
 {
 	auto find_iterator = this->holdings_by_barony.find(barony);
 	if (find_iterator != this->holdings_by_barony.end()) {
@@ -600,7 +600,7 @@ holding *Province::get_holding(LandedTitle *barony) const
 **
 **	@param	type	The holding's type
 */
-void Province::create_holding(LandedTitle *barony, holding_type *type)
+void province::create_holding(LandedTitle *barony, holding_type *type)
 {
 	auto new_holding = std::make_unique<holding>(barony, type, this);
 	new_holding->moveToThread(QApplication::instance()->thread());
@@ -623,7 +623,7 @@ void Province::create_holding(LandedTitle *barony, holding_type *type)
 **
 **	@param	barony	The holding's barony
 */
-void Province::destroy_holding(LandedTitle *barony)
+void province::destroy_holding(LandedTitle *barony)
 {
 	holding *holding = this->get_holding(barony);
 	if (holding == this->get_capital_holding()) {
@@ -642,7 +642,7 @@ void Province::destroy_holding(LandedTitle *barony)
 /**
 **	@brief	Add a population unit to the province
 */
-void Province::add_population_unit(std::unique_ptr<population_unit> &&population_unit)
+void province::add_population_unit(std::unique_ptr<population_unit> &&population_unit)
 {
 	this->population_units.push_back(std::move(population_unit));
 }
@@ -652,10 +652,10 @@ void Province::add_population_unit(std::unique_ptr<population_unit> &&population
 **
 **	@return	True if the province borders a water province, or false otherwise
 */
-bool Province::BordersWater() const
+bool province::borders_water() const
 {
-	for (const Province *border_province : this->BorderProvinces) {
-		if (border_province->GetTerrain()->IsWater()) {
+	for (const province *border_province : this->border_provinces) {
+		if (border_province->get_terrain()->IsWater()) {
 			return true;
 		}
 	}
@@ -668,10 +668,10 @@ bool Province::BordersWater() const
 **
 **	@return	True if the province borders a river province, or false otherwise
 */
-bool Province::BordersRiver() const
+bool province::borders_river() const
 {
-	for (const Province *border_province : this->BorderProvinces) {
-		if (border_province->GetTerrain()->IsRiver()) {
+	for (const province *border_province : this->border_provinces) {
+		if (border_province->get_terrain()->IsRiver()) {
 			return true;
 		}
 	}
@@ -684,10 +684,10 @@ bool Province::BordersRiver() const
 **
 **	@return	True if the province is coastal, or false otherwise
 */
-bool Province::IsCoastal() const
+bool province::is_coastal() const
 {
-	for (const Province *border_province : this->BorderProvinces) {
-		if (border_province->GetTerrain()->IsOcean()) {
+	for (const province *border_province : this->border_provinces) {
+		if (border_province->get_terrain()->IsOcean()) {
 			return true;
 		}
 	}
@@ -702,26 +702,26 @@ bool Province::IsCoastal() const
 **
 **	@param	notify_engine_interface	Whether to emit a signal notifying the engine interface of the change
 */
-void Province::SetSelected(const bool selected, const bool notify_engine_interface)
+void province::set_selected(const bool selected, const bool notify_engine_interface)
 {
-	if (selected == this->IsSelected()) {
+	if (selected == this->is_selected()) {
 		return;
 	}
 
 	if (selected) {
-		if (Province::SelectedProvince != nullptr) {
-			Province::SelectedProvince->SetSelected(false, false);
+		if (province::selected_province != nullptr) {
+			province::selected_province->set_selected(false, false);
 		}
-		Province::SelectedProvince = this;
+		province::selected_province = this;
 	} else {
-		Province::SelectedProvince = nullptr;
+		province::selected_province = nullptr;
 	}
 
-	this->Selected = selected;
-	emit SelectedChanged();
+	this->selected = selected;
+	emit selected_changed();
 
 	if (notify_engine_interface) {
-		EngineInterface::get()->emit SelectedProvinceChanged();
+		EngineInterface::get()->emit selected_province_changed();
 	}
 }
 
@@ -730,16 +730,16 @@ void Province::SetSelected(const bool selected, const bool notify_engine_interfa
 **
 **	@return	True if the province is selectable, or false otherwise
 */
-bool Province::IsSelectable() const
+bool province::is_selectable() const
 {
 	return this->get_county() != nullptr;
 }
 
-QVariantList Province::get_population_per_type_qvariant_list() const
+QVariantList province::get_population_per_type_qvariant_list() const
 {
 	QVariantList population_per_type;
 
-	for (const auto &kv_pair : this->PopulationPerType) {
+	for (const auto &kv_pair : this->population_per_type) {
 		QVariantMap type_population;
 		type_population["type"] = QVariant::fromValue(kv_pair.first);
 		type_population["population"] = QVariant::fromValue(kv_pair.second);
@@ -749,7 +749,7 @@ QVariantList Province::get_population_per_type_qvariant_list() const
 	return population_per_type;
 }
 
-QVariantList Province::get_population_per_culture_qvariant_list() const
+QVariantList province::get_population_per_culture_qvariant_list() const
 {
 	QVariantList population_per_culture;
 
@@ -763,7 +763,7 @@ QVariantList Province::get_population_per_culture_qvariant_list() const
 	return population_per_culture;
 }
 
-QVariantList Province::get_population_per_religion_qvariant_list() const
+QVariantList province::get_population_per_religion_qvariant_list() const
 {
 	QVariantList population_per_religion;
 
