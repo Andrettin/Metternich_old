@@ -37,7 +37,7 @@ namespace metternich {
 	{
 		try {
 			database::get()->load();
-			Map::get()->load();
+			map::get()->load();
 			Game::get()->Start(Defines::get()->GetStartDate());
 		} catch (const std::exception &exception) {
 			std::cerr << exception.what() << '\n';

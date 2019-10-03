@@ -28,7 +28,7 @@ namespace metternich {
 /**
 **	@brief	Get an instance of the class by the RGB value associated with it
 **	@param	rgb	The instance's RGB
-**	@param	should_find	Whether it is expected that an instance should be found (i.e. if none is, then it is an error).
+**	@param	should_find	Whether it is expected that an instance should be found (i.e. if none is, then it is an error)
 **	@return	The instance if found, or null otherwise
 */
 province *province::get_by_rgb(const QRgb &rgb, const bool should_find)
@@ -323,7 +323,7 @@ void province::create_image(const std::vector<int> &pixel_indexes)
 	QPoint end_pos(-1, -1);
 
 	for (const int index : pixel_indexes) {
-		QPoint pixel_pos = Map::get()->GetPixelPosition(index);
+		QPoint pixel_pos = map::get()->get_pixel_position(index);
 		if (start_pos.x() == -1 || pixel_pos.x() < start_pos.x()) {
 			start_pos.setX(pixel_pos.x());
 		}
@@ -347,7 +347,7 @@ void province::create_image(const std::vector<int> &pixel_indexes)
 	this->image.fill(0);
 
 	for (const int index : pixel_indexes) {
-		QPoint pixel_pos = Map::get()->GetPixelPosition(index) - this->rect.topLeft();
+		QPoint pixel_pos = map::get()->get_pixel_position(index) - this->rect.topLeft();
 		this->image.setPixel(pixel_pos, 1);
 	}
 }
@@ -360,7 +360,7 @@ void province::create_image(const std::vector<int> &pixel_indexes)
 void province::set_border_pixels(const std::vector<int> &pixel_indexes)
 {
 	for (const int index : pixel_indexes) {
-		QPoint pixel_pos = Map::get()->GetPixelPosition(index) - this->rect.topLeft();
+		QPoint pixel_pos = map::get()->get_pixel_position(index) - this->rect.topLeft();
 		this->image.setPixel(pixel_pos, 2);
 	}
 }

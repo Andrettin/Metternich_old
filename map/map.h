@@ -7,18 +7,18 @@
 
 namespace metternich {
 
-class Map : public singleton<Map>
+class map : public singleton<map>
 {
 public:
 	void load();
-	QPoint GetPixelPosition(const int index);
+	QPoint get_pixel_position(const int index);
 
 private:
 	void load_provinces();
 	void load_terrain();
 
 private:
-	QSize Size = QSize(0, 0);
+	QSize size = QSize(0, 0);
 };
 
 }

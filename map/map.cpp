@@ -10,24 +10,24 @@
 
 namespace metternich {
 
-void Map::load()
+void map::load()
 {
 	this->load_provinces();
 	this->load_terrain();
 }
 
-QPoint Map::GetPixelPosition(const int index)
+QPoint map::get_pixel_position(const int index)
 {
-	return util::index_to_point(index, this->Size);
+	return util::index_to_point(index, this->size);
 }
 
-void Map::load_provinces()
+void map::load_provinces()
 {
 	EngineInterface::get()->set_loading_message("Loading Provinces... (0%)");
 
 	QImage province_image("./map/provinces.png");
 	QImage terrain_image("./map/terrain.png"); //used to calculate each province's terrain
-	this->Size = province_image.size(); //set the map's size to that of the province map
+	this->size = province_image.size(); //set the map's size to that of the province map
 	const int pixel_count = province_image.width() * province_image.height();
 
 	std::map<province *, std::vector<int>> province_pixel_indexes;
@@ -111,7 +111,7 @@ void Map::load_provinces()
 	}
 }
 
-void Map::load_terrain()
+void map::load_terrain()
 {
 	EngineInterface::get()->set_loading_message("Loading Terrain...");
 	QImage terrain_image("./map/terrain.png");
