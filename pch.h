@@ -5,7 +5,10 @@
 #include <QApplication>
 #include <QColor>
 #include <QDateTime>
+#include <QGeoCoordinate>
+#include <QGeoPolygon>
 #include <QImage>
+#include <QJsonDocument>
 #include <QList>
 #include <QLocale>
 #include <QMetaProperty>
@@ -23,6 +26,7 @@
 #include <QTimeZone>
 #include <QTranslator>
 #include <QVariant>
+#include <QVariantList>
 #include <QVector>
 
 #include <algorithm>
@@ -38,6 +42,7 @@
 #include <random>
 #include <set>
 #include <shared_mutex>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <thread>

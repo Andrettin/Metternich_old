@@ -6,12 +6,16 @@
 #include "util.h"
 
 #include <QImage>
+#include <QJsonDocument>
 #include <QRect>
+
+#include <sstream>
 
 namespace metternich {
 
 void map::load()
 {
+	this->load_geojson_files();
 	this->load_provinces();
 	this->load_terrain();
 }
@@ -19,6 +23,142 @@ void map::load()
 QPoint map::get_pixel_position(const int index)
 {
 	return util::index_to_point(index, this->size);
+}
+
+/**
+**	@brief	Load GeoJSON files and save their data in GSML files
+*/
+void map::load_geojson_files()
+{
+	std::filesystem::path province_data_path("./map/provinces");
+
+	if (!std::filesystem::exists(province_data_path)) {
+		return;
+	}
+
+	std::filesystem::recursive_directory_iterator dir_iterator(province_data_path);
+
+	for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
+		if (!dir_entry.is_regular_file() || dir_entry.path().extension() != ".geojson") {
+			continue;
+		}
+
+		std::ifstream ifstream(dir_entry);
+
+		if (!ifstream) {
+			throw std::runtime_error("Failed to open file: " + dir_entry.path().string());
+		}
+
+		const std::string raw_geojson_data(std::istreambuf_iterator<char>{ifstream}, std::istreambuf_iterator<char>{});
+		const QByteArray raw_geojson_byte_array = QByteArray::fromStdString(raw_geojson_data);
+
+		QJsonParseError json_error;
+		const QJsonDocument json = QJsonDocument::fromJson(raw_geojson_byte_array, &json_error);
+
+		if (json.isNull()) {
+			throw std::runtime_error("JSON parsing failed: " + json_error.errorString().toStdString() + ".");
+		}
+
+		this->process_geojson_data(json.toVariant().toMap());
+	}
+
+	this->save_geojson_data_to_gsml();
+}
+
+/**
+**	@brief	Process GeoJSON data
+**
+**	@param	geojson_data	The GeoJSON data
+*/
+void map::process_geojson_data(const QVariantMap &geojson_data)
+{
+	const QString geojson_type = geojson_data.value("type").toString();
+
+	if (geojson_type == "FeatureCollection") {
+		this->process_geojson_features(geojson_data.value("features").toList());
+	} else {
+		throw std::runtime_error("Invalid GeoJSON entry type: " + geojson_type.toStdString());
+	}
+}
+
+/**
+**	@brief	Process a list of GeoJSON features
+**
+**	@param	features	The GeoJSON features
+*/
+void map::process_geojson_features(const QVariantList &features)
+{
+	for (const QVariant &feature_variant : features) {
+		const QVariantMap feature = feature_variant.toMap();
+		const QVariantMap feature_properties = feature.value("properties").toMap();
+		const std::string feature_name = feature_properties.value("name").toString().toStdString();
+		const QVariantMap geometry = feature.value("geometry").toMap();
+		const std::string geometry_type = geometry.value("type").toString().toStdString();
+
+		if (geometry_type == "MultiPolygon") {
+			const QVariantList multi_polygon_coordinates = geometry.value("coordinates").toList();
+			const QVariantList polygon_coordinates = multi_polygon_coordinates.front().toList().front().toList();
+			this->process_geojson_polygon_coordinates(feature_name, polygon_coordinates);
+		} else {
+			throw std::runtime_error("Invalid GeoJSON feature type: " + geometry_type);
+		}
+	}
+}
+
+/**
+**	@brief	Process the coordinates for a GeoJSON polygon
+**
+**	@param	feature_name	The name of the feature
+**	@param	coordinates		The coordinates
+*/
+void map::process_geojson_polygon_coordinates(const std::string &feature_name, const QVariantList &coordinates)
+{
+	std::vector<std::pair<double, double>> polygon_coordinates;
+	for (const QVariant &coordinate_variant : coordinates) {
+		const QVariantList coordinate = coordinate_variant.toList();
+		const double latitude = coordinate[0].toDouble();
+		const double longitude = coordinate[1].toDouble();
+		polygon_coordinates.emplace_back(latitude, longitude);
+	}
+	this->geojson_polygon_coordinates[feature_name].push_back(polygon_coordinates);
+}
+
+/**
+**	@brief	Save GeoJSON data as GSML files
+*/
+void map::save_geojson_data_to_gsml()
+{
+	for (const auto &kv_pair : this->geojson_polygon_coordinates) {
+		const std::string &feature_name = kv_pair.first;
+
+		gsml_data data(feature_name);
+		gsml_data coordinate_data("coordinates");
+
+		for (const std::vector<std::pair<double, double>> &polygon_coordinates : kv_pair.second) {
+			gsml_data polygon_coordinate_data;
+
+			for (const std::pair<double, double> &coordinate_pair : polygon_coordinates) {
+				gsml_data coordinate;
+
+				std::ostringstream lat_string_stream;
+				lat_string_stream << std::setprecision(17) << coordinate_pair.first;
+				coordinate.add_value(lat_string_stream.str());
+
+				std::ostringstream lon_string_stream;
+				lon_string_stream << std::setprecision(17) << coordinate_pair.second;
+				coordinate.add_value(lon_string_stream.str());
+
+				polygon_coordinate_data.add_child(std::move(coordinate));
+			}
+
+			coordinate_data.add_child(std::move(polygon_coordinate_data));
+		}
+
+		data.add_child(std::move(coordinate_data));
+		data.print_to_dir("./map/provinces/");
+	}
+
+	this->geojson_polygon_coordinates.clear();
 }
 
 void map::load_provinces()

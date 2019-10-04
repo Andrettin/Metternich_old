@@ -1,4 +1,4 @@
-QT += core gui quick widgets
+QT += core gui quick widgets location positioning
 CONFIG += c++17 force_debug_info
 
 # The following define makes your compiler emit warnings if you use

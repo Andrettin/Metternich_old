@@ -29,9 +29,9 @@ public:
 		return this->value;
 	}
 
-	void print(std::ofstream &ofstream) const
+	void print(std::ofstream &ofstream, const size_t indentation) const
 	{
-		ofstream << this->get_key() << " ";
+		ofstream << std::string(indentation, '\t') << this->get_key() << " ";
 
 		switch (this->get_operator()) {
 			case gsml_operator::assignment:
