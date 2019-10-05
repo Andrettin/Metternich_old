@@ -294,7 +294,7 @@ public:
 		std::filesystem::recursive_directory_iterator dir_iterator(map_path);
 
 		for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
-			if (!dir_entry.is_regular_file()) {
+			if (!dir_entry.is_regular_file() || dir_entry.path().extension() != ".txt") {
 				continue;
 			}
 

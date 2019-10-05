@@ -18,6 +18,9 @@ void map::load()
 	this->load_geojson_files();
 	this->load_provinces();
 	this->load_terrain();
+
+	//load map data for provinces
+	province::process_map_database();
 }
 
 QPoint map::get_pixel_position(const int index)
@@ -114,12 +117,14 @@ void map::process_geojson_features(const QVariantList &features)
 void map::process_geojson_polygon_coordinates(const std::string &feature_name, const QVariantList &coordinates)
 {
 	std::vector<std::pair<double, double>> polygon_coordinates;
+
 	for (const QVariant &coordinate_variant : coordinates) {
 		const QVariantList coordinate = coordinate_variant.toList();
 		const double latitude = coordinate[0].toDouble();
 		const double longitude = coordinate[1].toDouble();
 		polygon_coordinates.emplace_back(latitude, longitude);
 	}
+
 	this->geojson_polygon_coordinates[feature_name].push_back(polygon_coordinates);
 }
 
@@ -141,11 +146,11 @@ void map::save_geojson_data_to_gsml()
 				gsml_data coordinate;
 
 				std::ostringstream lat_string_stream;
-				lat_string_stream << std::setprecision(17) << coordinate_pair.first;
+				lat_string_stream << std::setprecision(map::geojson_coordinate_precision) << coordinate_pair.first;
 				coordinate.add_value(lat_string_stream.str());
 
 				std::ostringstream lon_string_stream;
-				lon_string_stream << std::setprecision(17) << coordinate_pair.second;
+				lon_string_stream << std::setprecision(map::geojson_coordinate_precision) << coordinate_pair.second;
 				coordinate.add_value(lon_string_stream.str());
 
 				polygon_coordinate_data.add_child(std::move(coordinate));

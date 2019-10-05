@@ -11,7 +11,7 @@ namespace metternich {
 class map : public singleton<map>
 {
 private:
-	static constexpr int geojson_coordinate_precision = 15;
+	static constexpr int geojson_coordinate_precision = 17;
 
 public:
 	void load();

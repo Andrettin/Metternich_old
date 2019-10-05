@@ -128,12 +128,14 @@ public:
 private:
 	void print_components(std::ofstream &ofstream, const size_t indentation = 0) const
 	{
-		for (const std::string &value : this->get_values()) {
+		if (!this->get_values().empty()) {
 			if (this->is_minor()) {
 				ofstream << " ";
 			} else {
 				ofstream << std::string(indentation, '\t');
 			}
+		}
+		for (const std::string &value : this->get_values()) {
 			ofstream << value << " ";
 		}
 
