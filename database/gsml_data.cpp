@@ -169,7 +169,12 @@ void gsml_data::parse_tokens(const std::vector<std::string> &tokens, gsml_data *
 		}
 
 		if (key.empty()) {
-			if (token == "}") { //closes current tag
+			if (token == "{") { //opens a new, untagged scope
+				(*current_gsml_data)->children.emplace_back();
+				gsml_data &new_gsml_data = (*current_gsml_data)->children.back();
+				new_gsml_data.parent = *current_gsml_data;
+				(*current_gsml_data) = &new_gsml_data;
+			} else if (token == "}") { //closes current tag
 				if ((*current_gsml_data) == nullptr) {
 					throw std::runtime_error("Tried closing tag before any tag had been opened.");
 				}

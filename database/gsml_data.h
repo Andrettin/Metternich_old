@@ -2,6 +2,9 @@
 
 #include "database/gsml_property.h"
 
+#include <QGeoCoordinate>
+#include <QGeoPolygon>
+
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
@@ -68,6 +71,25 @@ public:
 		std::sort(this->children.begin(), this->children.end(), [](gsml_data &a, gsml_data &b) {
 			return a.get_tag() < b.get_tag();
 		});
+	}
+
+	QGeoCoordinate to_geocoordinate() const
+	{
+		const double longitude = std::stod(this->get_values()[0]);
+		const double latitude = std::stod(this->get_values()[1]);
+		return QGeoCoordinate(latitude, longitude);
+	}
+
+	QGeoPolygon to_geopolygon() const
+	{
+		QList<QGeoCoordinate> coordinates;
+
+		for (const gsml_data &coordinate_data : this->get_children()) {
+			QGeoCoordinate coordinate = coordinate_data.to_geocoordinate();
+			coordinates.append(std::move(coordinate));
+		}
+
+		return QGeoPolygon(coordinates);
 	}
 
 	void print_to_dir(const std::filesystem::path &directory) const

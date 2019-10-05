@@ -4,6 +4,7 @@
 #include "database/data_type.h"
 
 #include <QColor>
+#include <QGeoPolygon>
 #include <QImage>
 #include <QObject>
 #include <QRect>
@@ -47,6 +48,7 @@ class province : public data_entry, public data_type<province>
 	Q_PROPERTY(metternich::holding* capital_holding READ get_capital_holding WRITE set_capital_holding NOTIFY capital_holding_changed)
 	Q_PROPERTY(bool selected READ is_selected WRITE set_selected NOTIFY selected_changed)
 	Q_PROPERTY(bool selectable READ is_selectable CONSTANT)
+	Q_PROPERTY(QVariantList geopolygons READ get_geopolygons_qvariant_list CONSTANT)
 
 public:
 	static constexpr const char *class_identifier = "province";
@@ -267,6 +269,8 @@ public:
 	Q_INVOKABLE QVariantList get_population_per_culture_qvariant_list() const;
 	Q_INVOKABLE QVariantList get_population_per_religion_qvariant_list() const;
 
+	QVariantList get_geopolygons_qvariant_list() const;
+
 signals:
 	void county_changed();
 	void duchy_changed();
@@ -304,6 +308,7 @@ private:
 	std::map<PopulationType *, int> population_per_type; //the population for each population type
 	std::map<metternich::culture *, int> population_per_culture; //the population for each culture
 	std::map<metternich::religion *, int> population_per_religion; //the population for each religion
+	std::vector<QGeoPolygon> geopolygons;
 };
 
 }

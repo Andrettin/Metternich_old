@@ -255,6 +255,9 @@ void database::load()
 		metadata->get_processing_function()(false);
 	}
 
+	//load map data for provinces
+	province::process_map_database();
+
 	//initialize data entries for each data type
 	for (const std::unique_ptr<data_type_metadata> &metadata : this->metadata) {
 		metadata->get_initialization_function()();

@@ -138,6 +138,10 @@ void province::process_gsml_scope(const gsml_data &scope)
 		}
 
 		province::instances_by_rgb[this->color.rgb()] = this;
+	} else if (tag == "coordinates") {
+		for (const gsml_data &polygon_data : scope.get_children()) {
+			this->geopolygons.push_back(polygon_data.to_geopolygon());
+		}
 	} else {
 		data_entry_base::process_gsml_scope(scope);
 	}
@@ -775,6 +779,11 @@ QVariantList province::get_population_per_religion_qvariant_list() const
 	}
 
 	return population_per_religion;
+}
+
+QVariantList province::get_geopolygons_qvariant_list() const
+{
+	return util::container_to_qvariant_list(this->geopolygons);
 }
 
 }
