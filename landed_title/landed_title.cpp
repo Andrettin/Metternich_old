@@ -140,7 +140,7 @@ void LandedTitle::process_gsml_scope(const gsml_data &scope)
 		const int red = std::stoi(values.at(0));
 		const int green = std::stoi(values.at(1));
 		const int blue = std::stoi(values.at(2));
-		this->Color.setRgb(red, green, blue);
+		this->color.setRgb(red, green, blue);
 	} else {
 		data_entry_base::process_gsml_scope(scope);
 	}
@@ -192,7 +192,7 @@ void LandedTitle::initialize_history()
 */
 void LandedTitle::check() const
 {
-	if (this->GetTier() != LandedTitleTier::Barony && !this->GetColor().isValid()) {
+	if (this->GetTier() != LandedTitleTier::Barony && !this->get_color().isValid()) {
 		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has no valid color.");
 	}
 

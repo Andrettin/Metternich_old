@@ -22,6 +22,7 @@ class LandedTitle : public data_entry, public data_type<LandedTitle>
 	Q_OBJECT
 
 	Q_PROPERTY(QString titled_name READ GetTitledNameQString NOTIFY TitledNameChanged)
+	Q_PROPERTY(QColor color READ get_color CONSTANT)
 	Q_PROPERTY(metternich::Character* holder READ GetHolder WRITE SetHolder NOTIFY HolderChanged)
 	Q_PROPERTY(metternich::LandedTitle* holder_title MEMBER HolderTitle WRITE SetHolderTitle)
 	Q_PROPERTY(metternich::LandedTitle* liege_title MEMBER LiegeTitle)
@@ -78,9 +79,9 @@ public:
 
 	std::string GetHolderTitleName() const;
 
-	const QColor &GetColor() const
+	const QColor &get_color() const
 	{
-		return this->Color;
+		return this->color;
 	}
 
 	LandedTitleTier GetTier() const
@@ -172,7 +173,7 @@ signals:
 	void RealmChanged();
 
 private:
-	QColor Color;
+	QColor color;
 	LandedTitleTier Tier;
 	Character *Holder = nullptr;
 	metternich::holding *holding = nullptr; //this title's holding, if it is a non-titular barony

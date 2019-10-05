@@ -374,9 +374,9 @@ void province::update_image()
 	if (this->get_county() != nullptr) {
 		const LandedTitle *realm = this->get_county()->GetRealm();
 		if (realm != nullptr) {
-			province_color = realm->GetColor();
+			province_color = realm->get_color();
 		} else {
-			province_color = this->get_county()->GetColor();
+			province_color = this->get_county()->get_color();
 		}
 	} else if (this->get_terrain()->IsWater()) {
 		province_color = QColor("#0080ff");

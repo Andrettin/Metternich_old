@@ -17,7 +17,7 @@ class PopulationType : public data_entry, public data_type<PopulationType>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(QColor color MEMBER Color READ GetColor)
+	Q_PROPERTY(QColor color MEMBER color READ get_color)
 	Q_PROPERTY(QVariantList holding_types READ get_holding_types_qvariant_list)
 
 public:
@@ -30,9 +30,9 @@ public:
 	virtual void process_gsml_scope(const gsml_data &scope) override;
 	virtual void check() const override;
 
-	const QColor &GetColor() const
+	const QColor &get_color() const
 	{
-		return this->Color;
+		return this->color;
 	}
 
 	const std::set<holding_type *> &get_holding_types() const
@@ -53,7 +53,7 @@ public:
 	}
 
 private:
-	QColor Color;
+	QColor color;
 	std::set<holding_type *> holding_types; //the holding types where this population type can live
 };
 

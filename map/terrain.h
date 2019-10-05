@@ -13,7 +13,7 @@ class Terrain : public data_entry, public data_type<Terrain>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(QColor color READ GetColor CONSTANT)
+	Q_PROPERTY(QColor color READ get_color CONSTANT)
 	Q_PROPERTY(bool water MEMBER Water READ IsWater)
 	Q_PROPERTY(bool navigable MEMBER Navigable READ IsNavigable)
 	Q_PROPERTY(bool ocean MEMBER Ocean READ IsOcean)
@@ -34,9 +34,9 @@ public:
 
 	virtual void process_gsml_scope(const gsml_data &scope) override;
 
-	const QColor &GetColor() const
+	const QColor &get_color() const
 	{
-		return this->Color;
+		return this->color;
 	}
 
 	bool IsWater() const
@@ -65,7 +65,7 @@ public:
 	}
 
 private:
-	QColor Color; //the color used to identify the terrain in the terrain map
+	QColor color; //the color used to identify the terrain in the terrain map
 	bool Water = false; //whether the terrain is a water terrain
 	bool Navigable = false; //whether this water terrain is navigable
 	bool Ocean = false;
