@@ -138,7 +138,7 @@ void province::process_gsml_scope(const gsml_data &scope)
 		}
 
 		province::instances_by_rgb[this->color.rgb()] = this;
-	} else if (tag == "coordinates") {
+	} else if (tag == "geopolygons") {
 		for (const gsml_data &polygon_data : scope.get_children()) {
 			this->geopolygons.push_back(polygon_data.to_geopolygon());
 		}

@@ -45,6 +45,28 @@ public:
 		return this->children;
 	}
 
+	const gsml_data &get_child(const std::string &tag) const
+	{
+		for (const gsml_data &child : this->get_children()) {
+			if (child.get_tag() == tag) {
+				return child;
+			}
+		}
+
+		throw std::runtime_error("No child with tag \"" + tag + "\" found for this GSML data.");
+	}
+
+	bool has_child(const std::string &tag) const
+	{
+		for (const gsml_data &child : this->get_children()) {
+			if (child.get_tag() == tag) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	void add_child(gsml_data &&child)
 	{
 		this->children.push_back(child);
@@ -80,7 +102,7 @@ public:
 		return QGeoCoordinate(latitude, longitude);
 	}
 
-	QGeoPolygon to_geopolygon() const
+	QList<QGeoCoordinate> to_geocoordinate_list() const
 	{
 		QList<QGeoCoordinate> coordinates;
 
@@ -89,7 +111,22 @@ public:
 			coordinates.append(std::move(coordinate));
 		}
 
-		return QGeoPolygon(coordinates);
+		return coordinates;
+	}
+
+	QGeoPolygon to_geopolygon() const
+	{
+		QList<QGeoCoordinate> coordinates = this->get_child("coordinates").to_geocoordinate_list();
+		QGeoPolygon geopolygon(coordinates);
+
+		if (this->has_child("hole_coordinates")) {
+			for (const gsml_data &hole_coordinate_data : this->get_child("hole_coordinates").get_children()) {
+				QList<QGeoCoordinate> hole_coordinates = hole_coordinate_data.to_geocoordinate_list();
+				geopolygon.addHole(hole_coordinates);
+			}
+		}
+
+		return geopolygon;
 	}
 
 	void print_to_dir(const std::filesystem::path &directory) const

@@ -102,8 +102,8 @@ void map::process_geojson_features(const QVariantList &features)
 			const QVariantList multi_polygon_coordinates = geometry.value("coordinates").toList();
 
 			for (const QVariant &polygon_coordinates_variant : multi_polygon_coordinates) {
-				const QVariantList polygon_coordinates = polygon_coordinates_variant.toList().front().toList();
-				this->process_geojson_polygon_coordinates(feature_name, polygon_coordinates);
+				const QVariantList polygon_coordinates = polygon_coordinates_variant.toList();
+				this->process_geojson_polygon(feature_name, polygon_coordinates);
 			}
 		} else {
 			throw std::runtime_error("Invalid GeoJSON feature type: " + geometry_type);
@@ -114,21 +114,58 @@ void map::process_geojson_features(const QVariantList &features)
 /**
 **	@brief	Process the coordinates for a GeoJSON polygon
 **
-**	@param	feature_name	The name of the feature
-**	@param	coordinates		The coordinates
+**	@param	feature_name		The name of the feature
+**	@param	coordinate_group	The coordinates, containing both the polygon itself and holes in it (if any)
 */
-void map::process_geojson_polygon_coordinates(const std::string &feature_name, const QVariantList &coordinates)
+void map::process_geojson_polygon(const std::string &feature_name, const QVariantList &coordinate_group)
 {
-	std::vector<std::pair<double, double>> polygon_coordinates;
+	gsml_data geopolygon_data;
 
-	for (const QVariant &coordinate_variant : coordinates) {
-		const QVariantList coordinate = coordinate_variant.toList();
-		const double latitude = coordinate[0].toDouble();
-		const double longitude = coordinate[1].toDouble();
-		polygon_coordinates.emplace_back(latitude, longitude);
+	const QVariantList coordinates = coordinate_group.front().toList();
+	gsml_data coordinate_data("coordinates");
+	this->process_geojson_coordinates(coordinates, coordinate_data);
+	geopolygon_data.add_child(std::move(coordinate_data));
+
+	//process hole coordinates
+	if (coordinate_group.size() > 1) {
+		gsml_data hole_data("hole_coordinates");
+		for (int i = 1; i < coordinate_group.size(); ++i) {
+			const QVariantList hole_coordinates = coordinate_group[i].toList();
+			gsml_data hole_coordinate_data;
+			this->process_geojson_coordinates(hole_coordinates, hole_coordinate_data);
+			hole_data.add_child(std::move(hole_coordinate_data));
+		}
+		geopolygon_data.add_child(std::move(hole_data));
 	}
 
-	this->geojson_polygon_coordinates[feature_name].push_back(polygon_coordinates);
+	this->geojson_polygon_data[feature_name].push_back(std::move(geopolygon_data));
+}
+
+/**
+**	@brief	Process GeoJSON coordinates
+**
+**	@param	coordinates				The coordinates
+**	@param	coordinate_list_data	The coordinate list GSML data
+*/
+void map::process_geojson_coordinates(const QVariantList &coordinates, gsml_data &coordinate_list_data)
+{
+	for (const QVariant &coordinate_variant : coordinates) {
+		const QVariantList coordinate = coordinate_variant.toList();
+		const double longitude = coordinate[0].toDouble();
+		const double latitude = coordinate[1].toDouble();
+
+		gsml_data coordinate_data;
+
+		std::ostringstream lon_string_stream;
+		lon_string_stream << std::setprecision(map::geojson_coordinate_precision) << longitude;
+		coordinate_data.add_value(lon_string_stream.str());
+
+		std::ostringstream lat_string_stream;
+		lat_string_stream << std::setprecision(map::geojson_coordinate_precision) << latitude;
+		coordinate_data.add_value(lat_string_stream.str());
+
+		coordinate_list_data.add_child(std::move(coordinate_data));
+	}
 }
 
 /**
@@ -136,37 +173,21 @@ void map::process_geojson_polygon_coordinates(const std::string &feature_name, c
 */
 void map::save_geojson_data_to_gsml()
 {
-	for (const auto &kv_pair : this->geojson_polygon_coordinates) {
+	for (auto &kv_pair : this->geojson_polygon_data) {
 		const std::string &feature_name = kv_pair.first;
 
 		gsml_data data(feature_name);
-		gsml_data coordinate_data("coordinates");
+		gsml_data geopolygons("geopolygons");
 
-		for (const std::vector<std::pair<double, double>> &polygon_coordinates : kv_pair.second) {
-			gsml_data polygon_coordinate_data;
-
-			for (const std::pair<double, double> &coordinate_pair : polygon_coordinates) {
-				gsml_data coordinate;
-
-				std::ostringstream lat_string_stream;
-				lat_string_stream << std::setprecision(map::geojson_coordinate_precision) << coordinate_pair.first;
-				coordinate.add_value(lat_string_stream.str());
-
-				std::ostringstream lon_string_stream;
-				lon_string_stream << std::setprecision(map::geojson_coordinate_precision) << coordinate_pair.second;
-				coordinate.add_value(lon_string_stream.str());
-
-				polygon_coordinate_data.add_child(std::move(coordinate));
-			}
-
-			coordinate_data.add_child(std::move(polygon_coordinate_data));
+		for (gsml_data &geopolygon_data : kv_pair.second) {
+			geopolygons.add_child(std::move(geopolygon_data));
 		}
 
-		data.add_child(std::move(coordinate_data));
+		data.add_child(std::move(geopolygons));
 		data.print_to_dir("./map/provinces/");
 	}
 
-	this->geojson_polygon_coordinates.clear();
+	this->geojson_polygon_data.clear();
 }
 
 void map::load_provinces()

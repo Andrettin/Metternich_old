@@ -1,10 +1,13 @@
 #pragma once
 
+#include "database/gsml_data.h"
 #include "singleton.h"
 
 #include <QPoint>
 #include <QSize>
 #include <QVariantList>
+
+#include <utility>
 
 namespace metternich {
 
@@ -21,14 +24,15 @@ private:
 	void load_geojson_files();
 	void process_geojson_data(const QVariantMap &geojson_data);
 	void process_geojson_features(const QVariantList &features);
-	void process_geojson_polygon_coordinates(const std::string &feature_name, const QVariantList &coordinates);
+	void process_geojson_polygon(const std::string &feature_name, const QVariantList &coordinate_group);
+	void process_geojson_coordinates(const QVariantList &coordinates, gsml_data &coordinate_list_data);
 	void save_geojson_data_to_gsml();
 	void load_provinces();
 	void load_terrain();
 
 private:
 	QSize size = QSize(0, 0);
-	std::map<std::string, std::vector<std::vector<std::pair<double, double>>>> geojson_polygon_coordinates; //GeoJSON polygon coordinates, mapped to the name of the corresponding feature
+	std::map<std::string, std::vector<gsml_data>> geojson_polygon_data; //GeoJSON geopolygons coordinates, mapped to the name of the corresponding feature
 };
 
 }
