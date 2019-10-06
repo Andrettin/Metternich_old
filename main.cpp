@@ -40,7 +40,7 @@ namespace metternich {
 			map::get()->load();
 			Game::get()->Start(Defines::get()->GetStartDate());
 		} catch (const std::exception &exception) {
-			std::cerr << exception.what() << '\n';
+			qCritical() << exception.what() << '\n';
 			QApplication::exit(EXIT_FAILURE);
 		}
 	}
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
 
 		return app.exec();
 	} catch (const std::exception &exception) {
-		std::cerr << exception.what() << '\n';
+		qCritical() << exception.what() << '\n';
 		return -1;
 	}
 }
