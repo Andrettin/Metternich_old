@@ -100,8 +100,11 @@ void map::process_geojson_features(const QVariantList &features)
 
 		if (geometry_type == "MultiPolygon") {
 			const QVariantList multi_polygon_coordinates = geometry.value("coordinates").toList();
-			const QVariantList polygon_coordinates = multi_polygon_coordinates.front().toList().front().toList();
-			this->process_geojson_polygon_coordinates(feature_name, polygon_coordinates);
+
+			for (const QVariant &polygon_coordinates_variant : multi_polygon_coordinates) {
+				const QVariantList polygon_coordinates = polygon_coordinates_variant.toList().front().toList();
+				this->process_geojson_polygon_coordinates(feature_name, polygon_coordinates);
+			}
 		} else {
 			throw std::runtime_error("Invalid GeoJSON feature type: " + geometry_type);
 		}
