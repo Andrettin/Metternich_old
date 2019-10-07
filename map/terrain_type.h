@@ -21,7 +21,7 @@ class terrain_type : public data_entry, public data_type<terrain_type>
 
 public:
 	static constexpr const char *class_identifier = "terrain";
-	static constexpr const char *database_folder = "terrains";
+	static constexpr const char *database_folder = "terrain_types";
 
 	static terrain_type *get_by_rgb(const QRgb &rgb, const bool should_find = true);
 
