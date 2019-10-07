@@ -19,7 +19,8 @@ void map::load()
 	this->load_provinces();
 	this->load_terrain();
 
-	//load map data for provinces
+	//load map data for terrain types and provinces
+	terrain_type::process_map_database();
 	province::process_map_database();
 }
 

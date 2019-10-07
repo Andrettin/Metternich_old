@@ -71,6 +71,7 @@ private:
 	bool ocean = false;
 	bool river = false;
 	std::unique_ptr<metternich::Modifier> modifier; //the modifier applied to provinces with this terrain
+	std::vector<QGeoPolygon> geopolygons;
 };
 
 }

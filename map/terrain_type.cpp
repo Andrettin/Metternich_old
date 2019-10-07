@@ -63,6 +63,10 @@ void terrain_type::process_gsml_scope(const gsml_data &scope)
 	} else if (tag == "modifier") {
 		this->modifier = std::make_unique<metternich::Modifier>();
 		database::process_gsml_data(this->modifier, scope);
+	} else if (tag == "geopolygons") {
+		for (const gsml_data &polygon_data : scope.get_children()) {
+			this->geopolygons.push_back(polygon_data.to_geopolygon());
+		}
 	} else {
 		data_entry_base::process_gsml_scope(scope);
 	}
