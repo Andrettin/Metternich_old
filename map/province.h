@@ -4,6 +4,7 @@
 #include "database/data_type.h"
 
 #include <QColor>
+#include <QGeoCoordinate>
 #include <QGeoPolygon>
 #include <QImage>
 #include <QObject>
@@ -270,6 +271,18 @@ public:
 	Q_INVOKABLE QVariantList get_population_per_religion_qvariant_list() const;
 
 	QVariantList get_geopolygons_qvariant_list() const;
+
+	bool contains_coordinate(const QGeoCoordinate &coordinate) const
+	{
+		//get whether a coordinate is located in the province
+		for (const QGeoPolygon &geopolygon : this->geopolygons) {
+			if (geopolygon.contains(coordinate)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
 
 signals:
 	void county_changed();

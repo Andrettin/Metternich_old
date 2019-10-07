@@ -24,9 +24,31 @@ void map::load()
 	province::process_map_database();
 }
 
-QPoint map::get_pixel_position(const int index)
+QPoint map::get_pixel_position(const int index) const
 {
 	return util::index_to_point(index, this->size);
+}
+
+terrain_type *map::get_coordinate_terrain(const QGeoCoordinate &coordinate) const
+{
+	for (terrain_type *terrain_type : terrain_type::get_all()) {
+		if (terrain_type->contains_coordinate(coordinate)) {
+			return terrain_type;
+		}
+	}
+
+	return nullptr;
+}
+
+province *map::get_coordinate_province(const QGeoCoordinate &coordinate) const
+{
+	for (province *province : province::get_all()) {
+		if (province->contains_coordinate(coordinate)) {
+			return province;
+		}
+	}
+
+	return nullptr;
 }
 
 /**

@@ -64,6 +64,18 @@ public:
 		return this->modifier;
 	}
 
+	bool contains_coordinate(const QGeoCoordinate &coordinate) const
+	{
+		//get whether the areas of this terrain type contain the given coordinate
+		for (const QGeoPolygon &geopolygon : this->geopolygons) {
+			if (geopolygon.contains(coordinate)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 private:
 	QColor color; //the color used to identify the terrain in the terrain map
 	bool water = false; //whether the terrain is a water terrain
