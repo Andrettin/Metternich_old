@@ -23,12 +23,17 @@ void map::load()
 	terrain_type::process_map_database();
 	province::process_map_database();
 
+	int processed_provinces = 0;
 	for (province *province : province::get_all()) {
+		const int progress_percent = processed_provinces * 100 / static_cast<int>(province::get_all().size());
+		EngineInterface::get()->set_loading_message("Calculating Province Terrain and Border Provinces... (" + QString::number(progress_percent) + "%)");
+
 		if (province->get_terrain() == nullptr) {
 			province->calculate_terrain();
 		}
 
 		province->calculate_border_provinces();
+		processed_provinces++;
 	}
 }
 
