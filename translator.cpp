@@ -1,6 +1,7 @@
 #include "translator.h"
 
 #include "database/gsml_data.h"
+#include "database/gsml_parser.h"
 #include "util.h"
 
 #include <filesystem>
@@ -71,7 +72,8 @@ void Translator::load_locale(const std::string &language)
 			continue;
 		}
 
-		gsml_data gsml_data = gsml_data::parse_file(dir_entry.path());
+		gsml_parser parser(dir_entry.path());
+		gsml_data gsml_data = parser.parse();
 
 		for (const gsml_property &property : gsml_data.get_properties()) {
 			if (property.get_operator() != gsml_operator::assignment) {

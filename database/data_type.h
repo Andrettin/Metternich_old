@@ -4,6 +4,7 @@
 #include "database/data_type_base.h"
 #include "database/data_type_metadata.h"
 #include "database/gsml_data.h"
+#include "database/gsml_parser.h"
 
 #include <QApplication>
 
@@ -164,7 +165,8 @@ public:
 				continue;
 			}
 
-			T::gsml_data_to_process.push_back(gsml_data::parse_file(dir_entry.path()));
+			gsml_parser parser(dir_entry.path());
+			T::gsml_data_to_process.push_back(parser.parse());
 		}
 	}
 
@@ -229,7 +231,8 @@ public:
 				}
 			}
 
-			T::gsml_history_data_to_process.push_back(gsml_data::parse_file(dir_entry.path()));
+			gsml_parser parser(dir_entry.path());
+			T::gsml_history_data_to_process.push_back(parser.parse());
 		}
 	}
 
@@ -302,7 +305,8 @@ public:
 				throw std::runtime_error(dir_entry.path().stem().string() + " is not a valid \"" + T::class_identifier + "\" instance identifier.");
 			}
 
-			gsml_map_data_to_process.push_back(gsml_data::parse_file(dir_entry.path()));
+			gsml_parser parser(dir_entry.path());
+			gsml_map_data_to_process.push_back(parser.parse());
 		}
 
 		for (gsml_data &data : gsml_map_data_to_process) {

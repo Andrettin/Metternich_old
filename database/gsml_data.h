@@ -14,6 +14,8 @@
 
 namespace metternich {
 
+class gsml_parser;
+
 /**
 **	@brief	Grand strategy markup language data
 */
@@ -21,13 +23,6 @@ class gsml_data
 {
 public:
 	gsml_data(const std::string tag = std::string()) : tag(tag) {}
-
-	static gsml_data parse_file(const std::filesystem::path &filepath);
-
-private:
-	static std::vector<std::string> parse_line(const std::string &line);
-	static bool parse_escaped_character(std::string &current_string, const char c);
-	static void parse_tokens(const std::vector<std::string> &tokens, gsml_data **current_gsml_data);
 
 public:
 	const std::string &get_tag() const
@@ -206,6 +201,8 @@ private:
 	std::vector<gsml_data> children;
 	std::vector<gsml_property> properties;
 	std::vector<std::string> values; //values directly attached to the GSML data scope, used for e.g. name arrays
+
+	friend gsml_parser;
 };
 
 }

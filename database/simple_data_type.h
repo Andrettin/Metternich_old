@@ -2,6 +2,7 @@
 
 #include "database/data_type_base.h"
 #include "database/gsml_data.h"
+#include "database/gsml_parser.h"
 
 #include <filesystem>
 #include <string>
@@ -34,7 +35,8 @@ public:
 				continue;
 			}
 
-			T::gsml_history_data_to_process.push_back(gsml_data::parse_file(dir_entry.path()));
+			gsml_parser parser(dir_entry.path());
+			T::gsml_history_data_to_process.push_back(parser.parse());
 		}
 	}
 };

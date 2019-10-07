@@ -2,6 +2,7 @@
 
 #include "database/database.h"
 #include "database/gsml_data.h"
+#include "database/gsml_parser.h"
 #include "history/history.h"
 
 namespace metternich {
@@ -17,7 +18,8 @@ void Defines::load()
 		return;
 	}
 
-	gsml_data gsml_data = gsml_data::parse_file(defines_path);
+	gsml_parser parser(defines_path);
+	gsml_data gsml_data = parser.parse();
 
 	for (const gsml_property &property : gsml_data.get_properties()) {
 		this->process_gsml_property(property);

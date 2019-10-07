@@ -20,7 +20,7 @@ SOURCES += \
         database/csv_data.cpp \
         database/data_entry.cpp \
         database/database.cpp \
-        database/gsml_data.cpp \
+        database/gsml_parser.cpp \
         defines.cpp \
         economy/commodity.cpp \
         economy/employee.cpp \
@@ -85,6 +85,7 @@ HEADERS += \
     database/database.h \
     database/gsml_data.h \
     database/gsml_operator.h \
+    database/gsml_parser.h \
     database/gsml_property.h \
     database/simple_data_type.h \
     defines.h \
