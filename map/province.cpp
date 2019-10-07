@@ -429,6 +429,37 @@ void province::set_terrain(metternich::terrain_type *terrain)
 }
 
 /**
+**	@brief	Calculate the province's terrain
+*/
+void province::calculate_terrain()
+{
+	std::map<terrain_type *, int> terrain_counts;
+
+	for (const QGeoPolygon &geopolygon : this->geopolygons) {
+		terrain_type *terrain = map::get()->get_coordinate_terrain(geopolygon.center());
+
+		if (terrain != nullptr) {
+			terrain_counts[terrain]++;
+		}
+	}
+
+	terrain_type *best_terrain = nullptr;
+	int best_terrain_count = 0;
+	for (const auto &kv_pair : terrain_counts) {
+		terrain_type *terrain = kv_pair.first;
+		const int count = kv_pair.second;
+		if (count > best_terrain_count) {
+			best_terrain = terrain;
+			best_terrain_count = count;
+		}
+	}
+
+	if (best_terrain != nullptr) {
+		this->set_terrain(best_terrain);
+	}
+}
+
+/**
 **	@brief	Set the province's population
 **
 **	@param	population	The new population size for the province
@@ -649,6 +680,39 @@ void province::destroy_holding(LandedTitle *barony)
 void province::add_population_unit(std::unique_ptr<population_unit> &&population_unit)
 {
 	this->population_units.push_back(std::move(population_unit));
+}
+
+/**
+**	@brief	Calculate the province's border provinces
+*/
+void province::calculate_border_provinces()
+{
+	std::set<province *> border_provinces;
+	std::vector<QGeoCoordinate> border_coordinates;
+
+	for (const QGeoPolygon &geopolygon : this->geopolygons) {
+		QList<QGeoCoordinate> coordinates = geopolygon.path();
+
+		for (int i = 0; i < geopolygon.holesCount(); ++i) {
+			coordinates.append(geopolygon.holePath(i));
+		}
+
+		for (const QGeoCoordinate &coordinate : coordinates) {
+			border_coordinates.push_back(coordinate.atDistanceAndAzimuth(1000, 0));
+			border_coordinates.push_back(coordinate.atDistanceAndAzimuth(1000, 90));
+			border_coordinates.push_back(coordinate.atDistanceAndAzimuth(1000, 180));
+			border_coordinates.push_back(coordinate.atDistanceAndAzimuth(1000, 270));
+		}
+	}
+
+	for (const QGeoCoordinate &coordinate : border_coordinates) {
+		province *coordinate_province = map::get()->get_coordinate_province(coordinate);
+		if (coordinate_province != nullptr && coordinate_province != this) {
+			border_provinces.insert(coordinate_province);
+		}
+	}
+
+	this->border_provinces = border_provinces;
 }
 
 /**

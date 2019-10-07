@@ -22,6 +22,14 @@ void map::load()
 	//load map data for terrain types and provinces
 	terrain_type::process_map_database();
 	province::process_map_database();
+
+	for (province *province : province::get_all()) {
+		if (province->get_terrain() == nullptr) {
+			province->calculate_terrain();
+		}
+
+		province->calculate_border_provinces();
+	}
 }
 
 QPoint map::get_pixel_position(const int index) const
