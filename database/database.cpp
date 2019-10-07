@@ -20,7 +20,7 @@
 #include "landed_title/landed_title.h"
 #include "map/province.h"
 #include "map/region.h"
-#include "map/terrain.h"
+#include "map/terrain_type.h"
 #include "phenotype.h"
 #include "politics/law.h"
 #include "politics/law_group.h"
@@ -112,7 +112,7 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 			} else if (property.get_key() == "region") {
 				new_property_value = QVariant::fromValue(region::get(property.get_value()));
 			} else if (property.get_key() == "terrain") {
-				new_property_value = QVariant::fromValue(Terrain::get(property.get_value()));
+				new_property_value = QVariant::fromValue(terrain_type::get(property.get_value()));
 			} else if (property.get_key() == "culture") {
 				new_property_value = QVariant::fromValue(culture::get(property.get_value()));
 			} else if (property.get_key() == "culture_group") {

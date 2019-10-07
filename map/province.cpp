@@ -12,7 +12,7 @@
 #include "landed_title/landed_title.h"
 #include "map/map.h"
 #include "map/region.h"
-#include "map/terrain.h"
+#include "map/terrain_type.h"
 #include "population/population_type.h"
 #include "population/population_unit.h"
 #include "religion.h"
@@ -382,7 +382,7 @@ void province::update_image()
 		} else {
 			province_color = this->get_county()->get_color();
 		}
-	} else if (this->get_terrain()->IsWater()) {
+	} else if (this->get_terrain()->is_water()) {
 		province_color = QColor("#0080ff");
 	} else {
 		province_color = QColor(Qt::darkGray); //wasteland
@@ -407,22 +407,22 @@ void province::update_image()
 **
 **	@param	terrain	The new terrain
 */
-void province::set_terrain(metternich::Terrain *terrain)
+void province::set_terrain(metternich::terrain_type *terrain)
 {
 	if (terrain == this->get_terrain()) {
 		return;
 	}
 
-	const metternich::Terrain *old_terrain = this->get_terrain();
+	const metternich::terrain_type *old_terrain = this->get_terrain();
 
-	if (old_terrain != nullptr && old_terrain->GetModifier() != nullptr) {
-		old_terrain->GetModifier()->remove(this);
+	if (old_terrain != nullptr && old_terrain->get_modifier() != nullptr) {
+		old_terrain->get_modifier()->remove(this);
 	}
 
 	this->terrain = terrain;
 
-	if (terrain != nullptr && terrain->GetModifier() != nullptr) {
-		terrain->GetModifier()->Apply(this);
+	if (terrain != nullptr && terrain->get_modifier() != nullptr) {
+		terrain->get_modifier()->Apply(this);
 	}
 
 	emit terrain_changed();
@@ -659,7 +659,7 @@ void province::add_population_unit(std::unique_ptr<population_unit> &&population
 bool province::borders_water() const
 {
 	for (const province *border_province : this->border_provinces) {
-		if (border_province->get_terrain()->IsWater()) {
+		if (border_province->get_terrain()->is_water()) {
 			return true;
 		}
 	}
@@ -675,7 +675,7 @@ bool province::borders_water() const
 bool province::borders_river() const
 {
 	for (const province *border_province : this->border_provinces) {
-		if (border_province->get_terrain()->IsRiver()) {
+		if (border_province->get_terrain()->is_river()) {
 			return true;
 		}
 	}
@@ -691,7 +691,7 @@ bool province::borders_river() const
 bool province::is_coastal() const
 {
 	for (const province *border_province : this->border_provinces) {
-		if (border_province->get_terrain()->IsOcean()) {
+		if (border_province->get_terrain()->is_ocean()) {
 			return true;
 		}
 	}

@@ -28,7 +28,7 @@ std::unique_ptr<Condition> Condition::FromGSMLProperty(const gsml_property &prop
 	} else if (condition_identifier == "commodity") {
 		condition = std::make_unique<commodity_condition>(property.get_value());
 	} else if (condition_identifier == "terrain") {
-		condition = std::make_unique<TerrainCondition>(property.get_value());
+		condition = std::make_unique<terrain_condition>(property.get_value());
 	} else {
 		throw std::runtime_error("Invalid property condition: \"" + condition_identifier + "\".");
 	}

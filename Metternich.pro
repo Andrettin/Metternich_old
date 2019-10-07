@@ -39,7 +39,7 @@ SOURCES += \
         map/province.cpp \
         map/province_image_provider.cpp \
         map/region.cpp \
-        map/terrain.cpp \
+        map/terrain_type.cpp \
         population/population_type.cpp \
         population/population_unit.cpp \
         religion.cpp \
@@ -107,7 +107,7 @@ HEADERS += \
     map/province.h \
     map/province_image_provider.h \
     map/region.h \
-    map/terrain.h \
+    map/terrain_type.h \
     pch.h \
     phenotype.h \
     politics/law.h \

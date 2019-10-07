@@ -2,7 +2,7 @@
 
 #include "engine_interface.h"
 #include "map/province.h"
-#include "map/terrain.h"
+#include "map/terrain_type.h"
 #include "util.h"
 
 #include <QImage>
@@ -201,7 +201,7 @@ void map::load_provinces()
 
 	std::map<province *, std::vector<int>> province_pixel_indexes;
 	std::map<province *, std::vector<int>> province_border_pixel_indexes;
-	std::map<province *, std::map<Terrain *, int>> province_terrain_counts;
+	std::map<province *, std::map<terrain_type *, int>> province_terrain_counts;
 
 	const QRgb *rgb_data = reinterpret_cast<const QRgb *>(province_image.constBits());
 	const QRgb *terrain_rgb_data = reinterpret_cast<const QRgb *>(terrain_image.constBits());
@@ -243,8 +243,8 @@ void map::load_provinces()
 			}
 
 			const QRgb &terrain_pixel_rgb = terrain_rgb_data[i];
-			Terrain *pixel_terrain = Terrain::GetByRGB(terrain_pixel_rgb);
-			std::map<Terrain *, int> &province_terrain_count = province_terrain_counts[pixel_province];
+			terrain_type *pixel_terrain = terrain_type::get_by_rgb(terrain_pixel_rgb);
+			std::map<terrain_type *, int> &province_terrain_count = province_terrain_counts[pixel_province];
 			if (province_terrain_count.find(pixel_terrain) == province_terrain_count.end()) {
 				province_terrain_count[pixel_terrain] = 0;
 			}
@@ -256,10 +256,10 @@ void map::load_provinces()
 
 	for (const auto &province_terrain_count : province_terrain_counts) {
 		province *province = province_terrain_count.first;
-		Terrain *best_terrain = nullptr;
+		terrain_type *best_terrain = nullptr;
 		int best_terrain_count = 0;
 		for (const auto &kv_pair : province_terrain_count.second) {
-			Terrain *terrain = kv_pair.first;
+			terrain_type *terrain = kv_pair.first;
 			const int count = kv_pair.second;
 			if (count > best_terrain_count) {
 				best_terrain = terrain;

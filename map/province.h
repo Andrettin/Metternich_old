@@ -27,7 +27,7 @@ class PopulationType;
 class population_unit;
 class region;
 class religion;
-class Terrain;
+class terrain_type;
 
 class province : public data_entry, public data_type<province>
 {
@@ -40,7 +40,7 @@ class province : public data_entry, public data_type<province>
 	Q_PROPERTY(QColor color READ get_color CONSTANT)
 	Q_PROPERTY(QRect rect READ get_rect CONSTANT)
 	Q_PROPERTY(QImage image READ get_image NOTIFY image_changed)
-	Q_PROPERTY(metternich::Terrain* terrain READ get_terrain WRITE set_terrain NOTIFY terrain_changed)
+	Q_PROPERTY(metternich::terrain_type* terrain READ get_terrain WRITE set_terrain NOTIFY terrain_changed)
 	Q_PROPERTY(metternich::culture* culture READ get_culture WRITE set_culture NOTIFY culture_changed)
 	Q_PROPERTY(metternich::religion* religion READ get_religion WRITE set_religion NOTIFY religion_changed)
 	Q_PROPERTY(int population READ get_population WRITE set_population NOTIFY population_changed)
@@ -112,12 +112,12 @@ public:
 		return this->image;
 	}
 
-	metternich::Terrain *get_terrain() const
+	terrain_type *get_terrain() const
 	{
 		return this->terrain;
 	}
 
-	void set_terrain(Terrain *terrain);
+	void set_terrain(terrain_type *terrain);
 
 	metternich::culture *get_culture() const
 	{
@@ -291,7 +291,7 @@ private:
 	QColor color; //the color used to identify the province in the province map
 	QRect rect; //the rectangle that the province occupies
 	QImage image; //the province's image to be drawn on-screen
-	metternich::Terrain *terrain = nullptr;
+	terrain_type *terrain = nullptr;
 	metternich::culture *culture = nullptr;
 	metternich::religion *religion = nullptr;
 	int population = 0; //the sum of the population of all of the province's settlement holdings

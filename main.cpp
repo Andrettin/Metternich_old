@@ -16,7 +16,7 @@
 #include "map/province.h"
 #include "map/province_image_provider.h"
 #include "map/region.h"
-#include "map/terrain.h"
+#include "map/terrain_type.h"
 #include "population/population_type.h"
 #include "population/population_unit.h"
 #include "religion.h"
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
 		qmlRegisterType<population_unit>();
 		qmlRegisterType<province>();
 		qmlRegisterType<religion>();
-		qmlRegisterType<Terrain>();
+		qmlRegisterType<terrain_type>();
 		engine.rootContext()->setContextProperty("metternich", EngineInterface::get());
 		engine.addImageProvider(QLatin1String("provinces"), new province_image_provider);
 		engine.addImageProvider(QLatin1String("empty"), new EmptyImageProvider);
