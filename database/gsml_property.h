@@ -36,10 +36,13 @@ public:
 		switch (this->get_operator()) {
 			case gsml_operator::assignment:
 				ofstream << "=";
+				break;
 			case gsml_operator::addition:
 				ofstream << "+=";
+				break;
 			case gsml_operator::subtraction:
 				ofstream << "-=";
+				break;
 			case gsml_operator::none:
 				throw std::runtime_error("Cannot print the GSML \"none\" operator.");
 		}

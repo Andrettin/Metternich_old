@@ -35,10 +35,13 @@ private:
 	void save_geojson_data_to_gsml();
 	void load_provinces();
 	void load_terrain();
+	bool check_cache();
+	void save_cache();
 
 private:
 	QSize size = QSize(0, 0);
 	std::map<std::string, std::vector<gsml_data>> geojson_polygon_data; //GeoJSON geopolygons coordinates, mapped to the name of the corresponding feature
+	std::string checksum;
 };
 
 }

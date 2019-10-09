@@ -5,6 +5,7 @@
 #include "map/terrain_type.h"
 #include "util.h"
 
+#include <QCryptographicHash>
 #include <QImage>
 #include <QJsonDocument>
 #include <QRect>
@@ -20,20 +21,29 @@ void map::load()
 	this->load_terrain();
 
 	//load map data for terrain types and provinces
-	terrain_type::process_map_database();
 	province::process_map_database();
 
-	int processed_provinces = 0;
-	for (province *province : province::get_all()) {
-		const int progress_percent = processed_provinces * 100 / static_cast<int>(province::get_all().size());
-		EngineInterface::get()->set_loading_message("Calculating Province Terrain and Border Provinces... (" + QString::number(progress_percent) + "%)");
+	if (this->check_cache()) {
+		EngineInterface::get()->set_loading_message("Loading Map Cache...");
+		terrain_type::process_cache();
+		province::process_cache();
+	} else {
+		terrain_type::process_map_database(); //we only need to load the terrain map database to calculate the province terrain
 
-		if (province->get_terrain() == nullptr) {
-			province->calculate_terrain();
+		int processed_provinces = 0;
+		for (province *province : province::get_all()) {
+			const int progress_percent = processed_provinces * 100 / static_cast<int>(province::get_all().size());
+			EngineInterface::get()->set_loading_message("Calculating Province Terrain and Border Provinces... (" + QString::number(progress_percent) + "%)");
+
+			if (province->get_terrain() == nullptr) {
+				province->calculate_terrain();
+			}
+
+			province->calculate_border_provinces();
+			processed_provinces++;
 		}
 
-		province->calculate_border_provinces();
-		processed_provinces++;
+		this->save_cache();
 	}
 }
 
@@ -320,6 +330,64 @@ void map::load_terrain()
 {
 	EngineInterface::get()->set_loading_message("Loading Terrain...");
 	QImage terrain_image("./map/terrain.png");
+}
+
+/**
+**	@brief	Check to see if the cache is valid
+**
+**	@return	True if the cache is valid, or false otherwise
+*/
+bool map::check_cache()
+{
+	QCryptographicHash hash(QCryptographicHash::Md5);
+	util::add_files_to_checksum(hash, "./map/provinces");
+	util::add_files_to_checksum(hash, "./map/terrain_types");
+
+	this->checksum = hash.result().toHex().toStdString(); //save the checksum
+
+	const std::filesystem::path cache_path("./cache");
+
+	if (!std::filesystem::exists(cache_path)) {
+		return false;
+	}
+
+	const std::filesystem::path stored_checksum_path(cache_path / "checksum.txt");
+
+	if (!std::filesystem::exists(stored_checksum_path)) {
+		return false;
+	}
+
+	gsml_parser parser(stored_checksum_path);
+	gsml_data stored_checksum_data = parser.parse();
+	std::string stored_checksum = stored_checksum_data.get_property_value("map");
+
+	if (stored_checksum != this->checksum) {
+		return false;
+	}
+
+	return true;
+}
+
+/**
+**	@brief	Save the map cache
+*/
+void map::save_cache()
+{
+	const std::filesystem::path cache_path("./cache");
+
+	if (!std::filesystem::exists(cache_path)) {
+		std::filesystem::create_directory(cache_path);
+	}
+
+	const std::filesystem::path stored_checksum_path(cache_path / "checksum.txt");
+
+	std::ofstream ofstream(stored_checksum_path);
+	gsml_data stored_checksum_data;
+	stored_checksum_data.add_property("map", this->checksum);
+	stored_checksum_data.print_components(ofstream);
+	ofstream.close();
+
+	province::save_cache();
 }
 
 }

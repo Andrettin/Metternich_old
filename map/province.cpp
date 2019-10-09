@@ -142,6 +142,11 @@ void province::process_gsml_scope(const gsml_data &scope)
 		for (const gsml_data &polygon_data : scope.get_children()) {
 			this->geopolygons.push_back(polygon_data.to_geopolygon());
 		}
+	} else if (tag == "border_provinces") {
+		for (const std::string &border_province_identifier : scope.get_values()) {
+			province *border_province = province::get(border_province_identifier);
+			this->border_provinces.insert(border_province);
+		}
 	} else {
 		data_entry_base::process_gsml_scope(scope);
 	}
@@ -220,6 +225,25 @@ void province::check() const
 			}
 		}
 	}
+}
+
+/**
+**	@brief	Get cache data for the province
+*/
+gsml_data province::get_cache_data() const
+{
+	gsml_data cache_data(this->get_identifier());
+	cache_data.add_property("terrain", this->get_terrain()->get_identifier());
+
+	gsml_data border_provinces("border_provinces");
+
+	for (const province *province : this->border_provinces) {
+		border_provinces.add_value(province->get_identifier());
+	}
+
+	cache_data.add_child(std::move(border_provinces));
+
+	return cache_data;
 }
 
 /**

@@ -77,6 +77,7 @@ public:
 	virtual void process_gsml_dated_scope(const gsml_data &scope, const QDateTime &date) override;
 	virtual void initialize_history() override;
 	virtual void check() const override;
+	virtual gsml_data get_cache_data() const override;
 
 	void do_day();
 	void do_month();

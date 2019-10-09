@@ -4,6 +4,7 @@
 
 #include <QApplication>
 #include <QColor>
+#include <QCryptographicHash>
 #include <QDateTime>
 #include <QGeoCoordinate>
 #include <QGeoPolygon>

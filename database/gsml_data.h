@@ -48,7 +48,7 @@ public:
 			}
 		}
 
-		throw std::runtime_error("No child with tag \"" + tag + "\" found for this GSML data.");
+		throw std::runtime_error("No child with tag \"" + tag + "\" found for GSML data.");
 	}
 
 	bool has_child(const std::string &tag) const
@@ -70,6 +70,22 @@ public:
 	const std::vector<gsml_property> &get_properties() const
 	{
 		return this->properties;
+	}
+
+	const std::string &get_property_value(const std::string &key) const
+	{
+		for (const gsml_property &property : this->get_properties()) {
+			if (property.get_key() == key) {
+				return property.get_value();
+			}
+		}
+
+		throw std::runtime_error("No property with key \"" + key + "\" found for GSML data.");
+	}
+
+	void add_property(const std::string &key, const std::string &value)
+	{
+		this->properties.emplace_back(key, gsml_operator::assignment, value);
 	}
 
 	const std::vector<std::string> &get_values() const
@@ -126,7 +142,7 @@ public:
 
 	void print_to_dir(const std::filesystem::path &directory) const
 	{
-		std::filesystem::path filepath(directory.string() + this->get_tag() + ".txt");
+		std::filesystem::path filepath(directory / (this->get_tag() + ".txt"));
 		std::ofstream ofstream(filepath);
 		this->print_components(ofstream);
 	}
@@ -157,7 +173,6 @@ public:
 		}
 	}
 
-private:
 	void print_components(std::ofstream &ofstream, const size_t indentation = 0) const
 	{
 		if (!this->get_values().empty()) {
@@ -169,6 +184,11 @@ private:
 		}
 		for (const std::string &value : this->get_values()) {
 			ofstream << value << " ";
+		}
+		if (!this->get_values().empty()) {
+			if (!this->is_minor()) {
+				ofstream << "\n";
+			}
 		}
 
 		for (const gsml_property &property : this->get_properties()) {
@@ -189,6 +209,7 @@ private:
 		}
 	}
 
+private:
 	bool is_minor() const
 	{
 		//get whether this is minor GSML data, e.g. just containing a few simple values

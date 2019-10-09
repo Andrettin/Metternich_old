@@ -50,6 +50,14 @@ void data_entry_base::load_history(gsml_data &data)
 	}
 }
 
+/**
+**	@brief	Get cache data for the data entry
+*/
+gsml_data identifiable_data_entry_base::get_cache_data() const
+{
+	throw std::runtime_error("The data entry's type does not support caching data.");
+}
+
 std::string data_entry::get_name() const
 {
 	return Translator::get()->Translate(this->identifier);

@@ -76,6 +76,8 @@ public:
 		return QString::fromStdString(this->get_name());
 	}
 
+	virtual gsml_data get_cache_data() const;
+
 signals:
 	void name_changed();
 };
