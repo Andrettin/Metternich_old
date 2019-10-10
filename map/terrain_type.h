@@ -14,7 +14,7 @@ class terrain_type : public data_entry, public data_type<terrain_type>
 	Q_OBJECT
 
 	Q_PROPERTY(QColor color READ get_color CONSTANT)
-	Q_PROPERTY(bool water MEMBER water READ is_water)
+	Q_PROPERTY(bool water MEMBER water READ is_water NOTIFY water_changed)
 	Q_PROPERTY(bool navigable MEMBER navigable READ is_navigable)
 	Q_PROPERTY(bool ocean MEMBER ocean READ is_ocean)
 	Q_PROPERTY(bool river MEMBER river READ is_river)
@@ -75,6 +75,9 @@ public:
 
 		return false;
 	}
+
+signals:
+	void water_changed();
 
 private:
 	QColor color; //the color used to identify the terrain in the terrain map

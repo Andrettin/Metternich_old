@@ -206,11 +206,17 @@ void province::initialize_history()
 */
 void province::check() const
 {
-	if (!this->get_color().isValid()) {
-		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no valid color.");
-	}
-
 	if (Game::get()->IsStarting()) {
+		if (this->get_terrain() == nullptr) {
+			throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no terrain.");
+		}
+
+		/*
+		if (this->border_provinces.empty()) {
+			throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no border provinces.");
+		}
+		*/
+
 		if (this->get_county() != nullptr) {
 			if (this->get_culture() == nullptr) {
 				throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no culture.");
