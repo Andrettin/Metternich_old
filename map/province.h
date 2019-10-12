@@ -49,6 +49,7 @@ class province : public data_entry, public data_type<province>
 	Q_PROPERTY(metternich::holding* capital_holding READ get_capital_holding WRITE set_capital_holding NOTIFY capital_holding_changed)
 	Q_PROPERTY(bool selected READ is_selected WRITE set_selected NOTIFY selected_changed)
 	Q_PROPERTY(bool selectable READ is_selectable CONSTANT)
+	Q_PROPERTY(QGeoCoordinate center_coordinate READ get_center_coordinate CONSTANT)
 	Q_PROPERTY(QVariantList geopolygons READ get_geopolygons_qvariant_list CONSTANT)
 
 public:
@@ -275,6 +276,24 @@ public:
 
 	QVariantList get_geopolygons_qvariant_list() const;
 
+	const QGeoPolygon &get_main_geopolygon() const
+	{
+		if (this->geopolygons.empty()) {
+			throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no geopolygons.");
+		}
+
+		size_t main_geopolygon_index = 0;
+
+		//start from 1 as 0 is already the default
+		for (size_t i = 1; i < this->geopolygons.size(); ++i) {
+			const QGeoPolygon &geopolygon = this->geopolygons[i];
+			if (geopolygon.path().size() > this->geopolygons[main_geopolygon_index].path().size()) {
+				main_geopolygon_index = i;
+			}
+		}
+
+		return this->geopolygons[main_geopolygon_index];
+	}
 	bool contains_coordinate(const QGeoCoordinate &coordinate) const
 	{
 		//get whether a coordinate is located in the province
@@ -285,6 +304,12 @@ public:
 		}
 
 		return false;
+	}
+
+	QGeoCoordinate get_center_coordinate() const
+	{
+		const QGeoPolygon &geopolygon = this->get_main_geopolygon();
+		return geopolygon.center();
 	}
 
 signals:
