@@ -4,7 +4,7 @@
 #include "landed_title/landed_title.h"
 #include "map/province.h"
 #include "population/population_unit.h"
-#include "util.h"
+#include "util/util.h"
 
 namespace metternich {
 

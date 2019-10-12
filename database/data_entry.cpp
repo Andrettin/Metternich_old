@@ -4,7 +4,7 @@
 #include "game/game.h"
 #include "history/history.h"
 #include "translator.h"
-#include "util.h"
+#include "util/util.h"
 
 namespace metternich {
 

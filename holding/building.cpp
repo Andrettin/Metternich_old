@@ -2,7 +2,7 @@
 
 #include "holding/holding_type.h"
 #include "script/condition/and_condition.h"
-#include "util.h"
+#include "util/util.h"
 
 namespace metternich {
 

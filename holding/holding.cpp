@@ -19,7 +19,7 @@
 #include "script/identifiable_modifier.h"
 #include "script/modifier.h"
 #include "translator.h"
-#include "util.h"
+#include "util/util.h"
 
 #include <utility>
 

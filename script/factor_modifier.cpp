@@ -3,7 +3,7 @@
 #include "database/gsml_data.h"
 #include "database/gsml_property.h"
 #include "script/condition/condition.h"
-#include "util.h"
+#include "util/util.h"
 
 namespace metternich {
 

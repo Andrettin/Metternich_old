@@ -18,7 +18,7 @@
 #include "religion.h"
 #include "script/modifier.h"
 #include "translator.h"
-#include "util.h"
+#include "util/util.h"
 
 #include <QApplication>
 #include <QPainter>

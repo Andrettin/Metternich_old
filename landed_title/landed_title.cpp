@@ -11,7 +11,7 @@
 #include "map/province.h"
 #include "politics/law.h"
 #include "translator.h"
-#include "util.h"
+#include "util/util.h"
 
 #include <stdexcept>
 

@@ -4,7 +4,7 @@
 #include "database/gsml_data.h"
 #include "database/gsml_property.h"
 #include "population/population_type.h"
-#include "util.h"
+#include "util/util.h"
 
 namespace metternich {
 
