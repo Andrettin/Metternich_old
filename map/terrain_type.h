@@ -25,6 +25,40 @@ public:
 
 	static terrain_type *get_by_rgb(const QRgb &rgb, const bool should_find = true);
 
+	/**
+	**	@brief	Process the map database for the terrain type
+	*/
+	static void process_map_database()
+	{
+		std::filesystem::path map_path("./map/" + std::string(terrain_type::database_folder));
+
+		if (!std::filesystem::exists(map_path)) {
+			return;
+		}
+
+		std::filesystem::directory_iterator dir_iterator(map_path);
+
+		for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
+			terrain_type *terrain = terrain_type::get(dir_entry.path().stem().string());
+
+			if (dir_entry.is_directory()) {
+				std::filesystem::recursive_directory_iterator subdir_iterator(dir_entry);
+
+				for (const std::filesystem::directory_entry &subdir_entry : subdir_iterator) {
+					if (!subdir_entry.is_regular_file() || subdir_entry.path().extension() != ".txt") {
+						continue;
+					}
+
+					gsml_parser parser(subdir_entry.path());
+					database::process_gsml_data(terrain, parser.parse());
+				}
+			} else if (dir_entry.is_regular_file() && dir_entry.path().extension() == ".txt") {
+				gsml_parser parser(dir_entry.path());
+				database::process_gsml_data(terrain, parser.parse());
+			}
+		}
+	}
+
 private:
 	static inline std::map<QRgb, terrain_type *> instances_by_rgb;
 
@@ -62,6 +96,11 @@ public:
 	const std::unique_ptr<metternich::Modifier> &get_modifier() const
 	{
 		return this->modifier;
+	}
+
+	const std::vector<QGeoPolygon> &get_geopolygons() const
+	{
+		return this->geopolygons;
 	}
 
 	bool contains_coordinate(const QGeoCoordinate &coordinate) const

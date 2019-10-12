@@ -15,6 +15,24 @@ namespace metternich {
 class province;
 class terrain_type;
 
+struct geocoordinate_int
+{
+	geocoordinate_int(const int lat, const int lon) : latitude(lat), longitude(lon)
+	{
+	}
+
+	geocoordinate_int(const double lat, const double lon) : latitude(static_cast<int>(lat)), longitude(static_cast<int>(lon))
+	{
+	}
+
+	geocoordinate_int(const QGeoCoordinate &coordinate) : geocoordinate_int(coordinate.latitude(), coordinate.longitude())
+	{
+	}
+
+	int latitude = 0;
+	int longitude = 0;
+};
+
 class map : public singleton<map>
 {
 private:
@@ -42,6 +60,8 @@ private:
 	QSize size = QSize(0, 0);
 	std::map<std::string, std::vector<gsml_data>> geojson_polygon_data; //GeoJSON geopolygons coordinates, mapped to the name of the corresponding feature
 	std::string checksum;
+	std::map<int, std::map<int, std::vector<std::pair<const QGeoPolygon *, terrain_type *>>>> terrain_geopolygons_by_int_coordinate; //list of terrain type geopolygons located in a given integer geocoordinate square
+	std::map<int, std::map<int, std::vector<province *>>> provinces_by_int_coordinate; //list of provinces located in a given geocoordinate square
 };
 
 }

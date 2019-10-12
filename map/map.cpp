@@ -7,6 +7,7 @@
 #include "util/point_util.h"
 
 #include <QCryptographicHash>
+#include <QGeoRectangle>
 #include <QImage>
 #include <QJsonDocument>
 #include <QRect>
@@ -30,6 +31,23 @@ void map::load()
 		province::process_cache();
 	} else {
 		terrain_type::process_map_database(); //we only need to load the terrain map database to calculate the province terrain
+
+		//store which terrain type geopolygons are present in each integer coordinate quadrant (the quadrant covering a geocoordinate as a pair of integers, including the fractional numbers up to and excluding the next integer pair)
+		for (terrain_type *terrain_type : terrain_type::get_all()) {
+			for (const QGeoPolygon &geopolygon : terrain_type->get_geopolygons()) {
+				QGeoRectangle bounding_georectangle = geopolygon.boundingGeoRectangle();
+				QGeoCoordinate bottom_left = bounding_georectangle.bottomLeft();
+				QGeoCoordinate top_right = bounding_georectangle.topRight();
+
+				const geocoordinate_int geopolygon_min(bottom_left);
+				const geocoordinate_int geopolygon_max(top_right);
+				for (int lat = geopolygon_min.latitude; lat <= geopolygon_max.latitude; ++lat) {
+					for (int lon = geopolygon_min.longitude; lon <= geopolygon_max.longitude; ++lon) {
+						this->terrain_geopolygons_by_int_coordinate[lat][lon].emplace_back(&geopolygon, terrain_type);
+					}
+				}
+			}
+		}
 
 		int processed_provinces = 0;
 		for (province *province : province::get_all()) {
@@ -55,9 +73,24 @@ QPoint map::get_pixel_position(const int index) const
 
 terrain_type *map::get_coordinate_terrain(const QGeoCoordinate &coordinate) const
 {
-	for (terrain_type *terrain_type : terrain_type::get_all()) {
-		if (terrain_type->contains_coordinate(coordinate)) {
-			return terrain_type;
+	geocoordinate_int coordinate_int(coordinate);
+
+	auto find_iterator = this->terrain_geopolygons_by_int_coordinate.find(coordinate_int.latitude);
+	if (find_iterator == this->terrain_geopolygons_by_int_coordinate.end()) {
+		return nullptr;
+	}
+
+	auto sub_find_iterator = find_iterator->second.find(coordinate_int.longitude);
+	if (sub_find_iterator == find_iterator->second.end()) {
+		return nullptr;
+	}
+
+	const std::vector<std::pair<const QGeoPolygon *, terrain_type *>> &terrain_geopolygons = sub_find_iterator->second;
+	for (const auto &terrain_geopolygon_pair : terrain_geopolygons) {
+		const QGeoPolygon *geopolygon = terrain_geopolygon_pair.first;
+
+		if (geopolygon->contains(coordinate)) {
+			return terrain_geopolygon_pair.second;
 		}
 	}
 

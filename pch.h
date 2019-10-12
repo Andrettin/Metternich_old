@@ -8,6 +8,7 @@
 #include <QDateTime>
 #include <QGeoCoordinate>
 #include <QGeoPolygon>
+#include <QGeoRectangle>
 #include <QImage>
 #include <QJsonDocument>
 #include <QList>

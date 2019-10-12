@@ -466,10 +466,27 @@ void province::calculate_terrain()
 	std::map<terrain_type *, int> terrain_counts;
 
 	for (const QGeoPolygon &geopolygon : this->geopolygons) {
-		terrain_type *terrain = map::get()->get_coordinate_terrain(geopolygon.center());
+		std::vector<QGeoCoordinate> checked_coordinates;
 
-		if (terrain != nullptr) {
-			terrain_counts[terrain]++;
+		QGeoCoordinate center_coordinate = geopolygon.center();
+		checked_coordinates.push_back(center_coordinate);
+
+		for (const QGeoCoordinate &border_coordinate : geopolygon.path()) {
+			const double latitude = (center_coordinate.latitude() + border_coordinate.latitude()) / 2;
+			const double longitude = (center_coordinate.longitude() + border_coordinate.longitude()) / 2;
+			checked_coordinates.emplace_back(latitude, longitude);
+		}
+
+		for (const QGeoCoordinate &coordinate : checked_coordinates) {
+			if (!geopolygon.contains(coordinate)) {
+				continue;
+			}
+
+			terrain_type *terrain = map::get()->get_coordinate_terrain(coordinate);
+
+			if (terrain != nullptr) {
+				terrain_counts[terrain]++;
+			}
 		}
 	}
 
@@ -486,6 +503,8 @@ void province::calculate_terrain()
 
 	if (best_terrain != nullptr) {
 		this->set_terrain(best_terrain);
+	} else {
+		throw std::runtime_error("No terrain could be calculated for province \"" + this->get_identifier() + "\".");
 	}
 }
 
