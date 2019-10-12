@@ -319,15 +319,15 @@ public:
 	*/
 	static void process_cache()
 	{
-		std::filesystem::path map_path("./cache/" + std::string(T::database_folder));
+		const std::filesystem::path cache_path(database::get_cache_path() / std::string(T::database_folder));
 
-		if (!std::filesystem::exists(map_path)) {
+		if (!std::filesystem::exists(cache_path)) {
 			return;
 		}
 
 		std::vector<gsml_data> cache_data_to_process;
 
-		std::filesystem::recursive_directory_iterator dir_iterator(map_path);
+		std::filesystem::recursive_directory_iterator dir_iterator(cache_path);
 
 		for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
 			if (!dir_entry.is_regular_file() || dir_entry.path().extension() != ".txt") {
@@ -353,10 +353,10 @@ public:
 	*/
 	static void save_cache()
 	{
-		const std::filesystem::path cache_path("./cache/" + std::string(T::database_folder));
+		const std::filesystem::path cache_path(database::get_cache_path() / std::string(T::database_folder));
 
 		if (!std::filesystem::exists(cache_path)) {
-			std::filesystem::create_directory(cache_path);
+			std::filesystem::create_directories(cache_path);
 		}
 
 		std::vector<gsml_data> cache_data_list;

@@ -4,6 +4,9 @@
 #include "singleton.h"
 #include "type_traits.h"
 
+#include <QStandardPaths>
+
+#include <filesystem>
 #include <functional>
 #include <memory>
 #include <mutex>
@@ -43,6 +46,24 @@ public:
 	}
 
 	static void process_gsml_property_for_object(QObject *object, const gsml_property &property);
+
+	static std::filesystem::path get_documents_path()
+	{
+		std::string documents_path_str = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation).toStdString();
+		if (documents_path_str.empty()) {
+			throw std::runtime_error("No writable documents path found.");
+		}
+
+		std::filesystem::path documents_path(documents_path_str +  "/Iron Barons");
+		return documents_path;
+	}
+
+	static std::filesystem::path get_cache_path()
+	{
+		std::filesystem::path cache_path = database::get_documents_path();
+		cache_path /= "cache";
+		return cache_path;
+	}
 
 public:
 	database();

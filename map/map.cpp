@@ -346,7 +346,7 @@ bool map::check_cache()
 
 	this->checksum = hash.result().toHex().toStdString(); //save the checksum
 
-	const std::filesystem::path cache_path("./cache");
+	const std::filesystem::path cache_path = database::get_cache_path();
 
 	if (!std::filesystem::exists(cache_path)) {
 		return false;
@@ -374,10 +374,10 @@ bool map::check_cache()
 */
 void map::save_cache()
 {
-	const std::filesystem::path cache_path("./cache");
+	const std::filesystem::path cache_path = database::get_cache_path();
 
 	if (!std::filesystem::exists(cache_path)) {
-		std::filesystem::create_directory(cache_path);
+		std::filesystem::create_directories(cache_path);
 	}
 
 	const std::filesystem::path stored_checksum_path(cache_path / "checksum.txt");

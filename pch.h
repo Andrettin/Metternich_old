@@ -21,6 +21,7 @@
 #include <QQuickImageProvider>
 #include <QRect>
 #include <QSize>
+#include <QStandardPaths>
 #include <QString>
 #include <QThread>
 #include <QTimer>
