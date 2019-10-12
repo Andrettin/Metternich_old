@@ -896,7 +896,7 @@ QVariantList province::get_population_per_religion_qvariant_list() const
 
 QVariantList province::get_geopolygons_qvariant_list() const
 {
-	return util::container_to_qvariant_list(this->geopolygons);
+	return util::container_to_qvariant_list(this->get_geopolygons());
 }
 
 }

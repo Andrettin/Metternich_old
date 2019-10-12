@@ -49,6 +49,25 @@ void map::load()
 			}
 		}
 
+		for (province *province : province::get_all()) {
+			for (const QGeoPolygon &geopolygon : province->get_geopolygons()) {
+				QGeoRectangle bounding_georectangle = geopolygon.boundingGeoRectangle();
+				QGeoCoordinate bottom_left = bounding_georectangle.bottomLeft();
+				QGeoCoordinate top_right = bounding_georectangle.topRight();
+
+				const geocoordinate_int geopolygon_min(bottom_left);
+				const geocoordinate_int geopolygon_max(top_right);
+				for (int lat = geopolygon_min.latitude; lat <= geopolygon_max.latitude; ++lat) {
+					for (int lon = geopolygon_min.longitude; lon <= geopolygon_max.longitude; ++lon) {
+						std::vector<metternich::province *> &coordinate_provinces = this->provinces_by_int_coordinate[lat][lon];
+						if (std::find(coordinate_provinces.begin(), coordinate_provinces.end(), province) == coordinate_provinces.end()) {
+							coordinate_provinces.push_back(province);
+						}
+					}
+				}
+			}
+		}
+
 		int processed_provinces = 0;
 		for (province *province : province::get_all()) {
 			const int progress_percent = processed_provinces * 100 / static_cast<int>(province::get_all().size());
@@ -99,7 +118,19 @@ terrain_type *map::get_coordinate_terrain(const QGeoCoordinate &coordinate) cons
 
 province *map::get_coordinate_province(const QGeoCoordinate &coordinate) const
 {
-	for (province *province : province::get_all()) {
+	geocoordinate_int coordinate_int(coordinate);
+
+	auto find_iterator = this->provinces_by_int_coordinate.find(coordinate_int.latitude);
+	if (find_iterator == this->provinces_by_int_coordinate.end()) {
+		return nullptr;
+	}
+
+	auto sub_find_iterator = find_iterator->second.find(coordinate_int.longitude);
+	if (sub_find_iterator == find_iterator->second.end()) {
+		return nullptr;
+	}
+
+	for (province *province : sub_find_iterator->second) {
 		if (province->contains_coordinate(coordinate)) {
 			return province;
 		}

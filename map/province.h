@@ -274,6 +274,11 @@ public:
 	Q_INVOKABLE QVariantList get_population_per_culture_qvariant_list() const;
 	Q_INVOKABLE QVariantList get_population_per_religion_qvariant_list() const;
 
+	const std::vector<QGeoPolygon> &get_geopolygons() const
+	{
+		return this->geopolygons;
+	}
+
 	QVariantList get_geopolygons_qvariant_list() const;
 
 	const QGeoPolygon &get_main_geopolygon() const
