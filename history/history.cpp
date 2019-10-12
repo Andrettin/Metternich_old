@@ -8,7 +8,7 @@
 #include "map/province.h"
 #include "map/region.h"
 #include "population/population_unit.h"
-#include "util/util.h"
+#include "util/string_util.h"
 
 namespace metternich {
 

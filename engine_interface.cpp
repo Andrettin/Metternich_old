@@ -4,7 +4,7 @@
 #include "game/game.h"
 #include "holding/holding.h"
 #include "map/province.h"
-#include "util/util.h"
+#include "util/container_util.h"
 
 #include <QList>
 

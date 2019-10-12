@@ -9,7 +9,8 @@
 #include "script/condition/not_condition.h"
 #include "script/condition/or_condition.h"
 #include "script/condition/terrain_condition.h"
-#include "util/util.h"
+#include "util/parse_util.h"
+#include "util/string_util.h"
 
 namespace metternich {
 

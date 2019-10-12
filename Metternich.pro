@@ -137,4 +137,9 @@ HEADERS += \
     third_party/maskedmousearea/maskedmousearea.h \
     translator.h \
     type_traits.h \
-    util/util.h
+    util/container_util.h \
+    util/filesystem_util.h \
+    util/number_util.h \
+    util/parse_util.h \
+    util/point_util.h \
+    util/string_util.h

@@ -8,7 +8,7 @@
 #include "map/province.h"
 #include "map/region.h"
 #include "population/population_type.h"
-#include "util/util.h"
+#include "util/container_util.h"
 
 #include <QApplication>
 

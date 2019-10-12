@@ -4,7 +4,7 @@
 #include "script/modifier_effect/population_capacity_modifier_effect.h"
 #include "script/modifier_effect/population_capacity_modifier_modifier_effect.h"
 #include "script/modifier_effect/population_growth_modifier_effect.h"
-#include "util/util.h"
+#include "util/parse_util.h"
 
 namespace metternich {
 

@@ -2,7 +2,7 @@
 
 #include "database/gsml_data.h"
 #include "database/gsml_parser.h"
-#include "util/util.h"
+#include "util/string_util.h"
 
 #include <filesystem>
 

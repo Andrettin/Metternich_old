@@ -4,7 +4,7 @@
 #include "database/gsml_data.h"
 #include "database/gsml_property.h"
 #include "factor_modifier.h"
-#include "util/util.h"
+#include "util/parse_util.h"
 
 namespace metternich {
 

@@ -3,7 +3,8 @@
 #include "engine_interface.h"
 #include "map/province.h"
 #include "map/terrain_type.h"
-#include "util/util.h"
+#include "util/filesystem_util.h"
+#include "util/point_util.h"
 
 #include <QCryptographicHash>
 #include <QImage>

@@ -27,7 +27,8 @@
 #include "population/population_type.h"
 #include "religion.h"
 #include "translator.h"
-#include "util/util.h"
+#include "util/parse_util.h"
+#include "util/string_util.h"
 
 #include <QMetaProperty>
 #include <QObject>
