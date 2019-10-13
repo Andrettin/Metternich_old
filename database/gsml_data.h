@@ -3,6 +3,7 @@
 #include "database/gsml_property.h"
 
 #include <QGeoCoordinate>
+#include <QGeoPath>
 #include <QGeoPolygon>
 
 #include <algorithm>
@@ -138,6 +139,14 @@ public:
 		}
 
 		return geopolygon;
+	}
+
+	QGeoPath to_geopath() const
+	{
+		QList<QGeoCoordinate> coordinates = this->get_child("coordinates").to_geocoordinate_list();
+		QGeoPath geopath(coordinates);
+
+		return geopath;
 	}
 
 	void print_to_dir(const std::filesystem::path &directory) const

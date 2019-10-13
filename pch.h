@@ -7,6 +7,7 @@
 #include <QCryptographicHash>
 #include <QDateTime>
 #include <QGeoCoordinate>
+#include <QGeoPath>
 #include <QGeoPolygon>
 #include <QGeoRectangle>
 #include <QImage>

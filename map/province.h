@@ -5,6 +5,7 @@
 
 #include <QColor>
 #include <QGeoCoordinate>
+#include <QGeoPath>
 #include <QGeoPolygon>
 #include <QImage>
 #include <QObject>
@@ -51,6 +52,7 @@ class province : public data_entry, public data_type<province>
 	Q_PROPERTY(bool selectable READ is_selectable CONSTANT)
 	Q_PROPERTY(QGeoCoordinate center_coordinate READ get_center_coordinate CONSTANT)
 	Q_PROPERTY(QVariantList geopolygons READ get_geopolygons_qvariant_list CONSTANT)
+	Q_PROPERTY(QVariantList geopaths READ get_geopaths_qvariant_list CONSTANT)
 
 public:
 	static constexpr const char *class_identifier = "province";
@@ -282,24 +284,39 @@ public:
 
 	QVariantList get_geopolygons_qvariant_list() const;
 
-	const QGeoPolygon &get_main_geopolygon() const
+	const QGeoShape &get_main_geoshape() const
 	{
-		if (this->geopolygons.empty()) {
-			throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no geopolygons.");
-		}
+		if (!this->geopolygons.empty()) {
+			size_t main_geopolygon_index = 0;
 
-		size_t main_geopolygon_index = 0;
-
-		//start from 1 as 0 is already the default
-		for (size_t i = 1; i < this->geopolygons.size(); ++i) {
-			const QGeoPolygon &geopolygon = this->geopolygons[i];
-			if (geopolygon.path().size() > this->geopolygons[main_geopolygon_index].path().size()) {
-				main_geopolygon_index = i;
+			//start from 1 as 0 is already the default
+			for (size_t i = 1; i < this->geopolygons.size(); ++i) {
+				const QGeoPolygon &geopolygon = this->geopolygons[i];
+				if (geopolygon.path().size() > this->geopolygons[main_geopolygon_index].path().size()) {
+					main_geopolygon_index = i;
+				}
 			}
+
+			return this->geopolygons[main_geopolygon_index];
+		} else if (!this->geopaths.empty()) {
+			size_t main_geopath_index = 0;
+
+			//start from 1 as 0 is already the default
+			for (size_t i = 1; i < this->geopaths.size(); ++i) {
+				const QGeoPath &geopath = this->geopaths[i];
+				if (geopath.path().size() > this->geopaths[main_geopath_index].path().size()) {
+					main_geopath_index = i;
+				}
+			}
+
+			return this->geopaths[main_geopath_index];
 		}
 
-		return this->geopolygons[main_geopolygon_index];
+		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has neither geopolygons nor geopaths.");
 	}
+
+	QVariantList get_geopaths_qvariant_list() const;
+
 	bool contains_coordinate(const QGeoCoordinate &coordinate) const
 	{
 		//get whether a coordinate is located in the province
@@ -309,13 +326,19 @@ public:
 			}
 		}
 
+		for (const QGeoPath &geopath : this->geopaths) {
+			if (geopath.contains(coordinate)) {
+				return true;
+			}
+		}
+
 		return false;
 	}
 
 	QGeoCoordinate get_center_coordinate() const
 	{
-		const QGeoPolygon &geopolygon = this->get_main_geopolygon();
-		return geopolygon.center();
+		const QGeoShape &geoshape = this->get_main_geoshape();
+		return geoshape.center();
 	}
 
 signals:
@@ -356,6 +379,7 @@ private:
 	std::map<metternich::culture *, int> population_per_culture; //the population for each culture
 	std::map<metternich::religion *, int> population_per_religion; //the population for each religion
 	std::vector<QGeoPolygon> geopolygons;
+	std::vector<QGeoPath> geopaths;
 };
 
 }

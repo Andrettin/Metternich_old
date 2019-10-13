@@ -155,6 +155,10 @@ void province::process_gsml_scope(const gsml_data &scope)
 		for (const gsml_data &polygon_data : scope.get_children()) {
 			this->geopolygons.push_back(polygon_data.to_geopolygon());
 		}
+	} else if (tag == "geopaths") {
+		for (const gsml_data &path_data : scope.get_children()) {
+			this->geopaths.push_back(path_data.to_geopath());
+		}
 	} else if (tag == "border_provinces") {
 		for (const std::string &border_province_identifier : scope.get_values()) {
 			province *border_province = province::get(border_province_identifier);
@@ -767,14 +771,24 @@ void province::calculate_border_provinces()
 		}
 	}
 
+	for (const QGeoPath &geopath : this->geopaths) {
+		QList<QGeoCoordinate> coordinates = geopath.path();
+
+		for (const QGeoCoordinate &coordinate : coordinates) {
+			border_coordinates.push_back(coordinate.atDistanceAndAzimuth(1000, 0));
+			border_coordinates.push_back(coordinate.atDistanceAndAzimuth(1000, 90));
+			border_coordinates.push_back(coordinate.atDistanceAndAzimuth(1000, 180));
+			border_coordinates.push_back(coordinate.atDistanceAndAzimuth(1000, 270));
+		}
+	}
+
 	for (const QGeoCoordinate &coordinate : border_coordinates) {
 		province *coordinate_province = map::get()->get_coordinate_province(coordinate);
 		if (coordinate_province != nullptr && coordinate_province != this) {
 			border_provinces.insert(coordinate_province);
+			coordinate_province->border_provinces.insert(this);
 		}
 	}
-
-	this->border_provinces = border_provinces;
 }
 
 /**
@@ -910,6 +924,11 @@ QVariantList province::get_population_per_religion_qvariant_list() const
 QVariantList province::get_geopolygons_qvariant_list() const
 {
 	return util::container_to_qvariant_list(this->get_geopolygons());
+}
+
+QVariantList province::get_geopaths_qvariant_list() const
+{
+	return util::container_to_qvariant_list(this->geopaths);
 }
 
 }

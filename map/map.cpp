@@ -216,6 +216,13 @@ void map::process_geojson_features(const QVariantList &features)
 				const QVariantList polygon_coordinates = polygon_coordinates_variant.toList();
 				this->process_geojson_polygon(feature_name, polygon_coordinates);
 			}
+		} else if (geometry_type == "MultiLineString") {
+			const QVariantList multi_line_coordinates = geometry.value("coordinates").toList();
+
+			for (const QVariant &line_coordinates_variant : multi_line_coordinates) {
+				const QVariantList line_coordinates = line_coordinates_variant.toList();
+				this->process_geojson_line(feature_name, line_coordinates);
+			}
 		} else {
 			throw std::runtime_error("Invalid GeoJSON feature type: " + geometry_type);
 		}
@@ -250,6 +257,23 @@ void map::process_geojson_polygon(const std::string &feature_name, const QVarian
 	}
 
 	this->geojson_polygon_data[feature_name].push_back(std::move(geopolygon_data));
+}
+
+/**
+**	@brief	Process the coordinates for a GeoJSON line
+**
+**	@param	feature_name	The name of the feature
+**	@param	coordinates		The coordinates for the line
+*/
+void map::process_geojson_line(const std::string &feature_name, const QVariantList &coordinates)
+{
+	gsml_data geopath_data;
+
+	gsml_data coordinate_data("coordinates");
+	this->process_geojson_coordinates(coordinates, coordinate_data);
+	geopath_data.add_child(std::move(coordinate_data));
+
+	this->geojson_path_data[feature_name].push_back(std::move(geopath_data));
 }
 
 /**
@@ -299,6 +323,22 @@ void map::save_geojson_data_to_gsml()
 	}
 
 	this->geojson_polygon_data.clear();
+
+	for (auto &kv_pair : this->geojson_path_data) {
+		const std::string &feature_name = kv_pair.first;
+
+		gsml_data data(feature_name);
+		gsml_data geopaths("geopaths");
+
+		for (gsml_data &geopath_data : kv_pair.second) {
+			geopaths.add_child(std::move(geopath_data));
+		}
+
+		data.add_child(std::move(geopaths));
+		data.print_to_dir("./map/provinces/");
+	}
+
+	this->geojson_path_data.clear();
 }
 
 void map::load_provinces()
