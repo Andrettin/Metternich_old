@@ -9,7 +9,9 @@
 namespace metternich {
 
 /**
-**	@brief	Constructor
+**	@brief	Get the string identifiers of the classes on which this one depends for loading its database
+**
+**	@return	The class identifier string list
 */
 std::set<std::string> region::get_database_dependencies()
 {

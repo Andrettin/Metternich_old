@@ -26,6 +26,19 @@
 namespace metternich {
 
 /**
+**	@brief	Get the string identifiers of the classes on which this one depends for loading its database
+**
+**	@return	The class identifier string list
+*/
+std::set<std::string> province::get_database_dependencies()
+{
+	return {
+		//so that the effects of the set_terrain() function can occur properly
+		terrain_type::class_identifier
+	};
+}
+
+/**
 **	@brief	Get an instance of the class by the RGB value associated with it
 **	@param	rgb	The instance's RGB
 **	@param	should_find	Whether it is expected that an instance should be found (i.e. if none is, then it is an error)

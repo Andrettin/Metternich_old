@@ -57,6 +57,7 @@ public:
 	static constexpr const char *database_folder = "provinces";
 	static constexpr const char *prefix = "p_";
 
+	static std::set<std::string> get_database_dependencies();
 	static province *add(const std::string &identifier);
 	static province *get_by_rgb(const QRgb &rgb, const bool should_find = true);
 

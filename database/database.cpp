@@ -238,7 +238,7 @@ void database::load()
 			return true;
 		}
 
-		return a.get() < b.get();
+		return a->get_database_dependency_count() < b->get_database_dependency_count();
 	});
 
 	//parse the files for in each data type's folder

@@ -28,6 +28,11 @@ public:
 		return this->has_database_dependency_on(metadata->get_class_identifier());
 	}
 
+	size_t get_database_dependency_count() const
+	{
+		return this->database_dependencies.size();
+	}
+
 	const std::function<void()> &get_parsing_function() const
 	{
 		return this->parsing_function;
