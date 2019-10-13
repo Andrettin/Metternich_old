@@ -63,6 +63,11 @@ public:
 	static province *add(const std::string &identifier);
 	static province *get_by_rgb(const QRgb &rgb, const bool should_find = true);
 
+	static const std::set<province *> &get_river_provinces()
+	{
+		return province::river_provinces;
+	}
+
 	static province *get_selected_province()
 	{
 		return province::selected_province;
@@ -70,6 +75,7 @@ public:
 
 private:
 	static inline std::map<QRgb, province *> instances_by_rgb;
+	static inline std::set<province *> river_provinces;
 	static inline province *selected_province = nullptr;
 
 public:

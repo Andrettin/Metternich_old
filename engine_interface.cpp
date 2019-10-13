@@ -15,10 +15,16 @@ Game *EngineInterface::GetGame() const
 	return Game::get();
 }
 
-QVariant EngineInterface::get_provinces() const
+QVariantList EngineInterface::get_provinces() const
 {
-	QObjectList province_list = util::vector_to_qobject_list(province::get_all());
-	return QVariant::fromValue(province_list);
+	QVariantList province_list = util::container_to_qvariant_list(province::get_all());
+	return province_list;
+}
+
+QVariantList EngineInterface::get_river_provinces() const
+{
+	QVariantList province_list = util::container_to_qvariant_list(province::get_river_provinces());
+	return province_list;
 }
 
 province *EngineInterface::get_selected_province() const

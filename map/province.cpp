@@ -462,14 +462,26 @@ void province::set_terrain(metternich::terrain_type *terrain)
 
 	const metternich::terrain_type *old_terrain = this->get_terrain();
 
-	if (old_terrain != nullptr && old_terrain->get_modifier() != nullptr) {
-		old_terrain->get_modifier()->remove(this);
+	if (old_terrain != nullptr) {
+		if (old_terrain->get_modifier() != nullptr) {
+			old_terrain->get_modifier()->remove(this);
+		}
+
+		if (old_terrain->is_river()) {
+			province::river_provinces.erase(this);
+		}
 	}
 
 	this->terrain = terrain;
 
-	if (terrain != nullptr && terrain->get_modifier() != nullptr) {
-		terrain->get_modifier()->Apply(this);
+	if (terrain != nullptr) {
+		if (terrain->get_modifier() != nullptr) {
+			terrain->get_modifier()->Apply(this);
+		}
+
+		if (terrain->is_river()) {
+			province::river_provinces.insert(this);
+		}
 	}
 
 	emit terrain_changed();
@@ -753,7 +765,6 @@ void province::add_population_unit(std::unique_ptr<population_unit> &&population
 */
 void province::calculate_border_provinces()
 {
-	std::set<province *> border_provinces;
 	std::vector<QGeoCoordinate> border_coordinates;
 
 	for (const QGeoPolygon &geopolygon : this->geopolygons) {
