@@ -118,6 +118,7 @@ public:
 	void create_image(const std::vector<int> &pixel_indexes);
 	void set_border_pixels(const std::vector<int> &pixel_indexes);
 	void update_image();
+	void update_image_from_geodata(QImage &image);
 
 	const QImage &get_image() const
 	{

@@ -19,6 +19,7 @@ namespace metternich {
 void map::load()
 {
 	this->load_geojson_files();
+
 	this->load_provinces();
 	this->load_terrain();
 
@@ -493,6 +494,28 @@ void map::save_cache()
 	ofstream.close();
 
 	province::save_cache();
+}
+
+/**
+**	@brief	Update the province image from geodata, caching the result
+*/
+void map::update_province_image_from_geodata()
+{
+	QImage province_image("./map/provinces.png");
+
+	int proc_provinces = 0;
+	for (province *province : province::get_all()) {
+		const int progress_percent = proc_provinces * 100 / static_cast<int>(province::get_all().size());
+		EngineInterface::get()->set_loading_message("Writing Provinces to Image... (" + QString::number(progress_percent) + "%)");
+
+		if (province->get_terrain() == nullptr || !province->get_terrain()->is_water()) {
+			province->update_image_from_geodata(province_image);
+		}
+
+		proc_provinces++;
+	}
+
+	province_image.save(QString::fromStdString((database::get_cache_path() / "province.png").string()));
 }
 
 }

@@ -19,6 +19,7 @@
 #include "script/modifier.h"
 #include "translator.h"
 #include "util/container_util.h"
+#include "util/point_util.h"
 
 #include <QApplication>
 #include <QPainter>
@@ -226,6 +227,10 @@ void province::check() const
 	if (Game::get()->IsStarting()) {
 		if (this->get_terrain() == nullptr) {
 			throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no terrain.");
+		}
+
+		if (!this->get_color().isValid()) {
+			throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no color.");
 		}
 
 		/*
@@ -447,6 +452,59 @@ void province::update_image()
 	this->image.setColor(2, border_color.rgb());
 
 	emit image_changed();
+}
+
+/**
+**	@brief	Update an image with the province's geodata
+**
+**	@param	image	The image to be updated from the province's geodata
+*/
+void province::update_image_from_geodata(QImage &image)
+{
+	const QString province_loading_message = EngineInterface::get()->get_loading_message();
+
+	QRgb rgb = this->get_color().rgb();
+	QRgb *rgb_data = reinterpret_cast<QRgb *>(image.bits());
+
+	const double lon_per_pixel = 360.0 / static_cast<double>(image.size().width());
+	const double lat_per_pixel = 180.0 / static_cast<double>(image.size().height());
+
+	for (const QGeoPolygon &geopolygon : this->geopolygons) {
+		QGeoRectangle georectangle = geopolygon.boundingGeoRectangle();
+		QGeoCoordinate bottom_left = georectangle.bottomLeft();
+		QGeoCoordinate top_right = georectangle.topRight();
+
+		double lon = bottom_left.longitude();
+		lon = std::round(lon / lon_per_pixel) * lon_per_pixel;
+		const int start_x = static_cast<int>(std::round((lon + 180.0) / lon_per_pixel));
+
+		double start_lat = bottom_left.latitude();
+		start_lat = std::round(start_lat / lat_per_pixel) * lat_per_pixel;
+
+		const int pixel_width = static_cast<int>(std::round((std::abs(top_right.longitude() - bottom_left.longitude())) / lon_per_pixel));
+		const bool show_progress = pixel_width >= 512;
+
+		for (; lon <= top_right.longitude(); lon += lon_per_pixel) {
+			const int x = static_cast<int>(std::round((lon + 180.0) / lon_per_pixel));
+
+			for (double lat = start_lat; lat <= top_right.latitude(); lat += lat_per_pixel) {
+				QGeoCoordinate coordinate(lat, lon);
+
+				if (!geopolygon.contains(coordinate)) {
+					continue;
+				}
+
+				const int y = static_cast<int>(std::round((lat * -1 + 90.0) / lat_per_pixel));
+				const int pixel_index = util::point_to_index(x, y, image.size());
+				rgb_data[pixel_index] = rgb;
+			}
+
+			if (show_progress) {
+				const int progress_percent = (x - start_x) * 100 / pixel_width;
+				EngineInterface::get()->set_loading_message(province_loading_message + "\nWriting Geopolygon to Image... (" + QString::number(progress_percent) + "%)");
+			}
+		}
+	}
 }
 
 /**
