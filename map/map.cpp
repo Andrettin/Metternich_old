@@ -362,7 +362,6 @@ void map::load_provinces()
 	province *previous_pixel_province = nullptr; //used to see which provinces border which horizontally
 	for (int i = 0; i < pixel_count; ++i) {
 		const bool line_start = ((i % province_image.width()) == 0);
-		const bool line_end = (i == (province_image.width() - 1));
 		if (line_start) {
 			//new line, set the previous pixel province to null
 			previous_pixel_province = nullptr;
@@ -386,19 +385,15 @@ void map::load_provinces()
 			}
 
 			if (i > province_image.width()) { //second line or below
-				//the pixels just above this one
-				const int offset_start = line_start ? 0 : -1;
-				const int offset_end = line_end ? 0 : 1;
-				for (int x_offset = offset_start; x_offset <= offset_end; ++x_offset) {
-					const int adjacent_pixel_index = i - province_image.width() + x_offset;
-					const QRgb &previous_vertical_pixel_rgb = rgb_data[adjacent_pixel_index];
-					province *previous_vertical_pixel_province = province::get_by_rgb(previous_vertical_pixel_rgb, false);
-					if (previous_vertical_pixel_province != pixel_province && previous_vertical_pixel_province != nullptr) {
-						province_border_pixel_indexes[pixel_province].push_back(i);
-							province_border_pixel_indexes[previous_vertical_pixel_province].push_back(adjacent_pixel_index);
-						pixel_province->add_border_province(previous_vertical_pixel_province);
-						previous_vertical_pixel_province->add_border_province(pixel_province);
-					}
+				//the pixel just above this one
+				const int adjacent_pixel_index = i - province_image.width();
+				const QRgb &previous_vertical_pixel_rgb = rgb_data[adjacent_pixel_index];
+				province *previous_vertical_pixel_province = province::get_by_rgb(previous_vertical_pixel_rgb, false);
+				if (previous_vertical_pixel_province != pixel_province && previous_vertical_pixel_province != nullptr) {
+					province_border_pixel_indexes[pixel_province].push_back(i);
+						province_border_pixel_indexes[previous_vertical_pixel_province].push_back(adjacent_pixel_index);
+					pixel_province->add_border_province(previous_vertical_pixel_province);
+					previous_vertical_pixel_province->add_border_province(pixel_province);
 				}
 			}
 

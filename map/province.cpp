@@ -447,7 +447,7 @@ void province::update_image()
 		//if the province is selected, highlight its border pixels
 		border_color = QColor(Qt::yellow);
 	} else {
-		border_color = QColor(province_color.red() / 2, province_color.green() / 2, province_color.blue() / 2);
+		border_color = QColor(Qt::black);
 	}
 
 	this->image.setColor(1, province_color.rgb());
