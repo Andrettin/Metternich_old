@@ -58,6 +58,7 @@ public:
 	static constexpr const char *class_identifier = "province";
 	static constexpr const char *database_folder = "provinces";
 	static constexpr const char *prefix = "p_";
+	static constexpr int river_width = 10000; //in meters
 
 	static std::set<std::string> get_database_dependencies();
 	static province *add(const std::string &identifier);
@@ -119,6 +120,7 @@ public:
 	void set_border_pixels(const std::vector<int> &pixel_indexes);
 	void update_image();
 	void update_image_from_geodata(QImage &image);
+	void write_geoshape_to_image(QImage &image, const QGeoShape &geoshape);
 
 	const QImage &get_image() const
 	{

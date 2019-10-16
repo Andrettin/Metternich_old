@@ -158,7 +158,9 @@ void province::process_gsml_scope(const gsml_data &scope)
 		}
 	} else if (tag == "geopaths") {
 		for (const gsml_data &path_data : scope.get_children()) {
-			this->geopaths.push_back(path_data.to_geopath());
+			QGeoPath geopath = path_data.to_geopath();
+			geopath.setWidth(province::river_width);
+			this->geopaths.push_back(geopath);
 		}
 	} else if (tag == "border_provinces") {
 		for (const std::string &border_province_identifier : scope.get_values()) {
@@ -461,6 +463,23 @@ void province::update_image()
 */
 void province::update_image_from_geodata(QImage &image)
 {
+	for (const QGeoPolygon &geopolygon : this->geopolygons) {
+		this->write_geoshape_to_image(image, geopolygon);
+	}
+
+	for (const QGeoPath &geopath : this->geopaths) {
+		this->write_geoshape_to_image(image, geopath);
+	}
+}
+
+/**
+**	@brief	Write a geoshape belonging to the province to an image
+**
+**	@param	image		The image to which the geoshape is to be written
+**	@param	geoshape	The geoshape
+*/
+void province::write_geoshape_to_image(QImage &image, const QGeoShape &geoshape)
+{
 	const QString province_loading_message = EngineInterface::get()->get_loading_message();
 
 	QRgb rgb = this->get_color().rgb();
@@ -469,40 +488,38 @@ void province::update_image_from_geodata(QImage &image)
 	const double lon_per_pixel = 360.0 / static_cast<double>(image.size().width());
 	const double lat_per_pixel = 180.0 / static_cast<double>(image.size().height());
 
-	for (const QGeoPolygon &geopolygon : this->geopolygons) {
-		QGeoRectangle georectangle = geopolygon.boundingGeoRectangle();
-		QGeoCoordinate bottom_left = georectangle.bottomLeft();
-		QGeoCoordinate top_right = georectangle.topRight();
+	QGeoRectangle georectangle = geoshape.boundingGeoRectangle();
+	QGeoCoordinate bottom_left = georectangle.bottomLeft();
+	QGeoCoordinate top_right = georectangle.topRight();
 
-		double lon = bottom_left.longitude();
-		lon = std::round(lon / lon_per_pixel) * lon_per_pixel;
-		const int start_x = static_cast<int>(std::round((lon + 180.0) / lon_per_pixel));
+	double lon = bottom_left.longitude();
+	lon = std::round(lon / lon_per_pixel) * lon_per_pixel;
+	const int start_x = static_cast<int>(std::round((lon + 180.0) / lon_per_pixel));
 
-		double start_lat = bottom_left.latitude();
-		start_lat = std::round(start_lat / lat_per_pixel) * lat_per_pixel;
+	double start_lat = bottom_left.latitude();
+	start_lat = std::round(start_lat / lat_per_pixel) * lat_per_pixel;
 
-		const int pixel_width = static_cast<int>(std::round((std::abs(top_right.longitude() - bottom_left.longitude())) / lon_per_pixel));
-		const bool show_progress = pixel_width >= 512;
+	const int pixel_width = static_cast<int>(std::round((std::abs(top_right.longitude() - bottom_left.longitude())) / lon_per_pixel));
+	const bool show_progress = pixel_width >= 512;
 
-		for (; lon <= top_right.longitude(); lon += lon_per_pixel) {
-			const int x = static_cast<int>(std::round((lon + 180.0) / lon_per_pixel));
+	for (; lon <= top_right.longitude(); lon += lon_per_pixel) {
+		const int x = static_cast<int>(std::round((lon + 180.0) / lon_per_pixel));
 
-			for (double lat = start_lat; lat <= top_right.latitude(); lat += lat_per_pixel) {
-				QGeoCoordinate coordinate(lat, lon);
+		for (double lat = start_lat; lat <= top_right.latitude(); lat += lat_per_pixel) {
+			QGeoCoordinate coordinate(lat, lon);
 
-				if (!geopolygon.contains(coordinate)) {
-					continue;
-				}
-
-				const int y = static_cast<int>(std::round((lat * -1 + 90.0) / lat_per_pixel));
-				const int pixel_index = util::point_to_index(x, y, image.size());
-				rgb_data[pixel_index] = rgb;
+			if (!geoshape.contains(coordinate)) {
+				continue;
 			}
 
-			if (show_progress) {
-				const int progress_percent = (x - start_x) * 100 / pixel_width;
-				EngineInterface::get()->set_loading_message(province_loading_message + "\nWriting Geopolygon to Image... (" + QString::number(progress_percent) + "%)");
-			}
+			const int y = static_cast<int>(std::round((lat * -1 + 90.0) / lat_per_pixel));
+			const int pixel_index = util::point_to_index(x, y, image.size());
+			rgb_data[pixel_index] = rgb;
+		}
+
+		if (show_progress) {
+			const int progress_percent = (x - start_x) * 100 / pixel_width;
+			EngineInterface::get()->set_loading_message(province_loading_message + "\nWriting Geopolygon to Image... (" + QString::number(progress_percent) + "%)");
 		}
 	}
 }
