@@ -20,11 +20,12 @@ void map::load()
 {
 	this->load_geojson_files();
 
-	this->load_provinces();
-	this->load_terrain();
-
 	//load map data for terrain types and provinces
 	province::process_map_database();
+
+	this->update_province_image_from_geodata();
+	this->load_provinces();
+	this->load_terrain();
 
 	if (this->check_cache()) {
 		EngineInterface::get()->set_loading_message("Loading Map Cache...");
@@ -346,7 +347,7 @@ void map::load_provinces()
 {
 	EngineInterface::get()->set_loading_message("Loading Provinces... (0%)");
 
-	QImage province_image("./map/provinces.png");
+	QImage province_image(QString::fromStdString((database::get_cache_path() / "provinces.png").string()));
 	QImage terrain_image("./map/terrain.png"); //used to calculate each province's terrain
 	this->size = province_image.size(); //set the map's size to that of the province map
 	const int pixel_count = province_image.width() * province_image.height();
@@ -515,7 +516,7 @@ void map::update_province_image_from_geodata()
 		proc_provinces++;
 	}
 
-	province_image.save(QString::fromStdString((database::get_cache_path() / "province.png").string()));
+	province_image.save(QString::fromStdString((database::get_cache_path() / "provinces.png").string()));
 }
 
 }
