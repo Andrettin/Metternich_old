@@ -120,6 +120,11 @@ public:
 
 		for (const gsml_data &coordinate_data : this->get_children()) {
 			QGeoCoordinate coordinate = coordinate_data.to_geocoordinate();
+
+			if (!coordinates.empty() && coordinate == coordinates.back()) {
+				continue; //don't add the coordinate if it is the same as the previous one
+			}
+
 			coordinates.append(std::move(coordinate));
 		}
 
