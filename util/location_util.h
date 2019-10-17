@@ -29,7 +29,7 @@ inline int longitude_to_x(const double longitude, const double lon_per_pixel)
 */
 inline int latitude_to_y(const double latitude, const double lat_per_pixel)
 {
-	return static_cast<int>(std::round((latitude + 90.0) / lat_per_pixel));
+	return static_cast<int>(std::round((latitude * -1 + 90.0) / lat_per_pixel));
 }
 
 /**
