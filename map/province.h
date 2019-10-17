@@ -133,7 +133,6 @@ public:
 	}
 
 	void set_terrain(terrain_type *terrain);
-	void calculate_terrain();
 
 	metternich::culture *get_culture() const
 	{
@@ -262,7 +261,6 @@ public:
 		this->border_provinces.insert(province);
 	}
 
-	void calculate_border_provinces();
 	bool borders_water() const;
 	bool borders_river() const;
 	bool is_coastal() const;

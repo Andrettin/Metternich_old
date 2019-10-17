@@ -19,71 +19,31 @@ namespace metternich {
 
 void map::load()
 {
-	this->load_geojson_files();
+	const bool cache_valid = this->check_cache();
 
-	//load map data for terrain types and provinces
-	province::process_map_database();
-
-	this->update_province_image_from_geodata();
-	this->load_provinces();
-	this->load_terrain();
-
-	if (this->check_cache()) {
+	if (cache_valid) {
 		EngineInterface::get()->set_loading_message("Loading Map Cache...");
 		terrain_type::process_cache();
 		province::process_cache();
 	} else {
-		terrain_type::process_map_database(); //we only need to load the terrain map database to calculate the province terrain
+		//clear cache
+		std::filesystem::path cache_path = database::get_cache_path();
+		std::filesystem::remove_all(cache_path);
+		std::filesystem::create_directories(cache_path);
 
-		//store which terrain type geopolygons are present in each integer coordinate quadrant (the quadrant covering a geocoordinate as a pair of integers, including the fractional numbers up to and excluding the next integer pair)
-		for (terrain_type *terrain_type : terrain_type::get_all()) {
-			for (const QGeoPolygon &geopolygon : terrain_type->get_geopolygons()) {
-				QGeoRectangle bounding_georectangle = geopolygon.boundingGeoRectangle();
-				QGeoCoordinate bottom_left = bounding_georectangle.bottomLeft();
-				QGeoCoordinate top_right = bounding_georectangle.topRight();
+		this->load_geojson_files();
 
-				const geocoordinate_int geopolygon_min(bottom_left);
-				const geocoordinate_int geopolygon_max(top_right);
-				for (int lat = geopolygon_min.latitude; lat <= geopolygon_max.latitude; ++lat) {
-					for (int lon = geopolygon_min.longitude; lon <= geopolygon_max.longitude; ++lon) {
-						this->terrain_geopolygons_by_int_coordinate[lat][lon].emplace_back(&geopolygon, terrain_type);
-					}
-				}
-			}
-		}
+		//load map data for terrain types and provinces
+		province::process_map_database();
+		terrain_type::process_map_database();
 
-		for (province *province : province::get_all()) {
-			for (const QGeoPolygon &geopolygon : province->get_geopolygons()) {
-				QGeoRectangle bounding_georectangle = geopolygon.boundingGeoRectangle();
-				QGeoCoordinate bottom_left = bounding_georectangle.bottomLeft();
-				QGeoCoordinate top_right = bounding_georectangle.topRight();
+		this->update_province_image_from_geodata();
+	}
 
-				const geocoordinate_int geopolygon_min(bottom_left);
-				const geocoordinate_int geopolygon_max(top_right);
-				for (int lat = geopolygon_min.latitude; lat <= geopolygon_max.latitude; ++lat) {
-					for (int lon = geopolygon_min.longitude; lon <= geopolygon_max.longitude; ++lon) {
-						std::vector<metternich::province *> &coordinate_provinces = this->provinces_by_int_coordinate[lat][lon];
-						if (std::find(coordinate_provinces.begin(), coordinate_provinces.end(), province) == coordinate_provinces.end()) {
-							coordinate_provinces.push_back(province);
-						}
-					}
-				}
-			}
-		}
+	this->load_terrain();
+	this->load_provinces();
 
-		int processed_provinces = 0;
-		for (province *province : province::get_all()) {
-			const int progress_percent = processed_provinces * 100 / static_cast<int>(province::get_all().size());
-			EngineInterface::get()->set_loading_message("Calculating Province Terrain and Border Provinces... (" + QString::number(progress_percent) + "%)");
-
-			if (province->get_terrain() == nullptr) {
-				province->calculate_terrain();
-			}
-
-			province->calculate_border_provinces();
-			processed_provinces++;
-		}
-
+	if (!cache_valid) {
 		this->save_cache();
 	}
 }
@@ -109,51 +69,16 @@ QPoint map::get_coordinate_pos(const QGeoCoordinate &coordinate) const
 
 terrain_type *map::get_coordinate_terrain(const QGeoCoordinate &coordinate) const
 {
-	geocoordinate_int coordinate_int(coordinate);
-
-	auto find_iterator = this->terrain_geopolygons_by_int_coordinate.find(coordinate_int.latitude);
-	if (find_iterator == this->terrain_geopolygons_by_int_coordinate.end()) {
-		return nullptr;
-	}
-
-	auto sub_find_iterator = find_iterator->second.find(coordinate_int.longitude);
-	if (sub_find_iterator == find_iterator->second.end()) {
-		return nullptr;
-	}
-
-	const std::vector<std::pair<const QGeoPolygon *, terrain_type *>> &terrain_geopolygons = sub_find_iterator->second;
-	for (const auto &terrain_geopolygon_pair : terrain_geopolygons) {
-		const QGeoPolygon *geopolygon = terrain_geopolygon_pair.first;
-
-		if (geopolygon->contains(coordinate)) {
-			return terrain_geopolygon_pair.second;
-		}
-	}
-
-	return nullptr;
+	QPoint pos = this->get_coordinate_pos(coordinate);
+	QRgb rgb = this->terrain_image.pixel(pos);
+	return terrain_type::get_by_rgb(rgb);
 }
 
 province *map::get_coordinate_province(const QGeoCoordinate &coordinate) const
 {
-	geocoordinate_int coordinate_int(coordinate);
-
-	auto find_iterator = this->provinces_by_int_coordinate.find(coordinate_int.latitude);
-	if (find_iterator == this->provinces_by_int_coordinate.end()) {
-		return nullptr;
-	}
-
-	auto sub_find_iterator = find_iterator->second.find(coordinate_int.longitude);
-	if (sub_find_iterator == find_iterator->second.end()) {
-		return nullptr;
-	}
-
-	for (province *province : sub_find_iterator->second) {
-		if (province->contains_coordinate(coordinate)) {
-			return province;
-		}
-	}
-
-	return nullptr;
+	QPoint pos = this->get_coordinate_pos(coordinate);
+	QRgb rgb = this->province_image.pixel(pos);
+	return province::get_by_rgb(rgb);
 }
 
 /**
@@ -362,21 +287,21 @@ void map::load_provinces()
 {
 	EngineInterface::get()->set_loading_message("Loading Provinces... (0%)");
 
-	QImage province_image(QString::fromStdString((database::get_cache_path() / "provinces.png").string()));
-	QImage terrain_image("./map/terrain.png"); //used to calculate each province's terrain
-	this->size = province_image.size(); //set the map's size to that of the province map
-	const int pixel_count = province_image.width() * province_image.height();
+	this->province_image = QImage(QString::fromStdString((database::get_cache_path() / "provinces.png").string()));
+
+	this->size = this->province_image.size(); //set the map's size to that of the province map
+	const int pixel_count = this->province_image.width() * this->province_image.height();
 
 	std::map<province *, std::vector<int>> province_pixel_indexes;
 	std::map<province *, std::vector<int>> province_border_pixel_indexes;
 	std::map<province *, std::map<terrain_type *, int>> province_terrain_counts;
 
-	const QRgb *rgb_data = reinterpret_cast<const QRgb *>(province_image.constBits());
-	const QRgb *terrain_rgb_data = reinterpret_cast<const QRgb *>(terrain_image.constBits());
+	const QRgb *rgb_data = reinterpret_cast<const QRgb *>(this->province_image.constBits());
+	const QRgb *terrain_rgb_data = reinterpret_cast<const QRgb *>(this->terrain_image.constBits());
 
 	province *previous_pixel_province = nullptr; //used to see which provinces border which horizontally
 	for (int i = 0; i < pixel_count; ++i) {
-		const bool line_start = ((i % province_image.width()) == 0);
+		const bool line_start = ((i % this->province_image.width()) == 0);
 		if (line_start) {
 			//new line, set the previous pixel province to null
 			previous_pixel_province = nullptr;
@@ -399,9 +324,9 @@ void map::load_provinces()
 				previous_pixel_province->add_border_province(pixel_province);
 			}
 
-			if (i > province_image.width()) { //second line or below
+			if (i > this->province_image.width()) { //second line or below
 				//the pixel just above this one
-				const int adjacent_pixel_index = i - province_image.width();
+				const int adjacent_pixel_index = i - this->province_image.width();
 				const QRgb &previous_vertical_pixel_rgb = rgb_data[adjacent_pixel_index];
 				province *previous_vertical_pixel_province = province::get_by_rgb(previous_vertical_pixel_rgb, false);
 				if (previous_vertical_pixel_province != pixel_province && previous_vertical_pixel_province != nullptr) {
@@ -453,7 +378,7 @@ void map::load_provinces()
 void map::load_terrain()
 {
 	EngineInterface::get()->set_loading_message("Loading Terrain...");
-	QImage terrain_image("./map/terrain.png");
+	this->terrain_image = QImage("./map/terrain.png");
 }
 
 /**

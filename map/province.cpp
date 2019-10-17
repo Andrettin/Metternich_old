@@ -48,6 +48,10 @@ std::set<std::string> province::get_database_dependencies()
 */
 province *province::get_by_rgb(const QRgb &rgb, const bool should_find)
 {
+	if (rgb == qRgb(0, 0, 0)) {
+		return nullptr;
+	}
+
 	typename std::map<QRgb, province *>::const_iterator find_iterator = province::instances_by_rgb.find(rgb);
 
 	if (find_iterator != province::instances_by_rgb.end()) {
@@ -564,56 +568,6 @@ void province::set_terrain(metternich::terrain_type *terrain)
 }
 
 /**
-**	@brief	Calculate the province's terrain
-*/
-void province::calculate_terrain()
-{
-	std::map<terrain_type *, int> terrain_counts;
-
-	for (const QGeoPolygon &geopolygon : this->geopolygons) {
-		std::vector<QGeoCoordinate> checked_coordinates;
-
-		QGeoCoordinate center_coordinate = geopolygon.center();
-		checked_coordinates.push_back(center_coordinate);
-
-		for (const QGeoCoordinate &border_coordinate : geopolygon.path()) {
-			const double latitude = (center_coordinate.latitude() + border_coordinate.latitude()) / 2;
-			const double longitude = (center_coordinate.longitude() + border_coordinate.longitude()) / 2;
-			checked_coordinates.emplace_back(latitude, longitude);
-		}
-
-		for (const QGeoCoordinate &coordinate : checked_coordinates) {
-			if (!geopolygon.contains(coordinate)) {
-				continue;
-			}
-
-			terrain_type *terrain = map::get()->get_coordinate_terrain(coordinate);
-
-			if (terrain != nullptr) {
-				terrain_counts[terrain]++;
-			}
-		}
-	}
-
-	terrain_type *best_terrain = nullptr;
-	int best_terrain_count = 0;
-	for (const auto &kv_pair : terrain_counts) {
-		terrain_type *terrain = kv_pair.first;
-		const int count = kv_pair.second;
-		if (count > best_terrain_count) {
-			best_terrain = terrain;
-			best_terrain_count = count;
-		}
-	}
-
-	if (best_terrain != nullptr) {
-		this->set_terrain(best_terrain);
-	} else {
-		throw std::runtime_error("No terrain could be calculated for province \"" + this->get_identifier() + "\".");
-	}
-}
-
-/**
 **	@brief	Set the province's population
 **
 **	@param	population	The new population size for the province
@@ -834,48 +788,6 @@ void province::destroy_holding(LandedTitle *barony)
 void province::add_population_unit(std::unique_ptr<population_unit> &&population_unit)
 {
 	this->population_units.push_back(std::move(population_unit));
-}
-
-/**
-**	@brief	Calculate the province's border provinces
-*/
-void province::calculate_border_provinces()
-{
-	std::vector<QGeoCoordinate> border_coordinates;
-
-	for (const QGeoPolygon &geopolygon : this->geopolygons) {
-		QList<QGeoCoordinate> coordinates = geopolygon.path();
-
-		for (int i = 0; i < geopolygon.holesCount(); ++i) {
-			coordinates.append(geopolygon.holePath(i));
-		}
-
-		for (const QGeoCoordinate &coordinate : coordinates) {
-			border_coordinates.push_back(coordinate.atDistanceAndAzimuth(1000, 0));
-			border_coordinates.push_back(coordinate.atDistanceAndAzimuth(1000, 90));
-			border_coordinates.push_back(coordinate.atDistanceAndAzimuth(1000, 180));
-			border_coordinates.push_back(coordinate.atDistanceAndAzimuth(1000, 270));
-		}
-	}
-
-	for (const QGeoPath &geopath : this->geopaths) {
-		QList<QGeoCoordinate> coordinates = geopath.path();
-
-		for (const QGeoCoordinate &coordinate : coordinates) {
-			border_coordinates.push_back(coordinate.atDistanceAndAzimuth(1000, 0));
-			border_coordinates.push_back(coordinate.atDistanceAndAzimuth(1000, 90));
-			border_coordinates.push_back(coordinate.atDistanceAndAzimuth(1000, 180));
-			border_coordinates.push_back(coordinate.atDistanceAndAzimuth(1000, 270));
-		}
-	}
-
-	for (const QGeoCoordinate &coordinate : border_coordinates) {
-		province *coordinate_province = map::get()->get_coordinate_province(coordinate);
-		if (coordinate_province != nullptr && coordinate_province != this) {
-			border_provinces.insert(coordinate_province);
-			coordinate_province->border_provinces.insert(this);
-		}
-	}
 }
 
 /**

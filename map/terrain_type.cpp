@@ -13,6 +13,10 @@ namespace metternich {
 */
 terrain_type *terrain_type::get_by_rgb(const QRgb &rgb, const bool should_find)
 {
+	if (rgb == qRgb(0, 0, 0)) {
+		return nullptr;
+	}
+
 	typename std::map<QRgb, terrain_type *>::const_iterator find_iterator = terrain_type::instances_by_rgb.find(rgb);
 
 	if (find_iterator != terrain_type::instances_by_rgb.end()) {
