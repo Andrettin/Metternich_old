@@ -48,7 +48,7 @@ std::set<std::string> province::get_database_dependencies()
 */
 province *province::get_by_rgb(const QRgb &rgb, const bool should_find)
 {
-	if (rgb == qRgb(0, 0, 0)) {
+	if (rgb == province::empty_rgb) {
 		return nullptr;
 	}
 
@@ -464,31 +464,36 @@ void province::update_image()
 /**
 **	@brief	Update an image with the province's geodata
 **
-**	@param	image	The image to be updated from the province's geodata
+**	@param	image			The image to be updated from the province's geodata
+**	@param	terrain_image	The terrain image to be updated from the province's geodata, if the province has preset terrain
 */
-void province::update_image_from_geodata(QImage &image)
+void province::write_geodata_to_image(QImage &image, QImage &terrain_image)
 {
 	for (const QGeoPolygon &geopolygon : this->geopolygons) {
-		this->write_geoshape_to_image(image, geopolygon);
+		this->write_geoshape_to_image(image, geopolygon, terrain_image);
 	}
 
 	for (const QGeoPath &geopath : this->geopaths) {
-		this->write_geoshape_to_image(image, geopath);
+		this->write_geoshape_to_image(image, geopath, terrain_image);
 	}
 }
 
 /**
 **	@brief	Write a geoshape belonging to the province to an image
 **
-**	@param	image		The image to which the geoshape is to be written
-**	@param	geoshape	The geoshape
+**	@param	image			The image to which the geoshape is to be written
+**	@param	geoshape		The geoshape
+**	@param	terrain_image	The terrain image to which the geoshape is to be written, if the province has preset terrain
 */
-void province::write_geoshape_to_image(QImage &image, const QGeoShape &geoshape)
+void province::write_geoshape_to_image(QImage &image, const QGeoShape &geoshape, QImage &terrain_image)
 {
 	const QString province_loading_message = EngineInterface::get()->get_loading_message();
 
 	QRgb rgb = this->get_color().rgb();
 	QRgb *rgb_data = reinterpret_cast<QRgb *>(image.bits());
+
+	QRgb terrain_rgb = this->get_terrain() != nullptr ? this->get_terrain()->get_color().rgb() : terrain_type::empty_rgb;
+	QRgb *terrain_rgb_data = reinterpret_cast<QRgb *>(terrain_image.bits());
 
 	const double lon_per_pixel = 360.0 / static_cast<double>(image.size().width());
 	const double lat_per_pixel = 180.0 / static_cast<double>(image.size().height());
@@ -513,13 +518,23 @@ void province::write_geoshape_to_image(QImage &image, const QGeoShape &geoshape)
 		for (double lat = start_lat; lat <= top_right.latitude(); lat += lat_per_pixel) {
 			QGeoCoordinate coordinate(lat, lon);
 
+			const int y = util::latitude_to_y(lat, lat_per_pixel);
+			const int pixel_index = util::point_to_index(x, y, image.size());
+
+			//only write the province to the pixel if it is empty, or if this is a river province
+			if (rgb_data[pixel_index] != province::empty_rgb && !this->is_river()) {
+				continue;
+			}
+
 			if (!geoshape.contains(coordinate)) {
 				continue;
 			}
 
-			const int y = util::latitude_to_y(lat, lat_per_pixel);
-			const int pixel_index = util::point_to_index(x, y, image.size());
 			rgb_data[pixel_index] = rgb;
+
+			if (this->get_terrain() != nullptr && (terrain_rgb_data[pixel_index] == terrain_type::empty_rgb || this->is_river())) {
+				terrain_rgb_data[pixel_index] = terrain_rgb;
+			}
 		}
 
 		if (show_progress) {
@@ -836,6 +851,16 @@ bool province::is_coastal() const
 	}
 
 	return false;
+}
+
+/**
+**	@brief	Get whether this province is a river province
+**
+**	@return	True if the province is a river province, or false otherwise
+*/
+bool province::is_river() const
+{
+	return this->get_terrain() != nullptr && this->get_terrain()->is_river();
 }
 
 /**

@@ -58,6 +58,7 @@ public:
 	static constexpr const char *class_identifier = "province";
 	static constexpr const char *database_folder = "provinces";
 	static constexpr const char *prefix = "p_";
+	static constexpr QRgb empty_rgb = qRgb(0, 0, 0);
 	static constexpr int river_width = 10000; //in meters
 
 	static std::set<std::string> get_database_dependencies();
@@ -119,8 +120,8 @@ public:
 	void create_image(const std::vector<int> &pixel_indexes);
 	void set_border_pixels(const std::vector<int> &pixel_indexes);
 	void update_image();
-	void update_image_from_geodata(QImage &image);
-	void write_geoshape_to_image(QImage &image, const QGeoShape &geoshape);
+	void write_geodata_to_image(QImage &image, QImage &terrain_image);
+	void write_geoshape_to_image(QImage &image, const QGeoShape &geoshape, QImage &terrain_image);
 
 	const QImage &get_image() const
 	{
@@ -264,6 +265,7 @@ public:
 	bool borders_water() const;
 	bool borders_river() const;
 	bool is_coastal() const;
+	bool is_river() const;
 
 	bool is_selected() const
 	{

@@ -57,7 +57,7 @@ private:
 	void load_terrain();
 	bool check_cache();
 	void save_cache();
-	void update_province_image_from_geodata();
+	void write_province_geodata_to_image();
 
 private:
 	QSize size = QSize(0, 0);

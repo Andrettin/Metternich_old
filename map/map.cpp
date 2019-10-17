@@ -37,7 +37,7 @@ void map::load()
 		province::process_map_database();
 		terrain_type::process_map_database();
 
-		this->update_province_image_from_geodata();
+		this->write_province_geodata_to_image();
 	}
 
 	this->load_terrain();
@@ -378,7 +378,7 @@ void map::load_provinces()
 void map::load_terrain()
 {
 	EngineInterface::get()->set_loading_message("Loading Terrain...");
-	this->terrain_image = QImage("./map/terrain.png");
+	this->terrain_image = QImage(QString::fromStdString((database::get_cache_path() / "terrain.png").string()));
 }
 
 /**
@@ -442,8 +442,9 @@ void map::save_cache()
 /**
 **	@brief	Update the province image from geodata, caching the result
 */
-void map::update_province_image_from_geodata()
+void map::write_province_geodata_to_image()
 {
+	QImage terrain_image("./map/terrain.png");
 	QImage province_image("./map/provinces.png");
 
 	int proc_provinces = 0;
@@ -452,12 +453,13 @@ void map::update_province_image_from_geodata()
 		EngineInterface::get()->set_loading_message("Writing Provinces to Image... (" + QString::number(progress_percent) + "%)");
 
 		if (province->get_terrain() == nullptr || !province->get_terrain()->is_water() || province->get_terrain()->is_river()) {
-			province->update_image_from_geodata(province_image);
+			province->write_geodata_to_image(province_image, terrain_image);
 		}
 
 		proc_provinces++;
 	}
 
+	terrain_image.save(QString::fromStdString((database::get_cache_path() / "terrain.png").string()));
 	province_image.save(QString::fromStdString((database::get_cache_path() / "provinces.png").string()));
 }
 

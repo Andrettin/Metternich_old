@@ -13,7 +13,7 @@ namespace metternich {
 */
 terrain_type *terrain_type::get_by_rgb(const QRgb &rgb, const bool should_find)
 {
-	if (rgb == qRgb(0, 0, 0)) {
+	if (rgb == terrain_type::empty_rgb) {
 		return nullptr;
 	}
 
