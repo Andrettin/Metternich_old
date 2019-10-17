@@ -40,7 +40,8 @@ private:
 
 public:
 	void load();
-	QPoint get_pixel_position(const int index) const;
+	QPoint get_pixel_pos(const int index) const;
+	QPoint get_coordinate_pos(const QGeoCoordinate &coordinate) const;
 	terrain_type *get_coordinate_terrain(const QGeoCoordinate &coordinate) const;
 	province *get_coordinate_province(const QGeoCoordinate &coordinate) const;
 

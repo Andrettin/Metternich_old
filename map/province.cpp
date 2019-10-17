@@ -19,6 +19,7 @@
 #include "script/modifier.h"
 #include "translator.h"
 #include "util/container_util.h"
+#include "util/location_util.h"
 #include "util/point_util.h"
 
 #include <QApplication>
@@ -381,7 +382,7 @@ void province::create_image(const std::vector<int> &pixel_indexes)
 	QPoint end_pos(-1, -1);
 
 	for (const int index : pixel_indexes) {
-		QPoint pixel_pos = map::get()->get_pixel_position(index);
+		QPoint pixel_pos = map::get()->get_pixel_pos(index);
 		if (start_pos.x() == -1 || pixel_pos.x() < start_pos.x()) {
 			start_pos.setX(pixel_pos.x());
 		}
@@ -405,7 +406,7 @@ void province::create_image(const std::vector<int> &pixel_indexes)
 	this->image.fill(0);
 
 	for (const int index : pixel_indexes) {
-		QPoint pixel_pos = map::get()->get_pixel_position(index) - this->rect.topLeft();
+		QPoint pixel_pos = map::get()->get_pixel_pos(index) - this->rect.topLeft();
 		this->image.setPixel(pixel_pos, 1);
 	}
 }
@@ -418,7 +419,7 @@ void province::create_image(const std::vector<int> &pixel_indexes)
 void province::set_border_pixels(const std::vector<int> &pixel_indexes)
 {
 	for (const int index : pixel_indexes) {
-		QPoint pixel_pos = map::get()->get_pixel_position(index) - this->rect.topLeft();
+		QPoint pixel_pos = map::get()->get_pixel_pos(index) - this->rect.topLeft();
 		this->image.setPixel(pixel_pos, 2);
 	}
 }
@@ -494,7 +495,7 @@ void province::write_geoshape_to_image(QImage &image, const QGeoShape &geoshape)
 
 	double lon = bottom_left.longitude();
 	lon = std::round(lon / lon_per_pixel) * lon_per_pixel;
-	const int start_x = static_cast<int>(std::round((lon + 180.0) / lon_per_pixel));
+	const int start_x = util::longitude_to_x(lon, lon_per_pixel);
 
 	double start_lat = bottom_left.latitude();
 	start_lat = std::round(start_lat / lat_per_pixel) * lat_per_pixel;
@@ -503,7 +504,7 @@ void province::write_geoshape_to_image(QImage &image, const QGeoShape &geoshape)
 	const bool show_progress = pixel_width >= 512;
 
 	for (; lon <= top_right.longitude(); lon += lon_per_pixel) {
-		const int x = static_cast<int>(std::round((lon + 180.0) / lon_per_pixel));
+		const int x = util::longitude_to_x(lon, lon_per_pixel);
 
 		for (double lat = start_lat; lat <= top_right.latitude(); lat += lat_per_pixel) {
 			QGeoCoordinate coordinate(lat, lon);
@@ -512,7 +513,7 @@ void province::write_geoshape_to_image(QImage &image, const QGeoShape &geoshape)
 				continue;
 			}
 
-			const int y = static_cast<int>(std::round((lat * -1 + 90.0) / lat_per_pixel));
+			const int y = util::latitude_to_y(lat, lat_per_pixel);
 			const int pixel_index = util::point_to_index(x, y, image.size());
 			rgb_data[pixel_index] = rgb;
 		}

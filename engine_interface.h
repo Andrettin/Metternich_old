@@ -51,6 +51,8 @@ public:
 		emit loading_message_changed();
 	}
 
+	Q_INVOKABLE QPoint coordinate_to_point(const QGeoCoordinate &coordinate) const;
+
 signals:
 	void selected_province_changed();
 	void selected_holding_changed();
