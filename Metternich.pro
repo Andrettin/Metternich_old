@@ -139,6 +139,7 @@ HEADERS += \
     type_traits.h \
     util/container_util.h \
     util/filesystem_util.h \
+    util/location_util.h \
     util/number_util.h \
     util/parse_util.h \
     util/point_util.h \
