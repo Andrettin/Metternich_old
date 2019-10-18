@@ -26,6 +26,8 @@ void map::load()
 		terrain_type::process_cache();
 		province::process_cache();
 	} else {
+		EngineInterface::get()->set_loading_message("Building Map Cache...");
+
 		//clear cache
 		std::filesystem::path cache_path = database::get_cache_path();
 		std::filesystem::remove_all(cache_path);
@@ -38,12 +40,9 @@ void map::load()
 		terrain_type::process_map_database();
 
 		this->write_province_geodata_to_image();
-	}
 
-	this->load_terrain();
-	this->load_provinces();
-
-	if (!cache_valid) {
+		this->load_terrain();
+		this->load_provinces();
 		this->save_cache();
 	}
 }
