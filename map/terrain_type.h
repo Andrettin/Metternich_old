@@ -18,6 +18,7 @@ class terrain_type : public data_entry, public data_type<terrain_type>
 	Q_PROPERTY(bool navigable MEMBER navigable READ is_navigable)
 	Q_PROPERTY(bool ocean MEMBER ocean READ is_ocean)
 	Q_PROPERTY(bool river MEMBER river READ is_river)
+	Q_PROPERTY(bool default_terrain READ is_default_terrain WRITE set_default_terrain)
 
 public:
 	static constexpr const char *class_identifier = "terrain";
@@ -25,6 +26,11 @@ public:
 	static constexpr QRgb empty_rgb = qRgb(0, 0, 0);
 
 	static terrain_type *get_by_rgb(const QRgb &rgb, const bool should_find = true);
+
+	static terrain_type *get_default_terrain()
+	{
+		return terrain_type::default_terrain;
+	}
 
 	/**
 	**	@brief	Process the map database for the terrain type
@@ -62,6 +68,7 @@ public:
 
 private:
 	static inline std::map<QRgb, terrain_type *> instances_by_rgb;
+	static inline terrain_type *default_terrain = nullptr;
 
 public:
 	terrain_type(const std::string &identifier);
@@ -92,6 +99,22 @@ public:
 	bool is_river() const
 	{
 		return this->river;
+	}
+
+	bool is_default_terrain() const
+	{
+		return terrain_type::default_terrain == this;
+	}
+
+	void set_default_terrain(const bool default_terrain)
+	{
+		if (default_terrain) {
+			terrain_type::default_terrain = this;
+		} else {
+			if (this->is_default_terrain())  {
+				terrain_type::default_terrain = nullptr;
+			}
+		}
 	}
 
 	const std::unique_ptr<metternich::Modifier> &get_modifier() const
