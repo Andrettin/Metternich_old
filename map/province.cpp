@@ -268,7 +268,9 @@ void province::check() const
 gsml_data province::get_cache_data() const
 {
 	gsml_data cache_data(this->get_identifier());
-	cache_data.add_property("terrain", this->get_terrain()->get_identifier());
+	if (this->get_terrain() != nullptr) {
+		cache_data.add_property("terrain", this->get_terrain()->get_identifier());
+	}
 
 	gsml_data border_provinces("border_provinces");
 
@@ -492,7 +494,13 @@ void province::write_geoshape_to_image(QImage &image, const QGeoShape &geoshape,
 	QRgb rgb = this->get_color().rgb();
 	QRgb *rgb_data = reinterpret_cast<QRgb *>(image.bits());
 
-	QRgb terrain_rgb = this->get_terrain() != nullptr ? this->get_terrain()->get_color().rgb() : terrain_type::empty_rgb;
+	QRgb terrain_rgb;
+	if (this->get_terrain() != nullptr) {
+		terrain_rgb = this->get_terrain()->get_color().rgb();
+	} else if (terrain_type::get_default_terrain() != nullptr) {
+		terrain_rgb = terrain_type::get_default_terrain()->get_color().rgb();
+	}
+
 	QRgb *terrain_rgb_data = reinterpret_cast<QRgb *>(terrain_image.bits());
 
 	const double lon_per_pixel = 360.0 / static_cast<double>(image.size().width());
@@ -532,7 +540,7 @@ void province::write_geoshape_to_image(QImage &image, const QGeoShape &geoshape,
 
 			rgb_data[pixel_index] = rgb;
 
-			if (this->get_terrain() != nullptr && (terrain_rgb_data[pixel_index] == terrain_type::empty_rgb || this->is_river())) {
+			if (terrain_rgb_data[pixel_index] == terrain_type::empty_rgb || this->is_river()) {
 				terrain_rgb_data[pixel_index] = terrain_rgb;
 			}
 		}
@@ -829,7 +837,7 @@ bool province::borders_water() const
 bool province::borders_river() const
 {
 	for (const province *border_province : this->border_provinces) {
-		if (border_province->get_terrain()->is_river()) {
+		if (border_province->is_river()) {
 			return true;
 		}
 	}
