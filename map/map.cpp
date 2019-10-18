@@ -44,6 +44,10 @@ void map::load()
 		this->load_terrain();
 		this->load_provinces();
 		this->save_cache();
+
+		//clear the terrain and province images, as there is no need to keep them in memory
+		this->terrain_image = QImage();
+		this->province_image = QImage();
 	}
 }
 
@@ -68,6 +72,10 @@ QPoint map::get_coordinate_pos(const QGeoCoordinate &coordinate) const
 
 terrain_type *map::get_coordinate_terrain(const QGeoCoordinate &coordinate) const
 {
+	if (this->terrain_image.isNull()) {
+		throw std::runtime_error("Cannot get coordinate terrain after clearing the terrain image from memory.");
+	}
+
 	QPoint pos = this->get_coordinate_pos(coordinate);
 	QRgb rgb = this->terrain_image.pixel(pos);
 	return terrain_type::get_by_rgb(rgb);
@@ -75,6 +83,10 @@ terrain_type *map::get_coordinate_terrain(const QGeoCoordinate &coordinate) cons
 
 province *map::get_coordinate_province(const QGeoCoordinate &coordinate) const
 {
+	if (this->province_image.isNull()) {
+		throw std::runtime_error("Cannot get coordinate province after clearing the province image from memory.");
+	}
+
 	QPoint pos = this->get_coordinate_pos(coordinate);
 	QRgb rgb = this->province_image.pixel(pos);
 	return province::get_by_rgb(rgb);
