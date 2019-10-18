@@ -450,9 +450,7 @@ void map::write_province_geodata_to_image()
 		const int progress_percent = proc_provinces * 100 / static_cast<int>(province::get_all().size());
 		EngineInterface::get()->set_loading_message("Writing Provinces to Image... (" + QString::number(progress_percent) + "%)");
 
-		if (!province->is_water() || province->is_river()) {
-			province->write_geodata_to_image(province_image, terrain_image);
-		}
+		province->write_geodata_to_image(province_image, terrain_image);
 
 		proc_provinces++;
 	}
