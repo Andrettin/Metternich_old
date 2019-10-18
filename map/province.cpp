@@ -441,7 +441,7 @@ void province::update_image()
 		} else {
 			province_color = this->get_county()->get_color();
 		}
-	} else if (this->get_terrain()->is_water()) {
+	} else if (this->is_water()) {
 		province_color = QColor("#0080ff");
 	} else {
 		province_color = QColor(Qt::darkGray); //wasteland
@@ -813,7 +813,7 @@ void province::add_population_unit(std::unique_ptr<population_unit> &&population
 bool province::borders_water() const
 {
 	for (const province *border_province : this->border_provinces) {
-		if (border_province->get_terrain()->is_water()) {
+		if (border_province->is_water()) {
 			return true;
 		}
 	}
@@ -851,6 +851,16 @@ bool province::is_coastal() const
 	}
 
 	return false;
+}
+
+/**
+**	@brief	Get whether this province is a water province
+**
+**	@return	True if the province is a water province, or false otherwise
+*/
+bool province::is_water() const
+{
+	return this->get_terrain() != nullptr && this->get_terrain()->is_water();
 }
 
 /**

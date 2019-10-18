@@ -265,6 +265,7 @@ public:
 	bool borders_water() const;
 	bool borders_river() const;
 	bool is_coastal() const;
+	bool is_water() const;
 	bool is_river() const;
 
 	bool is_selected() const
