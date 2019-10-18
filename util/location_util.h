@@ -80,7 +80,13 @@ inline QGeoRectangle get_inner_georectangle(const QGeoPolygon &geopolygon)
 	QGeoCoordinate bottom_left = original_bottom_left;
 	QGeoCoordinate top_right = original_top_right;
 
-	for (const QGeoCoordinate &coordinate : geopolygon.path()) {
+	QList<QGeoCoordinate> coordinates = geopolygon.path();
+	for (int i = 0; i < geopolygon.holesCount(); ++i) {
+		QList<QGeoCoordinate> hole_coordinates = geopolygon.holePath(i);
+		coordinates.append(hole_coordinates);
+	}
+
+	for (const QGeoCoordinate &coordinate : coordinates) {
 		const double lat = coordinate.latitude();
 		const double lon = coordinate.longitude();
 
