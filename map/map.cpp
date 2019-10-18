@@ -389,8 +389,7 @@ void map::load_terrain()
 bool map::check_cache()
 {
 	QCryptographicHash hash(QCryptographicHash::Md5);
-	util::add_files_to_checksum(hash, "./map/provinces");
-	util::add_files_to_checksum(hash, "./map/terrain_types");
+	util::add_files_to_checksum(hash, "./map");
 
 	this->checksum = hash.result().toHex().toStdString(); //save the checksum
 
