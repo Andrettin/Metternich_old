@@ -853,7 +853,7 @@ bool province::borders_river() const
 bool province::is_coastal() const
 {
 	for (const province *border_province : this->border_provinces) {
-		if (border_province->get_terrain()->is_ocean()) {
+		if (border_province->is_ocean()) {
 			return true;
 		}
 	}
@@ -869,6 +869,16 @@ bool province::is_coastal() const
 bool province::is_water() const
 {
 	return this->get_terrain() != nullptr && this->get_terrain()->is_water();
+}
+
+/**
+**	@brief	Get whether this province is an ocean province
+**
+**	@return	True if the province is an ocean province, or false otherwise
+*/
+bool province::is_ocean() const
+{
+	return this->get_terrain() != nullptr && this->get_terrain()->is_ocean();
 }
 
 /**
