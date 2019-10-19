@@ -529,8 +529,8 @@ void province::write_geoshape_to_image(QImage &image, const QGeoShape &geoshape,
 			const int y = util::latitude_to_y(lat, lat_per_pixel);
 			const int pixel_index = util::point_to_index(x, y, image.size());
 
-			//only write the province to the pixel if it is empty, or if this is a river province
-			if (rgb_data[pixel_index] != province::empty_rgb && !this->is_river()) {
+			//only write the province to the pixel if it is empty, or if this is a river province and the province to overwrite is not an ocean province
+			if (rgb_data[pixel_index] != province::empty_rgb && (!this->is_river() || province::get_by_rgb(rgb_data[pixel_index])->is_ocean())) {
 				continue;
 			}
 

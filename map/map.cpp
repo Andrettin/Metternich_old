@@ -4,6 +4,7 @@
 #include "map/province.h"
 #include "map/terrain_type.h"
 #include "util/filesystem_util.h"
+#include "util/image_util.h"
 #include "util/location_util.h"
 #include "util/point_util.h"
 
@@ -40,15 +41,18 @@ void map::load()
 		terrain_type::process_map_database();
 
 		this->write_province_geodata_to_image();
-
-		this->load_terrain();
-		this->load_provinces();
-		this->save_cache();
-
-		//clear the terrain and province images, as there is no need to keep them in memory
-		this->terrain_image = QImage();
-		this->province_image = QImage();
 	}
+
+	this->load_terrain();
+	this->load_provinces();
+
+	if (!cache_valid) {
+		this->save_cache();
+	}
+
+	//clear the terrain and province images, as there is no need to keep them in memory
+	this->terrain_image = QImage();
+	this->province_image = QImage();
 }
 
 QPoint map::get_pixel_pos(const int index) const
@@ -457,14 +461,27 @@ void map::write_province_geodata_to_image()
 	QImage terrain_image("./map/terrain.png");
 	QImage province_image("./map/provinces.png");
 
-	int proc_provinces = 0;
-	for (province *province : province::get_all()) {
-		const int progress_percent = proc_provinces * 100 / static_cast<int>(province::get_all().size());
+	std::vector<province *> provinces = province::get_all();
+	std::sort(provinces.begin(), provinces.end(), [](const province *a, const province *b) {
+		if (a->is_ocean() != b->is_ocean()) {
+			return a->is_ocean();
+		}
+
+		return a < b;
+	});
+
+	int processed_provinces = 0;
+
+	for (province *province : provinces) {
+		const int progress_percent = processed_provinces * 100 / static_cast<int>(province::get_all().size());
 		EngineInterface::get()->set_loading_message("Writing Provinces to Image... (" + QString::number(progress_percent) + "%)");
 
-		province->write_geodata_to_image(province_image, terrain_image);
+		std::set<QRgb> province_image_rgbs = util::get_image_rgbs(province_image);
+		if (!province_image_rgbs.contains(province->get_color().rgb()) || province->always_writes_geodata()) {
+			province->write_geodata_to_image(province_image, terrain_image);
+		}
 
-		proc_provinces++;
+		processed_provinces++;
 	}
 
 	terrain_image.save(QString::fromStdString((database::get_cache_path() / "terrain.png").string()));

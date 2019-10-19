@@ -53,6 +53,7 @@ class province : public data_entry, public data_type<province>
 	Q_PROPERTY(QGeoCoordinate center_coordinate READ get_center_coordinate CONSTANT)
 	Q_PROPERTY(QVariantList geopolygons READ get_geopolygons_qvariant_list CONSTANT)
 	Q_PROPERTY(QVariantList geopaths READ get_geopaths_qvariant_list CONSTANT)
+	Q_PROPERTY(bool always_write_geodata MEMBER always_write_geodata READ always_writes_geodata CONSTANT)
 
 public:
 	static constexpr const char *class_identifier = "province";
@@ -352,6 +353,11 @@ public:
 		return geoshape.center();
 	}
 
+	bool always_writes_geodata() const
+	{
+		return this->always_write_geodata;
+	}
+
 signals:
 	void county_changed();
 	void duchy_changed();
@@ -391,6 +397,7 @@ private:
 	std::map<metternich::religion *, int> population_per_religion; //the population for each religion
 	std::vector<QGeoPolygon> geopolygons;
 	std::vector<QGeoPath> geopaths;
+	bool always_write_geodata = false;
 };
 
 }
