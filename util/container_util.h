@@ -29,4 +29,16 @@ inline QObjectList vector_to_qobject_list(const std::vector<T *> &vector)
 	return object_list;
 }
 
+template <typename T>
+inline std::set<typename T::value_type> container_to_set(const T &container)
+{
+	std::set<typename T::value_type> set;
+
+	for (const typename T::value_type &element : container) {
+		set.insert(element);
+	}
+
+	return set;
+}
+
 }

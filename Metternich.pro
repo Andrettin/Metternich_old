@@ -1,5 +1,5 @@
 QT += core gui quick widgets location positioning
-CONFIG += c++17 force_debug_info
+CONFIG += c++2a force_debug_info
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -51,7 +51,8 @@ SOURCES += \
         script/modifier_base.cpp \
         script/modifier_effect/modifier_effect.cpp \
         third_party/maskedmousearea/maskedmousearea.cpp \
-        translator.cpp
+        translator.cpp \
+        util/image_util.cpp
 
 RESOURCES += qml.qrc
 
@@ -139,6 +140,7 @@ HEADERS += \
     type_traits.h \
     util/container_util.h \
     util/filesystem_util.h \
+    util/image_util.h \
     util/location_util.h \
     util/number_util.h \
     util/parse_util.h \
