@@ -6,6 +6,7 @@
 #include <QColor>
 #include <QCryptographicHash>
 #include <QDateTime>
+#include <QGeoCircle>
 #include <QGeoCoordinate>
 #include <QGeoPath>
 #include <QGeoPolygon>

@@ -122,6 +122,7 @@ public:
 	void update_image();
 	void write_geodata_to_image(QImage &image, QImage &terrain_image);
 	void write_geoshape_to_image(QImage &image, const QGeoShape &geoshape, QImage &terrain_image);
+	void write_geopath_endpoints_to_image(QImage &image, QImage &terrain_image);
 
 	const QImage &get_image() const
 	{

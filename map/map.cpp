@@ -472,16 +472,24 @@ void map::write_province_geodata_to_image()
 
 	int processed_provinces = 0;
 
+	std::set<QRgb> province_image_rgbs = util::get_image_rgbs(province_image);
+
 	for (province *province : provinces) {
 		const int progress_percent = processed_provinces * 100 / static_cast<int>(province::get_all().size());
 		EngineInterface::get()->set_loading_message("Writing Provinces to Image... (" + QString::number(progress_percent) + "%)");
 
-		std::set<QRgb> province_image_rgbs = util::get_image_rgbs(province_image);
 		if (!province_image_rgbs.contains(province->get_color().rgb()) || province->always_writes_geodata()) {
 			province->write_geodata_to_image(province_image, terrain_image);
 		}
 
 		processed_provinces++;
+	}
+
+	//write river endpoints, but only after everything else, as they should have lower priority than the rivers themselves
+	for (province *province : province::get_river_provinces()) {
+		if (!province_image_rgbs.contains(province->get_color().rgb()) || province->always_writes_geodata()) {
+			province->write_geopath_endpoints_to_image(province_image, terrain_image);
+		}
 	}
 
 	terrain_image.save(QString::fromStdString((database::get_cache_path() / "terrain.png").string()));

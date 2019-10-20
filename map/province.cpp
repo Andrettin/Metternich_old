@@ -23,6 +23,7 @@
 #include "util/point_util.h"
 
 #include <QApplication>
+#include <QGeoCircle>
 #include <QPainter>
 
 namespace metternich {
@@ -59,7 +60,8 @@ province *province::get_by_rgb(const QRgb &rgb, const bool should_find)
 	}
 
 	if (should_find) {
-		throw std::runtime_error("No province found for RGB value: " + std::to_string(rgb) + ".");
+		QColor color(rgb);
+		throw std::runtime_error("No province found for RGB value: " + std::to_string(color.red()) + "/" + std::to_string(color.green()) + "/" + std::to_string(color.blue()) + ".");
 	}
 
 	return nullptr;
@@ -466,9 +468,9 @@ void province::update_image()
 }
 
 /**
-**	@brief	Update an image with the province's geodata
+**	@brief	Write the province's geodata to a province image
 **
-**	@param	image			The image to be updated from the province's geodata
+**	@param	image			The image to which the province's geodata will be written to
 **	@param	terrain_image	The terrain image to be updated from the province's geodata, if the province has preset terrain
 */
 void province::write_geodata_to_image(QImage &image, QImage &terrain_image)
@@ -479,6 +481,25 @@ void province::write_geodata_to_image(QImage &image, QImage &terrain_image)
 
 	for (const QGeoPath &geopath : this->geopaths) {
 		this->write_geoshape_to_image(image, geopath, terrain_image);
+	}
+}
+
+/**
+**	@brief	Write the province's geopath endpoints to a province image
+**
+**	@param	image			The image to which the province's geodata will be written to
+**	@param	terrain_image	The terrain image to be updated from the province's geodata, if the province has preset terrain
+*/
+void province::write_geopath_endpoints_to_image(QImage &image, QImage &terrain_image)
+{
+	const int circle_radius = this->get_terrain()->get_path_width() / 2;
+
+	for (const QGeoPath &geopath : this->geopaths) {
+		QGeoCircle front_geocircle(geopath.path().front(), circle_radius);
+		this->write_geoshape_to_image(image, front_geocircle, terrain_image);
+
+		QGeoCircle back_geocircle(geopath.path().back(), circle_radius);
+		this->write_geoshape_to_image(image, back_geocircle, terrain_image);
 	}
 }
 
@@ -511,6 +532,14 @@ void province::write_geoshape_to_image(QImage &image, const QGeoShape &geoshape,
 	QGeoRectangle georectangle = geoshape.boundingGeoRectangle();
 	QGeoCoordinate bottom_left = georectangle.bottomLeft();
 	QGeoCoordinate top_right = georectangle.topRight();
+
+	if (geoshape.type() == QGeoShape::ShapeType::PathType) {
+		//increase the bounding rectangle of paths slightly, as otherwise a part of the path's width is cut off
+		bottom_left.setLatitude(bottom_left.latitude() - 0.1);
+		bottom_left.setLongitude(bottom_left.longitude() - 0.1);
+		top_right.setLatitude(top_right.latitude() + 0.1);
+		top_right.setLongitude(top_right.longitude() + 0.1);
+	}
 
 	double lon = bottom_left.longitude();
 	lon = std::round(lon / lon_per_pixel) * lon_per_pixel;
