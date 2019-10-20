@@ -265,6 +265,22 @@ public:
 
 	bool borders_water() const;
 	bool borders_river() const;
+	bool has_river() const;
+
+	bool has_inner_river() const
+	{
+		return this->inner_river;
+	}
+
+	void set_inner_river(const bool inner_river)
+	{
+		if (this->has_inner_river() == inner_river) {
+			return;
+		}
+
+		this->inner_river = inner_river;
+	}
+
 	bool is_coastal() const;
 	bool is_water() const;
 	bool is_ocean() const;
@@ -397,6 +413,7 @@ private:
 	std::map<metternich::religion *, int> population_per_religion; //the population for each religion
 	std::vector<QGeoPolygon> geopolygons;
 	std::vector<QGeoPath> geopaths;
+	bool inner_river = false; //whether the province has a minor river flowing through it
 	bool always_write_geodata = false;
 };
 

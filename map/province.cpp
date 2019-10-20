@@ -222,8 +222,8 @@ void province::initialize_history()
 	this->calculate_population();
 	this->calculate_population_groups();
 
-	if (this->borders_river()) {
-		this->change_population_capacity_additive_modifier(10000); //increase population capacity if this province borders a river
+	if (this->has_river()) {
+		this->change_population_capacity_additive_modifier(10000); //increase population capacity if this province has a river
 	}
 	if (this->is_coastal()) {
 		this->change_population_capacity_additive_modifier(10000); //increase population capacity if this province is coastal
@@ -874,6 +874,16 @@ bool province::borders_river() const
 	}
 
 	return false;
+}
+
+/**
+**	@brief	Get whether the province has a river, that is, whether it either borders a major river, or contains a minor river within itself
+**
+**	@return	True if the province has a river, or false otherwise
+*/
+bool province::has_river() const
+{
+	return this->has_inner_river() || this->borders_river();
 }
 
 /**

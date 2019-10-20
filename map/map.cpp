@@ -365,8 +365,14 @@ void map::load_provinces()
 		province *province = province_terrain_count.first;
 		terrain_type *best_terrain = nullptr;
 		int best_terrain_count = 0;
+		bool inner_river = false;
 		for (const auto &kv_pair : province_terrain_count.second) {
 			terrain_type *terrain = kv_pair.first;
+
+			if (terrain != nullptr && terrain->is_river() && !inner_river) {
+				inner_river = true;
+			}
+
 			const int count = kv_pair.second;
 			if (count > best_terrain_count) {
 				best_terrain = terrain;
@@ -374,6 +380,8 @@ void map::load_provinces()
 			}
 		}
 		province->set_terrain(best_terrain);
+
+		province->set_inner_river(inner_river);
 	}
 
 	for (const auto &kv_pair : province_pixel_indexes) {
