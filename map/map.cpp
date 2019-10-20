@@ -40,7 +40,7 @@ void map::load()
 		province::process_map_database();
 		terrain_type::process_map_database();
 
-		this->write_province_geodata_to_image();
+		this->write_geodata_to_image();
 	}
 
 	this->load_terrain();
@@ -355,9 +355,6 @@ void map::load_provinces()
 			const QRgb &terrain_pixel_rgb = terrain_rgb_data[i];
 			terrain_type *pixel_terrain = terrain_type::get_by_rgb(terrain_pixel_rgb);
 			std::map<terrain_type *, int> &province_terrain_count = province_terrain_counts[pixel_province];
-			if (province_terrain_count.find(pixel_terrain) == province_terrain_count.end()) {
-				province_terrain_count[pixel_terrain] = 0;
-			}
 			province_terrain_count[pixel_terrain]++;
 		}
 
@@ -454,13 +451,46 @@ void map::save_cache()
 }
 
 /**
-**	@brief	Update the province image from geodata, caching the result
+**	@brief	Write geodata to image files
 */
-void map::write_province_geodata_to_image()
+void map::write_geodata_to_image()
 {
 	QImage terrain_image("./map/terrain.png");
 	QImage province_image("./map/provinces.png");
 
+	this->write_terrain_geodata_to_image(terrain_image);
+	this->write_province_geodata_to_image(province_image, terrain_image);
+
+	terrain_image.save(QString::fromStdString((database::get_cache_path() / "terrain.png").string()));
+	province_image.save(QString::fromStdString((database::get_cache_path() / "provinces.png").string()));
+}
+
+/**
+**	@brief	Write terrain geodata to the terrain image, caching the result
+**
+**	@param	terrain_image	The terrain image to be written to
+*/
+void map::write_terrain_geodata_to_image(QImage &terrain_image)
+{
+	int processed_terrain_types = 0;
+
+	for (terrain_type *terrain_type : terrain_type::get_all()) {
+		const int progress_percent = processed_terrain_types * 100 / static_cast<int>(terrain_type::get_all().size());
+		EngineInterface::get()->set_loading_message("Writing Terrain to Image... (" + QString::number(progress_percent) + "%)");
+
+		terrain_type->write_geodata_to_image(terrain_image);
+
+		processed_terrain_types++;
+	}
+}
+
+/**
+**	@brief	Write province geodata to the province image, caching the result
+**
+**	@param	terrain_image	The terrain image to be written to, for terrain that is written from province data
+*/
+void map::write_province_geodata_to_image(QImage &province_image, QImage &terrain_image)
+{
 	std::vector<province *> provinces = province::get_all();
 	std::sort(provinces.begin(), provinces.end(), [](const province *a, const province *b) {
 		if (a->is_ocean() != b->is_ocean()) {
@@ -491,9 +521,6 @@ void map::write_province_geodata_to_image()
 			province->write_geopath_endpoints_to_image(province_image, terrain_image);
 		}
 	}
-
-	terrain_image.save(QString::fromStdString((database::get_cache_path() / "terrain.png").string()));
-	province_image.save(QString::fromStdString((database::get_cache_path() / "provinces.png").string()));
 }
 
 }

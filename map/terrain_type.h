@@ -4,6 +4,8 @@
 #include "database/data_type.h"
 
 #include <QColor>
+#include <QGeoPath>
+#include <QGeoPolygon>
 
 namespace metternich {
 
@@ -145,6 +147,10 @@ public:
 		return false;
 	}
 
+	void write_geodata_to_image(QImage &image);
+	void write_geoshape_to_image(QImage &image, const QGeoShape &geoshape);
+	void write_geopath_endpoints_to_image(QImage &image);
+
 signals:
 	void water_changed();
 
@@ -157,6 +163,7 @@ private:
 	int path_width = 0;
 	std::unique_ptr<metternich::Modifier> modifier; //the modifier applied to provinces with this terrain
 	std::vector<QGeoPolygon> geopolygons;
+	std::vector<QGeoPath> geopaths;
 };
 
 }

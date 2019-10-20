@@ -57,7 +57,9 @@ private:
 	void load_terrain();
 	bool check_cache();
 	void save_cache();
-	void write_province_geodata_to_image();
+	void write_geodata_to_image();
+	void write_terrain_geodata_to_image(QImage &terrain_image);
+	void write_province_geodata_to_image(QImage &province_image, QImage &terrain_image);
 
 private:
 	QSize size = QSize(0, 0);
