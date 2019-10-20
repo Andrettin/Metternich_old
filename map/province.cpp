@@ -164,7 +164,9 @@ void province::process_gsml_scope(const gsml_data &scope)
 	} else if (tag == "geopaths") {
 		for (const gsml_data &path_data : scope.get_children()) {
 			QGeoPath geopath = path_data.to_geopath();
-			geopath.setWidth(province::river_width);
+			if (this->get_terrain() != nullptr) {
+				geopath.setWidth(this->get_terrain()->get_path_width());
+			}
 			this->geopaths.push_back(geopath);
 		}
 	} else if (tag == "border_provinces") {

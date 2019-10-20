@@ -18,6 +18,7 @@ class terrain_type : public data_entry, public data_type<terrain_type>
 	Q_PROPERTY(bool navigable MEMBER navigable READ is_navigable)
 	Q_PROPERTY(bool ocean MEMBER ocean READ is_ocean)
 	Q_PROPERTY(bool river MEMBER river READ is_river)
+	Q_PROPERTY(int path_width MEMBER path_width READ get_path_width)
 	Q_PROPERTY(bool default_terrain READ is_default_terrain WRITE set_default_terrain)
 
 public:
@@ -101,6 +102,11 @@ public:
 		return this->river;
 	}
 
+	int get_path_width() const
+	{
+		return this->path_width;
+	}
+
 	bool is_default_terrain() const
 	{
 		return terrain_type::default_terrain == this;
@@ -148,6 +154,7 @@ private:
 	bool navigable = false; //whether this water terrain is navigable
 	bool ocean = false;
 	bool river = false;
+	int path_width = 0;
 	std::unique_ptr<metternich::Modifier> modifier; //the modifier applied to provinces with this terrain
 	std::vector<QGeoPolygon> geopolygons;
 };

@@ -60,7 +60,6 @@ public:
 	static constexpr const char *database_folder = "provinces";
 	static constexpr const char *prefix = "p_";
 	static constexpr QRgb empty_rgb = qRgb(0, 0, 0);
-	static constexpr int river_width = 10000; //in meters
 
 	static std::set<std::string> get_database_dependencies();
 	static province *add(const std::string &identifier);
