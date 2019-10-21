@@ -49,6 +49,21 @@ inline QPoint coordinate_to_point(const QGeoCoordinate &coordinate, const double
 }
 
 /**
+**	@brief	Convert a point to a geocoordinate
+**
+**	@param	point	The point
+**	@param	size	The size of the area where the point is located
+**
+**	@return	The coordinate
+*/
+inline QGeoCoordinate point_to_coordinate(const QPoint &point, const QSize &area_size)
+{
+	const double lon = (point.x() - (area_size.width() / 2)) * 180.0 / (area_size.width() / 2);
+	const double lat = (point.y() - (area_size.height() / 2)) * 90.0 / (area_size.height() / 2) * -1;
+	return QGeoCoordinate(lat, lon);
+}
+
+/**
 **	@brief	Get whether a coordinate is in a georectangle (presuming the rectangle is valid)
 **
 **	@param	coordinate		The geocoordinate

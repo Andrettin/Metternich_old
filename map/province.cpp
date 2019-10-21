@@ -1024,4 +1024,9 @@ QVariantList province::get_geopaths_qvariant_list() const
 	return util::container_to_qvariant_list(this->geopaths);
 }
 
+QGeoCoordinate province::get_center_coordinate() const
+{
+	return map::get()->get_pixel_pos_coordinate(this->rect.center());
+}
+
 }

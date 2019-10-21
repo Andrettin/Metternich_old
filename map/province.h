@@ -312,37 +312,6 @@ public:
 
 	QVariantList get_geopolygons_qvariant_list() const;
 
-	const QGeoShape &get_main_geoshape() const
-	{
-		if (!this->geopolygons.empty()) {
-			size_t main_geopolygon_index = 0;
-
-			//start from 1 as 0 is already the default
-			for (size_t i = 1; i < this->geopolygons.size(); ++i) {
-				const QGeoPolygon &geopolygon = this->geopolygons[i];
-				if (geopolygon.path().size() > this->geopolygons[main_geopolygon_index].path().size()) {
-					main_geopolygon_index = i;
-				}
-			}
-
-			return this->geopolygons[main_geopolygon_index];
-		} else if (!this->geopaths.empty()) {
-			size_t main_geopath_index = 0;
-
-			//start from 1 as 0 is already the default
-			for (size_t i = 1; i < this->geopaths.size(); ++i) {
-				const QGeoPath &geopath = this->geopaths[i];
-				if (geopath.path().size() > this->geopaths[main_geopath_index].path().size()) {
-					main_geopath_index = i;
-				}
-			}
-
-			return this->geopaths[main_geopath_index];
-		}
-
-		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has neither geopolygons nor geopaths.");
-	}
-
 	QVariantList get_geopaths_qvariant_list() const;
 
 	bool contains_coordinate(const QGeoCoordinate &coordinate) const
@@ -363,11 +332,7 @@ public:
 		return false;
 	}
 
-	QGeoCoordinate get_center_coordinate() const
-	{
-		const QGeoShape &geoshape = this->get_main_geoshape();
-		return geoshape.center();
-	}
+	QGeoCoordinate get_center_coordinate() const;
 
 	bool always_writes_geodata() const
 	{

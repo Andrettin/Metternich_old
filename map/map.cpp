@@ -74,6 +74,18 @@ QPoint map::get_coordinate_pos(const QGeoCoordinate &coordinate) const
 	return util::coordinate_to_point(coordinate, lon_per_pixel, lat_per_pixel);
 }
 
+/**
+**	@brief	Convert a pixel position on the map to a geocoordinate
+**
+**	@param	pos	The pixel position
+**
+**	@return The geocoordinate corresponding to the pixel position
+*/
+QGeoCoordinate map::get_pixel_pos_coordinate(const QPoint &pixel_pos) const
+{
+	return util::point_to_coordinate(pixel_pos, this->size);
+}
+
 terrain_type *map::get_coordinate_terrain(const QGeoCoordinate &coordinate) const
 {
 	if (this->terrain_image.isNull()) {
