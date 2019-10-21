@@ -41,7 +41,7 @@ namespace metternich {
 			Game::get()->Start(Defines::get()->GetStartDate());
 		} catch (const std::exception &exception) {
 			qCritical() << exception.what() << '\n';
-			QApplication::exit(EXIT_FAILURE);
+			QMetaObject::invokeMethod(QApplication::instance(), []{ QApplication::exit(EXIT_FAILURE); }, Qt::QueuedConnection);
 		}
 	}
 }
