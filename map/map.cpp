@@ -46,6 +46,10 @@ void map::load()
 	this->load_terrain();
 	this->load_provinces();
 
+	if (this->terrain_image.size() != this->province_image.size()) {
+		throw std::runtime_error("The terrain and province images have different sizes.");
+	}
+
 	if (!cache_valid) {
 		this->save_cache();
 	}
