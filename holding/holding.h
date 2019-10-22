@@ -19,7 +19,7 @@ class employment;
 class employment_type;
 class holding_type;
 class IdentifiableModifier;
-class LandedTitle;
+class landed_title;
 class PopulationType;
 class population_unit;
 class province;
@@ -32,7 +32,7 @@ class holding : public data_entry
 	Q_PROPERTY(QString name READ get_name_qstring NOTIFY name_changed)
 	Q_PROPERTY(QString titled_name READ get_titled_name_qstring NOTIFY titled_name_changed)
 	Q_PROPERTY(metternich::holding_type* type READ get_type NOTIFY type_changed)
-	Q_PROPERTY(metternich::LandedTitle* barony READ get_barony CONSTANT)
+	Q_PROPERTY(metternich::landed_title* barony READ get_barony CONSTANT)
 	Q_PROPERTY(int population READ get_population WRITE set_population NOTIFY population_changed)
 	Q_PROPERTY(int population_capacity READ get_population_capacity NOTIFY population_capacity_changed)
 	Q_PROPERTY(int population_growth READ get_population_growth NOTIFY population_growth_changed)
@@ -57,7 +57,7 @@ private:
 	static inline holding *selected_holding = nullptr;
 
 public:
-	holding(LandedTitle *barony, holding_type *type, province *province);
+	holding(landed_title *barony, holding_type *type, province *province);
 	virtual ~holding() override;
 
 	virtual void initialize_history() override;
@@ -65,7 +65,7 @@ public:
 	void do_day();
 	void do_month();
 
-	LandedTitle *get_barony() const
+	landed_title *get_barony() const
 	{
 		return this->barony;
 	}
@@ -451,7 +451,7 @@ signals:
 	void selected_changed();
 
 private:
-	LandedTitle *barony = nullptr;
+	landed_title *barony = nullptr;
 	holding_type *type = nullptr;
 	Character *owner = nullptr; //the owner of the holding
 	metternich::province *province = nullptr; //the province to which this holding belongs

@@ -15,51 +15,51 @@ class holding;
 class law;
 class law_group;
 class province;
-enum class LandedTitleTier : int;
+enum class landed_title_tier : int;
 
-class LandedTitle : public data_entry, public data_type<LandedTitle>
+class landed_title : public data_entry, public data_type<landed_title>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(QString titled_name READ GetTitledNameQString NOTIFY TitledNameChanged)
+	Q_PROPERTY(QString titled_name READ get_titled_name_qstring NOTIFY titled_name_changed)
 	Q_PROPERTY(QColor color READ get_color CONSTANT)
-	Q_PROPERTY(metternich::Character* holder READ GetHolder WRITE SetHolder NOTIFY HolderChanged)
-	Q_PROPERTY(metternich::LandedTitle* holder_title MEMBER HolderTitle WRITE SetHolderTitle)
-	Q_PROPERTY(metternich::LandedTitle* liege_title MEMBER LiegeTitle)
-	Q_PROPERTY(metternich::LandedTitle* de_jure_liege_title READ GetDeJureLiegeTitle WRITE SetDeJureLiegeTitle NOTIFY DeJureLiegeTitleChanged)
-	Q_PROPERTY(metternich::LandedTitle* realm READ GetRealm NOTIFY RealmChanged)
+	Q_PROPERTY(metternich::Character* holder READ get_holder WRITE set_holder NOTIFY holder_changed)
+	Q_PROPERTY(metternich::landed_title* holder_title MEMBER holder_title WRITE set_holder_title)
+	Q_PROPERTY(metternich::landed_title* liege_title MEMBER liege_title)
+	Q_PROPERTY(metternich::landed_title* de_jure_liege_title READ get_de_jure_liege_title WRITE set_de_jure_liege_title NOTIFY de_jure_liege_title_changed)
+	Q_PROPERTY(metternich::landed_title* realm READ get_realm NOTIFY realm_changed)
 	Q_PROPERTY(metternich::province* capital_province MEMBER capital_province READ get_capital_province)
 	Q_PROPERTY(QVariantList laws READ get_laws_qvariant_list)
 
 public:
-	LandedTitle(const std::string &identifier) : data_entry(identifier) {}
+	landed_title(const std::string &identifier) : data_entry(identifier) {}
 
 	static constexpr const char *class_identifier = "landed_title";
 	static constexpr const char *database_folder = "landed_titles";
-	static constexpr const char *BaronyPrefix = "b_";
-	static constexpr const char *CountyPrefix = "c_";
-	static constexpr const char *DuchyPrefix = "d_";
-	static constexpr const char *KingdomPrefix = "k_";
-	static constexpr const char *EmpirePrefix = "e_";
+	static constexpr const char *barony_prefix = "b_";
+	static constexpr const char *county_prefix = "c_";
+	static constexpr const char *duchy_prefix = "d_";
+	static constexpr const char *kingdom_prefix = "k_";
+	static constexpr const char *empire_prefix = "e_";
 
 	//string identifiers for landed title tiers
-	static constexpr const char *BaronyIdentifier = "barony";
-	static constexpr const char *CountyIdentifier = "county";
-	static constexpr const char *DuchyIdentifier = "duchy";
-	static constexpr const char *KingdomIdentifier = "kingdom";
-	static constexpr const char *EmpireIdentifier = "empire";
+	static constexpr const char *barony_identifier = "barony";
+	static constexpr const char *county_identifier = "county";
+	static constexpr const char *duchy_identifier = "duchy";
+	static constexpr const char *kingdom_identifier = "kingdom";
+	static constexpr const char *empire_identifier = "empire";
 
 	//string identifiers for landed title tier holder title names
-	static constexpr const char *BaronIdentifier = "baron";
-	static constexpr const char *CountIdentifier = "count";
-	static constexpr const char *DukeIdentifier = "duke";
-	static constexpr const char *KingIdentifier = "king";
-	static constexpr const char *EmperorIdentifier = "emperor";
+	static constexpr const char *baron_identifier = "baron";
+	static constexpr const char *count_identifier = "count";
+	static constexpr const char *duke_identifier = "duke";
+	static constexpr const char *king_identifier = "king";
+	static constexpr const char *emperor_identifier = "emperor";
 
-	static LandedTitle *add(const std::string &identifier);
+	static landed_title *add(const std::string &identifier);
 
-	static const char *GetTierIdentifier(const LandedTitleTier tier);
-	static const char *GetTierHolderIdentifier(const LandedTitleTier tier);
+	static const char *get_tier_identifier(const landed_title_tier tier);
+	static const char *get_tier_holder_identifier(const landed_title_tier tier);
 
 	virtual void process_gsml_dated_property(const gsml_property &property, const QDateTime &date) override;
 	virtual void process_gsml_scope(const gsml_data &scope) override;
@@ -68,34 +68,34 @@ public:
 	virtual void check() const override;
 
 	virtual std::string get_name() const override;
-	std::string GetTierTitleName() const;
+	std::string get_tier_title_name() const;
 
-	std::string GetTitledName() const;
+	std::string get_titled_name() const;
 
-	QString GetTitledNameQString() const
+	QString get_titled_name_qstring() const
 	{
-		return QString::fromStdString(this->GetTitledName());
+		return QString::fromStdString(this->get_titled_name());
 	}
 
-	std::string GetHolderTitleName() const;
+	std::string get_holder_title_name() const;
 
 	const QColor &get_color() const
 	{
 		return this->color;
 	}
 
-	LandedTitleTier GetTier() const
+	landed_title_tier get_tier() const
 	{
-		return this->Tier;
+		return this->tier;
 	}
 
-	Character *GetHolder() const
+	Character *get_holder() const
 	{
-		return this->Holder;
+		return this->holder;
 	}
 
-	void SetHolder(Character *character);
-	void SetHolderTitle(LandedTitle *title);
+	void set_holder(Character *character);
+	void set_holder_title(landed_title *title);
 
 	metternich::holding *get_holding() const
 	{
@@ -115,31 +115,31 @@ public:
 		this->capital_province = province;
 	}
 
-	LandedTitle *GetRealm() const;
+	landed_title *get_realm() const;
 
-	LandedTitle *GetDeJureLiegeTitle() const
+	landed_title *get_de_jure_liege_title() const
 	{
-		return this->DeJureLiegeTitle;
+		return this->de_jure_liege_title;
 	}
 
-	void SetDeJureLiegeTitle(LandedTitle *title);
+	void set_de_jure_liege_title(landed_title *title);
 
-	const std::vector<LandedTitle *> &get_de_jure_vassal_titles() const
+	const std::vector<landed_title *> &get_de_jure_vassal_titles() const
 	{
 		return this->de_jure_vassal_titles;
 	}
 
-	void add_de_jure_vassal_title(LandedTitle *title)
+	void add_de_jure_vassal_title(landed_title *title)
 	{
 		this->de_jure_vassal_titles.push_back(title);
 	}
 
-	void remove_de_jure_vassal_title(LandedTitle *title)
+	void remove_de_jure_vassal_title(landed_title *title)
 	{
 		this->de_jure_vassal_titles.erase(std::remove(this->de_jure_vassal_titles.begin(), this->de_jure_vassal_titles.end(), title), this->de_jure_vassal_titles.end());
 	}
 
-	bool IsTitular() const
+	bool is_titular() const
 	{
 		//a title is not titular if it has de jure vassals, or if it is a county belonging to a province, or a barony belonging to a holding
 		return this->get_de_jure_vassal_titles().empty() && this->get_province() == nullptr && this->get_holding() == nullptr;
@@ -167,22 +167,22 @@ public:
 	Q_INVOKABLE void remove_law(metternich::law *law);
 
 signals:
-	void TitledNameChanged();
-	void HolderChanged();
-	void DeJureLiegeTitleChanged();
-	void RealmChanged();
+	void titled_name_changed();
+	void holder_changed();
+	void de_jure_liege_title_changed();
+	void realm_changed();
 
 private:
 	QColor color;
-	LandedTitleTier Tier;
-	Character *Holder = nullptr;
+	landed_title_tier tier;
+	Character *holder = nullptr;
 	metternich::holding *holding = nullptr; //this title's holding, if it is a non-titular barony
 	metternich::province *province = nullptr; //this title's province, if it is a non-titular county
-	LandedTitle *DeJureLiegeTitle = nullptr;
-	std::vector<LandedTitle *> de_jure_vassal_titles;
+	landed_title *de_jure_liege_title = nullptr;
+	std::vector<landed_title *> de_jure_vassal_titles;
 	metternich::province *capital_province = nullptr;
-	LandedTitle *HolderTitle = nullptr; //title of this title's holder; used only for initialization, and set to null afterwards
-	LandedTitle *LiegeTitle = nullptr; //title of this title's holder's liege; used only for initialization, and set to null afterwards
+	landed_title *holder_title = nullptr; //title of this title's holder; used only for initialization, and set to null afterwards
+	landed_title *liege_title = nullptr; //title of this title's holder's liege; used only for initialization, and set to null afterwards
 	std::map<law_group *, law *> laws; //the laws pertaining to the title, mapped to the respective law group
 };
 

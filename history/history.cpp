@@ -22,7 +22,7 @@ void History::load()
 	region::parse_history_database();
 	province::parse_history_database();
 	Character::parse_history_database();
-	LandedTitle::parse_history_database();
+	landed_title::parse_history_database();
 	population_unit::parse_history_database();
 
 	Character::process_history_database(true);
@@ -30,7 +30,7 @@ void History::load()
 	region::process_history_database(false);
 	province::process_history_database(false);
 	Character::process_history_database(false);
-	LandedTitle::process_history_database(false);
+	landed_title::process_history_database(false);
 
 	//process after the province history, so that holdings will have been created
 	population_unit::process_history_database();

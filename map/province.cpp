@@ -108,9 +108,9 @@ province::~province()
 */
 void province::process_gsml_property(const gsml_property &property)
 {
-	if (property.get_key().substr(0, 2) == LandedTitle::BaronyPrefix) {
+	if (property.get_key().substr(0, 2) == landed_title::barony_prefix) {
 		//a property related to one of the province's holdings
-		LandedTitle *barony = LandedTitle::get(property.get_key());
+		landed_title *barony = landed_title::get(property.get_key());
 		holding *holding = this->get_holding(barony);
 		if (property.get_operator() == gsml_operator::assignment) {
 			//the assignment operator sets the holding's type (creating the holding if it doesn't exist)
@@ -191,10 +191,10 @@ void province::process_gsml_dated_scope(const gsml_data &scope, const QDateTime 
 {
 	const std::string &tag = scope.get_tag();
 
-	if (tag.substr(0, 2) == LandedTitle::BaronyPrefix) {
+	if (tag.substr(0, 2) == landed_title::barony_prefix) {
 		//a change to the data of one of the province's holdings
 
-		LandedTitle *barony = LandedTitle::get(tag);
+		landed_title *barony = landed_title::get(tag);
 		holding *holding = this->get_holding(barony);
 		if (holding != nullptr) {
 			for (const gsml_property &property : scope.get_properties()) {
@@ -328,7 +328,7 @@ std::string province::get_name() const
 **
 **	@param	county	The new county for the province
 */
-void province::set_county(LandedTitle *county)
+void province::set_county(landed_title *county)
 {
 	if (county == this->get_county()) {
 		return;
@@ -344,10 +344,10 @@ void province::set_county(LandedTitle *county)
 **
 **	@return	The province's (de jure) duchy
 */
-LandedTitle *province::get_duchy() const
+landed_title *province::get_duchy() const
 {
 	if (this->get_county() != nullptr) {
-		return this->get_county()->GetDeJureLiegeTitle();
+		return this->get_county()->get_de_jure_liege_title();
 	}
 
 	return nullptr;
@@ -358,10 +358,10 @@ LandedTitle *province::get_duchy() const
 **
 **	@return	The province's (de jure) kingdom
 */
-LandedTitle *province::get_kingdom() const
+landed_title *province::get_kingdom() const
 {
 	if (this->get_duchy() != nullptr) {
-		return this->get_duchy()->GetDeJureLiegeTitle();
+		return this->get_duchy()->get_de_jure_liege_title();
 	}
 
 	return nullptr;
@@ -372,10 +372,10 @@ LandedTitle *province::get_kingdom() const
 **
 **	@return	The province's (de jure) empire
 */
-LandedTitle *province::get_empire() const
+landed_title *province::get_empire() const
 {
 	if (this->get_kingdom() != nullptr) {
-		return this->get_kingdom()->GetDeJureLiegeTitle();
+		return this->get_kingdom()->get_de_jure_liege_title();
 	}
 
 	return nullptr;
@@ -441,7 +441,7 @@ void province::update_image()
 {
 	QColor province_color;
 	if (this->get_county() != nullptr) {
-		const LandedTitle *realm = this->get_county()->GetRealm();
+		const landed_title *realm = this->get_county()->get_realm();
 		if (realm != nullptr) {
 			province_color = realm->get_color();
 		} else {
@@ -780,7 +780,7 @@ QVariantList province::get_holdings_qvariant_list() const
 **
 **	@param	barony	The holding's barony
 */
-holding *province::get_holding(LandedTitle *barony) const
+holding *province::get_holding(landed_title *barony) const
 {
 	auto find_iterator = this->holdings_by_barony.find(barony);
 	if (find_iterator != this->holdings_by_barony.end()) {
@@ -797,7 +797,7 @@ holding *province::get_holding(LandedTitle *barony) const
 **
 **	@param	type	The holding's type
 */
-void province::create_holding(LandedTitle *barony, holding_type *type)
+void province::create_holding(landed_title *barony, holding_type *type)
 {
 	auto new_holding = std::make_unique<holding>(barony, type, this);
 	new_holding->moveToThread(QApplication::instance()->thread());
@@ -820,7 +820,7 @@ void province::create_holding(LandedTitle *barony, holding_type *type)
 **
 **	@param	barony	The holding's barony
 */
-void province::destroy_holding(LandedTitle *barony)
+void province::destroy_holding(landed_title *barony)
 {
 	holding *holding = this->get_holding(barony);
 	if (holding == this->get_capital_holding()) {

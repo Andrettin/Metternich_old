@@ -163,14 +163,14 @@ void Game::DoYear()
 */
 void Game::generate_missing_title_holders()
 {
-	std::vector<LandedTitle *> landed_titles = LandedTitle::get_all();
-	std::sort(landed_titles.begin(), landed_titles.end(), [](const LandedTitle *a, const LandedTitle *b) {
+	std::vector<landed_title *> landed_titles = landed_title::get_all();
+	std::sort(landed_titles.begin(), landed_titles.end(), [](const landed_title *a, const landed_title *b) {
 		//give priority to landed titles with greater rank (so that counties will be processed before baronies)
-		return a->GetTier() > b->GetTier();
+		return a->get_tier() > b->get_tier();
 	});
 
-	for (LandedTitle *landed_title : landed_titles) {
-		if (landed_title->GetHolder() != nullptr) {
+	for (landed_title *landed_title : landed_titles) {
+		if (landed_title->get_holder() != nullptr) {
 			continue;
 		}
 
@@ -185,11 +185,11 @@ void Game::generate_missing_title_holders()
 		}
 
 		Character *holder = Character::generate(province->get_culture(), province->get_religion());
-		landed_title->SetHolder(holder);
+		landed_title->set_holder(holder);
 
 		//set the liege of generated holding owners to the county holder
 		if (landed_title->get_holding() != nullptr) {
-			Character *county_holder = landed_title->get_holding()->get_province()->get_county()->GetHolder();
+			Character *county_holder = landed_title->get_holding()->get_province()->get_county()->get_holder();
 			holder->SetLiege(county_holder);
 		}
 	}

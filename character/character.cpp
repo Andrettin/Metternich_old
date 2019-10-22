@@ -113,54 +113,54 @@ std::string Character::GetFullName() const
 **
 **	@return	The character's titled name
 */
-std::string Character::GetTitledName() const
+std::string Character::get_titled_name() const
 {
 	std::string titled_name;
 
-	if (this->GetPrimaryTitle() != nullptr) {
-		titled_name += this->GetPrimaryTitle()->GetHolderTitleName() + " ";
+	if (this->get_primary_title() != nullptr) {
+		titled_name += this->get_primary_title()->get_holder_title_name() + " ";
 	}
 
 	titled_name += this->get_name();
 
-	if (this->GetPrimaryTitle() != nullptr) {
-		titled_name += " of " + this->GetPrimaryTitle()->get_name();
+	if (this->get_primary_title() != nullptr) {
+		titled_name += " of " + this->get_primary_title()->get_name();
 	}
 
 	return titled_name;
 }
 
-void Character::ChoosePrimaryTitle()
+void Character::choose_primary_title()
 {
-	LandedTitle *best_title = nullptr;
-	LandedTitleTier best_title_tier = LandedTitleTier::Barony;
+	landed_title *best_title = nullptr;
+	landed_title_tier best_title_tier = landed_title_tier::barony;
 
-	for (LandedTitle *title : this->GetLandedTitles()) {
-		if (best_title == nullptr || title->GetTier() > best_title_tier) {
+	for (landed_title *title : this->get_landed_titles()) {
+		if (best_title == nullptr || title->get_tier() > best_title_tier) {
 			best_title = title;
-			best_title_tier = title->GetTier();
+			best_title_tier = title->get_tier();
 		}
 	}
 
-	this->SetPrimaryTitle(best_title);
+	this->set_primary_title(best_title);
 }
 
-void Character::add_landed_title(LandedTitle *title)
+void Character::add_landed_title(landed_title *title)
 {
-	this->LandedTitles.push_back(title);
+	this->landed_titles.push_back(title);
 
 	//if the new title belongs to a higher tier than the current primary title (or if there is no current primary title), change the character's primary title to the new title
-	if (this->GetPrimaryTitle() == nullptr || this->GetPrimaryTitle()->GetTier() < title->GetTier()) {
-		this->SetPrimaryTitle(title);
+	if (this->get_primary_title() == nullptr || this->get_primary_title()->get_tier() < title->get_tier()) {
+		this->set_primary_title(title);
 	}
 }
 
-void Character::remove_landed_title(LandedTitle *title)
+void Character::remove_landed_title(landed_title *title)
 {
-	this->LandedTitles.erase(std::remove(this->LandedTitles.begin(), this->LandedTitles.end(), title), this->LandedTitles.end());
+	this->landed_titles.erase(std::remove(this->landed_titles.begin(), this->landed_titles.end(), title), this->landed_titles.end());
 
-	if (title == this->GetPrimaryTitle()) {
-		this->ChoosePrimaryTitle(); //needs to choose a new primary title, as the old one has been lost
+	if (title == this->get_primary_title()) {
+		this->choose_primary_title(); //needs to choose a new primary title, as the old one has been lost
 	}
 }
 

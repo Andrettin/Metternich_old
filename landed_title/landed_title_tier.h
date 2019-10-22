@@ -2,13 +2,13 @@
 
 namespace metternich {
 
-enum class LandedTitleTier : int
+enum class landed_title_tier : int
 {
-	Barony,
-	County,
-	Duchy,
-	Kingdom,
-	Empire
+	barony,
+	county,
+	duchy,
+	kingdom,
+	empire
 };
 
 }

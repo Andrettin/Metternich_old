@@ -32,12 +32,12 @@ namespace metternich {
 **	@param	type		The holding's type (e.g. city)
 **	@param	province	The province where the holding is located
 */
-holding::holding(LandedTitle *barony, holding_type *type, metternich::province *province) : data_entry(barony->get_identifier()), barony(barony), province(province)
+holding::holding(landed_title *barony, holding_type *type, metternich::province *province) : data_entry(barony->get_identifier()), barony(barony), province(province)
 {
 	barony->set_holding(this);
 	this->change_base_population_growth(Defines::get()->GetBasePopulationGrowth());
 	this->set_type(type);
-	this->set_owner(barony->GetHolder());
+	this->set_owner(barony->get_holder());
 	this->change_base_population_capacity(province->get_population_capacity_additive_modifier());
 	this->change_population_capacity_modifier(province->get_population_capacity_modifier());
 	this->change_base_population_growth(province->get_population_growth_modifier());

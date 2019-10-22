@@ -99,12 +99,12 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 			}
 
 			if (property.get_key() == "landed_title" || property.get_key() == "barony" || property.get_key() == "county" || property.get_key() == "duchy" || property.get_key() == "kingdom" || property.get_key() == "empire" || property.get_key() == "holder_title" || property.get_key() == "liege_title" || property.get_key() == "de_jure_liege_title") {
-				new_property_value = QVariant::fromValue(LandedTitle::get(property.get_value()));
+				new_property_value = QVariant::fromValue(landed_title::get(property.get_value()));
 			} else if (property.get_key() == "province" || property.get_key() == "capital_province") {
 				province *province = province::get(property.get_value());
 				new_property_value = QVariant::fromValue(province);
 			} else if (property.get_key() == "holding" || property.get_key() == "capital_holding") {
-				const LandedTitle *barony = LandedTitle::get(property.get_value());
+				const landed_title *barony = landed_title::get(property.get_value());
 				holding *holding = barony->get_holding();
 				if (holding == nullptr) {
 					throw std::runtime_error("Barony \"" + property.get_value() + "\" has no holding, but a holding property is being set using the barony as the holding's identifier.");
@@ -158,9 +158,9 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 				Trait *trait = Trait::get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(Trait *, trait));
 			} else if (property.get_key() == "holdings") {
-				LandedTitle *barony = LandedTitle::get(property.get_value());
+				landed_title *barony = landed_title::get(property.get_value());
 				if (class_name == "metternich::region") {
-					success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(LandedTitle *, barony));
+					success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(landed_title *, barony));
 				} else {
 					holding *holding = barony->get_holding();
 					if (holding == nullptr) {

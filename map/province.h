@@ -24,7 +24,7 @@ class CSVData;
 class culture;
 class holding;
 class holding_type;
-class LandedTitle;
+class landed_title;
 class PopulationType;
 class population_unit;
 class region;
@@ -35,10 +35,10 @@ class province : public data_entry, public data_type<province>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(metternich::LandedTitle* county READ get_county WRITE set_county NOTIFY county_changed)
-	Q_PROPERTY(metternich::LandedTitle* duchy READ get_duchy NOTIFY duchy_changed)
-	Q_PROPERTY(metternich::LandedTitle* kingdom READ get_kingdom NOTIFY kingdom_changed)
-	Q_PROPERTY(metternich::LandedTitle* empire READ get_empire NOTIFY empire_changed)
+	Q_PROPERTY(metternich::landed_title* county READ get_county WRITE set_county NOTIFY county_changed)
+	Q_PROPERTY(metternich::landed_title* duchy READ get_duchy NOTIFY duchy_changed)
+	Q_PROPERTY(metternich::landed_title* kingdom READ get_kingdom NOTIFY kingdom_changed)
+	Q_PROPERTY(metternich::landed_title* empire READ get_empire NOTIFY empire_changed)
 	Q_PROPERTY(QColor color READ get_color CONSTANT)
 	Q_PROPERTY(QRect rect READ get_rect CONSTANT)
 	Q_PROPERTY(QImage image READ get_image NOTIFY image_changed)
@@ -96,16 +96,16 @@ public:
 
 	virtual std::string get_name() const override;
 
-	LandedTitle *get_county() const
+	landed_title *get_county() const
 	{
 		return this->county;
 	}
 
-	void set_county(LandedTitle *county);
+	void set_county(landed_title *county);
 
-	LandedTitle *get_duchy() const;
-	LandedTitle *get_kingdom() const;
-	LandedTitle *get_empire() const;
+	landed_title *get_duchy() const;
+	landed_title *get_kingdom() const;
+	landed_title *get_empire() const;
 
 	const QColor &get_color() const
 	{
@@ -224,9 +224,9 @@ public:
 	}
 
 	QVariantList get_holdings_qvariant_list() const;
-	holding *get_holding(LandedTitle *barony) const;
-	void create_holding(LandedTitle *barony, holding_type *type);
-	void destroy_holding(LandedTitle *barony);
+	holding *get_holding(landed_title *barony) const;
+	void create_holding(landed_title *barony, holding_type *type);
+	void destroy_holding(landed_title *barony);
 
 	holding *get_capital_holding() const
 	{
@@ -355,7 +355,7 @@ signals:
 	void selected_changed();
 
 private:
-	LandedTitle *county = nullptr;
+	landed_title *county = nullptr;
 	QColor color; //the color used to identify the province in the province map
 	QRect rect; //the rectangle that the province occupies
 	QImage image; //the province's image to be drawn on-screen
@@ -367,7 +367,7 @@ private:
 	int population_capacity_modifier = 0; //the population capacity modifier which the province provides to its holdings
 	int population_growth_modifier = 0; //the population growth modifier which the province provides to its holdings
 	std::vector<holding *> holdings;
-	std::map<LandedTitle *, std::unique_ptr<holding>> holdings_by_barony; //the province's holdings, mapped to their respective baronies
+	std::map<landed_title *, std::unique_ptr<holding>> holdings_by_barony; //the province's holdings, mapped to their respective baronies
 	holding *capital_holding = nullptr;
 	std::vector<region *> regions; //the regions to which this province belongs
 	std::set<province *> border_provinces; //provinces bordering this one

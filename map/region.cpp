@@ -17,7 +17,7 @@ std::set<std::string> region::get_database_dependencies()
 {
 	return {
 		//because regions have to be processed after baronies' de jure lieges have been set
-		LandedTitle::class_identifier,
+		landed_title::class_identifier,
 		//so that when regions are processed provinces already have their counties set
 		province::class_identifier
 	};
@@ -75,8 +75,8 @@ void region::add_province(province *province)
 	province->add_region(this);
 
 	//add the holdings belonging to the provinces to the region
-	LandedTitle *county = province->get_county();
-	for (LandedTitle *barony : county->get_de_jure_vassal_titles()) {
+	landed_title *county = province->get_county();
+	for (landed_title *barony : county->get_de_jure_vassal_titles()) {
 		this->add_holding(barony);
 	}
 }
@@ -87,8 +87,8 @@ void region::remove_province(province *province)
 	province->remove_region(this);
 
 	//add the holdings belonging to the provinces to the region
-	LandedTitle *county = province->get_county();
-	for (LandedTitle *barony : county->get_de_jure_vassal_titles()) {
+	landed_title *county = province->get_county();
+	for (landed_title *barony : county->get_de_jure_vassal_titles()) {
 		this->remove_holding(barony);
 	}
 }
@@ -102,7 +102,7 @@ std::vector<holding *> region::get_holdings() const
 {
 	std::vector<holding *> holdings;
 
-	for (const LandedTitle *barony : this->baronies) {
+	for (const landed_title *barony : this->baronies) {
 		if (barony->get_holding() != nullptr) {
 			holdings.push_back(barony->get_holding());
 		}

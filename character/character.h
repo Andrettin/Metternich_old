@@ -16,7 +16,7 @@ class culture;
 class Dynasty;
 class gsml_property;
 class holding;
-class LandedTitle;
+class landed_title;
 class phenotype;
 class religion;
 class Trait;
@@ -27,13 +27,13 @@ class Character : public numeric_data_entry, public data_type<Character, int>
 
 	Q_PROPERTY(QString name READ get_name_qstring WRITE set_name_qstring NOTIFY name_changed)
 	Q_PROPERTY(QString full_name READ GetFullNameQString NOTIFY FullNameChanged)
-	Q_PROPERTY(QString titled_name READ GetTitledNameQString NOTIFY TitledNameChanged)
+	Q_PROPERTY(QString titled_name READ get_titled_name_qstring NOTIFY titled_name_changed)
 	Q_PROPERTY(bool female MEMBER Female READ IsFemale)
 	Q_PROPERTY(metternich::Dynasty* dynasty READ GetDynasty WRITE SetDynasty NOTIFY DynastyChanged)
 	Q_PROPERTY(metternich::culture* culture MEMBER culture READ get_culture NOTIFY culture_changed)
 	Q_PROPERTY(metternich::religion* religion MEMBER religion READ get_religion NOTIFY religion_changed)
 	Q_PROPERTY(metternich::phenotype* phenotype MEMBER phenotype READ get_phenotype)
-	Q_PROPERTY(metternich::LandedTitle* primary_title READ GetPrimaryTitle WRITE SetPrimaryTitle NOTIFY PrimaryTitleChanged)
+	Q_PROPERTY(metternich::landed_title* primary_title READ get_primary_title WRITE set_primary_title NOTIFY primary_title_changed)
 	Q_PROPERTY(metternich::Character* father READ GetFather WRITE SetFather)
 	Q_PROPERTY(metternich::Character* mother READ GetMother WRITE SetMother)
 	Q_PROPERTY(metternich::Character* spouse READ GetSpouse WRITE SetSpouse)
@@ -70,9 +70,9 @@ public:
 	Character(const int identifier) : numeric_data_entry(identifier)
 	{
 		connect(this, &Character::name_changed, this, &Character::FullNameChanged);
-		connect(this, &Character::name_changed, this, &Character::TitledNameChanged);
+		connect(this, &Character::name_changed, this, &Character::titled_name_changed);
 		connect(this, &Character::DynastyChanged, this, &Character::FullNameChanged);
-		connect(this, &Character::PrimaryTitleChanged, this, &Character::TitledNameChanged);
+		connect(this, &Character::primary_title_changed, this, &Character::titled_name_changed);
 
 		Character::LivingCharacters.push_back(this);
 	}
@@ -152,11 +152,11 @@ public:
 		return QString::fromStdString(this->GetFullName());
 	}
 
-	std::string GetTitledName() const;
+	std::string get_titled_name() const;
 
-	QString GetTitledNameQString() const
+	QString get_titled_name_qstring() const
 	{
-		return QString::fromStdString(this->GetTitledName());
+		return QString::fromStdString(this->get_titled_name());
 	}
 
 	bool IsAlive() const
@@ -215,31 +215,31 @@ public:
 		return this->phenotype;
 	}
 
-	LandedTitle *GetPrimaryTitle() const
+	landed_title *get_primary_title() const
 	{
-		return this->PrimaryTitle;
+		return this->primary_title;
 	}
 
-	void SetPrimaryTitle(LandedTitle *title)
+	void set_primary_title(landed_title *title)
 	{
-		if (title == this->GetPrimaryTitle()) {
+		if (title == this->get_primary_title()) {
 			return;
 		}
 
-		this->PrimaryTitle = title;
+		this->primary_title = title;
 
-		emit PrimaryTitleChanged();
+		emit primary_title_changed();
 	}
 
-	void ChoosePrimaryTitle();
+	void choose_primary_title();
 
-	const std::vector<LandedTitle *> &GetLandedTitles() const
+	const std::vector<landed_title *> &get_landed_titles() const
 	{
-		return this->LandedTitles;
+		return this->landed_titles;
 	}
 
-	void add_landed_title(LandedTitle *title);
-	void remove_landed_title(LandedTitle *title);
+	void add_landed_title(landed_title *title);
+	void remove_landed_title(landed_title *title);
 
 	Character *GetFather() const
 	{
@@ -347,10 +347,10 @@ public:
 		return this->IsAnyLiegeOf(character->GetLiege());
 	}
 
-	LandedTitle *GetRealm() const
+	landed_title *GetRealm() const
 	{
 		Character *top_liege = this->GetTopLiege();
-		return top_liege->GetPrimaryTitle();
+		return top_liege->get_primary_title();
 	}
 
 	const std::vector<Trait *> &GetTraits() const
@@ -406,12 +406,12 @@ public:
 signals:
 	void name_changed();
 	void FullNameChanged();
-	void TitledNameChanged();
+	void titled_name_changed();
 	void AliveChanged();
 	void DynastyChanged();
 	void culture_changed();
 	void religion_changed();
-	void PrimaryTitleChanged();
+	void primary_title_changed();
 	void LiegeChanged();
 	void WealthChanged();
 
@@ -423,8 +423,8 @@ private:
 	metternich::culture *culture = nullptr;
 	metternich::religion *religion = nullptr;
 	metternich::phenotype *phenotype = nullptr;
-	LandedTitle *PrimaryTitle = nullptr;
-	std::vector<LandedTitle *> LandedTitles;
+	landed_title *primary_title = nullptr;
+	std::vector<landed_title *> landed_titles;
 	Character *Father = nullptr;
 	Character *Mother = nullptr;
 	std::vector<Character *> Children;
