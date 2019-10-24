@@ -113,6 +113,14 @@ public:
 			}
 		}
 
+		if (data_type::instances_by_identifier.contains(identifier)) {
+			if constexpr (std::is_arithmetic_v<KEY>) {
+				throw std::runtime_error("Tried to add a \"" + std::string(T::class_identifier) + "\" instance with the already-used \"" + std::to_string(identifier) + "\" string identifier.");
+			} else {
+				throw std::runtime_error("Tried to add a \"" + std::string(T::class_identifier) + "\" instance with the already-used \"" + identifier + "\" string identifier.");
+			}
+		}
+
 		data_type::instances_by_identifier[identifier] = std::make_unique<T>(identifier);
 		T *instance = data_type::instances_by_identifier.find(identifier)->second.get();
 		data_type::instances.push_back(instance);
