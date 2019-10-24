@@ -22,6 +22,10 @@ public:
 	*/
 	static void parse_history_database()
 	{
+		if (std::string(T::database_folder).empty()) {
+			return;
+		}
+
 		std::filesystem::path history_path("./data/history/" + std::string(T::database_folder));
 
 		if (!std::filesystem::exists(history_path)) {
