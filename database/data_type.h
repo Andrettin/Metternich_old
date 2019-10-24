@@ -160,6 +160,10 @@ public:
 	*/
 	static void parse_database()
 	{
+		if (std::string(T::database_folder).empty()) {
+			return;
+		}
+
 		std::filesystem::path database_path("./data/common/" + std::string(T::database_folder));
 
 		if (!std::filesystem::exists(database_path)) {
@@ -185,6 +189,10 @@ public:
 	*/
 	static void process_database(const bool definition)
 	{
+		if (std::string(T::database_folder).empty()) {
+			return;
+		}
+
 		for (const gsml_data &data : T::gsml_data_to_process) {
 			for (const gsml_data &data_entry : data.get_children()) {
 				KEY identifier;
@@ -219,6 +227,10 @@ public:
 	*/
 	static void parse_history_database()
 	{
+		if (std::string(T::database_folder).empty()) {
+			return;
+		}
+
 		std::filesystem::path history_path("./data/history/" + std::string(T::database_folder));
 
 		if (!std::filesystem::exists(history_path)) {
@@ -293,6 +305,10 @@ public:
 	*/
 	static void process_map_database()
 	{
+		if (std::string(T::database_folder).empty()) {
+			return;
+		}
+
 		std::filesystem::path map_path("./map/" + std::string(T::database_folder));
 
 		if (!std::filesystem::exists(map_path)) {
@@ -327,6 +343,10 @@ public:
 	*/
 	static void process_cache()
 	{
+		if (std::string(T::database_folder).empty()) {
+			return;
+		}
+
 		const std::filesystem::path cache_path(database::get_cache_path() / std::string(T::database_folder));
 
 		if (!std::filesystem::exists(cache_path)) {
@@ -361,6 +381,10 @@ public:
 	*/
 	static void save_cache()
 	{
+		if (std::string(T::database_folder).empty()) {
+			return;
+		}
+
 		const std::filesystem::path cache_path(database::get_cache_path() / std::string(T::database_folder));
 
 		if (!std::filesystem::exists(cache_path)) {
