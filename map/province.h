@@ -47,6 +47,7 @@ class province : public data_entry, public data_type<province>
 	Q_PROPERTY(metternich::culture* culture READ get_culture WRITE set_culture NOTIFY culture_changed)
 	Q_PROPERTY(metternich::religion* religion READ get_religion WRITE set_religion NOTIFY religion_changed)
 	Q_PROPERTY(int population READ get_population WRITE set_population NOTIFY population_changed)
+	Q_PROPERTY(QVariantList holding_slots READ get_holding_slots_qvariant_list NOTIFY holding_slots_changed)
 	Q_PROPERTY(QVariantList holdings READ get_holdings_qvariant_list NOTIFY holdings_changed)
 	Q_PROPERTY(metternich::holding* capital_holding READ get_capital_holding WRITE set_capital_holding NOTIFY capital_holding_changed)
 	Q_PROPERTY(bool selected READ is_selected WRITE set_selected NOTIFY selected_changed)
@@ -233,11 +234,6 @@ public:
 
 	QVariantList get_holding_slots_qvariant_list() const;
 
-	void add_holding_slot(holding_slot *holding_slot)
-	{
-		this->holding_slots.push_back(holding_slot);
-	}
-
 	holding *get_holding(holding_slot *holding_slot) const;
 	void create_holding(holding_slot *holding_slot, holding_type *type);
 	void destroy_holding(holding_slot *holding_slot);
@@ -365,6 +361,7 @@ signals:
 	void population_changed();
 	void population_groups_changed();
 	void holdings_changed();
+	void holding_slots_changed();
 	void capital_holding_changed();
 	void selected_changed();
 

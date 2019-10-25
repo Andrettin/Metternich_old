@@ -1,8 +1,13 @@
 #include "holding/holding_slot.h"
 
+#include "culture/culture.h"
+#include "culture/culture_group.h"
 #include "economy/commodity.h"
 #include "landed_title/landed_title.h"
+#include "map/province.h"
 #include "random.h"
+#include "religion.h"
+#include "translator.h"
 
 namespace metternich {
 
@@ -15,6 +20,16 @@ void holding_slot::initialize()
 		//generate a commodity for the holding if it has none
 		this->generate_commodity();
 	}
+}
+
+/**
+**	@brief	Get the holding's name
+**
+**	@return	The holding's name
+*/
+std::string holding_slot::get_name() const
+{
+	return Translator::get()->Translate(this->get_barony()->get_identifier(), {this->get_province()->get_culture()->get_identifier(), this->get_province()->get_culture()->get_culture_group()->get_identifier(), this->get_province()->get_religion()->get_identifier()});
 }
 
 /**

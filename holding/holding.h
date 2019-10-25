@@ -32,6 +32,7 @@ class holding : public data_entry
 
 	Q_PROPERTY(QString name READ get_name_qstring NOTIFY name_changed)
 	Q_PROPERTY(QString titled_name READ get_titled_name_qstring NOTIFY titled_name_changed)
+	Q_PROPERTY(metternich::holding_slot* slot MEMBER slot CONSTANT)
 	Q_PROPERTY(metternich::holding_type* type READ get_type NOTIFY type_changed)
 	Q_PROPERTY(metternich::landed_title* barony READ get_barony CONSTANT)
 	Q_PROPERTY(int population READ get_population WRITE set_population NOTIFY population_changed)
@@ -58,7 +59,7 @@ private:
 	static inline holding *selected_holding = nullptr;
 
 public:
-	holding(holding_slot *holding_slot, holding_type *type);
+	holding(holding_slot *slot, holding_type *type);
 	virtual ~holding() override;
 
 	virtual void initialize_history() override;
@@ -444,7 +445,7 @@ signals:
 	void selected_changed();
 
 private:
-	holding_slot *holding_slot = nullptr;
+	holding_slot *slot = nullptr;
 	holding_type *type = nullptr;
 	Character *owner = nullptr; //the owner of the holding
 	std::vector<std::unique_ptr<population_unit>> population_units;

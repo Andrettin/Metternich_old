@@ -17,7 +17,9 @@ class holding_slot : public data_entry, public data_type<holding_slot>
 {
 	Q_OBJECT
 
+	Q_PROPERTY(QString name READ get_name_qstring NOTIFY name_changed)
 	Q_PROPERTY(metternich::landed_title* barony READ get_barony WRITE set_barony NOTIFY barony_changed)
+	Q_PROPERTY(metternich::holding* holding READ get_holding WRITE set_holding NOTIFY holding_changed)
 	Q_PROPERTY(bool settlement MEMBER settlement READ is_settlement)
 	Q_PROPERTY(metternich::commodity* commodity READ get_commodity WRITE set_commodity NOTIFY commodity_changed)
 
@@ -41,6 +43,13 @@ public:
 
 	virtual void initialize() override;
 
+	virtual std::string get_name() const override;
+
+	QString get_name_qstring() const
+	{
+		return QString::fromStdString(this->get_name());
+	}
+
 	landed_title *get_barony() const
 	{
 		return this->barony;
@@ -60,6 +69,7 @@ public:
 		}
 
 		this->holding = holding;
+		emit holding_changed();
 	}
 
 	province *get_province() const
@@ -92,6 +102,7 @@ public:
 
 signals:
 	void barony_changed();
+	void holding_changed();
 	void commodity_changed();
 
 private:

@@ -29,19 +29,19 @@ namespace metternich {
 /**
 **	@brief	Constructor
 **
-**	@param	holding_slot	The holding's holding slot
-**	@param	type			The holding's type (e.g. city)
+**	@param	slot	The holding's holding slot
+**	@param	type	The holding's type (e.g. city)
 */
-holding::holding(metternich::holding_slot *holding_slot, holding_type *type) : data_entry(holding_slot->get_identifier()), holding_slot(holding_slot)
+holding::holding(metternich::holding_slot *slot, holding_type *type) : data_entry(slot->get_identifier()), slot(slot)
 {
-	holding_slot->set_holding(this);
+	slot->set_holding(this);
 	this->change_base_population_growth(Defines::get()->GetBasePopulationGrowth());
 	this->set_type(type);
 	this->set_owner(this->get_barony()->get_holder());
 	this->change_base_population_capacity(this->get_province()->get_population_capacity_additive_modifier());
 	this->change_population_capacity_modifier(this->get_province()->get_population_capacity_modifier());
 	this->change_base_population_growth(this->get_province()->get_population_growth_modifier());
-	this->set_commodity(holding_slot->get_commodity());
+	this->set_commodity(slot->get_commodity());
 
 	connect(this, &holding::type_changed, this, &holding::titled_name_changed);
 }
@@ -161,7 +161,7 @@ std::string holding::get_titled_name() const
 */
 landed_title *holding::get_barony() const
 {
-	return this->holding_slot->get_barony();
+	return this->slot->get_barony();
 }
 
 /**
@@ -195,7 +195,7 @@ void holding::set_type(holding_type *type)
 */
 province *holding::get_province() const
 {
-	return this->holding_slot->get_province();
+	return this->slot->get_province();
 }
 
 /**
