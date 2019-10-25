@@ -1,6 +1,7 @@
 #pragma once
 
 #include "holding/holding.h"
+#include "holding/holding_slot.h"
 #include "map/province.h"
 #include "map/terrain_type.h"
 #include "script/condition/condition.h"
@@ -34,6 +35,11 @@ public:
 	virtual bool check(const holding *holding) const override
 	{
 		return this->check(holding->get_province());
+	}
+
+	virtual bool check(const holding_slot *holding_slot) const override
+	{
+		return this->check(holding_slot->get_province());
 	}
 
 private:

@@ -11,6 +11,7 @@
 namespace metternich {
 
 class holding;
+class holding_slot;
 class landed_title;
 class population_unit;
 class province;
@@ -71,14 +72,14 @@ public:
 
 	QVariantList get_holdings_qvariant_list() const;
 
-	Q_INVOKABLE void add_holding(landed_title *barony)
+	Q_INVOKABLE void add_holding(holding_slot *holding_slot)
 	{
-		this->baronies.push_back(barony);
+		this->holding_slots.push_back(holding_slot);
 	}
 
-	Q_INVOKABLE void remove_holding(landed_title *barony)
+	Q_INVOKABLE void remove_holding(holding_slot *holding_slot)
 	{
-		this->baronies.erase(std::remove(this->baronies.begin(), this->baronies.end(), barony), this->baronies.end());
+		this->holding_slots.erase(std::remove(this->holding_slots.begin(), this->holding_slots.end(), holding_slot), this->holding_slots.end());
 	}
 
 	const std::vector<std::unique_ptr<population_unit>> &get_population_units() const
@@ -93,7 +94,7 @@ signals:
 
 private:
 	std::vector<province *> provinces;
-	std::vector<landed_title *> baronies; //the baronies for the holdings contained by this region
+	std::vector<holding_slot *> holding_slots; //the slots for the holdings contained by this region
 	std::vector<region *> subregions; //subregions of this region
 	std::vector<std::unique_ptr<population_unit>> population_units; //population units set for this region in history, used during initialization to generate population units in the region's settlements
 };

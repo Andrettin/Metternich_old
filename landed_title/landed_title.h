@@ -12,6 +12,7 @@ namespace metternich {
 
 class Character;
 class holding;
+class holding_slot;
 class law;
 class law_group;
 class province;
@@ -97,12 +98,13 @@ public:
 	void set_holder(Character *character);
 	void set_holder_title(landed_title *title);
 
-	metternich::holding *get_holding() const
+	metternich::holding_slot *get_holding_slot() const
 	{
-		return this->holding;
+		return this->holding_slot;
 	}
 
-	void set_holding(holding *holding);
+	void set_holding_slot(holding_slot *holding_slot);
+	metternich::holding *get_holding() const;
 
 	metternich::province *get_province() const
 	{
@@ -142,7 +144,7 @@ public:
 	bool is_titular() const
 	{
 		//a title is not titular if it has de jure vassals, or if it is a county belonging to a province, or a barony belonging to a holding
-		return this->get_de_jure_vassal_titles().empty() && this->get_province() == nullptr && this->get_holding() == nullptr;
+		return this->get_de_jure_vassal_titles().empty() && this->get_province() == nullptr && this->get_holding_slot() == nullptr;
 	}
 
 	metternich::province *get_capital_province() const
@@ -176,8 +178,8 @@ private:
 	QColor color;
 	landed_title_tier tier;
 	Character *holder = nullptr;
-	metternich::holding *holding = nullptr; //this title's holding, if it is a non-titular barony
-	metternich::province *province = nullptr; //this title's province, if it is a non-titular county
+	metternich::holding_slot *holding_slot = nullptr; //the title's holding slot, if it is a non-titular barony
+	metternich::province *province = nullptr; //the title's province, if it is a non-titular county
 	landed_title *de_jure_liege_title = nullptr;
 	std::vector<landed_title *> de_jure_vassal_titles;
 	metternich::province *capital_province = nullptr;

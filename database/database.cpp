@@ -16,6 +16,7 @@
 #include "game/game.h"
 #include "history/history.h"
 #include "holding/holding.h"
+#include "holding/holding_slot.h"
 #include "holding/holding_type.h"
 #include "landed_title/landed_title.h"
 #include "map/province.h"
@@ -104,10 +105,10 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 				province *province = province::get(property.get_value());
 				new_property_value = QVariant::fromValue(province);
 			} else if (property.get_key() == "holding" || property.get_key() == "capital_holding") {
-				const landed_title *barony = landed_title::get(property.get_value());
-				holding *holding = barony->get_holding();
+				const holding_slot *holding_slot = holding_slot::get(property.get_value());
+				holding *holding = holding_slot->get_holding();
 				if (holding == nullptr) {
-					throw std::runtime_error("Barony \"" + property.get_value() + "\" has no holding, but a holding property is being set using the barony as the holding's identifier.");
+					throw std::runtime_error("Holding slot \"" + property.get_value() + "\" has no constructed holding, but a holding property is being set using it as the holding's identifier.");
 				}
 				new_property_value = QVariant::fromValue(holding);
 			} else if (property.get_key() == "region") {
@@ -158,13 +159,13 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 				Trait *trait = Trait::get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(Trait *, trait));
 			} else if (property.get_key() == "holdings") {
-				landed_title *barony = landed_title::get(property.get_value());
+				holding_slot *slot = holding_slot::get(property.get_value());
 				if (class_name == "metternich::region") {
-					success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(landed_title *, barony));
+					success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(holding_slot *, slot));
 				} else {
-					holding *holding = barony->get_holding();
+					holding *holding = slot->get_holding();
 					if (holding == nullptr) {
-						throw std::runtime_error("Barony \"" + property.get_value() + "\" has no holding, but a holding list property is being modified using the barony as a holding's identifier.");
+						throw std::runtime_error("Holding slot \"" + property.get_value() + "\" has no holding, but a holding list property is being modified using it as a holding's identifier.");
 					}
 					success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(metternich::holding *, holding));
 				}

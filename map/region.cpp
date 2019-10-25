@@ -1,6 +1,7 @@
 #include "map/region.h"
 
 #include "database/database.h"
+#include "holding/holding_slot.h"
 #include "landed_title/landed_title.h"
 #include "map/province.h"
 #include "population/population_unit.h"
@@ -16,9 +17,7 @@ namespace metternich {
 std::set<std::string> region::get_database_dependencies()
 {
 	return {
-		//because regions have to be processed after baronies' de jure lieges have been set
-		landed_title::class_identifier,
-		//so that when regions are processed provinces already have their counties set
+		//so that when regions are processed provinces already have their holding slots set
 		province::class_identifier
 	};
 }
@@ -74,10 +73,9 @@ void region::add_province(province *province)
 	this->provinces.push_back(province);
 	province->add_region(this);
 
-	//add the holdings belonging to the provinces to the region
-	landed_title *county = province->get_county();
-	for (landed_title *barony : county->get_de_jure_vassal_titles()) {
-		this->add_holding(barony);
+	//add the holdings belonging to the province to the region
+	for (holding_slot *holding_slot : province->get_holding_slots()) {
+		this->add_holding(holding_slot);
 	}
 }
 
@@ -86,10 +84,9 @@ void region::remove_province(province *province)
 	this->provinces.erase(std::remove(this->provinces.begin(), this->provinces.end(), province), this->provinces.end());
 	province->remove_region(this);
 
-	//add the holdings belonging to the provinces to the region
-	landed_title *county = province->get_county();
-	for (landed_title *barony : county->get_de_jure_vassal_titles()) {
-		this->remove_holding(barony);
+	//add the holdings belonging to the province to the region
+	for (holding_slot *holding_slot : province->get_holding_slots()) {
+		this->remove_holding(holding_slot);
 	}
 }
 
@@ -102,9 +99,9 @@ std::vector<holding *> region::get_holdings() const
 {
 	std::vector<holding *> holdings;
 
-	for (const landed_title *barony : this->baronies) {
-		if (barony->get_holding() != nullptr) {
-			holdings.push_back(barony->get_holding());
+	for (const holding_slot *holding_slot : this->holding_slots) {
+		if (holding_slot->get_holding() != nullptr) {
+			holdings.push_back(holding_slot->get_holding());
 		}
 	}
 
@@ -113,7 +110,7 @@ std::vector<holding *> region::get_holdings() const
 
 QVariantList region::get_holdings_qvariant_list() const
 {
-	return util::container_to_qvariant_list(this->baronies);
+	return util::container_to_qvariant_list(this->holding_slots);
 }
 
 /**

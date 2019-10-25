@@ -23,6 +23,7 @@ namespace metternich {
 class CSVData;
 class culture;
 class holding;
+class holding_slot;
 class holding_type;
 class landed_title;
 class PopulationType;
@@ -224,9 +225,22 @@ public:
 	}
 
 	QVariantList get_holdings_qvariant_list() const;
-	holding *get_holding(landed_title *barony) const;
-	void create_holding(landed_title *barony, holding_type *type);
-	void destroy_holding(landed_title *barony);
+
+	const std::vector<holding_slot *> &get_holding_slots() const
+	{
+		return this->holding_slots;
+	}
+
+	QVariantList get_holding_slots_qvariant_list() const;
+
+	void add_holding_slot(holding_slot *holding_slot)
+	{
+		this->holding_slots.push_back(holding_slot);
+	}
+
+	holding *get_holding(holding_slot *holding_slot) const;
+	void create_holding(holding_slot *holding_slot, holding_type *type);
+	void destroy_holding(holding_slot *holding_slot);
 
 	holding *get_capital_holding() const
 	{
@@ -366,8 +380,9 @@ private:
 	int population_capacity_additive_modifier = 0; //the population capacity additive modifier which the province provides to its holdings
 	int population_capacity_modifier = 0; //the population capacity modifier which the province provides to its holdings
 	int population_growth_modifier = 0; //the population growth modifier which the province provides to its holdings
+	std::vector<holding_slot *> holding_slots;
 	std::vector<holding *> holdings;
-	std::map<landed_title *, std::unique_ptr<holding>> holdings_by_barony; //the province's holdings, mapped to their respective baronies
+	std::map<holding_slot *, std::unique_ptr<holding>> holdings_by_slot; //the province's holdings, mapped to their respective holding slots
 	holding *capital_holding = nullptr;
 	std::vector<region *> regions; //the regions to which this province belongs
 	std::set<province *> border_provinces; //provinces bordering this one

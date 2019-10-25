@@ -6,6 +6,7 @@
 #include "culture/culture_group.h"
 #include "game/game.h"
 #include "holding/holding.h"
+#include "holding/holding_slot.h"
 #include "holding/holding_type.h"
 #include "landed_title/landed_title_tier.h"
 #include "map/province.h"
@@ -141,6 +142,10 @@ void landed_title::process_gsml_scope(const gsml_data &scope)
 		const int green = std::stoi(values.at(1));
 		const int blue = std::stoi(values.at(2));
 		this->color.setRgb(red, green, blue);
+	} else if (tag.substr(0, 2) == landed_title::barony_prefix) {
+		landed_title *barony = landed_title::add(tag);
+		barony->set_de_jure_liege_title(this);
+		database::process_gsml_data(barony, scope);
 	} else {
 		data_entry_base::process_gsml_scope(scope);
 	}
@@ -205,8 +210,8 @@ void landed_title::check() const
 			throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has no capital province.");
 		}
 
-		if (this->get_holding() != nullptr && this->get_holding()->get_province() != this->get_capital_province()) {
-			throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has its holding in a different province than its capital province.");
+		if (this->get_holding_slot() != nullptr && this->get_holding_slot()->get_province() != this->get_capital_province()) {
+			throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has its holding slot in a different province than its capital province.");
 		}
 
 		if (this->get_province() != nullptr) {
@@ -215,9 +220,9 @@ void landed_title::check() const
 			}
 		}
 
-		if (this->get_holding() != nullptr) {
+		if (this->get_holding_slot() != nullptr) {
 			if (this->get_tier() != landed_title_tier::barony) {
-				throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has been assigned to a holding, but is not a barony.");
+				throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has been assigned to a holding slot, but is not a barony.");
 			}
 		}
 	}
@@ -355,9 +360,22 @@ void landed_title::set_holder(Character *character)
 	emit holder_changed();
 }
 
-void landed_title::set_holding(metternich::holding *holding)
+void landed_title::set_holding_slot(metternich::holding_slot *holding_slot)
 {
-	this->holding = holding;
+	if (holding_slot == this->get_holding_slot()) {
+		return;
+	}
+
+	this->holding_slot = holding_slot;
+}
+
+holding *landed_title::get_holding() const
+{
+	if (this->get_holding_slot() != nullptr) {
+		return this->get_holding_slot()->get_holding();
+	}
+
+	return nullptr;
 }
 
 landed_title *landed_title::get_realm() const

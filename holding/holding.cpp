@@ -1,4 +1,4 @@
-#include "holding.h"
+#include "holding/holding.h"
 
 #include "culture/culture.h"
 #include "culture/culture_group.h"
@@ -9,6 +9,7 @@
 #include "engine_interface.h"
 #include "game/game.h"
 #include "holding/building.h"
+#include "holding/holding_slot.h"
 #include "holding/holding_type.h"
 #include "landed_title/landed_title.h"
 #include "map/province.h"
@@ -28,19 +29,19 @@ namespace metternich {
 /**
 **	@brief	Constructor
 **
-**	@param	barony		The holding's barony
-**	@param	type		The holding's type (e.g. city)
-**	@param	province	The province where the holding is located
+**	@param	holding_slot	The holding's holding slot
+**	@param	type			The holding's type (e.g. city)
 */
-holding::holding(landed_title *barony, holding_type *type, metternich::province *province) : data_entry(barony->get_identifier()), barony(barony), province(province)
+holding::holding(metternich::holding_slot *holding_slot, holding_type *type) : data_entry(holding_slot->get_identifier()), holding_slot(holding_slot)
 {
-	barony->set_holding(this);
+	holding_slot->set_holding(this);
 	this->change_base_population_growth(Defines::get()->GetBasePopulationGrowth());
 	this->set_type(type);
-	this->set_owner(barony->get_holder());
-	this->change_base_population_capacity(province->get_population_capacity_additive_modifier());
-	this->change_population_capacity_modifier(province->get_population_capacity_modifier());
-	this->change_base_population_growth(province->get_population_growth_modifier());
+	this->set_owner(this->get_barony()->get_holder());
+	this->change_base_population_capacity(this->get_province()->get_population_capacity_additive_modifier());
+	this->change_population_capacity_modifier(this->get_province()->get_population_capacity_modifier());
+	this->change_base_population_growth(this->get_province()->get_population_growth_modifier());
+	this->set_commodity(holding_slot->get_commodity());
 
 	connect(this, &holding::type_changed, this, &holding::titled_name_changed);
 }
@@ -50,7 +51,6 @@ holding::holding(landed_title *barony, holding_type *type, metternich::province 
 */
 holding::~holding()
 {
-	this->barony->set_holding(nullptr);
 }
 
 /**
@@ -58,11 +58,6 @@ holding::~holding()
 */
 void holding::initialize_history()
 {
-	if (this->get_commodity() == nullptr) {
-		//generate a commodity for the holding if it produces none
-		this->generate_commodity();
-	}
-
 	if (this->get_province() != nullptr) {
 		if (this->get_culture() == nullptr) {
 			this->set_culture(this->get_province()->get_culture());
@@ -160,6 +155,16 @@ std::string holding::get_titled_name() const
 }
 
 /**
+**	@brief	Get the holding's barony
+**
+**	@return	The holding's barony
+*/
+landed_title *holding::get_barony() const
+{
+	return this->holding_slot->get_barony();
+}
+
+/**
 **	@brief	Set the holding's type
 **
 **	@param	type	The holding type
@@ -181,6 +186,16 @@ void holding::set_type(holding_type *type)
 	}
 
 	emit type_changed();
+}
+
+/**
+**	@brief	Get the holding's province
+**
+**	@return	The holding's province
+*/
+province *holding::get_province() const
+{
+	return this->holding_slot->get_province();
 }
 
 /**
@@ -472,39 +487,6 @@ void holding::set_under_construction_building(Building *building)
 	if (building != nullptr) {
 		this->set_construction_days(building->GetConstructionDays());
 	}
-}
-
-/**
-**	@brief	Generate a commodity for the holding to produce
-*/
-void holding::generate_commodity()
-{
-	std::map<metternich::commodity *, std::pair<int, int>> commodity_chance_ranges;
-	int total_chance_factor = 0;
-	for (metternich::commodity *commodity : commodity::get_all()) {
-		const int commodity_chance = commodity->calculate_chance(this);
-		if (commodity_chance > 0) {
-			commodity_chance_ranges[commodity] = std::pair<int, int>(total_chance_factor, total_chance_factor + commodity_chance);
-			total_chance_factor += commodity_chance;
-		}
-	}
-
-	if (commodity_chance_ranges.empty()) {
-		return;
-	}
-
-	metternich::commodity *chosen_commodity = nullptr;
-
-	const int random_number = Random::generate(total_chance_factor);
-	for (const auto &element : commodity_chance_ranges) {
-		metternich::commodity *commodity = element.first;
-		const std::pair<int, int> range = element.second;
-		if (random_number >= range.first && random_number < range.second) {
-			chosen_commodity = commodity;
-		}
-	}
-
-	this->set_commodity(chosen_commodity);
 }
 
 /**

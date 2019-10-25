@@ -12,6 +12,7 @@ namespace metternich {
 class ChanceFactor;
 class gsml_data;
 class holding;
+class holding_slot;
 
 class commodity : public data_entry, public data_type<commodity>
 {
@@ -68,7 +69,7 @@ public:
 		this->set_icon_path(icon_path.toStdString());
 	}
 
-	int calculate_chance(holding *holding) const;
+	int calculate_chance(holding_slot *holding_slot) const;
 
 signals:
 	void icon_path_changed();

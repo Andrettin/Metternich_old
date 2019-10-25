@@ -42,6 +42,11 @@ public:
 		return this->check_internal(holding);
 	}
 
+	virtual bool check(const holding_slot *holding_slot) const override
+	{
+		return this->check_internal(holding_slot);
+	}
+
 private:
 	template <typename T>
 	bool check_internal(const T *scope) const

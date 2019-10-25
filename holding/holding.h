@@ -17,6 +17,7 @@ class commodity;
 class culture;
 class employment;
 class employment_type;
+class holding_slot;
 class holding_type;
 class IdentifiableModifier;
 class landed_title;
@@ -57,18 +58,13 @@ private:
 	static inline holding *selected_holding = nullptr;
 
 public:
-	holding(landed_title *barony, holding_type *type, province *province);
+	holding(holding_slot *holding_slot, holding_type *type);
 	virtual ~holding() override;
 
 	virtual void initialize_history() override;
 
 	void do_day();
 	void do_month();
-
-	landed_title *get_barony() const
-	{
-		return this->barony;
-	}
 
 	virtual std::string get_name() const override;
 
@@ -84,6 +80,8 @@ public:
 	{
 		return QString::fromStdString(this->get_titled_name());
 	}
+
+	landed_title *get_barony() const;
 
 	holding_type *get_type() const
 	{
@@ -107,10 +105,7 @@ public:
 		emit owner_changed();
 	}
 
-	metternich::province *get_province() const
-	{
-		return this->province;
-	}
+	metternich::province *get_province() const;
 
 	const std::vector<std::unique_ptr<population_unit>> &get_population_units() const
 	{
@@ -357,8 +352,6 @@ public:
 		emit commodity_changed();
 	}
 
-	void generate_commodity();
-
 	metternich::culture *get_culture() const
 	{
 		return this->culture;
@@ -451,10 +444,9 @@ signals:
 	void selected_changed();
 
 private:
-	landed_title *barony = nullptr;
+	holding_slot *holding_slot = nullptr;
 	holding_type *type = nullptr;
 	Character *owner = nullptr; //the owner of the holding
-	metternich::province *province = nullptr; //the province to which this holding belongs
 	std::vector<std::unique_ptr<population_unit>> population_units;
 	int base_population_capacity = 0; //the base population capacity
 	int population_capacity_modifier = 100; //the population capacity modifier

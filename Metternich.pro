@@ -32,6 +32,7 @@ SOURCES += \
         history/history.cpp \
         holding/building.cpp \
         holding/holding.cpp \
+        holding/holding_slot.cpp \
         holding/holding_type.cpp \
         landed_title/landed_title.cpp \
         main.cpp \
@@ -102,6 +103,7 @@ HEADERS += \
     history/history.h \
     holding/building.h \
     holding/holding.h \
+    holding/holding_slot.h \
     holding/holding_type.h \
     landed_title/landed_title.h \
     landed_title/landed_title_tier.h \

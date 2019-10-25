@@ -5,6 +5,7 @@ namespace metternich {
 class gsml_data;
 class gsml_property;
 class holding;
+class holding_slot;
 class province;
 
 /**
@@ -33,6 +34,12 @@ public:
 	{
 		Q_UNUSED(holding);
 		throw std::runtime_error("Invalid condition for holding: \"" + this->get_identifier() + "\".");
+	}
+
+	virtual bool check(const holding_slot *holding_slot) const
+	{
+		Q_UNUSED(holding_slot);
+		throw std::runtime_error("Invalid condition for holding slot: \"" + this->get_identifier() + "\".");
 	}
 };
 
