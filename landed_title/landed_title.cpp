@@ -162,6 +162,10 @@ void landed_title::initialize()
 			this->capital_province = this->get_de_jure_liege_title()->get_province();
 		}
 	}
+
+	if (this->get_capital_province() == nullptr) {
+		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has no capital province.");
+	}
 }
 
 /**
