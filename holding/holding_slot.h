@@ -21,7 +21,7 @@ class holding_slot : public data_entry, public data_type<holding_slot>
 	Q_PROPERTY(metternich::landed_title* barony READ get_barony WRITE set_barony NOTIFY barony_changed)
 	Q_PROPERTY(metternich::holding* holding READ get_holding WRITE set_holding NOTIFY holding_changed)
 	Q_PROPERTY(bool settlement MEMBER settlement READ is_settlement)
-	Q_PROPERTY(metternich::commodity* commodity READ get_commodity WRITE set_commodity NOTIFY commodity_changed)
+	Q_PROPERTY(QVariantList available_commodities READ get_available_commodities_qvariant_list NOTIFY available_commodities_changed)
 
 public:
 	static constexpr const char *class_identifier = "holding_slot";
@@ -83,34 +83,38 @@ public:
 	}
 
 
-	metternich::commodity *get_commodity() const
+	const std::vector<commodity *> &get_available_commodities() const
 	{
-		return this->commodity;
+		return this->available_commodities;
 	}
 
-	void set_commodity(commodity *commodity)
-	{
-		if (commodity == this->get_commodity()) {
-			return;
-		}
+	QVariantList get_available_commodities_qvariant_list() const;
 
-		this->commodity = commodity;
-		emit commodity_changed();
+	Q_INVOKABLE void add_available_commodity(commodity *commodity)
+	{
+		this->available_commodities.push_back(commodity);
+		emit available_commodities_changed();
 	}
 
-	void generate_commodity();
+	Q_INVOKABLE void remove_available_commodity(commodity *commodity)
+	{
+		this->available_commodities.erase(std::remove(this->available_commodities.begin(), this->available_commodities.end(), commodity), this->available_commodities.end());
+		emit available_commodities_changed();
+	}
+
+	void generate_available_commodity();
 
 signals:
 	void barony_changed();
 	void holding_changed();
-	void commodity_changed();
+	void available_commodities_changed();
 
 private:
 	landed_title *barony = nullptr; //the barony corresponding to this holding slot
 	holding *holding = nullptr; //the holding built on this slot, if any
 	province *province = nullptr; //to which province this holding slot belongs
 	bool settlement = false; //whether the holding slot is a settlement one
-	metternich::commodity *commodity = nullptr; //the commodity available for production by the holding (if any)
+	std::vector<metternich::commodity *> available_commodities; //the commodities available for production by the holding (if any)
 };
 
 }

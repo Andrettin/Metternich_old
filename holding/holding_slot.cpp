@@ -8,6 +8,7 @@
 #include "random.h"
 #include "religion.h"
 #include "translator.h"
+#include "util/container_util.h"
 
 namespace metternich {
 
@@ -16,9 +17,9 @@ namespace metternich {
 */
 void holding_slot::initialize()
 {
-	if (this->get_commodity() == nullptr) {
-		//generate a commodity for the holding if it has none
-		this->generate_commodity();
+	if (this->get_available_commodities().empty()) {
+		//generate an available commodity for the holding if it has none
+		this->generate_available_commodity();
 	}
 }
 
@@ -49,9 +50,19 @@ void holding_slot::set_barony(landed_title *barony)
 }
 
 /**
+**	@brief	Get the holding slot's available commodities as a QVariantList
+**
+**	@return	The available commodities as a QVariantList
+*/
+QVariantList holding_slot::get_available_commodities_qvariant_list() const
+{
+	return util::container_to_qvariant_list(this->get_available_commodities());
+}
+
+/**
 **	@brief	Generate a commodity for the holding slot to have as available to produce
 */
-void holding_slot::generate_commodity()
+void holding_slot::generate_available_commodity()
 {
 	std::map<metternich::commodity *, std::pair<int, int>> commodity_chance_ranges;
 	int total_chance_factor = 0;
@@ -78,7 +89,7 @@ void holding_slot::generate_commodity()
 		}
 	}
 
-	this->set_commodity(chosen_commodity);
+	this->add_available_commodity(chosen_commodity);
 }
 
 }

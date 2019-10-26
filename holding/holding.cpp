@@ -41,7 +41,9 @@ holding::holding(metternich::holding_slot *slot, holding_type *type) : data_entr
 	this->change_base_population_capacity(this->get_province()->get_population_capacity_additive_modifier());
 	this->change_population_capacity_modifier(this->get_province()->get_population_capacity_modifier());
 	this->change_base_population_growth(this->get_province()->get_population_growth_modifier());
-	this->set_commodity(slot->get_commodity());
+
+	metternich::commodity *commodity = slot->get_available_commodities()[Random::generate(this->get_available_buildings().size())];
+	this->set_commodity(commodity);
 
 	connect(this, &holding::type_changed, this, &holding::titled_name_changed);
 }
