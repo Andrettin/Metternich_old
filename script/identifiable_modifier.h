@@ -11,7 +11,7 @@ class gsml_property;
 /**
 **	@brief	An identifiable modifier
 */
-class IdentifiableModifier : public data_entry, public data_type<IdentifiableModifier>, public ModifierBase
+class identifiable_modifier : public data_entry, public data_type<identifiable_modifier>, public ModifierBase
 {
 	Q_OBJECT
 
@@ -21,22 +21,22 @@ public:
 
 	static void initialize_all()
 	{
-		data_type<IdentifiableModifier>::initialize_all();
+		data_type<identifiable_modifier>::initialize_all();
 
 		//store pointers to the hardcoded modifiers
-		IdentifiableModifier::OverpopulationModifier = IdentifiableModifier::get("overpopulation");
+		identifiable_modifier::overpopulation_modifier = identifiable_modifier::get("overpopulation");
 	}
 
-	static IdentifiableModifier *GetOverpopulationModifier()
+	static identifiable_modifier *get_overpopulation_modifier()
 	{
-		return IdentifiableModifier::OverpopulationModifier;
+		return identifiable_modifier::overpopulation_modifier;
 	}
 
 private:
-	static inline IdentifiableModifier *OverpopulationModifier = nullptr;
+	static inline identifiable_modifier *overpopulation_modifier = nullptr;
 
 public:
-	IdentifiableModifier(const std::string &identifier) : data_entry(identifier) {}
+	identifiable_modifier(const std::string &identifier) : data_entry(identifier) {}
 
 	virtual void process_gsml_property(const gsml_property &property) override;
 

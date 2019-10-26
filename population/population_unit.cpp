@@ -23,7 +23,7 @@ void population_unit::process_history_database()
 	for (const gsml_data &data : population_unit::gsml_history_data_to_process) {
 		for (const gsml_data &data_entry : data.get_children()) {
 			const std::string type_identifier = data_entry.get_tag();
-			PopulationType *type = PopulationType::get(type_identifier);
+			population_type *type = population_type::get(type_identifier);
 			auto population_unit(std::make_unique<population_unit>(type));
 			population_unit->moveToThread(QApplication::instance()->thread());
 			population_unit->load_history(const_cast<gsml_data &>(data_entry));
@@ -128,7 +128,7 @@ void population_unit::set_size(const int size)
 */
 bool population_unit::discounts_any_type() const
 {
-	return this->get_discount_types().size() == PopulationType::get_all().size();
+	return this->get_discount_types().size() == population_type::get_all().size();
 }
 
 /**
@@ -143,7 +143,7 @@ void population_unit::set_discount_any_type(const bool discount_any_type)
 	}
 
 	if (discount_any_type) {
-		for (PopulationType *population_type : PopulationType::get_all()) {
+		for (population_type *population_type : population_type::get_all()) {
 			this->discount_types.insert(population_type);
 		}
 	} else {

@@ -334,14 +334,14 @@ void holding::check_overpopulation()
 	//give the overpopulation modifier if the holding has become overpopulated, or remove it if it was overpopulated but isn't anymore
 	const bool overpopulated = this->get_population() > this->get_population_capacity();
 	if (overpopulated) {
-		if (this->modifiers.find(IdentifiableModifier::GetOverpopulationModifier()) == this->modifiers.end()) {
-			IdentifiableModifier::GetOverpopulationModifier()->Apply(this);
-			this->modifiers.insert(IdentifiableModifier::GetOverpopulationModifier());
+		if (this->modifiers.find(identifiable_modifier::get_overpopulation_modifier()) == this->modifiers.end()) {
+			identifiable_modifier::get_overpopulation_modifier()->Apply(this);
+			this->modifiers.insert(identifiable_modifier::get_overpopulation_modifier());
 		}
 	} else {
-		if (this->modifiers.find(IdentifiableModifier::GetOverpopulationModifier()) != this->modifiers.end()) {
-			IdentifiableModifier::GetOverpopulationModifier()->remove(this);
-			this->modifiers.erase(IdentifiableModifier::GetOverpopulationModifier());
+		if (this->modifiers.find(identifiable_modifier::get_overpopulation_modifier()) != this->modifiers.end()) {
+			identifiable_modifier::get_overpopulation_modifier()->remove(this);
+			this->modifiers.erase(identifiable_modifier::get_overpopulation_modifier());
 		}
 	}
 }
@@ -403,7 +403,7 @@ QVariantList holding::get_buildings_qvariant_list() const
 	return util::container_to_qvariant_list(this->get_buildings());
 }
 
-void holding::add_building(Building *building)
+void holding::add_building(building *building)
 {
 	if (this->buildings.find(building) != this->buildings.end()) {
 		throw std::runtime_error("Tried to add the \"" + building->get_identifier() + "\" building to a holding that already has it.");
@@ -414,7 +414,7 @@ void holding::add_building(Building *building)
 	emit buildings_changed();
 }
 
-void holding::remove_building(Building *building)
+void holding::remove_building(building *building)
 {
 	if (this->buildings.find(building) == this->buildings.end()) {
 		throw std::runtime_error("Tried to remove the \"" + building->get_identifier() + "\" building to a holding that does not have it.");
@@ -431,10 +431,10 @@ void holding::remove_building(Building *building)
 **	@param	building	The building
 **	@param	change		The multiplier for the change: 1 to apply, -1 to remove
 */
-void holding::apply_building_effects(const Building *building, const int change)
+void holding::apply_building_effects(const building *building, const int change)
 {
 	if (building->get_employment_type() != nullptr) {
-		this->change_employment_workforce(building->get_employment_type(), building->GetWorkforce() * change);
+		this->change_employment_workforce(building->get_employment_type(), building->get_workforce() * change);
 	}
 }
 
@@ -443,17 +443,17 @@ void holding::apply_building_effects(const Building *building, const int change)
 **
 **	@return	The available buildings
 */
-std::vector<Building *> holding::get_available_buildings() const
+std::vector<building *> holding::get_available_buildings() const
 {
-	std::vector<Building *> available_buildings;
+	std::vector<building *> available_buildings;
 
-	for (Building *building : this->get_type()->get_buildings()) {
+	for (building *building : this->get_type()->get_buildings()) {
 		if (building->is_available_for_holding(this)) {
 			available_buildings.push_back(building);
 		}
 	}
 
-	std::sort(available_buildings.begin(), available_buildings.end(), [this](Building *a, Building *b) {
+	std::sort(available_buildings.begin(), available_buildings.end(), [this](building *a, building *b) {
 		//give priority to buildings that have already been built, so that they will be displayed first
 		bool a_built = this->get_buildings().find(a) != this->get_buildings().end();
 		bool b_built = this->get_buildings().find(b) != this->get_buildings().end();
@@ -482,7 +482,7 @@ QVariantList holding::get_available_buildings_qvariant_list() const
 **
 **	@param	building	The building
 */
-void holding::set_under_construction_building(Building *building)
+void holding::set_under_construction_building(building *building)
 {
 	if (building == this->get_under_construction_building()) {
 		return;
@@ -491,7 +491,7 @@ void holding::set_under_construction_building(Building *building)
 	this->under_construction_building = building;
 	emit under_construction_building_changed();
 	if (building != nullptr) {
-		this->set_construction_days(building->GetConstructionDays());
+		this->set_construction_days(building->get_construction_days());
 	}
 }
 
@@ -611,7 +611,7 @@ QVariantList holding::get_population_per_religion_qvariant_list() const
 void holding::order_construction(const QVariant &building_variant)
 {
 	QObject *building_object = qvariant_cast<QObject *>(building_variant);
-	Building *building = static_cast<Building *>(building_object);
+	building *building = static_cast<metternich::building *>(building_object);
 	Game::get()->PostOrder([this, building]() {
 		this->set_under_construction_building(building);
 	});

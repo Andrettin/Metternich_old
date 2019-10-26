@@ -125,7 +125,7 @@ void province::process_gsml_property(const gsml_property &property)
 			}
 		} else if (property.get_operator() == gsml_operator::addition || property.get_operator() == gsml_operator::subtraction) {
 			//the addition/subtraction operators add/remove buildings to/from the holding
-			Building *building = Building::get(property.get_value());
+			building *building = building::get(property.get_value());
 			if (property.get_operator() == gsml_operator::addition) {
 				holding->add_building(building);
 			} else if (property.get_operator() == gsml_operator::subtraction) {

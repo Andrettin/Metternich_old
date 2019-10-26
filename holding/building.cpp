@@ -11,14 +11,14 @@ namespace metternich {
 **
 **	@param	identifier	The building's string identifier
 */
-Building::Building(const std::string &identifier) : data_entry(identifier)
+building::building(const std::string &identifier) : data_entry(identifier)
 {
 }
 
 /**
 **	@brief	Destructor
 */
-Building::~Building()
+building::~building()
 {
 }
 
@@ -27,14 +27,14 @@ Building::~Building()
 **
 **	@param	scope	The scope
 */
-void Building::process_gsml_scope(const gsml_data &scope)
+void building::process_gsml_scope(const gsml_data &scope)
 {
 	if (scope.get_tag() == "preconditions") {
-		this->Preconditions = std::make_unique<AndCondition>();
-		database::process_gsml_data(this->Preconditions.get(), scope);
+		this->preconditions = std::make_unique<AndCondition>();
+		database::process_gsml_data(this->preconditions.get(), scope);
 	} else if (scope.get_tag() == "conditions") {
-		this->Conditions = std::make_unique<AndCondition>();
-		database::process_gsml_data(this->Conditions.get(), scope);
+		this->conditions = std::make_unique<AndCondition>();
+		database::process_gsml_data(this->conditions.get(), scope);
 	} else {
 		data_entry_base::process_gsml_scope(scope);
 	}
@@ -45,7 +45,7 @@ void Building::process_gsml_scope(const gsml_data &scope)
 **
 **	@return	The holding types as a QVariantList
 */
-QVariantList Building::get_holding_types_qvariant_list() const
+QVariantList building::get_holding_types_qvariant_list() const
 {
 	return util::container_to_qvariant_list(this->get_holding_types());
 }
@@ -55,7 +55,7 @@ QVariantList Building::get_holding_types_qvariant_list() const
 **
 **	@param	holding_type	The holding type
 */
-void Building::add_holding_type(holding_type *holding_type)
+void building::add_holding_type(holding_type *holding_type)
 {
 	this->holding_types.push_back(holding_type);
 	holding_type->add_building(this);
@@ -66,7 +66,7 @@ void Building::add_holding_type(holding_type *holding_type)
 **
 **	@param	holding_type	The holding type
 */
-void Building::remove_holding_type(holding_type *holding_type)
+void building::remove_holding_type(holding_type *holding_type)
 {
 	this->holding_types.erase(std::remove(this->holding_types.begin(), this->holding_types.end(), holding_type), this->holding_types.end());
 	holding_type->remove_building(this);
@@ -79,13 +79,13 @@ void Building::remove_holding_type(holding_type *holding_type)
 **
 **	@return	True if the building is available for the holding, or false otherwise
 */
-bool Building::is_available_for_holding(const holding *holding) const
+bool building::is_available_for_holding(const holding *holding) const
 {
-	if (!this->Preconditions) {
+	if (!this->preconditions) {
 		return true;
 	}
 
-	return this->Preconditions->check(holding);
+	return this->preconditions->check(holding);
 }
 
 /**
@@ -95,17 +95,17 @@ bool Building::is_available_for_holding(const holding *holding) const
 **
 **	@return	True if the building is buildable in the holding, or false otherwise
 */
-bool Building::is_buildable_in_holding(const holding *holding) const
+bool building::is_buildable_in_holding(const holding *holding) const
 {
 	if (!this->is_available_for_holding(holding)) {
 		return false;
 	}
 
-	if (!this->Conditions) {
+	if (!this->conditions) {
 		return true;
 	}
 
-	return this->Conditions->check(holding);
+	return this->conditions->check(holding);
 }
 
 }

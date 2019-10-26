@@ -68,14 +68,14 @@ int main(int argc, char *argv[])
 
 		qmlRegisterType<MaskedMouseArea>("MaskedMouseArea", 1, 0, "MaskedMouseArea");
 
-		qmlRegisterType<Building>();
+		qmlRegisterType<building>();
 		qmlRegisterType<commodity>();
 		qmlRegisterType<culture>();
 		qmlRegisterType<Game>();
 		qmlRegisterType<holding>();
 		qmlRegisterType<holding_type>();
 		qmlRegisterType<landed_title>();
-		qmlRegisterType<PopulationType>();
+		qmlRegisterType<population_type>();
 		qmlRegisterType<population_unit>();
 		qmlRegisterType<province>();
 		qmlRegisterType<religion>();

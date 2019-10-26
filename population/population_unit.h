@@ -12,7 +12,7 @@ namespace metternich {
 class culture;
 class employment;
 class holding;
-class PopulationType;
+class population_type;
 class province;
 class region;
 class religion;
@@ -21,7 +21,7 @@ class population_unit : public data_entry_base, public simple_data_type<populati
 {
 	Q_OBJECT
 
-	Q_PROPERTY(metternich::PopulationType* type MEMBER type READ get_type NOTIFY type_changed)
+	Q_PROPERTY(metternich::population_type* type MEMBER type READ get_type NOTIFY type_changed)
 	Q_PROPERTY(metternich::culture* culture READ get_culture WRITE set_culture NOTIFY culture_changed)
 	Q_PROPERTY(metternich::religion* religion READ get_religion WRITE set_religion NOTIFY religion_changed)
 	Q_PROPERTY(int size READ get_size WRITE set_size NOTIFY size_changed)
@@ -38,13 +38,13 @@ public:
 
 	static void process_history_database();
 
-	population_unit(PopulationType *type) : type(type) {}
+	population_unit(population_type *type) : type(type) {}
 
 	virtual void initialize_history() override;
 
 	void do_month();
 
-	PopulationType *get_type() const
+	population_type *get_type() const
 	{
 		return this->type;
 	}
@@ -160,20 +160,20 @@ public:
 	bool discounts_any_type() const;
 	void set_discount_any_type(const bool discount_any_type);
 
-	const std::set<PopulationType *> &get_discount_types() const
+	const std::set<population_type *> &get_discount_types() const
 	{
 		return this->discount_types;
 	}
 
 	QVariantList get_discount_types_qvariant_list() const;
 
-	Q_INVOKABLE void add_discount_type(PopulationType *type)
+	Q_INVOKABLE void add_discount_type(population_type *type)
 	{
 		this->discount_types.insert(type);
 		emit discount_types_changed();
 	}
 
-	Q_INVOKABLE void remove_discount_type(PopulationType *type)
+	Q_INVOKABLE void remove_discount_type(population_type *type)
 	{
 		this->discount_types.erase(type);
 		emit discount_types_changed();
@@ -249,7 +249,7 @@ signals:
 	void wealth_changed();
 
 private:
-	PopulationType *type = nullptr;
+	population_type *type = nullptr;
 	metternich::culture *culture = nullptr;
 	metternich::religion *religion = nullptr;
 	int size = 0; //the size of the population unit, in number of individuals
@@ -258,7 +258,7 @@ private:
 	metternich::region *region = nullptr; //the region where this population unit lives; used only during initialization to generate population units in settlements in the region
 	bool discount_existing = false; //whether to discount the size of existing population units (in this population unit's holding, province or region) of the types given in DiscountTypes from that of this one
 	bool discount_any_type = false; //whether to discount the size of any existing population units from that of this one
-	std::set<PopulationType *> discount_types; //the sizes of population units belonging to these types will be discounted from that of this population unit
+	std::set<population_type *> discount_types; //the sizes of population units belonging to these types will be discounted from that of this population unit
 	std::set<employment *> employments;
 	int unemployed_size = 0; //the amount of people from this population unit which are unemployed
 	int wealth = 0; //the wealth belonging to the population unit

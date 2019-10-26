@@ -6,7 +6,7 @@ namespace metternich {
 
 class gsml_data;
 class gsml_property;
-class PopulationType;
+class population_type;
 
 class employment_owner : public QObject
 {
@@ -32,7 +32,7 @@ public:
 		return owner;
 	}
 
-	const metternich::PopulationType *get_population_type() const
+	const metternich::population_type *get_population_type() const
 	{
 		return this->population_type;
 	}
@@ -53,7 +53,7 @@ public:
 	}
 
 private:
-	const metternich::PopulationType *population_type = nullptr;
+	const metternich::population_type *population_type = nullptr;
 	int output_modifier = 100; //the owner's output modifier in ideal conditions (i.e. the proportion of owners to workforce being exactly as in ProportionToWorkforce)
 	int proportion_to_workforce = 1; //the proportion (in percent) that the owners should have to the workforce to grant the output modifier in full
 	int income_share = 50; //the share of income for the employment owner

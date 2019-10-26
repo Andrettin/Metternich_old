@@ -11,7 +11,7 @@
 
 namespace metternich {
 
-class Building;
+class building;
 class Character;
 class commodity;
 class culture;
@@ -19,9 +19,9 @@ class employment;
 class employment_type;
 class holding_slot;
 class holding_type;
-class IdentifiableModifier;
+class identifiable_modifier;
 class landed_title;
-class PopulationType;
+class population_type;
 class population_unit;
 class province;
 class religion;
@@ -41,7 +41,7 @@ class holding : public data_entry
 	Q_PROPERTY(QVariantList population_units READ get_population_units_qvariant_list NOTIFY population_units_changed)
 	Q_PROPERTY(QVariantList buildings READ get_buildings_qvariant_list NOTIFY buildings_changed)
 	Q_PROPERTY(QVariantList available_buildings READ get_available_buildings_qvariant_list NOTIFY available_buildings_changed)
-	Q_PROPERTY(metternich::Building* under_construction_building READ get_under_construction_building NOTIFY under_construction_building_changed)
+	Q_PROPERTY(metternich::building* under_construction_building READ get_under_construction_building NOTIFY under_construction_building_changed)
 	Q_PROPERTY(int construction_days READ get_construction_days NOTIFY construction_days_changed)
 	Q_PROPERTY(metternich::commodity* commodity READ get_commodity WRITE set_commodity NOTIFY commodity_changed)
 	Q_PROPERTY(metternich::culture* culture READ get_culture WRITE set_culture NOTIFY culture_changed)
@@ -252,12 +252,12 @@ public:
 	void do_population_growth();
 	void check_overpopulation();
 
-	const std::map<PopulationType *, int> &get_population_per_type() const
+	const std::map<population_type *, int> &get_population_per_type() const
 	{
 		return this->population_per_type;
 	}
 
-	int get_population_type_population(PopulationType *population_type) const
+	int get_population_type_population(population_type *population_type) const
 	{
 		auto find_iterator = this->population_per_type.find(population_type);
 		if (find_iterator == this->population_per_type.end()) {
@@ -299,24 +299,24 @@ public:
 
 	void calculate_population_groups();
 
-	const std::set<Building *> &get_buildings() const
+	const std::set<building *> &get_buildings() const
 	{
 		return this->buildings;
 	}
 
 	QVariantList get_buildings_qvariant_list() const;
-	Q_INVOKABLE void add_building(Building *building);
-	Q_INVOKABLE void remove_building(Building *building);
-	void apply_building_effects(const Building *building, const int change);
-	std::vector<Building *> get_available_buildings() const;
+	Q_INVOKABLE void add_building(building *building);
+	Q_INVOKABLE void remove_building(building *building);
+	void apply_building_effects(const building *building, const int change);
+	std::vector<building *> get_available_buildings() const;
 	QVariantList get_available_buildings_qvariant_list() const;
 
-	Building *get_under_construction_building() const
+	building *get_under_construction_building() const
 	{
 		return this->under_construction_building;
 	}
 
-	void set_under_construction_building(Building *building);
+	void set_under_construction_building(building *building);
 
 	int get_construction_days() const
 	{
@@ -455,17 +455,17 @@ private:
 	int population = 0; //the size of this holding's total population
 	int base_population_growth = 0; //the base population growth
 	int population_growth = 0; //the population growth, in permyriad (per 10,000)
-	std::set<Building *> buildings;
-	Building *under_construction_building = nullptr; //the building currently under construction
+	std::set<building *> buildings;
+	building *under_construction_building = nullptr; //the building currently under construction
 	int construction_days = 0; //the amount of days remaining to construct the building under construction
 	metternich::commodity *commodity = nullptr; //the commodity produced by the holding (if any)
 	int holding_size = 100; //the holding size, which affects population capacity (100 = normal size)
 	metternich::culture *culture = nullptr; //the holding's culture
 	metternich::religion *religion = nullptr; //the holding's religion
-	std::set<IdentifiableModifier *> modifiers; //modifiers applied to the holding
+	std::set<identifiable_modifier *> modifiers; //modifiers applied to the holding
 	bool selected = false;
 	std::map<const employment_type *, std::unique_ptr<employment>> employments; //employments, mapped to their respective employment types
-	std::map<PopulationType *, int> population_per_type; //the population for each population type
+	std::map<population_type *, int> population_per_type; //the population for each population type
 	std::map<metternich::culture *, int> population_per_culture; //the population for each culture
 	std::map<metternich::religion *, int> population_per_religion; //the population for each religion
 };

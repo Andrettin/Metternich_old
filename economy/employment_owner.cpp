@@ -16,7 +16,7 @@ namespace metternich {
 std::unique_ptr<employment_owner> employment_owner::from_gsml_scope(const gsml_data &scope)
 {
 	auto owner = std::make_unique<employment_owner>();
-	owner->population_type = PopulationType::get(scope.get_tag());
+	owner->population_type = population_type::get(scope.get_tag());
 
 	database::process_gsml_data(owner, scope);
 

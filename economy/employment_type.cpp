@@ -122,7 +122,7 @@ void employment_type::initialize()
 **
 **	@return	The employee efficiency for the population type
 */
-int employment_type::get_employee_efficiency(const PopulationType *population_type) const
+int employment_type::get_employee_efficiency(const population_type *population_type) const
 {
 	for (const std::unique_ptr<employee> &employee : this->employees) {
 		if (employee->get_population_type() == population_type) {
@@ -140,7 +140,7 @@ int employment_type::get_employee_efficiency(const PopulationType *population_ty
 **
 **	@return	True if the employment type allows employing the population type, or false otherwise
 */
-bool employment_type::can_employ_population_type(const PopulationType *population_type) const
+bool employment_type::can_employ_population_type(const population_type *population_type) const
 {
 	for (const std::unique_ptr<employee> &employee : this->employees) {
 		if (employee->get_population_type() == population_type) {

@@ -13,7 +13,7 @@ namespace metternich {
 
 class holding_type;
 
-class PopulationType : public data_entry, public data_type<PopulationType>
+class population_type : public data_entry, public data_type<population_type>
 {
 	Q_OBJECT
 
@@ -25,7 +25,7 @@ public:
 	static constexpr const char *database_folder = "population_types";
 
 public:
-	PopulationType(const std::string &identifier) : data_entry(identifier) {}
+	population_type(const std::string &identifier) : data_entry(identifier) {}
 
 	virtual void process_gsml_scope(const gsml_data &scope) override;
 	virtual void check() const override;

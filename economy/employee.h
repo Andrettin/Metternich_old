@@ -6,7 +6,7 @@ namespace metternich {
 
 class gsml_data;
 class gsml_property;
-class PopulationType;
+class population_type;
 
 class employee : public QObject
 {
@@ -32,7 +32,7 @@ public:
 		return employee;
 	}
 
-	const metternich::PopulationType *get_population_type() const
+	const metternich::population_type *get_population_type() const
 	{
 		return this->population_type;
 	}
@@ -53,7 +53,7 @@ public:
 	}
 
 private:
-	const metternich::PopulationType *population_type = nullptr;
+	const metternich::population_type *population_type = nullptr;
 	int efficiency = 100; //the employee's efficiency, as a percentage
 	int workforce_proportion = 100; //the proportion that the employee can make of the workforce, as a percentage
 	int income_share = 50; //the share of income for the employee

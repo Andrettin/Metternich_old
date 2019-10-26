@@ -11,7 +11,7 @@ class commodity;
 class employee;
 class employment_owner;
 class gsml_data;
-class PopulationType;
+class population_type;
 
 class employment_type : public data_entry, public data_type<employment_type>
 {
@@ -48,8 +48,8 @@ public:
 		return this->output_value;
 	}
 
-	int get_employee_efficiency(const PopulationType *population_type) const;
-	bool can_employ_population_type(const PopulationType *population_type) const;
+	int get_employee_efficiency(const population_type *population_type) const;
+	bool can_employ_population_type(const population_type *population_type) const;
 
 private:
 	employment_type *template_type = nullptr;

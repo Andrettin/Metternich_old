@@ -26,7 +26,7 @@ class holding;
 class holding_slot;
 class holding_type;
 class landed_title;
-class PopulationType;
+class population_type;
 class population_unit;
 class region;
 class religion;
@@ -385,7 +385,7 @@ private:
 	std::set<province *> border_provinces; //provinces bordering this one
 	bool selected = false;
 	std::vector<std::unique_ptr<population_unit>> population_units; //population units set for this province in history, used during initialization to generate population units in the province's settlements
-	std::map<PopulationType *, int> population_per_type; //the population for each population type
+	std::map<population_type *, int> population_per_type; //the population for each population type
 	std::map<metternich::culture *, int> population_per_culture; //the population for each culture
 	std::map<metternich::religion *, int> population_per_religion; //the population for each religion
 	std::vector<QGeoPolygon> geopolygons;

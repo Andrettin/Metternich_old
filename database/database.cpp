@@ -179,8 +179,8 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 				region *region = region::get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(metternich::region *, region));
 			} else if (property.get_key() == "discount_types") {
-				PopulationType *type = PopulationType::get(property.get_value());
-				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(PopulationType *, type));
+				population_type *type = population_type::get(property.get_value());
+				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(population_type *, type));
 			} else if (property.get_key() == "laws") {
 				law *law = law::get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(metternich::law *, law));

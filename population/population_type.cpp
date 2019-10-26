@@ -10,7 +10,7 @@ namespace metternich {
 **
 **	@param	scope	The scope
 */
-void PopulationType::process_gsml_scope(const gsml_data &scope)
+void population_type::process_gsml_scope(const gsml_data &scope)
 {
 	const std::string &tag = scope.get_tag();
 	const std::vector<std::string> &values = scope.get_values();
@@ -32,14 +32,14 @@ void PopulationType::process_gsml_scope(const gsml_data &scope)
 /**
 **	@brief	Check whether the population type is in a valid state
 */
-void PopulationType::check() const
+void population_type::check() const
 {
 	if (!this->get_color().isValid()) {
 		throw std::runtime_error("Population type \"" + this->get_identifier() + "\" has no valid color.");
 	}
 }
 
-QVariantList PopulationType::get_holding_types_qvariant_list() const
+QVariantList population_type::get_holding_types_qvariant_list() const
 {
 	return util::container_to_qvariant_list(this->get_holding_types());
 }
