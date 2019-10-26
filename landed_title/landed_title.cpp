@@ -106,15 +106,15 @@ void landed_title::process_gsml_dated_property(const gsml_property &property, co
 
 		if (property.get_value() == "random") {
 			//generate random holder
-			Character *holder = Character::generate(this->get_capital_province()->get_culture(), this->get_capital_province()->get_religion());
+			character *holder = character::generate(this->get_capital_province()->get_culture(), this->get_capital_province()->get_religion());
 			this->set_holder(holder);
 			return;
 		} else if (property.get_value() == "none") {
 			this->set_holder(nullptr);
 			return;
 		} else {
-			const Character *holder = Character::get(std::stoi(property.get_value()));
-			if (holder != nullptr && !holder->IsAlive()) {
+			const character *holder = character::get(std::stoi(property.get_value()));
+			if (holder != nullptr && !holder->is_alive()) {
 				return;
 			}
 		}
@@ -191,7 +191,7 @@ void landed_title::initialize_history()
 			throw std::runtime_error("Tried to set the \"" + this->liege_title->get_identifier() + "\" liege title for \"" + this->get_identifier() + "\", but the latter has no holder.");
 		}
 
-		this->get_holder()->SetLiege(this->liege_title->get_holder());
+		this->get_holder()->set_liege(this->liege_title->get_holder());
 		this->liege_title = nullptr;
 	}
 }
@@ -254,9 +254,9 @@ std::string landed_title::get_name() const
 		suffixes.push_back(culture->get_culture_group()->get_identifier());
 	}
 
-	if (this->get_holder() != nullptr && this->get_holder()->GetDynasty() != nullptr) {
+	if (this->get_holder() != nullptr && this->get_holder()->get_dynasty() != nullptr) {
 		//allow for different localizations depending on the title holder's dynasty
-		suffixes.push_back(this->get_holder()->GetDynasty()->get_identifier());
+		suffixes.push_back(this->get_holder()->get_dynasty()->get_identifier());
 	}
 
 	return Translator::get()->Translate(this->get_identifier(), suffixes);
@@ -334,7 +334,7 @@ std::string landed_title::get_holder_title_name() const
 	return Translator::get()->Translate(landed_title::get_tier_holder_identifier(this->get_tier()), suffixes);
 }
 
-void landed_title::set_holder(Character *character)
+void landed_title::set_holder(character *character)
 {
 	if (character == this->get_holder()) {
 		return;
@@ -384,10 +384,10 @@ holding *landed_title::get_holding() const
 
 landed_title *landed_title::get_realm() const
 {
-	Character *holder = this->get_holder();
+	character *holder = this->get_holder();
 
 	if (holder != nullptr) {
-		Character *top_liege = holder->GetTopLiege();
+		character *top_liege = holder->get_top_liege();
 		return top_liege->get_primary_title();
 	}
 

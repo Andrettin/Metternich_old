@@ -21,91 +21,91 @@ class phenotype;
 class religion;
 class Trait;
 
-class Character : public numeric_data_entry, public data_type<Character, int>
+class character : public numeric_data_entry, public data_type<character, int>
 {
 	Q_OBJECT
 
 	Q_PROPERTY(QString name READ get_name_qstring WRITE set_name_qstring NOTIFY name_changed)
-	Q_PROPERTY(QString full_name READ GetFullNameQString NOTIFY FullNameChanged)
+	Q_PROPERTY(QString full_name READ get_full_name_qstring NOTIFY full_name_changed)
 	Q_PROPERTY(QString titled_name READ get_titled_name_qstring NOTIFY titled_name_changed)
-	Q_PROPERTY(bool female MEMBER Female READ IsFemale)
-	Q_PROPERTY(metternich::Dynasty* dynasty READ GetDynasty WRITE SetDynasty NOTIFY DynastyChanged)
+	Q_PROPERTY(bool female MEMBER female READ is_female)
+	Q_PROPERTY(metternich::Dynasty* dynasty READ get_dynasty WRITE set_dynasty NOTIFY dynasty_changed)
 	Q_PROPERTY(metternich::culture* culture MEMBER culture READ get_culture NOTIFY culture_changed)
 	Q_PROPERTY(metternich::religion* religion MEMBER religion READ get_religion NOTIFY religion_changed)
 	Q_PROPERTY(metternich::phenotype* phenotype MEMBER phenotype READ get_phenotype)
 	Q_PROPERTY(metternich::landed_title* primary_title READ get_primary_title WRITE set_primary_title NOTIFY primary_title_changed)
-	Q_PROPERTY(metternich::Character* father READ GetFather WRITE SetFather)
-	Q_PROPERTY(metternich::Character* mother READ GetMother WRITE SetMother)
-	Q_PROPERTY(metternich::Character* spouse READ GetSpouse WRITE SetSpouse)
-	Q_PROPERTY(metternich::Character* liege READ GetLiege WRITE SetLiege NOTIFY LiegeChanged)
-	Q_PROPERTY(metternich::Character* employer READ GetLiege WRITE SetLiege NOTIFY LiegeChanged)
-	Q_PROPERTY(QVariantList traits READ GetTraitsQVariantList)
-	Q_PROPERTY(int wealth READ GetWealth WRITE SetWealth NOTIFY WealthChanged)
+	Q_PROPERTY(metternich::character* father READ get_father WRITE set_father)
+	Q_PROPERTY(metternich::character* mother READ get_mother WRITE set_mother)
+	Q_PROPERTY(metternich::character* spouse READ get_spouse WRITE set_spouse)
+	Q_PROPERTY(metternich::character* liege READ get_liege WRITE set_liege NOTIFY liege_changed)
+	Q_PROPERTY(metternich::character* employer READ get_liege WRITE set_liege NOTIFY liege_changed)
+	Q_PROPERTY(QVariantList traits READ get_traits_qvariant_list)
+	Q_PROPERTY(int wealth READ get_wealth WRITE set_wealth NOTIFY wealth_changed)
 
 public:
 	static constexpr const char *class_identifier = "character";
 	static constexpr const char *database_folder = "characters";
 	static constexpr bool history_only = true;
 
-	static void remove(Character *character)
+	static void remove(character *character)
 	{
-		if (character->IsAlive()) {
-			Character::LivingCharacters.erase(std::remove(Character::LivingCharacters.begin(), Character::LivingCharacters.end(), character), Character::LivingCharacters.end());
+		if (character->is_alive()) {
+			character::living_characters.erase(std::remove(character::living_characters.begin(), character::living_characters.end(), character), character::living_characters.end());
 		}
 
-		data_type<Character, int>::remove(character);
+		data_type<metternich::character, int>::remove(character);
 	}
 
-	static const std::vector<Character *> &get_all_living()
+	static const std::vector<character *> &get_all_living()
 	{
-		return Character::LivingCharacters;
+		return character::living_characters;
 	}
 
-	static Character *generate(culture *culture, religion *religion, phenotype *phenotype = nullptr);
+	static character *generate(culture *culture, religion *religion, phenotype *phenotype = nullptr);
 
 private:
-	static inline std::vector<Character *> LivingCharacters;
+	static inline std::vector<character *> living_characters;
 
 public:
-	Character(const int identifier) : numeric_data_entry(identifier)
+	character(const int identifier) : numeric_data_entry(identifier)
 	{
-		connect(this, &Character::name_changed, this, &Character::FullNameChanged);
-		connect(this, &Character::name_changed, this, &Character::titled_name_changed);
-		connect(this, &Character::DynastyChanged, this, &Character::FullNameChanged);
-		connect(this, &Character::primary_title_changed, this, &Character::titled_name_changed);
+		connect(this, &character::name_changed, this, &character::full_name_changed);
+		connect(this, &character::name_changed, this, &character::titled_name_changed);
+		connect(this, &character::dynasty_changed, this, &character::full_name_changed);
+		connect(this, &character::primary_title_changed, this, &character::titled_name_changed);
 
-		Character::LivingCharacters.push_back(this);
+		character::living_characters.push_back(this);
 	}
 
-	virtual ~Character() override
+	virtual ~character() override
 	{
 		//remove references from other characters to his one; necessary since this character could be purged e.g. if it was born after the start date
-		if (this->GetFather() != nullptr) {
-			this->GetFather()->Children.erase(std::remove(this->GetFather()->Children.begin(), this->GetFather()->Children.end(), this), this->GetFather()->Children.end());
+		if (this->get_father() != nullptr) {
+			this->get_father()->children.erase(std::remove(this->get_father()->children.begin(), this->get_father()->children.end(), this), this->get_father()->children.end());
 		}
 
-		if (this->GetMother() != nullptr) {
-			this->GetMother()->Children.erase(std::remove(this->GetMother()->Children.begin(), this->GetMother()->Children.end(), this), this->GetMother()->Children.end());
+		if (this->get_mother() != nullptr) {
+			this->get_mother()->children.erase(std::remove(this->get_mother()->children.begin(), this->get_mother()->children.end(), this), this->get_mother()->children.end());
 		}
 
-		if (this->GetSpouse() != nullptr) {
-			this->GetSpouse()->Spouse = nullptr;
+		if (this->get_spouse() != nullptr) {
+			this->get_spouse()->spouse = nullptr;
 		}
 
-		for (Character *child : this->Children) {
-			if (this->IsFemale()) {
-				child->Mother = nullptr;
+		for (character *child : this->children) {
+			if (this->is_female()) {
+				child->mother = nullptr;
 			} else {
-				child->Father = nullptr;
+				child->father = nullptr;
 			}
 		}
 
-		if (this->GetLiege() != nullptr) {
-			this->GetLiege()->Vassals.erase(std::remove(this->GetLiege()->Vassals.begin(), this->GetLiege()->Vassals.end(), this), this->GetLiege()->Vassals.end());
+		if (this->get_liege() != nullptr) {
+			this->get_liege()->vassals.erase(std::remove(this->get_liege()->vassals.begin(), this->get_liege()->vassals.end(), this), this->get_liege()->vassals.end());
 		}
 
-		for (Character *vassal : this->Vassals) {
-			vassal->Liege = nullptr;
+		for (character *vassal : this->vassals) {
+			vassal->liege = nullptr;
 		}
 	}
 
@@ -131,7 +131,7 @@ public:
 		}
 	}
 
-	void DoMonth()
+	void do_month()
 	{
 	}
 
@@ -145,11 +145,11 @@ public:
 		this->name = name.toStdString();
 	}
 
-	std::string GetFullName() const;
+	std::string get_full_name() const;
 
-	QString GetFullNameQString() const
+	QString get_full_name_qstring() const
 	{
-		return QString::fromStdString(this->GetFullName());
+		return QString::fromStdString(this->get_full_name());
 	}
 
 	std::string get_titled_name() const;
@@ -159,45 +159,45 @@ public:
 		return QString::fromStdString(this->get_titled_name());
 	}
 
-	bool IsAlive() const
+	bool is_alive() const
 	{
-		return this->Alive;
+		return this->alive;
 	}
 
-	void SetAlive(const bool alive)
+	void set_alive(const bool alive)
 	{
-		if (alive == this->Alive) {
+		if (alive == this->alive) {
 			return;
 		}
 
-		this->Alive = alive;
-		if (this->Alive) {
-			Character::LivingCharacters.push_back(this);
+		this->alive = alive;
+		if (this->alive) {
+			character::living_characters.push_back(this);
 		} else {
-			Character::LivingCharacters.erase(std::remove(Character::LivingCharacters.begin(), Character::LivingCharacters.end(), this), Character::LivingCharacters.end());
+			character::living_characters.erase(std::remove(character::living_characters.begin(), character::living_characters.end(), this), character::living_characters.end());
 		}
-		emit AliveChanged();
+		emit alive_changed();
 	}
 
-	bool IsFemale() const
+	bool is_female() const
 	{
-		return this->Female;
+		return this->female;
 	}
 
-	metternich::Dynasty *GetDynasty() const
+	metternich::Dynasty *get_dynasty() const
 	{
-		return this->Dynasty;
+		return this->dynasty;
 	}
 
-	void SetDynasty(Dynasty *dynasty)
+	void set_dynasty(Dynasty *dynasty)
 	{
-		if (dynasty == this->GetDynasty()) {
+		if (dynasty == this->get_dynasty()) {
 			return;
 		}
 
-		this->Dynasty = dynasty;
+		this->dynasty = dynasty;
 
-		emit DynastyChanged();
+		emit dynasty_changed();
 	}
 
 	metternich::culture *get_culture() const
@@ -241,153 +241,153 @@ public:
 	void add_landed_title(landed_title *title);
 	void remove_landed_title(landed_title *title);
 
-	Character *GetFather() const
+	character *get_father() const
 	{
-		return this->Father;
+		return this->father;
 	}
 
-	void SetFather(Character *father)
+	void set_father(character *father)
 	{
-		if (this->GetFather() == father) {
+		if (this->get_father() == father) {
 			return;
 		}
 
-		if (this->GetFather() != nullptr) {
-			this->GetFather()->Children.erase(std::remove(this->GetFather()->Children.begin(), this->GetFather()->Children.end(), this), this->GetFather()->Children.end());
+		if (this->get_father() != nullptr) {
+			this->get_father()->children.erase(std::remove(this->get_father()->children.begin(), this->get_father()->children.end(), this), this->get_father()->children.end());
 		}
 
-		this->Father = father;
-		father->Children.push_back(this);
+		this->father = father;
+		father->children.push_back(this);
 	}
 
-	Character *GetMother() const
+	character *get_mother() const
 	{
-		return this->Mother;
+		return this->mother;
 	}
 
-	void SetMother(Character *mother)
+	void set_mother(character *mother)
 	{
-		if (this->GetMother() == mother) {
+		if (this->get_mother() == mother) {
 			return;
 		}
 
-		if (this->GetMother() != nullptr) {
-			this->GetMother()->Children.erase(std::remove(this->GetMother()->Children.begin(), this->GetMother()->Children.end(), this), this->GetMother()->Children.end());
+		if (this->get_mother() != nullptr) {
+			this->get_mother()->children.erase(std::remove(this->get_mother()->children.begin(), this->get_mother()->children.end(), this), this->get_mother()->children.end());
 		}
 
-		this->Mother = mother;
-		mother->Children.push_back(this);
+		this->mother = mother;
+		mother->children.push_back(this);
 	}
 
-	Character *GetSpouse() const
+	character *get_spouse() const
 	{
-		return this->Spouse;
+		return this->spouse;
 	}
 
-	void SetSpouse(Character *spouse)
+	void set_spouse(character *spouse)
 	{
-		if (this->GetSpouse() == spouse) {
+		if (this->get_spouse() == spouse) {
 			return;
 		}
 
-		if (this->GetSpouse() != nullptr) {
-			this->GetSpouse()->Spouse = nullptr;
+		if (this->get_spouse() != nullptr) {
+			this->get_spouse()->spouse = nullptr;
 		}
 
-		this->Spouse = spouse;
-		spouse->Spouse = this;
+		this->spouse = spouse;
+		spouse->spouse = this;
 	}
 
-	const QDateTime &GetBirthDate()
+	const QDateTime &get_birth_date()
 	{
-		return this->BirthDate;
+		return this->birth_date;
 	}
 
-	const QDateTime &GetDeathDate()
+	const QDateTime &get_death_date()
 	{
-		return this->DeathDate;
+		return this->death_date;
 	}
 
-	Character *GetLiege() const
+	character *get_liege() const
 	{
-		return this->Liege;
+		return this->liege;
 	}
 
-	void SetLiege(Character *liege)
+	void set_liege(character *liege)
 	{
-		if (this->GetLiege() == liege) {
+		if (this->get_liege() == liege) {
 			return;
 		}
 
-		if (this->GetLiege() != nullptr) {
-			this->GetLiege()->Vassals.erase(std::remove(this->GetLiege()->Vassals.begin(), this->GetLiege()->Vassals.end(), this), this->GetLiege()->Vassals.end());
+		if (this->get_liege() != nullptr) {
+			this->get_liege()->vassals.erase(std::remove(this->get_liege()->vassals.begin(), this->get_liege()->vassals.end(), this), this->get_liege()->vassals.end());
 		}
 
-		this->Liege = liege;
-		liege->Vassals.push_back(this);
-		emit LiegeChanged();
+		this->liege = liege;
+		liege->vassals.push_back(this);
+		emit liege_changed();
 	}
-	Character *GetTopLiege() const
+	character *get_top_liege() const
 	{
-		if (this->GetLiege() != nullptr) {
-			return this->GetLiege()->GetTopLiege();
+		if (this->get_liege() != nullptr) {
+			return this->get_liege()->get_top_liege();
 		}
 
-		return const_cast<Character *>(this);
+		return const_cast<character *>(this);
 	}
 
-	bool IsAnyLiegeOf(const Character *character) const
+	bool is_any_liege_of(const character *character) const
 	{
-		if (character->GetLiege() == nullptr) {
+		if (character->get_liege() == nullptr) {
 			return false;
-		} else if (this == character->GetLiege()) {
+		} else if (this == character->get_liege()) {
 			return true;
 		}
 
-		return this->IsAnyLiegeOf(character->GetLiege());
+		return this->is_any_liege_of(character->get_liege());
 	}
 
-	landed_title *GetRealm() const
+	landed_title *get_realm() const
 	{
-		Character *top_liege = this->GetTopLiege();
+		character *top_liege = this->get_top_liege();
 		return top_liege->get_primary_title();
 	}
 
-	const std::vector<Trait *> &GetTraits() const
+	const std::vector<Trait *> &get_traits() const
 	{
-		return this->Traits;
+		return this->traits;
 	}
 
-	QVariantList GetTraitsQVariantList() const;
+	QVariantList get_traits_qvariant_list() const;
 
 	Q_INVOKABLE void add_trait(Trait *trait)
 	{
-		this->Traits.push_back(trait);
+		this->traits.push_back(trait);
 	}
 
 	Q_INVOKABLE void remove_trait(Trait *trait)
 	{
-		this->Traits.erase(std::remove(this->Traits.begin(), this->Traits.end(), trait), this->Traits.end());
+		this->traits.erase(std::remove(this->traits.begin(), this->traits.end(), trait), this->traits.end());
 	}
 
-	int GetWealth() const
+	int get_wealth() const
 	{
-		return this->Wealth;
+		return this->wealth;
 	}
 
-	void SetWealth(const int wealth)
+	void set_wealth(const int wealth)
 	{
-		if (this->Wealth == wealth) {
+		if (this->wealth == wealth) {
 			return;
 		}
 
-		this->Wealth = wealth;
-		emit WealthChanged();
+		this->wealth = wealth;
+		emit wealth_changed();
 	}
 
-	void ChangeWealth(const int change)
+	void change_wealth(const int change)
 	{
-		this->SetWealth(this->GetWealth() + change);
+		this->set_wealth(this->get_wealth() + change);
 	}
 
 	int get_stored_commodity(const commodity *commodity) const
@@ -405,36 +405,36 @@ public:
 
 signals:
 	void name_changed();
-	void FullNameChanged();
+	void full_name_changed();
 	void titled_name_changed();
-	void AliveChanged();
-	void DynastyChanged();
+	void alive_changed();
+	void dynasty_changed();
 	void culture_changed();
 	void religion_changed();
 	void primary_title_changed();
-	void LiegeChanged();
-	void WealthChanged();
+	void liege_changed();
+	void wealth_changed();
 
 private:
 	std::string name;
-	bool Alive = true;
-	bool Female = false;
-	metternich::Dynasty *Dynasty = nullptr;
+	bool alive = true;
+	bool female = false;
+	metternich::Dynasty *dynasty = nullptr;
 	metternich::culture *culture = nullptr;
 	metternich::religion *religion = nullptr;
 	metternich::phenotype *phenotype = nullptr;
 	landed_title *primary_title = nullptr;
 	std::vector<landed_title *> landed_titles;
-	Character *Father = nullptr;
-	Character *Mother = nullptr;
-	std::vector<Character *> Children;
-	Character *Spouse = nullptr;
-	QDateTime BirthDate;
-	QDateTime DeathDate;
-	Character *Liege = nullptr;
-	std::vector<Character *> Vassals;
-	std::vector<Trait *> Traits;
-	int Wealth = 0;
+	character *father = nullptr;
+	character *mother = nullptr;
+	std::vector<character *> children;
+	character *spouse = nullptr;
+	QDateTime birth_date;
+	QDateTime death_date;
+	character *liege = nullptr;
+	std::vector<character *> vassals;
+	std::vector<Trait *> traits;
+	int wealth = 0;
 	std::map<const commodity *, int> stored_commodities; //the amount of each commodity stored by the character
 };
 

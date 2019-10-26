@@ -18,7 +18,7 @@ class Defines : public QObject, public singleton<Defines>
 	Q_OBJECT
 
 	Q_PROPERTY(QDateTime start_date MEMBER StartDate READ GetStartDate)
-	Q_PROPERTY(int player_character MEMBER PlayerCharacterID READ GetPlayerCharacterID)
+	Q_PROPERTY(int player_character MEMBER player_character_id READ get_player_character_id)
 	Q_PROPERTY(int base_population_growth MEMBER BasePopulationGrowth READ GetBasePopulationGrowth)
 
 public:
@@ -30,9 +30,9 @@ public:
 		return this->StartDate;
 	}
 
-	int GetPlayerCharacterID() const
+	int get_player_character_id() const
 	{
-		return this->PlayerCharacterID;
+		return this->player_character_id;
 	}
 
 	int GetBasePopulationGrowth() const
@@ -42,7 +42,7 @@ public:
 
 private:
 	QDateTime StartDate;
-	int PlayerCharacterID = 0;
+	int player_character_id = 0;
 	int BasePopulationGrowth = 0; //permyriad
 };
 

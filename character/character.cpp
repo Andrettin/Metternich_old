@@ -25,10 +25,10 @@ namespace metternich {
 **	@param	religion	The religion for the generated character
 **	@param	phenotype	The phenotype for the generated character; if none is given then the default phenotype for the culture is used instead
 */
-Character *Character::generate(metternich::culture *culture, metternich::religion *religion, metternich::phenotype *phenotype)
+character *character::generate(metternich::culture *culture, metternich::religion *religion, metternich::phenotype *phenotype)
 {
-	const int identifier = Character::generate_numeric_identifier();
-	Character *character = Character::add(identifier);
+	const int identifier = character::generate_numeric_identifier();
+	character *character = character::add(identifier);
 	character->culture = culture;
 	character->religion = religion;
 	if (phenotype != nullptr) {
@@ -36,7 +36,7 @@ Character *Character::generate(metternich::culture *culture, metternich::religio
 	}
 	//generate the character's birth date to be between 60 and 20 years before the current date
 	const QDateTime &current_date = Game::get()->GetCurrentDate();
-	character->BirthDate = current_date.addDays(Random::generate_in_range(-60 * 365, -20 * 365));
+	character->birth_date = current_date.addDays(Random::generate_in_range(-60 * 365, -20 * 365));
 	character->initialize_history(); //generates a name and sets the phenotype if none was given
 	return character;
 }
@@ -47,7 +47,7 @@ Character *Character::generate(metternich::culture *culture, metternich::religio
 **	@param	property	The property
 **	@param	date		The date of the property change
 */
-void Character::process_gsml_dated_property(const gsml_property &property, const QDateTime &date)
+void character::process_gsml_dated_property(const gsml_property &property, const QDateTime &date)
 {
 	if (property.get_key() == "birth") {
 		if (property.get_operator() != gsml_operator::assignment) {
@@ -55,8 +55,8 @@ void Character::process_gsml_dated_property(const gsml_property &property, const
 		}
 
 		if (util::string_to_bool(property.get_value())) {
-			this->BirthDate = date;
-			this->Alive = true;
+			this->birth_date = date;
+			this->alive = true;
 		}
 	} else if (property.get_key() == "death") {
 		if (property.get_operator() != gsml_operator::assignment) {
@@ -64,8 +64,8 @@ void Character::process_gsml_dated_property(const gsml_property &property, const
 		}
 
 		if (util::string_to_bool(property.get_value())) {
-			this->DeathDate = date;
-			this->Alive = false;
+			this->death_date = date;
+			this->alive = false;
 		}
 	} else {
 		this->process_gsml_property(property);
@@ -75,7 +75,7 @@ void Character::process_gsml_dated_property(const gsml_property &property, const
 /**
 **	@brief	Initialize the character's history
 */
-void Character::initialize_history()
+void character::initialize_history()
 {
 	if (this->get_phenotype() == nullptr) {
 		if (this->get_culture()->get_default_phenotype() != nullptr) {
@@ -86,7 +86,7 @@ void Character::initialize_history()
 	}
 
 	if (this->name.empty() && this->get_culture() != nullptr) {
-		if (this->IsFemale()) {
+		if (this->is_female()) {
 			this->name = this->get_culture()->generate_female_name();
 		} else {
 			this->name = this->get_culture()->generate_male_name();
@@ -99,11 +99,11 @@ void Character::initialize_history()
 **
 **	@return	The character's full name
 */
-std::string Character::GetFullName() const
+std::string character::get_full_name() const
 {
 	std::string full_name = this->name;
-	if (this->GetDynasty() != nullptr) {
-		full_name += " " + this->GetDynasty()->get_name();
+	if (this->get_dynasty() != nullptr) {
+		full_name += " " + this->get_dynasty()->get_name();
 	}
 	return full_name;
 }
@@ -113,7 +113,7 @@ std::string Character::GetFullName() const
 **
 **	@return	The character's titled name
 */
-std::string Character::get_titled_name() const
+std::string character::get_titled_name() const
 {
 	std::string titled_name;
 
@@ -130,7 +130,7 @@ std::string Character::get_titled_name() const
 	return titled_name;
 }
 
-void Character::choose_primary_title()
+void character::choose_primary_title()
 {
 	landed_title *best_title = nullptr;
 	landed_title_tier best_title_tier = landed_title_tier::barony;
@@ -145,7 +145,7 @@ void Character::choose_primary_title()
 	this->set_primary_title(best_title);
 }
 
-void Character::add_landed_title(landed_title *title)
+void character::add_landed_title(landed_title *title)
 {
 	this->landed_titles.push_back(title);
 
@@ -155,7 +155,7 @@ void Character::add_landed_title(landed_title *title)
 	}
 }
 
-void Character::remove_landed_title(landed_title *title)
+void character::remove_landed_title(landed_title *title)
 {
 	this->landed_titles.erase(std::remove(this->landed_titles.begin(), this->landed_titles.end(), title), this->landed_titles.end());
 
@@ -164,9 +164,9 @@ void Character::remove_landed_title(landed_title *title)
 	}
 }
 
-QVariantList Character::GetTraitsQVariantList() const
+QVariantList character::get_traits_qvariant_list() const
 {
-	return util::container_to_qvariant_list(this->GetTraits());
+	return util::container_to_qvariant_list(this->get_traits());
 }
 
 /**
@@ -174,12 +174,12 @@ QVariantList Character::GetTraitsQVariantList() const
 **
 **	@param	holding	The holding
 */
-bool Character::can_build_in_holding(const holding *holding)
+bool character::can_build_in_holding(const holding *holding)
 {
-	return holding->get_owner() == this || this->IsAnyLiegeOf(holding->get_owner());
+	return holding->get_owner() == this || this->is_any_liege_of(holding->get_owner());
 }
 
-bool Character::can_build_in_holding(const QVariant &holding_variant)
+bool character::can_build_in_holding(const QVariant &holding_variant)
 {
 	QObject *holding_object = qvariant_cast<QObject *>(holding_variant);
 	const holding *holding = static_cast<metternich::holding *>(holding_object);

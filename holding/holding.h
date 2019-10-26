@@ -12,7 +12,7 @@
 namespace metternich {
 
 class building;
-class Character;
+class character;
 class commodity;
 class culture;
 class employment;
@@ -91,12 +91,12 @@ public:
 
 	void set_type(holding_type *type);
 
-	Character *get_owner() const
+	character *get_owner() const
 	{
 		return this->owner;
 	}
 
-	void set_owner(Character *character)
+	void set_owner(character *character)
 	{
 		if (character == this->get_owner()) {
 			return;
@@ -447,7 +447,7 @@ signals:
 private:
 	holding_slot *slot = nullptr;
 	holding_type *type = nullptr;
-	Character *owner = nullptr; //the owner of the holding
+	character *owner = nullptr; //the owner of the holding
 	std::vector<std::unique_ptr<population_unit>> population_units;
 	int base_population_capacity = 0; //the base population capacity
 	int population_capacity_modifier = 100; //the population capacity modifier

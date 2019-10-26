@@ -10,7 +10,7 @@
 
 namespace metternich {
 
-class Character;
+class character;
 class holding;
 class holding_slot;
 class law;
@@ -24,7 +24,7 @@ class landed_title : public data_entry, public data_type<landed_title>
 
 	Q_PROPERTY(QString titled_name READ get_titled_name_qstring NOTIFY titled_name_changed)
 	Q_PROPERTY(QColor color READ get_color CONSTANT)
-	Q_PROPERTY(metternich::Character* holder READ get_holder WRITE set_holder NOTIFY holder_changed)
+	Q_PROPERTY(metternich::character* holder READ get_holder WRITE set_holder NOTIFY holder_changed)
 	Q_PROPERTY(metternich::landed_title* holder_title MEMBER holder_title WRITE set_holder_title)
 	Q_PROPERTY(metternich::landed_title* liege_title MEMBER liege_title)
 	Q_PROPERTY(metternich::landed_title* de_jure_liege_title READ get_de_jure_liege_title WRITE set_de_jure_liege_title NOTIFY de_jure_liege_title_changed)
@@ -90,12 +90,12 @@ public:
 		return this->tier;
 	}
 
-	Character *get_holder() const
+	character *get_holder() const
 	{
 		return this->holder;
 	}
 
-	void set_holder(Character *character);
+	void set_holder(character *character);
 	void set_holder_title(landed_title *title);
 
 	metternich::holding_slot *get_holding_slot() const
@@ -177,7 +177,7 @@ signals:
 private:
 	QColor color;
 	landed_title_tier tier;
-	Character *holder = nullptr;
+	character *holder = nullptr;
 	metternich::holding_slot *holding_slot = nullptr; //the title's holding slot, if it is a non-titular barony
 	metternich::province *province = nullptr; //the title's province, if it is a non-titular county
 	landed_title *de_jure_liege_title = nullptr;

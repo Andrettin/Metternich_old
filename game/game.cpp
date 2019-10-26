@@ -34,9 +34,9 @@ void Game::Start(const QDateTime &start_date)
 	History::load();
 
 	this->generate_missing_title_holders();
-	this->PurgeSuperfluousCharacters();
+	this->purge_superfluous_characters();
 
-	this->SetPlayerCharacter(Character::get(Defines::get()->GetPlayerCharacterID()));
+	this->set_player_character(character::get(Defines::get()->get_player_character_id()));
 
 	this->Starting = false;
 	this->Running = true;
@@ -146,8 +146,8 @@ void Game::DoMonth()
 		province->do_month();
 	}
 
-	for (Character *character : Character::get_all_living()) {
-		character->DoMonth();
+	for (character *character : character::get_all_living()) {
+		character->do_month();
 	}
 }
 
@@ -184,13 +184,13 @@ void Game::generate_missing_title_holders()
 			province = landed_title->get_holding()->get_province();
 		}
 
-		Character *holder = Character::generate(province->get_culture(), province->get_religion());
+		character *holder = character::generate(province->get_culture(), province->get_religion());
 		landed_title->set_holder(holder);
 
 		//set the liege of generated holding owners to the county holder
 		if (landed_title->get_holding() != nullptr) {
-			Character *county_holder = landed_title->get_holding()->get_province()->get_county()->get_holder();
-			holder->SetLiege(county_holder);
+			character *county_holder = landed_title->get_holding()->get_province()->get_county()->get_holder();
+			holder->set_liege(county_holder);
 		}
 	}
 }
@@ -198,19 +198,19 @@ void Game::generate_missing_title_holders()
 /**
 **	@brief	Purge superfluous characters
 */
-void Game::PurgeSuperfluousCharacters()
+void Game::purge_superfluous_characters()
 {
-	std::vector<Character *> characters_to_remove;
+	std::vector<character *> characters_to_remove;
 
-	for (Character *character : Character::get_all()) {
+	for (character *character : character::get_all()) {
 		//purge characters without a birth date, since this means that they were created during history loading, but haven't actually been born for the chosen start date (so that their birth wasn't loaded)
-		if (!character->GetBirthDate().isValid()) {
+		if (!character->get_birth_date().isValid()) {
 			characters_to_remove.push_back(character);
 		}
 	}
 
-	for (Character *character : characters_to_remove) {
-		Character::remove(character);
+	for (character *character : characters_to_remove) {
+		character::remove(character);
 	}
 }
 
