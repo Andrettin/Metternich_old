@@ -9,20 +9,20 @@ namespace metternich {
 /**
 **	@brief	CSV data
 */
-class CSVData
+class csv_data
 {
 public:
-	static constexpr char Delimiter = ';';
+	static constexpr char delimiter = ';';
 
-	static CSVData ParseFile(const std::filesystem::path &filepath);
+	static csv_data parse_file(const std::filesystem::path &filepath);
 
-	const std::vector<std::vector<std::string>> &GetValues() const
+	const std::vector<std::vector<std::string>> &get_values() const
 	{
-		return this->Values;
+		return this->values;
 	}
 
 private:
-	std::vector<std::vector<std::string>> Values;
+	std::vector<std::vector<std::string>> values;
 };
 
 }

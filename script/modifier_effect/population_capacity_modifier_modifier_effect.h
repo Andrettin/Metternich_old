@@ -9,10 +9,10 @@ namespace metternich {
 /**
 **	@brief	A population capacity modifier modifier effect
 */
-class PopulationCapacityModifierModifierEffect : public ModifierEffect
+class population_capacity_modifier_modifier_effect : public modifier_effect
 {
 public:
-	PopulationCapacityModifierModifierEffect(const int population_capacity_modifier) : PopulationCapacityModifier(population_capacity_modifier) {}
+	population_capacity_modifier_modifier_effect(const int population_capacity_modifier) : population_capacity_modifier(population_capacity_modifier) {}
 
 	virtual const std::string &get_identifier() const override
 	{
@@ -20,18 +20,18 @@ public:
 		return identifier;
 	}
 
-	virtual void Apply(province *province, const int change) const override
+	virtual void apply(province *province, const int change) const override
 	{
-		province->change_population_capacity_modifier(this->PopulationCapacityModifier * change);
+		province->change_population_capacity_modifier(this->population_capacity_modifier * change);
 	}
 
-	virtual void Apply(holding *holding, const int change) const override
+	virtual void apply(holding *holding, const int change) const override
 	{
-		holding->change_population_capacity_modifier(this->PopulationCapacityModifier * change);
+		holding->change_population_capacity_modifier(this->population_capacity_modifier * change);
 	}
 
 private:
-	int PopulationCapacityModifier = 0;
+	int population_capacity_modifier = 0;
 };
 
 }

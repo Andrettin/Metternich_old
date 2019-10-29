@@ -19,13 +19,13 @@ namespace metternich {
 **
 **	@param	gsml_property	The GSML property
 */
-std::unique_ptr<Condition> Condition::FromGSMLProperty(const gsml_property &property)
+std::unique_ptr<condition> condition::from_gsml_property(const gsml_property &property)
 {
 	std::string condition_identifier = util::to_lower(property.get_key());
-	std::unique_ptr<Condition> condition;
+	std::unique_ptr<condition> condition;
 
 	if (condition_identifier == "borders_water") {
-		condition = std::make_unique<BordersWaterCondition>(util::string_to_bool(property.get_value()));
+		condition = std::make_unique<borders_water_condition>(util::string_to_bool(property.get_value()));
 	} else if (condition_identifier == "commodity") {
 		condition = std::make_unique<commodity_condition>(property.get_value());
 	} else if (condition_identifier == "terrain") {
@@ -42,21 +42,21 @@ std::unique_ptr<Condition> Condition::FromGSMLProperty(const gsml_property &prop
 **
 **	@param	scope	The GSML scope
 */
-std::unique_ptr<Condition> Condition::FromGSMLScope(const gsml_data &scope)
+std::unique_ptr<condition> condition::from_gsml_scope(const gsml_data &scope)
 {
 	std::string condition_identifier = util::to_lower(scope.get_tag());
-	std::unique_ptr<Condition> condition;
+	std::unique_ptr<condition> condition;
 
 	if (condition_identifier == "and") {
-		condition = std::make_unique<AndCondition>();
+		condition = std::make_unique<and_condition>();
 	} else if (condition_identifier == "or") {
-		condition = std::make_unique<OrCondition>();
+		condition = std::make_unique<or_condition>();
 	} else if (condition_identifier == "not" || condition_identifier == "nor") {
-		condition = std::make_unique<NotCondition>();
+		condition = std::make_unique<not_condition>();
 	} else if (condition_identifier == "nand") {
-		auto and_condition = std::make_unique<AndCondition>();
+		auto and_condition = std::make_unique<metternich::and_condition>();
 		database::process_gsml_data(and_condition, scope);
-		condition = std::make_unique<NotCondition>(std::move(and_condition));
+		condition = std::make_unique<not_condition>(std::move(and_condition));
 		return condition;
 	} else {
 		throw std::runtime_error("Invalid scope condition: \"" + condition_identifier + "\".");
@@ -72,7 +72,7 @@ std::unique_ptr<Condition> Condition::FromGSMLScope(const gsml_data &scope)
 **
 **	@param	property	The property
 */
-void Condition::process_gsml_property(const gsml_property &property)
+void condition::process_gsml_property(const gsml_property &property)
 {
 	throw std::runtime_error("Invalid \"" + this->get_identifier() + "\" condition property: " + property.get_key() + ".");
 }
@@ -82,7 +82,7 @@ void Condition::process_gsml_property(const gsml_property &property)
 **
 **	@param	scope	The scope
 */
-void Condition::process_gsml_scope(const gsml_data &scope)
+void condition::process_gsml_scope(const gsml_data &scope)
 {
 	throw std::runtime_error("Invalid \"" + this->get_identifier() + "\" condition scope: " + scope.get_tag() + ".");
 }

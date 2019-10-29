@@ -4,7 +4,7 @@
 
 namespace metternich {
 
-void Dynasty::set_culture(metternich::culture *culture)
+void dynasty::set_culture(metternich::culture *culture)
 {
 	this->culture = culture;
 	culture->add_dynasty(this);

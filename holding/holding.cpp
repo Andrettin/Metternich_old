@@ -35,7 +35,7 @@ namespace metternich {
 holding::holding(metternich::holding_slot *slot, holding_type *type) : data_entry(slot->get_identifier()), slot(slot)
 {
 	slot->set_holding(this);
-	this->change_base_population_growth(Defines::get()->GetBasePopulationGrowth());
+	this->change_base_population_growth(defines::get()->get_base_population_growth());
 	this->set_type(type);
 	this->set_owner(this->get_barony()->get_holder());
 	this->change_base_population_capacity(this->get_province()->get_population_capacity_additive_modifier());
@@ -127,7 +127,7 @@ void holding::do_month()
 */
 std::string holding::get_name() const
 {
-	return Translator::get()->Translate(this->get_barony()->get_identifier(), {this->get_culture()->get_identifier(), this->get_culture()->get_culture_group()->get_identifier(), this->get_religion()->get_identifier()});
+	return translator::get()->translate(this->get_barony()->get_identifier(), {this->get_culture()->get_identifier(), this->get_culture()->get_culture_group()->get_identifier(), this->get_religion()->get_identifier()});
 }
 
 /**
@@ -145,7 +145,7 @@ std::string holding::get_type_name() const
 	suffixes.push_back(culture->get_culture_group()->get_identifier());
 	suffixes.push_back(religion->get_identifier());
 
-	return Translator::get()->Translate(this->get_type()->get_identifier(), suffixes);
+	return translator::get()->translate(this->get_type()->get_identifier(), suffixes);
 }
 
 /**
@@ -188,7 +188,7 @@ void holding::set_type(holding_type *type)
 	this->type = type;
 
 	if (this->get_type() != nullptr && this->get_type()->get_modifier() != nullptr) {
-		this->get_type()->get_modifier()->Apply(this);
+		this->get_type()->get_modifier()->apply(this);
 	}
 
 	emit type_changed();
@@ -335,7 +335,7 @@ void holding::check_overpopulation()
 	const bool overpopulated = this->get_population() > this->get_population_capacity();
 	if (overpopulated) {
 		if (this->modifiers.find(identifiable_modifier::get_overpopulation_modifier()) == this->modifiers.end()) {
-			identifiable_modifier::get_overpopulation_modifier()->Apply(this);
+			identifiable_modifier::get_overpopulation_modifier()->apply(this);
 			this->modifiers.insert(identifiable_modifier::get_overpopulation_modifier());
 		}
 	} else {
@@ -562,7 +562,7 @@ void holding::set_selected(const bool selected, const bool notify_engine_interfa
 	emit selected_changed();
 
 	if (notify_engine_interface) {
-		EngineInterface::get()->emit selected_holding_changed();
+		engine_interface::get()->emit selected_holding_changed();
 	}
 }
 
@@ -612,7 +612,7 @@ void holding::order_construction(const QVariant &building_variant)
 {
 	QObject *building_object = qvariant_cast<QObject *>(building_variant);
 	building *building = static_cast<metternich::building *>(building_object);
-	Game::get()->PostOrder([this, building]() {
+	game::get()->post_order([this, building]() {
 		this->set_under_construction_building(building);
 	});
 }

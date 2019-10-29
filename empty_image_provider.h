@@ -4,10 +4,10 @@
 
 namespace metternich {
 
-class EmptyImageProvider : public QQuickImageProvider
+class empty_image_provider : public QQuickImageProvider
 {
 public:
-	EmptyImageProvider() : QQuickImageProvider(QQuickImageProvider::Image) {}
+	empty_image_provider() : QQuickImageProvider(QQuickImageProvider::Image) {}
 
 	virtual QImage requestImage(const QString &, QSize *, const QSize &) override
 	{

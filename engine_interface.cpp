@@ -11,29 +11,29 @@
 
 namespace metternich {
 
-Game *EngineInterface::GetGame() const
+game *engine_interface::get_game() const
 {
-	return Game::get();
+	return game::get();
 }
 
-QVariantList EngineInterface::get_provinces() const
+QVariantList engine_interface::get_provinces() const
 {
 	QVariantList province_list = util::container_to_qvariant_list(province::get_all());
 	return province_list;
 }
 
-QVariantList EngineInterface::get_river_provinces() const
+QVariantList engine_interface::get_river_provinces() const
 {
 	QVariantList province_list = util::container_to_qvariant_list(province::get_river_provinces());
 	return province_list;
 }
 
-province *EngineInterface::get_selected_province() const
+province *engine_interface::get_selected_province() const
 {
 	return province::get_selected_province();
 }
 
-holding *EngineInterface::get_selected_holding() const
+holding *engine_interface::get_selected_holding() const
 {
 	return holding::get_selected_holding();
 }
@@ -45,7 +45,7 @@ holding *EngineInterface::get_selected_holding() const
 **
 **	@return The pixel position corresponding to the coordinate
 */
-QPoint EngineInterface::coordinate_to_point(const QGeoCoordinate &coordinate) const
+QPoint engine_interface::coordinate_to_point(const QGeoCoordinate &coordinate) const
 {
 	return map::get()->get_coordinate_pos(coordinate);
 }

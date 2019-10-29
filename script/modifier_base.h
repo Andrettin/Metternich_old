@@ -7,41 +7,41 @@
 
 namespace metternich {
 
-class ModifierEffect;
+class modifier_effect;
 
 /**
 **	@brief	The modifier base class
 */
-class ModifierBase
+class modifier_base
 {
 public:
-	ModifierBase();
-	virtual ~ModifierBase();
+	modifier_base();
+	virtual ~modifier_base();
 
 	template <typename T>
-	void Apply(T *scope) const
+	void apply(T *scope) const
 	{
-		for (const std::unique_ptr<ModifierEffect> &modifier_effect : this->ModifierEffects) {
-			modifier_effect->Apply(scope, 1);
+		for (const std::unique_ptr<modifier_effect> &modifier_effect : this->modifier_effects) {
+			modifier_effect->apply(scope, 1);
 		}
 	}
 
 	template <typename T>
 	void remove(T *scope) const
 	{
-		for (const std::unique_ptr<ModifierEffect> &modifier_effect : this->ModifierEffects) {
-			modifier_effect->Apply(scope, -1);
+		for (const std::unique_ptr<modifier_effect> &modifier_effect : this->modifier_effects) {
+			modifier_effect->apply(scope, -1);
 		}
 	}
 
 protected:
-	void add_modifier_effect(std::unique_ptr<ModifierEffect> &&modifier_effect)
+	void add_modifier_effect(std::unique_ptr<modifier_effect> &&modifier_effect)
 	{
-		this->ModifierEffects.push_back(std::move(modifier_effect));
+		this->modifier_effects.push_back(std::move(modifier_effect));
 	}
 
 private:
-	std::vector<std::unique_ptr<ModifierEffect>> ModifierEffects;
+	std::vector<std::unique_ptr<modifier_effect>> modifier_effects;
 };
 
 }

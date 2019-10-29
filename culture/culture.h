@@ -11,7 +11,7 @@
 namespace metternich {
 
 class culture_group;
-class Dynasty;
+class dynasty;
 
 class culture : public culture_base, public data_type<culture>
 {
@@ -39,7 +39,7 @@ public:
 		return this->color;
 	}
 
-	void add_dynasty(Dynasty *dynasty)
+	void add_dynasty(dynasty *dynasty)
 	{
 		this->dynasties.push_back(dynasty);
 	}
@@ -54,7 +54,7 @@ signals:
 private:
 	metternich::culture_group *culture_group = nullptr;
 	QColor color;
-	std::vector<Dynasty *> dynasties;
+	std::vector<dynasty *> dynasties;
 };
 
 }

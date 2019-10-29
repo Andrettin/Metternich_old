@@ -10,20 +10,20 @@ namespace metternich {
 /**
 **	@brief	A scripted "not" condition
 */
-class NotCondition : public Condition
+class not_condition : public condition
 {
 public:
-	NotCondition() {}
+	not_condition() {}
 
-	NotCondition(std::unique_ptr<Condition> &&condition)
+	not_condition(std::unique_ptr<condition> &&condition)
 	{
-		this->Conditions.push_back(std::move(condition));
+		this->conditions.push_back(std::move(condition));
 	}
 
 	virtual void process_gsml_property(const gsml_property &property) override
 	{
-		std::unique_ptr<Condition> condition = Condition::FromGSMLProperty(property);
-		this->Conditions.push_back(std::move(condition));
+		std::unique_ptr<condition> condition = condition::from_gsml_property(property);
+		this->conditions.push_back(std::move(condition));
 	}
 
 	virtual const std::string &get_identifier() const override
@@ -51,7 +51,7 @@ private:
 	template <typename T>
 	bool check_internal(const T *scope) const
 	{
-		for (const std::unique_ptr<Condition> &condition : this->Conditions) {
+		for (const std::unique_ptr<condition> &condition : this->conditions) {
 			if (condition->check(scope)) {
 				return false;
 			}
@@ -62,7 +62,7 @@ private:
 
 
 private:
-	std::vector<std::unique_ptr<Condition>> Conditions;
+	std::vector<std::unique_ptr<condition>> conditions;
 };
 
 }

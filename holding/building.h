@@ -7,7 +7,7 @@
 
 namespace metternich {
 
-class Condition;
+class condition;
 class employment_type;
 class holding;
 class holding_type;
@@ -91,8 +91,8 @@ private:
 	std::string icon_path;
 	std::vector<holding_type *> holding_types;
 	int construction_days = 0; //how many days does it take to construct this building
-	std::unique_ptr<Condition> preconditions;
-	std::unique_ptr<Condition> conditions;
+	std::unique_ptr<condition> preconditions;
+	std::unique_ptr<condition> conditions;
 	metternich::employment_type *employment_type = nullptr;
 	int workforce = 0; //how many workers does this building allow for its employment type
 };

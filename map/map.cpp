@@ -23,11 +23,11 @@ void map::load()
 	const bool cache_valid = this->check_cache();
 
 	if (cache_valid) {
-		EngineInterface::get()->set_loading_message("Loading Map Cache...");
+		engine_interface::get()->set_loading_message("Loading Map Cache...");
 		terrain_type::process_cache();
 		province::process_cache();
 	} else {
-		EngineInterface::get()->set_loading_message("Building Map Cache...");
+		engine_interface::get()->set_loading_message("Building Map Cache...");
 
 		//clear cache
 		std::filesystem::path cache_path = database::get_cache_path();
@@ -316,7 +316,7 @@ void map::save_geojson_data_to_gsml()
 
 void map::load_provinces()
 {
-	EngineInterface::get()->set_loading_message("Loading Provinces... (0%)");
+	engine_interface::get()->set_loading_message("Loading Provinces... (0%)");
 
 	this->province_image = QImage(QString::fromStdString((database::get_cache_path() / "provinces.png").string()));
 
@@ -339,7 +339,7 @@ void map::load_provinces()
 
 			//update the progress in the loading message
 			const long long int progress_percent = static_cast<long long int>(i) * 100 / pixel_count;
-			EngineInterface::get()->set_loading_message("Loading Provinces... (" + QString::number(progress_percent) + "%)");
+			engine_interface::get()->set_loading_message("Loading Provinces... (" + QString::number(progress_percent) + "%)");
 		}
 
 		const QRgb &pixel_rgb = rgb_data[i];
@@ -413,7 +413,7 @@ void map::load_provinces()
 
 void map::load_terrain()
 {
-	EngineInterface::get()->set_loading_message("Loading Terrain...");
+	engine_interface::get()->set_loading_message("Loading Terrain...");
 	this->terrain_image = QImage(QString::fromStdString((database::get_cache_path() / "terrain.png").string()));
 }
 
@@ -500,7 +500,7 @@ void map::write_terrain_geodata_to_image(QImage &terrain_image)
 
 	for (terrain_type *terrain_type : terrain_type::get_all()) {
 		const int progress_percent = processed_terrain_types * 100 / static_cast<int>(terrain_type::get_all().size());
-		EngineInterface::get()->set_loading_message("Writing Terrain to Image... (" + QString::number(progress_percent) + "%)");
+		engine_interface::get()->set_loading_message("Writing Terrain to Image... (" + QString::number(progress_percent) + "%)");
 
 		terrain_type->write_geodata_to_image(terrain_image);
 
@@ -530,7 +530,7 @@ void map::write_province_geodata_to_image(QImage &province_image, QImage &terrai
 
 	for (province *province : provinces) {
 		const int progress_percent = processed_provinces * 100 / static_cast<int>(province::get_all().size());
-		EngineInterface::get()->set_loading_message("Writing Provinces to Image... (" + QString::number(progress_percent) + "%)");
+		engine_interface::get()->set_loading_message("Writing Provinces to Image... (" + QString::number(progress_percent) + "%)");
 
 		if (!province_image_rgbs.contains(province->get_color().rgb()) || province->always_writes_geodata()) {
 			province->write_geodata_to_image(province_image, terrain_image);

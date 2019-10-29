@@ -11,13 +11,13 @@ class province;
 /**
 **	@brief	A scripted condition
 */
-class Condition
+class condition
 {
 public:
-	static std::unique_ptr<Condition> FromGSMLProperty(const gsml_property &property);
-	static std::unique_ptr<Condition> FromGSMLScope(const gsml_data &scope);
+	static std::unique_ptr<condition> from_gsml_property(const gsml_property &property);
+	static std::unique_ptr<condition> from_gsml_scope(const gsml_data &scope);
 
-	virtual ~Condition() {}
+	virtual ~condition() {}
 
 	virtual void process_gsml_property(const gsml_property &property);
 	virtual void process_gsml_scope(const gsml_data &scope);
@@ -26,19 +26,19 @@ public:
 
 	virtual bool check(const province *province) const
 	{
-		Q_UNUSED(province);
+		Q_UNUSED(province)
 		throw std::runtime_error("Invalid condition for province: \"" + this->get_identifier() + "\".");
 	}
 
 	virtual bool check(const holding *holding) const
 	{
-		Q_UNUSED(holding);
+		Q_UNUSED(holding)
 		throw std::runtime_error("Invalid condition for holding: \"" + this->get_identifier() + "\".");
 	}
 
 	virtual bool check(const holding_slot *holding_slot) const
 	{
-		Q_UNUSED(holding_slot);
+		Q_UNUSED(holding_slot)
 		throw std::runtime_error("Invalid condition for holding slot: \"" + this->get_identifier() + "\".");
 	}
 };

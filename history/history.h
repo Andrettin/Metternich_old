@@ -8,13 +8,13 @@
 
 namespace metternich {
 
-class History
+class history
 {
 public:
 	static void load();
 	static void generate_population_units();
 
-	static QDateTime StringToDate(const std::string &date_str);
+	static QDateTime string_to_date(const std::string &date_str);
 };
 
 }

@@ -15,9 +15,9 @@ namespace metternich {
 /**
 **	@brief	Load history
 */
-void History::load()
+void history::load()
 {
-	EngineInterface::get()->set_loading_message("Loading History...");
+	engine_interface::get()->set_loading_message("Loading History...");
 
 	region::parse_history_database();
 	province::parse_history_database();
@@ -35,7 +35,7 @@ void History::load()
 	//process after the province history, so that holdings will have been created
 	population_unit::process_history_database();
 
-	History::generate_population_units();
+	history::generate_population_units();
 
 	database::get()->initialize_history();
 }
@@ -43,7 +43,7 @@ void History::load()
 /**
 **	@brief	Create population units, based on population history for regions, provinces and settlement holdings
 */
-void History::generate_population_units()
+void history::generate_population_units()
 {
 	std::vector<population_unit *> base_population_units;
 
@@ -108,7 +108,7 @@ void History::generate_population_units()
 	}
 }
 
-QDateTime History::StringToDate(const std::string &date_str)
+QDateTime history::string_to_date(const std::string &date_str)
 {
 	std::vector<std::string> date_string_list = util::split_string(date_str, '.');
 

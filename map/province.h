@@ -20,7 +20,7 @@
 
 namespace metternich {
 
-class CSVData;
+class csv_data;
 class culture;
 class holding;
 class holding_slot;

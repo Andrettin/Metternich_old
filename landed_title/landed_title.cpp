@@ -97,7 +97,7 @@ const char *landed_title::get_tier_holder_identifier(const landed_title_tier tie
 */
 void landed_title::process_gsml_dated_property(const gsml_property &property, const QDateTime &date)
 {
-	Q_UNUSED(date);
+	Q_UNUSED(date)
 
 	if (property.get_key() == "holder") {
 		if (property.get_operator() != gsml_operator::assignment) {
@@ -209,7 +209,7 @@ void landed_title::check() const
 		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has a different province and capital province.");
 	}
 
-	if (Game::get()->IsStarting()) {
+	if (game::get()->is_starting()) {
 		if (this->get_capital_province() == nullptr) {
 			throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has no capital province.");
 		}
@@ -259,7 +259,7 @@ std::string landed_title::get_name() const
 		suffixes.push_back(this->get_holder()->get_dynasty()->get_identifier());
 	}
 
-	return Translator::get()->Translate(this->get_identifier(), suffixes);
+	return translator::get()->translate(this->get_identifier(), suffixes);
 }
 
 /**
@@ -289,7 +289,7 @@ std::string landed_title::get_tier_title_name() const
 		suffixes.push_back(culture->get_culture_group()->get_identifier());
 	}
 
-	return Translator::get()->Translate(landed_title::get_tier_identifier(this->get_tier()), suffixes);
+	return translator::get()->translate(landed_title::get_tier_identifier(this->get_tier()), suffixes);
 }
 
 /**
@@ -331,7 +331,7 @@ std::string landed_title::get_holder_title_name() const
 		suffixes.push_back(culture->get_culture_group()->get_identifier());
 	}
 
-	return Translator::get()->Translate(landed_title::get_tier_holder_identifier(this->get_tier()), suffixes);
+	return translator::get()->translate(landed_title::get_tier_holder_identifier(this->get_tier()), suffixes);
 }
 
 void landed_title::set_holder(character *character)

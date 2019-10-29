@@ -68,7 +68,7 @@ void terrain_type::process_gsml_scope(const gsml_data &scope)
 		this->color.setRgb(red, green, blue);
 		terrain_type::instances_by_rgb[this->color.rgb()] = this;
 	} else if (tag == "modifier") {
-		this->modifier = std::make_unique<metternich::Modifier>();
+		this->modifier = std::make_unique<metternich::modifier>();
 		database::process_gsml_data(this->modifier, scope);
 	} else if (tag == "geopolygons") {
 		for (const gsml_data &polygon_data : scope.get_children()) {
@@ -127,7 +127,7 @@ void terrain_type::write_geopath_endpoints_to_image(QImage &image)
 */
 void terrain_type::write_geoshape_to_image(QImage &image, const QGeoShape &geoshape)
 {
-	const QString terrain_loading_message = EngineInterface::get()->get_loading_message();
+	const QString terrain_loading_message = engine_interface::get()->get_loading_message();
 
 	QRgb rgb = this->get_color().rgb();
 	QRgb *rgb_data = reinterpret_cast<QRgb *>(image.bits());
@@ -180,7 +180,7 @@ void terrain_type::write_geoshape_to_image(QImage &image, const QGeoShape &geosh
 
 		if (show_progress) {
 			const int progress_percent = (x - start_x) * 100 / pixel_width;
-			EngineInterface::get()->set_loading_message(terrain_loading_message + "\nWriting Geopolygon to Image... (" + QString::number(progress_percent) + "%)");
+			engine_interface::get()->set_loading_message(terrain_loading_message + "\nWriting Geopolygon to Image... (" + QString::number(progress_percent) + "%)");
 		}
 	}
 }

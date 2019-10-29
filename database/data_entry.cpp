@@ -36,9 +36,9 @@ void data_entry_base::load_history(gsml_data &data)
 	data.sort_children(); //sort by date, so that they are applied chronologically
 
 	for (const gsml_data &history_entry : data.get_children()) {
-		QDateTime date = History::StringToDate(history_entry.get_tag());
+		QDateTime date = history::string_to_date(history_entry.get_tag());
 
-		if (date <= Game::get()->GetCurrentDate()) {
+		if (date <= game::get()->get_current_date()) {
 			for (const gsml_property &property : history_entry.get_properties()) {
 				this->process_gsml_dated_property(property, date);
 			}
@@ -60,7 +60,7 @@ gsml_data identifiable_data_entry_base::get_cache_data() const
 
 std::string data_entry::get_name() const
 {
-	return Translator::get()->Translate(this->identifier);
+	return translator::get()->translate(this->identifier);
 }
 
 }

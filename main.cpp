@@ -38,7 +38,7 @@ namespace metternich {
 		try {
 			database::get()->load();
 			map::get()->load();
-			Game::get()->Start(Defines::get()->GetStartDate());
+			game::get()->start(defines::get()->get_start_date());
 		} catch (const std::exception &exception) {
 			qCritical() << exception.what() << '\n';
 			QMetaObject::invokeMethod(QApplication::instance(), []{ QApplication::exit(EXIT_FAILURE); }, Qt::QueuedConnection);
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 
 		QApplication app(argc, argv);
 
-		Translator *translator = Translator::get();
+		translator *translator = translator::get();
 
 		translator->load_locale("english");
 
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 		qmlRegisterType<building>();
 		qmlRegisterType<commodity>();
 		qmlRegisterType<culture>();
-		qmlRegisterType<Game>();
+		qmlRegisterType<game>();
 		qmlRegisterType<holding>();
 		qmlRegisterType<holding_type>();
 		qmlRegisterType<landed_title>();
@@ -80,9 +80,9 @@ int main(int argc, char *argv[])
 		qmlRegisterType<province>();
 		qmlRegisterType<religion>();
 		qmlRegisterType<terrain_type>();
-		engine.rootContext()->setContextProperty("metternich", EngineInterface::get());
+		engine.rootContext()->setContextProperty("metternich", engine_interface::get());
 		engine.addImageProvider(QLatin1String("provinces"), new province_image_provider);
-		engine.addImageProvider(QLatin1String("empty"), new EmptyImageProvider);
+		engine.addImageProvider(QLatin1String("empty"), new empty_image_provider);
 
 		const QUrl url(QStringLiteral("./interface/main.qml"));
 		QObject::connect(&engine, &QQmlApplicationEngine::objectCreated, &app, [url](QObject *obj, const QUrl &objUrl) {

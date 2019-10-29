@@ -11,18 +11,18 @@
 
 namespace metternich {
 
-class Game;
+class game;
 class holding;
 class province;
 
 /**
 **	@brief	Interface for the engine, to be used in the context of QML
 */
-class EngineInterface : public QObject, public singleton<EngineInterface>
+class engine_interface : public QObject, public singleton<engine_interface>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(metternich::Game* game READ GetGame CONSTANT)
+	Q_PROPERTY(metternich::game* game READ get_game CONSTANT)
 	Q_PROPERTY(QVariantList provinces READ get_provinces CONSTANT)
 	Q_PROPERTY(QVariantList river_provinces READ get_river_provinces CONSTANT)
 	Q_PROPERTY(metternich::province* selected_province READ get_selected_province NOTIFY selected_province_changed)
@@ -30,7 +30,7 @@ class EngineInterface : public QObject, public singleton<EngineInterface>
 	Q_PROPERTY(QString loading_message READ get_loading_message NOTIFY loading_message_changed)
 
 public:
-	Game *GetGame() const;
+	game *get_game() const;
 	QVariantList get_provinces() const;
 	QVariantList get_river_provinces() const;
 	province *get_selected_province() const;

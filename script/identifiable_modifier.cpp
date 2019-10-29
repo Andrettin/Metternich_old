@@ -12,7 +12,7 @@ namespace metternich {
 */
 void identifiable_modifier::process_gsml_property(const gsml_property &property)
 {
-	std::unique_ptr<ModifierEffect> modifier_effect = ModifierEffect::FromGSMLProperty(property);
+	std::unique_ptr<modifier_effect> modifier_effect = modifier_effect::from_gsml_property(property);
 	this->add_modifier_effect(std::move(modifier_effect));
 }
 

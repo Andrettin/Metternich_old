@@ -9,7 +9,7 @@
 
 namespace metternich {
 
-class Modifier;
+class modifier;
 
 class terrain_type : public data_entry, public data_type<terrain_type>
 {
@@ -125,7 +125,7 @@ public:
 		}
 	}
 
-	const std::unique_ptr<metternich::Modifier> &get_modifier() const
+	const std::unique_ptr<metternich::modifier> &get_modifier() const
 	{
 		return this->modifier;
 	}
@@ -161,7 +161,7 @@ private:
 	bool ocean = false;
 	bool river = false;
 	int path_width = 0;
-	std::unique_ptr<metternich::Modifier> modifier; //the modifier applied to provinces with this terrain
+	std::unique_ptr<metternich::modifier> modifier; //the modifier applied to provinces with this terrain
 	std::vector<QGeoPolygon> geopolygons;
 	std::vector<QGeoPath> geopaths;
 };

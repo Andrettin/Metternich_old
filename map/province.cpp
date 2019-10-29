@@ -93,7 +93,7 @@ province::province(const std::string &identifier) : data_entry(identifier)
 {
 	connect(this, &province::culture_changed, this, &identifiable_data_entry_base::name_changed);
 	connect(this, &province::religion_changed, this, &identifiable_data_entry_base::name_changed);
-	connect(Game::get(), &Game::RunningChanged, this, &province::update_image);
+	connect(game::get(), &game::running_changed, this, &province::update_image);
 	connect(this, &province::selected_changed, this, &province::update_image);
 }
 
@@ -242,7 +242,7 @@ void province::initialize_history()
 */
 void province::check() const
 {
-	if (Game::get()->IsStarting()) {
+	if (game::get()->is_starting()) {
 		if (this->get_terrain() == nullptr) {
 			throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no terrain.");
 		}
@@ -324,10 +324,10 @@ void province::do_month()
 std::string province::get_name() const
 {
 	if (this->get_county() != nullptr) {
-		return Translator::get()->Translate(this->get_county()->get_identifier(), {this->get_culture()->get_identifier(), this->get_culture()->get_culture_group()->get_identifier(), this->get_religion()->get_identifier()});
+		return translator::get()->translate(this->get_county()->get_identifier(), {this->get_culture()->get_identifier(), this->get_culture()->get_culture_group()->get_identifier(), this->get_religion()->get_identifier()});
 	}
 
-	return Translator::get()->Translate(this->get_identifier()); //province without a county; sea zone, river, lake or wasteland
+	return translator::get()->translate(this->get_identifier()); //province without a county; sea zone, river, lake or wasteland
 }
 
 /**
@@ -519,12 +519,12 @@ void province::write_geopath_endpoints_to_image(QImage &image, QImage &terrain_i
 */
 void province::write_geoshape_to_image(QImage &image, const QGeoShape &geoshape, QImage &terrain_image)
 {
-	const QString province_loading_message = EngineInterface::get()->get_loading_message();
+	const QString province_loading_message = engine_interface::get()->get_loading_message();
 
 	QRgb rgb = this->get_color().rgb();
 	QRgb *rgb_data = reinterpret_cast<QRgb *>(image.bits());
 
-	QRgb terrain_rgb;
+	QRgb terrain_rgb = qRgb(0, 0, 0);
 	if (this->get_terrain() != nullptr) {
 		terrain_rgb = this->get_terrain()->get_color().rgb();
 	} else if (terrain_type::get_default_terrain() != nullptr) {
@@ -585,7 +585,7 @@ void province::write_geoshape_to_image(QImage &image, const QGeoShape &geoshape,
 
 		if (show_progress) {
 			const int progress_percent = (x - start_x) * 100 / pixel_width;
-			EngineInterface::get()->set_loading_message(province_loading_message + "\nWriting Geopolygon to Image... (" + QString::number(progress_percent) + "%)");
+			engine_interface::get()->set_loading_message(province_loading_message + "\nWriting Geopolygon to Image... (" + QString::number(progress_percent) + "%)");
 		}
 	}
 }
@@ -617,7 +617,7 @@ void province::set_terrain(metternich::terrain_type *terrain)
 
 	if (terrain != nullptr) {
 		if (terrain->get_modifier() != nullptr) {
-			terrain->get_modifier()->Apply(this);
+			terrain->get_modifier()->apply(this);
 		}
 
 		if (terrain->is_river()) {
@@ -967,7 +967,7 @@ void province::set_selected(const bool selected, const bool notify_engine_interf
 	emit selected_changed();
 
 	if (notify_engine_interface) {
-		EngineInterface::get()->emit selected_province_changed();
+		engine_interface::get()->emit selected_province_changed();
 	}
 }
 

@@ -30,10 +30,10 @@ building::~building()
 void building::process_gsml_scope(const gsml_data &scope)
 {
 	if (scope.get_tag() == "preconditions") {
-		this->preconditions = std::make_unique<AndCondition>();
+		this->preconditions = std::make_unique<and_condition>();
 		database::process_gsml_data(this->preconditions.get(), scope);
 	} else if (scope.get_tag() == "conditions") {
-		this->conditions = std::make_unique<AndCondition>();
+		this->conditions = std::make_unique<and_condition>();
 		database::process_gsml_data(this->conditions.get(), scope);
 	} else {
 		data_entry_base::process_gsml_scope(scope);

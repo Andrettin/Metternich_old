@@ -11,14 +11,14 @@ namespace metternich {
 /**
 **	@brief	Constructor
 */
-ChanceFactor::ChanceFactor()
+chance_factor::chance_factor()
 {
 }
 
 /**
 **	@brief	Destructor
 */
-ChanceFactor::~ChanceFactor()
+chance_factor::~chance_factor()
 {
 }
 
@@ -27,7 +27,7 @@ ChanceFactor::~ChanceFactor()
 **
 **	@param	property	The property
 */
-void ChanceFactor::process_gsml_property(const gsml_property &property)
+void chance_factor::process_gsml_property(const gsml_property &property)
 {
 	const std::string &key = property.get_key();
 	const gsml_operator gsml_operator = property.get_operator();
@@ -35,7 +35,7 @@ void ChanceFactor::process_gsml_property(const gsml_property &property)
 
 	if (key == "factor") {
 		if (gsml_operator == gsml_operator::assignment) {
-			this->Factor = util::centesimal_number_string_to_int(value);
+			this->factor = util::centesimal_number_string_to_int(value);
 		} else {
 			throw std::runtime_error("Invalid operator for property (\"" + property.get_key() + "\").");
 		}
@@ -49,12 +49,12 @@ void ChanceFactor::process_gsml_property(const gsml_property &property)
 **
 **	@param	scope	The scope
 */
-void ChanceFactor::process_gsml_scope(const gsml_data &scope)
+void chance_factor::process_gsml_scope(const gsml_data &scope)
 {
 	if (scope.get_tag() == "modifier") {
-		auto factor_modifier = std::make_unique<FactorModifier>();
-		database::process_gsml_data(factor_modifier, scope);
-		this->Modifiers.push_back(std::move(factor_modifier));
+		auto modifier = std::make_unique<factor_modifier>();
+		database::process_gsml_data(modifier, scope);
+		this->modifiers.push_back(std::move(modifier));
 	} else {
 		throw std::runtime_error("Invalid chance scope: " + scope.get_tag() + ".");
 	}

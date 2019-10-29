@@ -10,14 +10,14 @@ namespace metternich {
 /**
 **	@brief	Constructor
 */
-FactorModifier::FactorModifier()
+factor_modifier::factor_modifier()
 {
 }
 
 /**
 **	@brief	Destructor
 */
-FactorModifier::~FactorModifier()
+factor_modifier::~factor_modifier()
 {
 }
 
@@ -26,7 +26,7 @@ FactorModifier::~FactorModifier()
 **
 **	@param	property	The property
 */
-void FactorModifier::process_gsml_property(const gsml_property &property)
+void factor_modifier::process_gsml_property(const gsml_property &property)
 {
 	const std::string &key = property.get_key();
 	const gsml_operator gsml_operator = property.get_operator();
@@ -34,13 +34,13 @@ void FactorModifier::process_gsml_property(const gsml_property &property)
 
 	if (key == "factor") {
 		if (gsml_operator == gsml_operator::assignment) {
-			this->Factor = util::centesimal_number_string_to_int(value);
+			this->factor = util::centesimal_number_string_to_int(value);
 		} else {
 			throw std::runtime_error("Invalid operator for property (\"" + property.get_key() + "\").");
 		}
 	} else {
-		std::unique_ptr<Condition> condition = Condition::FromGSMLProperty(property);
-		this->Conditions.push_back(std::move(condition));
+		std::unique_ptr<condition> condition = condition::from_gsml_property(property);
+		this->conditions.push_back(std::move(condition));
 	}
 }
 
@@ -49,10 +49,10 @@ void FactorModifier::process_gsml_property(const gsml_property &property)
 **
 **	@param	scope	The scope
 */
-void FactorModifier::process_gsml_scope(const gsml_data &scope)
+void factor_modifier::process_gsml_scope(const gsml_data &scope)
 {
-	std::unique_ptr<Condition> condition = Condition::FromGSMLScope(scope);
-	this->Conditions.push_back(std::move(condition));
+	std::unique_ptr<condition> condition = condition::from_gsml_scope(scope);
+	this->conditions.push_back(std::move(condition));
 }
 
 }

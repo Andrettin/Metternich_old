@@ -9,7 +9,7 @@
 namespace metternich {
 
 class building;
-class Modifier;
+class modifier;
 
 class holding_type : public data_entry, public data_type<holding_type>
 {
@@ -46,7 +46,7 @@ public:
 		this->buildings.erase(std::remove(this->buildings.begin(), this->buildings.end(), building), this->buildings.end());
 	}
 
-	const std::unique_ptr<metternich::Modifier> &get_modifier() const
+	const std::unique_ptr<metternich::modifier> &get_modifier() const
 	{
 		return this->modifier;
 	}
@@ -54,7 +54,7 @@ public:
 private:
 	bool settlement = false;	//whether the holding type occupies a settlement slot
 	std::vector<building *> buildings;
-	std::unique_ptr<metternich::Modifier> modifier; //the modifier applied to holdings of this type
+	std::unique_ptr<metternich::modifier> modifier; //the modifier applied to holdings of this type
 };
 
 }

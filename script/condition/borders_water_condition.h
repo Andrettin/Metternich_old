@@ -10,10 +10,10 @@ namespace metternich {
 /**
 **	@brief	A scripted "borders water" condition
 */
-class BordersWaterCondition : public Condition
+class borders_water_condition : public condition
 {
 public:
-	BordersWaterCondition(const bool borders_water) : BordersWater(borders_water) {}
+	borders_water_condition(const bool borders_water) : borders_water(borders_water) {}
 
 	virtual const std::string &get_identifier() const override
 	{
@@ -23,7 +23,7 @@ public:
 
 	virtual bool check(const province *province) const override
 	{
-		return province->borders_water() == this->BordersWater;
+		return province->borders_water() == this->borders_water;
 	}
 
 	virtual bool check(const holding *holding) const override
@@ -37,7 +37,7 @@ public:
 	}
 
 private:
-	bool BordersWater = false;
+	bool borders_water = false;
 };
 
 }

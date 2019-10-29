@@ -7,14 +7,14 @@ namespace metternich {
 /**
 **	@brief	Constructor
 */
-ModifierBase::ModifierBase()
+modifier_base::modifier_base()
 {
 }
 
 /**
 **	@brief	Destructor
 */
-ModifierBase::~ModifierBase()
+modifier_base::~modifier_base()
 {
 }
 

@@ -13,13 +13,13 @@ namespace metternich {
 
 class commodity;
 class culture;
-class Dynasty;
+class dynasty;
 class gsml_property;
 class holding;
 class landed_title;
 class phenotype;
 class religion;
-class Trait;
+class trait;
 
 class character : public numeric_data_entry, public data_type<character, int>
 {
@@ -29,7 +29,7 @@ class character : public numeric_data_entry, public data_type<character, int>
 	Q_PROPERTY(QString full_name READ get_full_name_qstring NOTIFY full_name_changed)
 	Q_PROPERTY(QString titled_name READ get_titled_name_qstring NOTIFY titled_name_changed)
 	Q_PROPERTY(bool female MEMBER female READ is_female)
-	Q_PROPERTY(metternich::Dynasty* dynasty READ get_dynasty WRITE set_dynasty NOTIFY dynasty_changed)
+	Q_PROPERTY(metternich::dynasty* dynasty READ get_dynasty WRITE set_dynasty NOTIFY dynasty_changed)
 	Q_PROPERTY(metternich::culture* culture MEMBER culture READ get_culture NOTIFY culture_changed)
 	Q_PROPERTY(metternich::religion* religion MEMBER religion READ get_religion NOTIFY religion_changed)
 	Q_PROPERTY(metternich::phenotype* phenotype MEMBER phenotype READ get_phenotype)
@@ -184,12 +184,12 @@ public:
 		return this->female;
 	}
 
-	metternich::Dynasty *get_dynasty() const
+	metternich::dynasty *get_dynasty() const
 	{
 		return this->dynasty;
 	}
 
-	void set_dynasty(Dynasty *dynasty)
+	void set_dynasty(dynasty *dynasty)
 	{
 		if (dynasty == this->get_dynasty()) {
 			return;
@@ -353,19 +353,19 @@ public:
 		return top_liege->get_primary_title();
 	}
 
-	const std::vector<Trait *> &get_traits() const
+	const std::vector<trait *> &get_traits() const
 	{
 		return this->traits;
 	}
 
 	QVariantList get_traits_qvariant_list() const;
 
-	Q_INVOKABLE void add_trait(Trait *trait)
+	Q_INVOKABLE void add_trait(trait *trait)
 	{
 		this->traits.push_back(trait);
 	}
 
-	Q_INVOKABLE void remove_trait(Trait *trait)
+	Q_INVOKABLE void remove_trait(trait *trait)
 	{
 		this->traits.erase(std::remove(this->traits.begin(), this->traits.end(), trait), this->traits.end());
 	}
@@ -419,7 +419,7 @@ private:
 	std::string name;
 	bool alive = true;
 	bool female = false;
-	metternich::Dynasty *dynasty = nullptr;
+	metternich::dynasty *dynasty = nullptr;
 	metternich::culture *culture = nullptr;
 	metternich::religion *religion = nullptr;
 	metternich::phenotype *phenotype = nullptr;
@@ -433,7 +433,7 @@ private:
 	QDateTime death_date;
 	character *liege = nullptr;
 	std::vector<character *> vassals;
-	std::vector<Trait *> traits;
+	std::vector<trait *> traits;
 	int wealth = 0;
 	std::map<const commodity *, int> stored_commodities; //the amount of each commodity stored by the character
 };

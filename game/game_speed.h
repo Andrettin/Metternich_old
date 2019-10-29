@@ -2,13 +2,13 @@
 
 namespace metternich {
 
-enum class GameSpeed : int
+enum class game_speed : int
 {
-	Slowest,
-	Slow,
-	Normal,
-	Fast,
-	Fastest
+	slowest,
+	slow,
+	normal,
+	fast,
+	fastest
 };
 
 }

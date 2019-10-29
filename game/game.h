@@ -14,49 +14,49 @@
 namespace metternich {
 
 class character;
-enum class GameSpeed : int;
+enum class game_speed : int;
 
 /**
 **	@brief	The game instance
 */
-class Game : public QObject, public singleton<Game>
+class game : public QObject, public singleton<game>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(bool running READ IsRunning NOTIFY RunningChanged)
-	Q_PROPERTY(QDateTime current_date READ GetCurrentDate NOTIFY CurrentDateChanged)
-	Q_PROPERTY(QString current_date_string READ GetCurrentDateString NOTIFY CurrentDateChanged)
+	Q_PROPERTY(bool running READ is_running NOTIFY running_changed)
+	Q_PROPERTY(QDateTime current_date READ get_current_date NOTIFY current_date_changed)
+	Q_PROPERTY(QString current_date_string READ get_current_date_string NOTIFY current_date_changed)
 	Q_PROPERTY(metternich::character* player_character READ get_player_character NOTIFY player_character_changed)
 
 public:
-	Game();
+	game();
 
-	void Start(const QDateTime &start_date);
-	void Run();
-	void DoTick();
-	void DoDay();
-	void DoMonth();
-	void DoYear();
+	void start(const QDateTime &start_date);
+	void run();
+	void do_tick();
+	void do_day();
+	void do_month();
+	void do_year();
 
-	bool IsStarting() const
+	bool is_starting() const
 	{
-		return this->Starting;
+		return this->starting;
 	}
 
-	bool IsRunning() const
+	bool is_running() const
 	{
-		return this->Running;
+		return this->running;
 	}
 
-	const QDateTime &GetCurrentDate() const
+	const QDateTime &get_current_date() const
 	{
-		return this->CurrentDate;
+		return this->current_date;
 	}
 
-	QString GetCurrentDateString() const
+	QString get_current_date_string() const
 	{
 		QLocale english_locale(QLocale::English);
-		return english_locale.toString(this->CurrentDate, "d MMMM, yyyy");
+		return english_locale.toString(this->current_date, "d MMMM, yyyy");
 	}
 
 	character *get_player_character() const
@@ -74,19 +74,19 @@ public:
 		emit player_character_changed();
 	}
 
-	void PostOrder(const std::function<void()> &function)
+	void post_order(const std::function<void()> &function)
 	{
-		std::unique_lock<std::shared_mutex> lock(this->Mutex);
-		this->Orders.push(function);
+		std::unique_lock<std::shared_mutex> lock(this->mutex);
+		this->orders.push(function);
 	}
 
-	void DoOrders()
+	void do_orders()
 	{
-		std::shared_lock<std::shared_mutex> lock(this->Mutex);
+		std::shared_lock<std::shared_mutex> lock(this->mutex);
 
-		while (!this->Orders.empty()) {
-			this->Orders.front()();
-			this->Orders.pop();
+		while (!this->orders.empty()) {
+			this->orders.front()();
+			this->orders.pop();
 		}
 	}
 
@@ -94,18 +94,18 @@ public:
 	void purge_superfluous_characters();
 
 signals:
-	void RunningChanged();
-	void CurrentDateChanged();
+	void running_changed();
+	void current_date_changed();
 	void player_character_changed();
 
 private:
-	bool Starting = false;
-	bool Running = false;
-	QDateTime CurrentDate;
-	GameSpeed Speed;
+	bool starting = false;
+	bool running = false;
+	QDateTime current_date;
+	game_speed speed;
 	character *player_character = nullptr;
-	std::queue<std::function<void()>> Orders; //orders given by the player, received from the UI thread
-	mutable std::shared_mutex Mutex;
+	std::queue<std::function<void()>> orders; //orders given by the player, received from the UI thread
+	mutable std::shared_mutex mutex;
 };
 
 }

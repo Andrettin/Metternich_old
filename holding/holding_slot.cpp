@@ -30,7 +30,7 @@ void holding_slot::initialize()
 */
 std::string holding_slot::get_name() const
 {
-	return Translator::get()->Translate(this->get_barony()->get_identifier(), {this->get_province()->get_culture()->get_identifier(), this->get_province()->get_culture()->get_culture_group()->get_identifier(), this->get_province()->get_religion()->get_identifier()});
+	return translator::get()->translate(this->get_barony()->get_identifier(), {this->get_province()->get_culture()->get_identifier(), this->get_province()->get_culture()->get_culture_group()->get_identifier(), this->get_province()->get_religion()->get_identifier()});
 }
 
 /**

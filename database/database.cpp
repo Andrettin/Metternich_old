@@ -93,7 +93,7 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 				throw std::runtime_error("Only the assignment operator is available for date-time properties.");
 			}
 
-			new_property_value = History::StringToDate(property.get_value());
+			new_property_value = history::string_to_date(property.get_value());
 		} else if (property_type == QVariant::Type::UserType) {
 			if (property.get_operator() != gsml_operator::assignment) {
 				throw std::runtime_error("Only the assignment operator is available for object reference properties.");
@@ -124,7 +124,7 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 			} else if (property.get_key() == "phenotype" || property.get_key() == "default_phenotype") {
 				new_property_value = QVariant::fromValue(phenotype::get(property.get_value()));
 			} else if (property.get_key() == "dynasty") {
-				new_property_value = QVariant::fromValue(Dynasty::get(property.get_value()));
+				new_property_value = QVariant::fromValue(dynasty::get(property.get_value()));
 			} else if (property.get_key() == "character" || property.get_key() == "holder" || property.get_key() == "father" || property.get_key() == "mother" || property.get_key() == "spouse" || property.get_key() == "liege" || property.get_key() == "employer") {
 				new_property_value = QVariant::fromValue(character::get(std::stoi(property.get_value())));
 			} else if (property.get_key() == "commodity" || property.get_key() == "output_commodity") {
@@ -156,8 +156,8 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 
 			bool success = false;
 			if (property.get_key() == "traits") {
-				Trait *trait = Trait::get(property.get_value());
-				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(Trait *, trait));
+				trait *trait_value = trait::get(property.get_value());
+				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(trait *, trait_value));
 			} else if (property.get_key() == "holdings") {
 				holding_slot *slot = holding_slot::get(property.get_value());
 				if (class_name == "metternich::region") {
@@ -227,9 +227,9 @@ database::~database()
 */
 void database::load()
 {
-	EngineInterface::get()->set_loading_message("Loading Database...");
+	engine_interface::get()->set_loading_message("Loading Database...");
 
-	Defines::get()->load();
+	defines::get()->load();
 
 	//sort the metadata instances so they are placed after their class' dependencies' metadata
 	std::sort(this->metadata.begin(), this->metadata.end(), [](const std::unique_ptr<data_type_metadata> &a, const std::unique_ptr<data_type_metadata> &b) {

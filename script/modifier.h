@@ -10,7 +10,7 @@ class gsml_property;
 /**
 **	@brief	A modifier (i.e. a collection of modifier effects)
 */
-class Modifier : public ModifierBase
+class modifier : public modifier_base
 {
 public:
 	void process_gsml_property(const gsml_property &property);

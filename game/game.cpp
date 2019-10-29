@@ -15,7 +15,7 @@ namespace metternich {
 /**
 **	@brief	Constructor
 */
-Game::Game() : Speed(GameSpeed::Fast)
+game::game() : speed(game_speed::fast)
 {
 }
 
@@ -24,37 +24,37 @@ Game::Game() : Speed(GameSpeed::Fast)
 **
 **	@param	start_date	The game's start date
 */
-void Game::Start(const QDateTime &start_date)
+void game::start(const QDateTime &start_date)
 {
-	this->Starting = true;
+	this->starting = true;
 
-	this->CurrentDate = start_date;
-	emit CurrentDateChanged();
+	this->current_date = start_date;
+	emit current_date_changed();
 
-	History::load();
+	history::load();
 
 	this->generate_missing_title_holders();
 	this->purge_superfluous_characters();
 
-	this->set_player_character(character::get(Defines::get()->get_player_character_id()));
+	this->set_player_character(character::get(defines::get()->get_player_character_id()));
 
-	this->Starting = false;
-	this->Running = true;
-	emit RunningChanged();
+	this->starting = false;
+	this->running = true;
+	emit running_changed();
 
-	std::thread game_loop_thread(&Game::Run, this);
+	std::thread game_loop_thread(&game::run, this);
 	game_loop_thread.detach();
 }
 
 /**
 **	@brief	Run the game's game loop
 */
-void Game::Run()
+void game::run()
 {
 	while (true) {
 		std::chrono::time_point<std::chrono::system_clock> tick_start = std::chrono::system_clock::now();
 
-		this->DoTick();
+		this->do_tick();
 
 		std::chrono::time_point<std::chrono::system_clock> tick_end = std::chrono::system_clock::now();
 
@@ -63,24 +63,24 @@ void Game::Run()
 		//sleep for the remaining duration of the tick, if any
 		std::chrono::milliseconds tick_ms;
 
-		switch (this->Speed) {
-			case GameSpeed::Slowest: {
+		switch (this->speed) {
+			case game_speed::slowest: {
 				tick_ms = std::chrono::milliseconds(2000);
 				break;
 			}
-			case GameSpeed::Slow: {
+			case game_speed::slow: {
 				tick_ms = std::chrono::milliseconds(1000);
 				break;
 			}
-			case GameSpeed::Normal: {
+			case game_speed::normal: {
 				tick_ms = std::chrono::milliseconds(500);
 				break;
 			}
-			case GameSpeed::Fast: {
+			case game_speed::fast: {
 				tick_ms = std::chrono::milliseconds(100);
 				break;
 			}
-			case GameSpeed::Fastest: {
+			case game_speed::fastest: {
 				tick_ms = std::chrono::milliseconds(1); //about as fast as possible, but leaving a bit of time for the UI thread to process its event loop
 				break;
 			}
@@ -96,32 +96,32 @@ void Game::Run()
 /**
 **	@brief	Do the game's per tick actions
 */
-void Game::DoTick()
+void game::do_tick()
 {
 	//process the orders given by the player
-	this->DoOrders();
+	this->do_orders();
 
-	QDateTime old_date = CurrentDate;
-	this->CurrentDate = this->CurrentDate.addDays(1);
-	emit CurrentDateChanged();
+	QDateTime old_date = current_date;
+	this->current_date = this->current_date.addDays(1);
+	emit current_date_changed();
 
-	if (old_date.date().day() != this->CurrentDate.date().day()) {
-		this->DoDay();
+	if (old_date.date().day() != this->current_date.date().day()) {
+		this->do_day();
 	}
 
-	if (old_date.date().month() != this->CurrentDate.date().month()) {
-		this->DoMonth();
+	if (old_date.date().month() != this->current_date.date().month()) {
+		this->do_month();
 	}
 
-	if (old_date.date().year() != this->CurrentDate.date().year()) {
-		this->DoYear();
+	if (old_date.date().year() != this->current_date.date().year()) {
+		this->do_year();
 	}
 }
 
 /**
 **	@brief	Do the game's daily actions
 */
-void Game::DoDay()
+void game::do_day()
 {
 	for (province *province : province::get_all()) {
 		if (province->get_county() == nullptr) {
@@ -136,7 +136,7 @@ void Game::DoDay()
 /**
 **	@brief	Do the game's monthly actions
 */
-void Game::DoMonth()
+void game::do_month()
 {
 	for (province *province : province::get_all()) {
 		if (province->get_county() == nullptr) {
@@ -154,14 +154,14 @@ void Game::DoMonth()
 /**
 **	@brief	Do the game's yearly actions
 */
-void Game::DoYear()
+void game::do_year()
 {
 }
 
 /**
 **	@brief	Generate holders for (non-titular) counties which lack them
 */
-void Game::generate_missing_title_holders()
+void game::generate_missing_title_holders()
 {
 	std::vector<landed_title *> landed_titles = landed_title::get_all();
 	std::sort(landed_titles.begin(), landed_titles.end(), [](const landed_title *a, const landed_title *b) {
@@ -198,7 +198,7 @@ void Game::generate_missing_title_holders()
 /**
 **	@brief	Purge superfluous characters
 */
-void Game::purge_superfluous_characters()
+void game::purge_superfluous_characters()
 {
 	std::vector<character *> characters_to_remove;
 

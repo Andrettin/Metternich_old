@@ -8,7 +8,7 @@
 
 namespace metternich {
 
-std::string Translator::Translate(const std::string &source_text, const std::vector<std::string> &suffixes) const
+std::string translator::translate(const std::string &source_text, const std::vector<std::string> &suffixes) const
 {
 	if (!suffixes.empty()) {
 		std::vector<std::string> suffix_combinations; //possible combinations of suffixes, from more specific to less specific
@@ -22,22 +22,22 @@ std::string Translator::Translate(const std::string &source_text, const std::vec
 		}
 
 		for (const std::string &suffix : suffix_combinations) {
-			const auto &suffix_find_iterator = this->Translations.find(source_text + suffix);
-			if (suffix_find_iterator != this->Translations.end())  {
+			const auto &suffix_find_iterator = this->translations.find(source_text + suffix);
+			if (suffix_find_iterator != this->translations.end())  {
 				return suffix_find_iterator->second;
 			}
 		}
 	}
 
-	const auto &find_iterator = this->Translations.find(source_text);
-	if (find_iterator != this->Translations.end())  {
+	const auto &find_iterator = this->translations.find(source_text);
+	if (find_iterator != this->translations.end())  {
 		return find_iterator->second;
 	}
 
 	return source_text;
 }
 
-QString Translator::translate(const char *context, const char *source_text, const char *disambiguation, int n) const
+QString translator::translate(const char *context, const char *source_text, const char *disambiguation, int n) const
 {
 	Q_UNUSED(context)
 	Q_UNUSED(n)
@@ -52,12 +52,12 @@ QString Translator::translate(const char *context, const char *source_text, cons
 		}
 	}
 
-	return QString::fromStdString(this->Translate(source_text, suffixes));
+	return QString::fromStdString(this->translate(source_text, suffixes));
 }
 
-void Translator::load_locale(const std::string &language)
+void translator::load_locale(const std::string &language)
 {
-	this->Translations.clear();
+	this->translations.clear();
 
 	std::filesystem::path translation_path("./localization/" + language);
 

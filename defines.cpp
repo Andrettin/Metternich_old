@@ -10,7 +10,7 @@ namespace metternich {
 /**
 **	@brief	Load the defines
 */
-void Defines::load()
+void defines::load()
 {
 	std::filesystem::path defines_path("./data/common/defines.txt");
 
@@ -31,7 +31,7 @@ void Defines::load()
 **
 **	@param	property	The property
 */
-void Defines::process_gsml_property(const gsml_property &property)
+void defines::process_gsml_property(const gsml_property &property)
 {
 	database::process_gsml_property_for_object(this, property);
 }

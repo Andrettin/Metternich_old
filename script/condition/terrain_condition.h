@@ -13,7 +13,7 @@ class terrain_type;
 /**
 **	@brief	A scripted terrain condition
 */
-class terrain_condition : public Condition
+class terrain_condition : public condition
 {
 public:
 	terrain_condition(const std::string &terrain_identifier)

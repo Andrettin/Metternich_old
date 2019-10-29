@@ -11,7 +11,7 @@ class commodity;
 /**
 **	@brief	A scripted commodity condition
 */
-class commodity_condition : public Condition
+class commodity_condition : public condition
 {
 public:
 	commodity_condition(const std::string &commodity_identifier)

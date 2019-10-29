@@ -11,7 +11,7 @@ class gsml_property;
 /**
 **	@brief	An identifiable modifier
 */
-class identifiable_modifier : public data_entry, public data_type<identifiable_modifier>, public ModifierBase
+class identifiable_modifier : public data_entry, public data_type<identifiable_modifier>, public modifier_base
 {
 	Q_OBJECT
 
@@ -41,9 +41,9 @@ public:
 	virtual void process_gsml_property(const gsml_property &property) override;
 
 	template <typename T>
-	void remove(T *scope) const //to prevent ambiguity for name lookup between ModifierBase::remove and data_type::remove
+	void remove(T *scope) const //to prevent ambiguity for name lookup between modifier_base::remove and data_type::remove
 	{
-		this->ModifierBase::remove(scope);
+		this->modifier_base::remove(scope);
 	}
 };
 
