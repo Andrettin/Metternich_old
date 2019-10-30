@@ -29,6 +29,7 @@ class population_unit : public data_entry_base, public simple_data_type<populati
 	Q_PROPERTY(metternich::province* province READ get_province WRITE set_province NOTIFY province_changed)
 	Q_PROPERTY(metternich::region* region READ get_region WRITE set_region NOTIFY region_changed)
 	Q_PROPERTY(int wealth READ get_wealth NOTIFY wealth_changed)
+	Q_PROPERTY(QString icon_path READ get_icon_path_qstring NOTIFY icon_path_changed)
 	Q_PROPERTY(bool discount_existing READ discounts_existing WRITE set_discount_existing NOTIFY discount_existing_changed)
 	Q_PROPERTY(bool discount_any_type READ discounts_any_type WRITE set_discount_any_type NOTIFY discount_types_changed)
 	Q_PROPERTY(QVariantList discount_types READ get_discount_types_qvariant_list NOTIFY discount_types_changed)
@@ -38,7 +39,12 @@ public:
 
 	static void process_history_database();
 
-	population_unit(population_type *type) : type(type) {}
+	population_unit(population_type *type) : type(type)
+	{
+		connect(this, &population_unit::type_changed, this, &population_unit::icon_path_changed);
+		connect(this, &population_unit::culture_changed, this, &population_unit::icon_path_changed);
+		connect(this, &population_unit::religion_changed, this, &population_unit::icon_path_changed);
+	}
 
 	virtual void initialize_history() override;
 
@@ -236,6 +242,13 @@ public:
 		this->set_wealth(this->get_wealth() + change);
 	}
 
+	std::filesystem::path get_icon_path() const;
+
+	QString get_icon_path_qstring() const
+	{
+		return "file:///" + QString::fromStdString(this->get_icon_path().string());
+	}
+
 signals:
 	void type_changed();
 	void culture_changed();
@@ -247,6 +260,7 @@ signals:
 	void discount_existing_changed();
 	void discount_types_changed();
 	void wealth_changed();
+	void icon_path_changed();
 
 private:
 	population_type *type = nullptr;

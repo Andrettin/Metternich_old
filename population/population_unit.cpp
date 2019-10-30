@@ -1,5 +1,7 @@
 #include "population/population_unit.h"
 
+#include "culture/culture.h"
+#include "culture/culture_group.h"
 #include "database/gsml_data.h"
 #include "economy/employment.h"
 #include "economy/employment_type.h"
@@ -7,7 +9,9 @@
 #include "holding/holding.h"
 #include "map/province.h"
 #include "map/region.h"
+#include "phenotype.h"
 #include "population/population_type.h"
+#include "religion.h"
 #include "util/container_util.h"
 
 #include <QApplication>
@@ -297,6 +301,20 @@ void population_unit::seek_employment()
 			}
 		}
 	}
+}
+
+/**
+**	@brief	Seek employment for the population unit
+*/
+std::filesystem::path population_unit::get_icon_path() const
+{
+	std::string base_tag = this->get_type()->get_icon_tag();
+	std::vector<std::vector<std::string>> tag_list_with_fallbacks;
+	tag_list_with_fallbacks.push_back({this->get_culture()->get_identifier(), this->get_culture()->get_culture_group()->get_identifier()});
+	tag_list_with_fallbacks.push_back({this->get_religion()->get_identifier()});
+
+	std::filesystem::path icon_path = database::get_tagged_image_path(database::get_population_icons_path(), base_tag, tag_list_with_fallbacks, "_small.png");
+	return icon_path;
 }
 
 }
