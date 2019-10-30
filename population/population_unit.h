@@ -12,6 +12,7 @@ namespace metternich {
 class culture;
 class employment;
 class holding;
+class phenotype;
 class population_type;
 class province;
 class region;
@@ -24,6 +25,7 @@ class population_unit : public data_entry_base, public simple_data_type<populati
 	Q_PROPERTY(metternich::population_type* type MEMBER type READ get_type NOTIFY type_changed)
 	Q_PROPERTY(metternich::culture* culture READ get_culture WRITE set_culture NOTIFY culture_changed)
 	Q_PROPERTY(metternich::religion* religion READ get_religion WRITE set_religion NOTIFY religion_changed)
+	Q_PROPERTY(metternich::phenotype* phenotype READ get_phenotype WRITE set_phenotype NOTIFY phenotype_changed)
 	Q_PROPERTY(int size READ get_size WRITE set_size NOTIFY size_changed)
 	Q_PROPERTY(metternich::holding* holding READ get_holding WRITE set_holding NOTIFY holding_changed)
 	Q_PROPERTY(metternich::province* province READ get_province WRITE set_province NOTIFY province_changed)
@@ -44,6 +46,7 @@ public:
 		connect(this, &population_unit::type_changed, this, &population_unit::icon_path_changed);
 		connect(this, &population_unit::culture_changed, this, &population_unit::icon_path_changed);
 		connect(this, &population_unit::religion_changed, this, &population_unit::icon_path_changed);
+		connect(this, &population_unit::phenotype_changed, this, &population_unit::icon_path_changed);
 	}
 
 	virtual void initialize_history() override;
@@ -83,6 +86,21 @@ public:
 
 		this->religion = religion;
 		emit religion_changed();
+	}
+
+	metternich::phenotype *get_phenotype() const
+	{
+		return this->phenotype;
+	}
+
+	void set_phenotype(phenotype *phenotype)
+	{
+		if (phenotype == this->get_phenotype()) {
+			return;
+		}
+
+		this->phenotype = phenotype;
+		emit phenotype_changed();
 	}
 
 	int get_size() const
@@ -253,6 +271,7 @@ signals:
 	void type_changed();
 	void culture_changed();
 	void religion_changed();
+	void phenotype_changed();
 	void size_changed();
 	void holding_changed();
 	void province_changed();
@@ -266,6 +285,7 @@ private:
 	population_type *type = nullptr;
 	metternich::culture *culture = nullptr;
 	metternich::religion *religion = nullptr;
+	metternich::phenotype *phenotype = nullptr;
 	int size = 0; //the size of the population unit, in number of individuals
 	metternich::holding *holding = nullptr; //the settlement holding where this population unit lives
 	metternich::province *province = nullptr; //the province where this population unit lives; used only during initialization to generate population units in settlements in the province

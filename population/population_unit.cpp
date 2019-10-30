@@ -65,6 +65,14 @@ void population_unit::initialize_history()
 		this->set_religion(this->get_holding()->get_religion());
 	}
 
+	if (this->get_phenotype() == nullptr) {
+		metternich::phenotype *phenotype = this->get_culture()->get_default_phenotype();
+		if (phenotype == nullptr) {
+			phenotype = this->get_culture()->get_culture_group()->get_default_phenotype();
+		}
+		this->set_phenotype(phenotype);
+	}
+
 	this->set_unemployed_size(this->get_size());
 }
 
@@ -279,6 +287,9 @@ void population_unit::distribute_to_holdings(const std::vector<metternich::holdi
 		if (this->get_religion() != nullptr) {
 			population_unit->set_religion(this->get_religion());
 		}
+		if (this->get_phenotype() != nullptr) {
+			population_unit->set_phenotype(this->get_phenotype());
+		}
 		holding->add_population_unit(std::move(population_unit));
 	}
 }
@@ -312,6 +323,7 @@ std::filesystem::path population_unit::get_icon_path() const
 	std::vector<std::vector<std::string>> tag_list_with_fallbacks;
 	tag_list_with_fallbacks.push_back({this->get_culture()->get_identifier(), this->get_culture()->get_culture_group()->get_identifier()});
 	tag_list_with_fallbacks.push_back({this->get_religion()->get_identifier()});
+	tag_list_with_fallbacks.push_back({this->get_phenotype()->get_identifier()});
 
 	std::filesystem::path icon_path = database::get_tagged_image_path(database::get_population_icons_path(), base_tag, tag_list_with_fallbacks, "_small.png");
 	return icon_path;
