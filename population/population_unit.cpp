@@ -65,14 +65,6 @@ void population_unit::initialize_history()
 		this->set_religion(this->get_holding()->get_religion());
 	}
 
-	if (this->get_phenotype() == nullptr) {
-		metternich::phenotype *phenotype = this->get_culture()->get_default_phenotype();
-		if (phenotype == nullptr) {
-			phenotype = this->get_culture()->get_culture_group()->get_default_phenotype();
-		}
-		this->set_phenotype(phenotype);
-	}
-
 	this->set_unemployed_size(this->get_size());
 }
 
@@ -83,6 +75,29 @@ void population_unit::do_month()
 {
 	if (this->get_unemployed_size() > 0) {
 		this->seek_employment();
+	}
+}
+
+/**
+**	@brief	Set the population unit's culture
+**
+**	@param	culture	The new culture
+*/
+void population_unit::set_culture(metternich::culture *culture)
+{
+	if (culture == this->get_culture()) {
+		return;
+	}
+
+	this->culture = culture;
+	emit culture_changed();
+
+	if (this->get_phenotype() == nullptr) {
+		metternich::phenotype *phenotype = culture->get_default_phenotype();
+		if (phenotype == nullptr) {
+			phenotype = culture->get_culture_group()->get_default_phenotype();
+		}
+		this->set_phenotype(phenotype);
 	}
 }
 
@@ -234,11 +249,25 @@ bool population_unit::can_distribute_to_holding(const metternich::holding *holdi
 	}
 
 	if (this->discounts_existing()) {
-		//the population unit can only be distributed to the given holding if there is no population unit there with the same type as this one, if discount existing is enabled
+		//the population unit can only be distributed to the given holding if there is no population unit there with the same type, culture, religion and phenotype as this one, if discount existing is enabled
 		for (const std::unique_ptr<population_unit> &population_unit : holding->get_population_units()) {
-			if (this->get_type() == population_unit->get_type()) {
-				return false;
+			if (population_unit->get_type() != this->get_type()) {
+				continue;
 			}
+
+			if (this->get_culture() != nullptr && population_unit->get_culture() != this->get_culture()) {
+				continue;
+			}
+
+			if (this->get_religion() != nullptr && population_unit->get_religion() != this->get_religion()) {
+				continue;
+			}
+
+			if (this->get_phenotype() != nullptr && population_unit->get_phenotype() != this->get_phenotype()) {
+				continue;
+			}
+
+			return false;
 		}
 	}
 

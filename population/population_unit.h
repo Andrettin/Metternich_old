@@ -63,15 +63,7 @@ public:
 		return this->culture;
 	}
 
-	void set_culture(culture *culture)
-	{
-		if (culture == this->get_culture()) {
-			return;
-		}
-
-		this->culture = culture;
-		emit culture_changed();
-	}
+	void set_culture(culture *culture);
 
 	metternich::religion *get_religion() const
 	{
