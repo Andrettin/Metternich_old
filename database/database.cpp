@@ -121,7 +121,7 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 				new_property_value = QVariant::fromValue(culture_group::get(property.get_value()));
 			} else if (property.get_key() == "religion") {
 				new_property_value = QVariant::fromValue(religion::get(property.get_value()));
-			} else if (property.get_key() == "phenotype" || property.get_key() == "default_phenotype") {
+			} else if (property.get_key() == "phenotype" || property.get_key() == "default_phenotype" || property.get_key() == "icon_fallback_phenotype") {
 				new_property_value = QVariant::fromValue(phenotype::get(property.get_value()));
 			} else if (property.get_key() == "dynasty") {
 				new_property_value = QVariant::fromValue(dynasty::get(property.get_value()));

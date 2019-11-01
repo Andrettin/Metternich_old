@@ -364,7 +364,13 @@ std::filesystem::path population_unit::get_icon_path() const
 	std::vector<std::vector<std::string>> tag_list_with_fallbacks;
 	tag_list_with_fallbacks.push_back({this->get_culture()->get_identifier(), this->get_culture()->get_culture_group()->get_identifier()});
 	tag_list_with_fallbacks.push_back({this->get_religion()->get_identifier()});
-	tag_list_with_fallbacks.push_back({this->get_phenotype()->get_identifier()});
+
+	std::vector<std::string> phenotype_tag_with_fallbacks;
+	phenotype_tag_with_fallbacks.push_back(this->get_phenotype()->get_identifier());
+	for (metternich::phenotype *fallback_phenotype : this->get_phenotype()->get_icon_fallback_phenotypes()) {
+		phenotype_tag_with_fallbacks.push_back(fallback_phenotype->get_identifier());
+	}
+	tag_list_with_fallbacks.push_back(std::move(phenotype_tag_with_fallbacks));
 
 	std::filesystem::path icon_path = database::get_tagged_image_path(database::get_population_icons_path(), base_tag, tag_list_with_fallbacks, "_small.png");
 	return icon_path;
