@@ -21,6 +21,7 @@ class holding_slot;
 class holding_type;
 class identifiable_modifier;
 class landed_title;
+class phenotype;
 class population_type;
 class population_unit;
 class province;
@@ -114,6 +115,8 @@ public:
 	}
 
 	void add_population_unit(std::unique_ptr<population_unit> &&population_unit);
+	population_unit *get_population_unit(const population_type *type, const culture *culture, const religion *religion, const phenotype *phenotype) const;
+	void change_population_size(population_type *type, culture *culture, religion *religion, phenotype *phenotype, const int change);
 	QVariantList get_population_units_qvariant_list() const;
 	void sort_population_units();
 	void remove_empty_population_units();

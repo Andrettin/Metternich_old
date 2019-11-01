@@ -3,6 +3,7 @@
 #include "database/data_entry.h"
 #include "database/data_type.h"
 
+#include <map>
 #include <string>
 
 namespace metternich {
@@ -57,9 +58,28 @@ public:
 		return fallback_phenotypes;
 	}
 
+	bool can_mix_with(const phenotype *other_phenotype) const
+	{
+		if (this == other_phenotype) {
+			return false;
+		}
+
+		return this->mixing_results.contains(other_phenotype);
+	}
+
+	phenotype *get_mixing_result(const phenotype *other_phenotype) const
+	{
+		auto find_iterator = this->mixing_results.find(other_phenotype);
+		if (find_iterator != this->mixing_results.end()) {
+			return find_iterator->second;
+		}
+
+		return nullptr;
+	}
+
 private:
 	phenotype *icon_fallback_phenotype = nullptr; //the phenotype from which the tag is to be used if an icon for this phenotype is absent
-	std::map<phenotype *, phenotype *> mixing_results; //the result of mixing with another phenotype
+	std::map<const phenotype *, phenotype *> mixing_results; //the result of mixing with another phenotype
 };
 
 }

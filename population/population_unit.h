@@ -38,6 +38,7 @@ class population_unit : public data_entry_base, public simple_data_type<populati
 
 public:
 	static constexpr const char *database_folder = "population_units";
+	static constexpr int mixing_factor_permyriad = 1; //up to this fraction of people will "mix" per month per mixing check
 
 	static void process_history_database();
 
@@ -49,9 +50,14 @@ public:
 		connect(this, &population_unit::phenotype_changed, this, &population_unit::icon_path_changed);
 	}
 
+	virtual ~population_unit() override
+	{
+	}
+
 	virtual void initialize_history() override;
 
 	void do_month();
+	void do_mixing();
 
 	population_type *get_type() const
 	{
@@ -94,6 +100,8 @@ public:
 		this->phenotype = phenotype;
 		emit phenotype_changed();
 	}
+
+	void mix_with(population_unit *other_population_unit);
 
 	int get_size() const
 	{

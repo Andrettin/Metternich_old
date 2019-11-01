@@ -62,11 +62,11 @@ void culture::check() const
 std::string culture::generate_male_name() const
 {
 	if (!this->get_male_names().empty()) {
-		return this->get_male_names()[Random::generate(this->get_male_names().size())];
+		return this->get_male_names()[random::generate(this->get_male_names().size())];
 	}
 
 	if (!this->get_culture_group()->get_male_names().empty()) {
-		return this->get_culture_group()->get_male_names()[Random::generate(this->get_culture_group()->get_male_names().size())];
+		return this->get_culture_group()->get_male_names()[random::generate(this->get_culture_group()->get_male_names().size())];
 	}
 
 	return std::string();
@@ -78,11 +78,11 @@ std::string culture::generate_male_name() const
 std::string culture::generate_female_name() const
 {
 	if (!this->get_female_names().empty()) {
-		return this->get_female_names()[Random::generate(this->get_female_names().size())];
+		return this->get_female_names()[random::generate(this->get_female_names().size())];
 	}
 
 	if (!this->get_culture_group()->get_female_names().empty()) {
-		return this->get_culture_group()->get_female_names()[Random::generate(this->get_culture_group()->get_female_names().size())];
+		return this->get_culture_group()->get_female_names()[random::generate(this->get_culture_group()->get_female_names().size())];
 	}
 
 	return std::string();
@@ -97,7 +97,7 @@ std::string culture::generate_dynasty_name() const
 		return std::string();
 	}
 
-	return this->dynasties[Random::generate(this->dynasties.size())]->get_name();
+	return this->dynasties[random::generate(this->dynasties.size())]->get_name();
 }
 
 }

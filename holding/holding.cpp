@@ -43,7 +43,7 @@ holding::holding(metternich::holding_slot *slot, holding_type *type) : data_entr
 	this->change_base_population_growth(this->get_province()->get_population_growth_modifier());
 
 	if (!slot->get_available_commodities().empty()) {
-		metternich::commodity *commodity = slot->get_available_commodities()[Random::generate(slot->get_available_commodities().size())];
+		metternich::commodity *commodity = slot->get_available_commodities()[random::generate(slot->get_available_commodities().size())];
 		this->set_commodity(commodity);
 	} else {
 		throw std::runtime_error("Holding slot \"" + slot->get_identifier() + "\" has no available commodities to produce.");
@@ -112,8 +112,10 @@ void holding::do_month()
 {
 	this->do_population_growth();
 
-	for (const std::unique_ptr<population_unit> &population_unit : this->get_population_units()) {
-		population_unit->do_month();
+	//use index-based for loop, as pop. units may add new ones in their do_month() function, e.g. due to mixing
+	size_t pop_units_size = this->population_units.size();
+	for (size_t i = 0; i < pop_units_size; ++i) {
+		this->population_units[i]->do_month();
 	}
 
 	this->remove_empty_population_units();
@@ -206,12 +208,76 @@ province *holding::get_province() const
 
 /**
 **	@brief	Add a population unit to the holding
+**
+**	@param	population_unit	The population unit
 */
 void holding::add_population_unit(std::unique_ptr<population_unit> &&population_unit)
 {
 	this->change_population(population_unit->get_size());
 	this->population_units.push_back(std::move(population_unit));
 	emit population_units_changed();
+}
+
+/**
+**	@brief	Get the population unit with a given type, culture, religion and phenotype, if any exist
+**
+**	@param	type		The population type
+**	@param	culture		The culture
+**	@param	religion	The religion
+**	@param	phenotype	The phenotype
+**
+**	@return	The population unit
+*/
+population_unit *holding::get_population_unit(const population_type *type, const metternich::culture *culture, const metternich::religion *religion, const phenotype *phenotype) const
+{
+	for (const std::unique_ptr<population_unit> &population_unit : this->get_population_units()) {
+		if (population_unit->get_type() != type) {
+			continue;
+		}
+
+		if (population_unit->get_culture() != culture) {
+			continue;
+		}
+
+		if (population_unit->get_religion() != religion) {
+			continue;
+		}
+
+		if (population_unit->get_phenotype() != phenotype) {
+			continue;
+		}
+
+		return population_unit.get();
+	}
+
+	return nullptr;
+}
+
+/**
+**	@brief	Change the population size of the holding's population unit with a given type, culture, religion and phenotype, creating a new one if no population unit is found with those characteristics and the change is positive
+**
+**	@param	type		The population type
+**	@param	culture		The culture
+**	@param	religion	The religion
+**	@param	phenotype	The phenotype
+**	@param	change		The population size change
+*/
+void holding::change_population_size(population_type *type, metternich::culture *culture, metternich::religion *religion, phenotype *phenotype, const int change)
+{
+	population_unit *population_unit = this->get_population_unit(type, culture, religion, phenotype);
+
+	if (population_unit != nullptr) {
+		population_unit->change_size(change);
+	} else if (change > 0) {
+		auto new_population_unit = std::make_unique<metternich::population_unit>(type);
+		new_population_unit->moveToThread(QApplication::instance()->thread());
+		new_population_unit->set_holding(this);
+		new_population_unit->set_size(change);
+		new_population_unit->set_culture(culture);
+		new_population_unit->set_religion(religion);
+		new_population_unit->set_phenotype(phenotype);
+		this->add_population_unit(std::move(new_population_unit));
+	}
 }
 
 /**

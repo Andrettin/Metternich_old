@@ -80,7 +80,7 @@ void holding_slot::generate_available_commodity()
 
 	metternich::commodity *chosen_commodity = nullptr;
 
-	const int random_number = Random::generate(total_chance_factor);
+	const int random_number = random::generate(total_chance_factor);
 	for (const auto &element : commodity_chance_ranges) {
 		metternich::commodity *commodity = element.first;
 		const std::pair<int, int> range = element.second;

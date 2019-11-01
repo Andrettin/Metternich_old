@@ -11,6 +11,7 @@
 #include "map/region.h"
 #include "phenotype.h"
 #include "population/population_type.h"
+#include "random.h"
 #include "religion.h"
 #include "util/container_util.h"
 
@@ -28,7 +29,7 @@ void population_unit::process_history_database()
 		for (const gsml_data &data_entry : data.get_children()) {
 			const std::string type_identifier = data_entry.get_tag();
 			population_type *type = population_type::get(type_identifier);
-			auto population_unit(std::make_unique<population_unit>(type));
+			auto population_unit = std::make_unique<metternich::population_unit>(type);
 			population_unit->moveToThread(QApplication::instance()->thread());
 			population_unit->load_history(const_cast<gsml_data &>(data_entry));
 
@@ -64,8 +65,6 @@ void population_unit::initialize_history()
 	if (this->get_religion() == nullptr) {
 		this->set_religion(this->get_holding()->get_religion());
 	}
-
-	this->set_unemployed_size(this->get_size());
 }
 
 /**
@@ -73,8 +72,36 @@ void population_unit::initialize_history()
 */
 void population_unit::do_month()
 {
+	if (this->get_size() == 0) {
+		return;
+	}
+
 	if (this->get_unemployed_size() > 0) {
 		this->seek_employment();
+	}
+
+	this->do_mixing();
+}
+
+/**
+**	@brief	Do mixing for the population unit
+*/
+void population_unit::do_mixing()
+{
+	for (const std::unique_ptr<population_unit> &other_population_unit : this->get_holding()->get_population_units()) {
+		if (other_population_unit.get() == this) {
+			continue;
+		}
+
+		if (other_population_unit->get_type() != this->get_type() || other_population_unit->get_culture() != this->get_culture() || other_population_unit->get_religion() != this->get_religion()) {
+			continue;
+		}
+
+		if (!this->get_phenotype()->can_mix_with(other_population_unit->get_phenotype())) {
+			continue;
+		}
+
+		this->mix_with(other_population_unit.get());
 	}
 }
 
@@ -99,6 +126,27 @@ void population_unit::set_culture(metternich::culture *culture)
 		}
 		this->set_phenotype(phenotype);
 	}
+}
+
+
+/**
+**	@brief	Mixing with another population unit
+*/
+void population_unit::mix_with(population_unit *other_population_unit)
+{
+	int size = std::min(this->get_size(), other_population_unit->get_size());
+	size *= population_unit::mixing_factor_permyriad + this->get_holding()->get_population_growth(); //the mixing factor must be greater than the population growth, so that it has the potential to affect the demographic composition even for a growing population
+	size /= 10000;
+	if (size > 0) {
+		size = random::generate(size);
+	}
+	size = std::max(size, 2); //2 instead of 1 so that it is always greater than pop. growth
+
+	metternich::phenotype *mixed_phenotype = this->get_phenotype()->get_mixing_result(other_population_unit->get_phenotype());
+	this->get_holding()->change_population_size(this->get_type(), this->get_culture(), this->get_religion(), mixed_phenotype, size * 2);
+
+	this->change_size(-size);
+	other_population_unit->change_size(-size);
 }
 
 /**
@@ -318,7 +366,7 @@ void population_unit::distribute_to_holdings(const std::vector<metternich::holdi
 			continue;
 		}
 
-		auto population_unit(std::make_unique<population_unit>(this->get_type()));
+		auto population_unit = std::make_unique<metternich::population_unit>(this->get_type());
 		population_unit->moveToThread(QApplication::instance()->thread());
 		population_unit->set_holding(holding);
 		population_unit->set_size(size_per_holding);

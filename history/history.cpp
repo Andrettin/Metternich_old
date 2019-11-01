@@ -84,6 +84,21 @@ void history::generate_population_units()
 			return a->get_region()->get_provinces().size() < b->get_region()->get_provinces().size();
 		}
 
+		//give priority to population units with a culture
+		if ((a->get_culture() != nullptr) != (b->get_culture() != nullptr)) {
+			return a->get_culture() != nullptr;
+		}
+
+		//give priority to population units with a religion
+		if ((a->get_religion() != nullptr) != (b->get_religion() != nullptr)) {
+			return a->get_religion() != nullptr;
+		}
+
+		//give priority to population units with a phenotype
+		if ((a->get_phenotype() != nullptr) != (b->get_phenotype() != nullptr)) {
+			return a->get_phenotype() != nullptr;
+		}
+
 		return a->get_size() < b->get_size();
 	});
 

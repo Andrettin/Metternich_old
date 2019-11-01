@@ -36,7 +36,7 @@ character *character::generate(metternich::culture *culture, metternich::religio
 	}
 	//generate the character's birth date to be between 60 and 20 years before the current date
 	const QDateTime &current_date = game::get()->get_current_date();
-	character->birth_date = current_date.addDays(Random::generate_in_range(-60 * 365, -20 * 365));
+	character->birth_date = current_date.addDays(random::generate_in_range(-60 * 365, -20 * 365));
 	character->initialize_history(); //generates a name and sets the phenotype if none was given
 	return character;
 }
