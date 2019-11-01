@@ -134,13 +134,15 @@ void population_unit::set_culture(metternich::culture *culture)
 */
 void population_unit::mix_with(population_unit *other_population_unit)
 {
-	int size = std::min(this->get_size(), other_population_unit->get_size());
+	const int base_size = std::min(this->get_size(), other_population_unit->get_size());
+	int size = base_size;
 	size *= population_unit::mixing_factor_permyriad + this->get_holding()->get_population_growth(); //the mixing factor must be greater than the population growth, so that it has the potential to affect the demographic composition even for a growing population
 	size /= 10000;
 	if (size > 0) {
 		size = random::generate(size);
 	}
 	size = std::max(size, 2); //2 instead of 1 so that it is always greater than pop. growth
+	size = std::min(size, base_size);
 
 	metternich::phenotype *mixed_phenotype = this->get_phenotype()->get_mixing_result(other_population_unit->get_phenotype());
 	this->get_holding()->change_population_size(this->get_type(), this->get_culture(), this->get_religion(), mixed_phenotype, size * 2);
