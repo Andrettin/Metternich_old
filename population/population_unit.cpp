@@ -219,6 +219,18 @@ void population_unit::subtract_existing_sizes_in_holding(const metternich::holdi
 			continue;
 		}
 
+		if (this->get_culture() != nullptr && population_unit->get_culture() != this->get_culture()) {
+			continue;
+		}
+
+		if (this->get_religion() != nullptr && population_unit->get_religion() != this->get_religion()) {
+			continue;
+		}
+
+		if (this->get_phenotype() != nullptr && population_unit->get_phenotype() != this->get_phenotype()) {
+			continue;
+		}
+
 		this->change_size(-population_unit->get_size());
 	}
 }
