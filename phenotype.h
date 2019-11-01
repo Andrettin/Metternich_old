@@ -19,6 +19,25 @@ public:
 
 	phenotype(const std::string &identifier) : data_entry(identifier) {}
 
+	virtual void process_gsml_scope(const gsml_data &scope) override
+	{
+		const std::string &tag = scope.get_tag();
+
+		if (tag == "mixing_results") {
+			for (const gsml_property &property : scope.get_properties()) {
+				const std::string &key = property.get_key();
+				const std::string &value = property.get_value();
+
+				phenotype *mixing_phenotype = phenotype::get(key);
+				phenotype *result_phenotype = phenotype::get(value);
+				this->mixing_results[mixing_phenotype] = result_phenotype;
+				mixing_phenotype->mixing_results[this] = result_phenotype;
+			}
+		} else {
+			data_entry_base::process_gsml_scope(scope);
+		}
+	}
+
 	phenotype *get_icon_fallback_phenotype() const
 	{
 		return this->icon_fallback_phenotype;
@@ -40,6 +59,7 @@ public:
 
 private:
 	phenotype *icon_fallback_phenotype = nullptr; //the phenotype from which the tag is to be used if an icon for this phenotype is absent
+	std::map<phenotype *, phenotype *> mixing_results; //the result of mixing with another phenotype
 };
 
 }
