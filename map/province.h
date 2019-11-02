@@ -31,6 +31,7 @@ class population_unit;
 class region;
 class religion;
 class terrain_type;
+enum class map_mode : int;
 
 class province : public data_entry, public data_type<province>
 {
@@ -62,6 +63,8 @@ public:
 	static constexpr const char *database_folder = "provinces";
 	static constexpr const char *prefix = "p_";
 	static constexpr QRgb empty_rgb = qRgb(0, 0, 0);
+	static const inline QColor water_province_color = QColor("#0080ff");
+	static const inline QColor wasteland_province_color = QColor(Qt::darkGray);
 
 	static std::set<std::string> get_database_dependencies();
 	static province *add(const std::string &identifier);
@@ -114,6 +117,8 @@ public:
 		return this->color;
 	}
 
+	const QColor &get_map_mode_color(map_mode mode) const;
+
 	const QRect &get_rect() const
 	{
 		return this->rect;
@@ -143,30 +148,14 @@ public:
 		return this->culture;
 	}
 
-	void set_culture(culture *culture)
-	{
-		if (culture == this->get_culture()) {
-			return;
-		}
-
-		this->culture = culture;
-		emit culture_changed();
-	}
+	void set_culture(culture *culture);
 
 	metternich::religion *get_religion() const
 	{
 		return this->religion;
 	}
 
-	void set_religion(religion *religion)
-	{
-		if (religion == this->get_religion()) {
-			return;
-		}
-
-		this->religion = religion;
-		emit religion_changed();
-	}
+	void set_religion(religion *religion);
 
 	int get_population() const
 	{

@@ -12,6 +12,7 @@
 #include "holding/holding_type.h"
 #include "landed_title/landed_title.h"
 #include "map/map.h"
+#include "map/map_mode.h"
 #include "map/region.h"
 #include "map/terrain_type.h"
 #include "population/population_type.h"
@@ -389,6 +390,41 @@ landed_title *province::get_empire() const
 }
 
 /**
+**	@brief	Get the province's color for a given map mode
+**
+**	@param	mode	The map mode
+**
+**	@return	The color for the given map mode
+*/
+const QColor &province::get_map_mode_color(const map_mode mode) const
+{
+	if (this->get_county() != nullptr) {
+		switch (mode) {
+			case map_mode::country: {
+				const landed_title *realm = this->get_county()->get_realm();
+				if (realm != nullptr) {
+					return realm->get_color();
+				} else {
+					return this->get_county()->get_color();
+				}
+			}
+			case map_mode::culture: {
+				return this->get_culture()->get_color();
+			}
+			case map_mode::religion: {
+				return this->get_religion()->get_color();
+			}
+		}
+	}
+
+	if (this->is_water()) {
+		return province::water_province_color;
+	} else {
+		return province::wasteland_province_color;
+	}
+}
+
+/**
 **	@brief	Create the province's image
 **
 **	@param	pixel_indexes	The indexes of the province's pixels
@@ -446,19 +482,7 @@ void province::set_border_pixels(const std::vector<int> &pixel_indexes)
 */
 void province::update_image()
 {
-	QColor province_color;
-	if (this->get_county() != nullptr) {
-		const landed_title *realm = this->get_county()->get_realm();
-		if (realm != nullptr) {
-			province_color = realm->get_color();
-		} else {
-			province_color = this->get_county()->get_color();
-		}
-	} else if (this->is_water()) {
-		province_color = QColor("#0080ff");
-	} else {
-		province_color = QColor(Qt::darkGray); //wasteland
-	}
+	const QColor &province_color = this->get_map_mode_color(map::get()->get_mode());
 
 	QColor border_color;
 	if (this->is_selected()) {
@@ -626,6 +650,44 @@ void province::set_terrain(metternich::terrain_type *terrain)
 	}
 
 	emit terrain_changed();
+}
+
+/**
+**	@brief	Set the province's culture
+**
+**	@param	culture	The new culture
+*/
+void province::set_culture(metternich::culture *culture)
+{
+	if (culture == this->get_culture()) {
+		return;
+	}
+
+	this->culture = culture;
+	emit culture_changed();
+
+	if (map::get()->get_mode() == map_mode::culture) {
+		this->update_image();
+	}
+}
+
+/**
+**	@brief	Set the province's religion
+**
+**	@param	religion	The new religion
+*/
+void province::set_religion(metternich::religion *religion)
+{
+	if (religion == this->get_religion()) {
+		return;
+	}
+
+	this->religion = religion;
+	emit religion_changed();
+
+	if (map::get()->get_mode() == map_mode::religion) {
+		this->update_image();
+	}
 }
 
 /**

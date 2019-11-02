@@ -50,4 +50,16 @@ QPoint engine_interface::coordinate_to_point(const QGeoCoordinate &coordinate) c
 	return map::get()->get_coordinate_pos(coordinate);
 }
 
+/**
+**	@brief	Set the map mode
+**
+**	@param	map_mode	The new map mode
+*/
+void engine_interface::set_map_mode(const int map_mode)
+{
+	game::get()->post_order([map_mode]() {
+		map::get()->set_mode(static_cast<metternich::map_mode>(map_mode));
+	});
+}
+
 }

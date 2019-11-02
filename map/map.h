@@ -14,24 +14,7 @@ namespace metternich {
 
 class province;
 class terrain_type;
-
-struct geocoordinate_int
-{
-	geocoordinate_int(const int lat, const int lon) : latitude(lat), longitude(lon)
-	{
-	}
-
-	geocoordinate_int(const double lat, const double lon) : latitude(static_cast<int>(lat)), longitude(static_cast<int>(lon))
-	{
-	}
-
-	geocoordinate_int(const QGeoCoordinate &coordinate) : geocoordinate_int(coordinate.latitude(), coordinate.longitude())
-	{
-	}
-
-	int latitude = 0;
-	int longitude = 0;
-};
+enum class map_mode : int;
 
 class map : public singleton<map>
 {
@@ -39,12 +22,20 @@ private:
 	static constexpr int geojson_coordinate_precision = 17;
 
 public:
+	map();
 	void load();
 	QPoint get_pixel_pos(const int index) const;
 	QPoint get_coordinate_pos(const QGeoCoordinate &coordinate) const;
 	QGeoCoordinate get_pixel_pos_coordinate(const QPoint &pos) const;
 	terrain_type *get_coordinate_terrain(const QGeoCoordinate &coordinate) const;
 	province *get_coordinate_province(const QGeoCoordinate &coordinate) const;
+
+	map_mode get_mode() const
+	{
+		return this->mode;
+	}
+
+	void set_mode(const map_mode mode);
 
 private:
 	void load_geojson_files();
@@ -69,6 +60,7 @@ private:
 	std::string checksum;
 	QImage province_image;
 	QImage terrain_image;
+	map_mode mode;
 };
 
 }

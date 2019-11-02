@@ -53,6 +53,8 @@ public:
 
 	Q_INVOKABLE QPoint coordinate_to_point(const QGeoCoordinate &coordinate) const;
 
+	Q_INVOKABLE void set_map_mode(const int map_mode);
+
 signals:
 	void selected_province_changed();
 	void selected_holding_changed();

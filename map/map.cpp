@@ -1,6 +1,7 @@
 #include "map/map.h"
 
 #include "engine_interface.h"
+#include "map/map_mode.h"
 #include "map/province.h"
 #include "map/terrain_type.h"
 #include "util/filesystem_util.h"
@@ -18,6 +19,16 @@
 
 namespace metternich {
 
+/**
+**	@brief	Constructor
+*/
+map::map() : mode(map_mode::country)
+{
+}
+
+/**
+**	@brief	Load the map
+*/
 void map::load()
 {
 	const bool cache_valid = this->check_cache();
@@ -59,6 +70,13 @@ void map::load()
 	this->province_image = QImage();
 }
 
+/**
+**	@brief	Convert a pixel index to a pixel position
+**
+**	@param	index	The index
+**
+**	@return The pixel position
+*/
 QPoint map::get_pixel_pos(const int index) const
 {
 	return util::index_to_point(index, this->size);
@@ -110,6 +128,24 @@ province *map::get_coordinate_province(const QGeoCoordinate &coordinate) const
 	QPoint pos = this->get_coordinate_pos(coordinate);
 	QRgb rgb = this->province_image.pixel(pos);
 	return province::get_by_rgb(rgb);
+}
+
+/**
+**	@brief	Set the map mode
+**
+**	@param	mode	The map mode
+*/
+void map::set_mode(const map_mode mode)
+{
+	if (mode == this->get_mode()) {
+		return;
+	}
+
+	this->mode = mode;
+
+	for (province *province : province::get_all()) {
+		province->update_image();
+	}
 }
 
 /**

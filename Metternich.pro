@@ -108,6 +108,7 @@ HEADERS += \
     landed_title/landed_title.h \
     landed_title/landed_title_tier.h \
     map/map.h \
+    map/map_mode.h \
     map/province.h \
     map/province_image_provider.h \
     map/region.h \
