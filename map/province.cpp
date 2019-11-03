@@ -451,6 +451,30 @@ const QColor &province::get_map_mode_color(const map_mode mode) const
 					return this->get_county()->get_color();
 				}
 			}
+			case map_mode::de_jure_empire: {
+				const landed_title *empire = this->get_de_jure_empire();
+				if (empire != nullptr) {
+					return empire->get_color();
+				} else {
+					return province::wasteland_province_color;
+				}
+			}
+			case map_mode::de_jure_kingdom: {
+				const landed_title *kingdom = this->get_de_jure_kingdom();
+				if (kingdom != nullptr) {
+					return kingdom->get_color();
+				} else {
+					return province::wasteland_province_color;
+				}
+			}
+			case map_mode::de_jure_duchy: {
+				const landed_title *duchy = this->get_de_jure_duchy();
+				if (duchy != nullptr) {
+					return duchy->get_color();
+				} else {
+					return province::wasteland_province_color;
+				}
+			}
 			case map_mode::culture: {
 				return this->get_culture()->get_color();
 			}
