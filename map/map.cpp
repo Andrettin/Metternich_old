@@ -146,6 +146,8 @@ void map::set_mode(const map_mode mode)
 	for (province *province : province::get_all()) {
 		province->update_image();
 	}
+
+	emit engine_interface::get()->map_mode_changed();
 }
 
 /**

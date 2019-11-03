@@ -51,6 +51,16 @@ QPoint engine_interface::coordinate_to_point(const QGeoCoordinate &coordinate) c
 }
 
 /**
+**	@brief	Get the map mode
+**
+**	@return	The map mode
+*/
+int engine_interface::get_map_mode() const
+{
+	return static_cast<int>(map::get()->get_mode());
+}
+
+/**
 **	@brief	Set the map mode
 **
 **	@param	map_mode	The new map mode

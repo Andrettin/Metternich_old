@@ -28,6 +28,7 @@ class engine_interface : public QObject, public singleton<engine_interface>
 	Q_PROPERTY(metternich::province* selected_province READ get_selected_province NOTIFY selected_province_changed)
 	Q_PROPERTY(metternich::holding* selected_holding READ get_selected_holding NOTIFY selected_holding_changed)
 	Q_PROPERTY(QString loading_message READ get_loading_message NOTIFY loading_message_changed)
+	Q_PROPERTY(int map_mode READ get_map_mode WRITE set_map_mode NOTIFY map_mode_changed)
 
 public:
 	game *get_game() const;
@@ -53,12 +54,14 @@ public:
 
 	Q_INVOKABLE QPoint coordinate_to_point(const QGeoCoordinate &coordinate) const;
 
-	Q_INVOKABLE void set_map_mode(const int map_mode);
+	int get_map_mode() const;
+	void set_map_mode(const int map_mode);
 
 signals:
 	void selected_province_changed();
 	void selected_holding_changed();
 	void loading_message_changed();
+	void map_mode_changed();
 
 private:
 	QString loading_message; //the loading message to be displayed
