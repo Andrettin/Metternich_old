@@ -406,7 +406,9 @@ void population_unit::seek_employment()
 }
 
 /**
-**	@brief	Seek employment for the population unit
+**	@brief	Get the path to the population unit's icon
+**
+**	@return	The path to the icon
 */
 std::filesystem::path population_unit::get_icon_path() const
 {

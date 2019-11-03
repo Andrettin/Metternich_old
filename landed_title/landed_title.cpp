@@ -11,6 +11,7 @@
 #include "landed_title/landed_title_tier.h"
 #include "map/province.h"
 #include "politics/law.h"
+#include "religion.h"
 #include "translator.h"
 #include "util/container_util.h"
 
@@ -239,13 +240,7 @@ void landed_title::check() const
 */
 std::string landed_title::get_name() const
 {
-	const culture *culture = nullptr;
-
-	if (this->get_holder() != nullptr) {
-		culture = this->get_holder()->get_culture();
-	} else if (this->get_capital_province() != nullptr) {
-		culture = this->get_capital_province()->get_culture();
-	}
+	const culture *culture = this->get_culture();
 
 	std::vector<std::string> suffixes;
 
@@ -269,13 +264,7 @@ std::string landed_title::get_name() const
 */
 std::string landed_title::get_tier_title_name() const
 {
-	const culture *culture = nullptr;
-
-	if (this->get_holder() != nullptr) {
-		culture = this->get_holder()->get_culture();
-	} else if (this->get_capital_province() != nullptr) {
-		culture = this->get_capital_province()->get_culture();
-	}
+	const culture *culture = this->get_culture();
 
 	std::vector<std::string> suffixes;
 
@@ -311,13 +300,7 @@ std::string landed_title::get_titled_name() const
 */
 std::string landed_title::get_holder_title_name() const
 {
-	const culture *culture = nullptr;
-
-	if (this->get_holder() != nullptr) {
-		culture = this->get_holder()->get_culture();
-	} else if (this->get_capital_province() != nullptr) {
-		culture = this->get_capital_province()->get_culture();
-	}
+	const culture *culture = this->get_culture();
 
 	std::vector<std::string> suffixes;
 
@@ -679,6 +662,62 @@ landed_title *landed_title::get_de_jure_empire() const
 	}
 
 	return nullptr;
+}
+
+/**
+**	@brief	Get the title's culture
+**
+**	@return	The title's culture
+*/
+culture *landed_title::get_culture() const
+{
+	if (this->get_holder() != nullptr) {
+		return this->get_holder()->get_culture();
+	} else if (this->get_capital_province() != nullptr) {
+		return this->get_capital_province()->get_culture();
+	}
+
+	return nullptr;
+}
+
+/**
+**	@brief	Get the title's religion
+**
+**	@return	The title's religion
+*/
+religion *landed_title::get_religion() const
+{
+	if (this->get_holder() != nullptr) {
+		return this->get_holder()->get_religion();
+	} else if (this->get_capital_province() != nullptr) {
+		return this->get_capital_province()->get_religion();
+	}
+
+	return nullptr;
+}
+
+/**
+**	@brief	Get the path to the title's flag
+**
+**	@return	The path to the flag
+*/
+std::filesystem::path landed_title::get_flag_path() const
+{
+	std::string base_tag = this->get_flag_tag();
+	std::vector<std::vector<std::string>> tag_list_with_fallbacks;
+
+	culture *culture = this->get_culture();
+	if (culture != nullptr) {
+		tag_list_with_fallbacks.push_back({culture->get_identifier(), culture->get_culture_group()->get_identifier()});
+	}
+
+	religion *religion = this->get_religion();
+	if (religion != nullptr) {
+		tag_list_with_fallbacks.push_back({religion->get_identifier()});
+	}
+
+	std::filesystem::path flag_path = database::get_tagged_image_path(database::get_flags_path(), base_tag, tag_list_with_fallbacks, ".svg");
+	return flag_path;
 }
 
 QVariantList landed_title::get_laws_qvariant_list() const

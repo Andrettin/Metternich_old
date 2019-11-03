@@ -11,11 +11,13 @@
 namespace metternich {
 
 class character;
+class culture;
 class holding;
 class holding_slot;
 class law;
 class law_group;
 class province;
+class religion;
 enum class landed_title_tier : int;
 
 class landed_title : public data_entry, public data_type<landed_title>
@@ -30,10 +32,12 @@ class landed_title : public data_entry, public data_type<landed_title>
 	Q_PROPERTY(metternich::landed_title* de_jure_liege_title READ get_de_jure_liege_title WRITE set_de_jure_liege_title NOTIFY de_jure_liege_title_changed)
 	Q_PROPERTY(metternich::landed_title* realm READ get_realm NOTIFY realm_changed)
 	Q_PROPERTY(metternich::province* capital_province MEMBER capital_province READ get_capital_province)
+	Q_PROPERTY(QString flag_tag READ get_flag_tag_qstring WRITE set_flag_tag_qstring)
+	Q_PROPERTY(QString flag_path READ get_flag_path_qstring CONSTANT)
 	Q_PROPERTY(QVariantList laws READ get_laws_qvariant_list)
 
 public:
-	landed_title(const std::string &identifier) : data_entry(identifier) {}
+	landed_title(const std::string &identifier) : data_entry(identifier), flag_tag(identifier) {}
 
 	static constexpr const char *class_identifier = "landed_title";
 	static constexpr const char *database_folder = "landed_titles";
@@ -162,6 +166,40 @@ public:
 		return this->capital_province;
 	}
 
+	culture *get_culture() const;
+	religion *get_religion() const;
+
+	const std::string &get_flag_tag() const
+	{
+		return this->flag_tag;
+	}
+
+	QString get_flag_tag_qstring() const
+	{
+		return QString::fromStdString(this->get_flag_tag());
+	}
+
+	void set_flag_tag(const std::string &flag_tag)
+	{
+		if (flag_tag == this->get_flag_tag()) {
+			return;
+		}
+
+		this->flag_tag = flag_tag;
+	}
+
+	void set_flag_tag_qstring(const QString &flag_tag)
+	{
+		this->set_flag_tag(flag_tag.toStdString());
+	}
+
+	std::filesystem::path get_flag_path() const;
+
+	QString get_flag_path_qstring() const
+	{
+		return "file:///" + QString::fromStdString(this->get_flag_path().string());
+	}
+
 	std::vector<law *> get_laws() const
 	{
 		std::vector<law *> laws;
@@ -195,6 +233,7 @@ private:
 	metternich::province *capital_province = nullptr;
 	landed_title *holder_title = nullptr; //title of this title's holder; used only for initialization, and set to null afterwards
 	landed_title *liege_title = nullptr; //title of this title's holder's liege; used only for initialization, and set to null afterwards
+	std::string flag_tag;
 	std::map<law_group *, law *> laws; //the laws pertaining to the title, mapped to the respective law group
 };
 
