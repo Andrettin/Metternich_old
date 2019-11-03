@@ -7,30 +7,6 @@
 namespace metternich {
 
 /**
-**	@brief	Process a GSML scope
-**
-**	@param	scope	The scope
-*/
-void culture::process_gsml_scope(const gsml_data &scope)
-{
-	const std::string &tag = scope.get_tag();
-	const std::vector<std::string> &values = scope.get_values();
-
-	if (tag == "color") {
-		if (values.size() != 3) {
-			throw std::runtime_error("The \"color\" scope for cultures needs to contain exactly three values!");
-		}
-
-		const int red = std::stoi(values.at(0));
-		const int green = std::stoi(values.at(1));
-		const int blue = std::stoi(values.at(2));
-		this->color.setRgb(red, green, blue);
-	} else {
-		culture_base::process_gsml_scope(scope);
-	}
-}
-
-/**
 **	@brief	Check whether the culture is in a valid state
 */
 void culture::check() const
@@ -54,6 +30,8 @@ void culture::check() const
 	if (this->get_female_names().empty() && this->get_culture_group()->get_female_names().empty()) {
 		throw std::runtime_error("Culture \"" + this->get_identifier() + "\" has no female names, and neither does its culture group (\"" + this->get_culture_group()->get_identifier() + "\").");
 	}
+
+	culture_base::check();
 }
 
 /**

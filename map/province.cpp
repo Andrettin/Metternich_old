@@ -454,6 +454,9 @@ const QColor &province::get_map_mode_color(const map_mode mode) const
 			case map_mode::culture: {
 				return this->get_culture()->get_color();
 			}
+			case map_mode::culture_group: {
+				return this->get_culture()->get_culture_group()->get_color();
+			}
 			case map_mode::religion: {
 				return this->get_religion()->get_color();
 			}
@@ -706,10 +709,17 @@ void province::set_culture(metternich::culture *culture)
 		return;
 	}
 
+	metternich::culture *old_culture = this->get_culture();
+	metternich::culture_group *old_culture_group = old_culture ? old_culture->get_culture_group() : nullptr;
+
 	this->culture = culture;
 	emit culture_changed();
+	metternich::culture_group *culture_group = culture ? culture->get_culture_group() : nullptr;
 
-	if (map::get()->get_mode() == map_mode::culture) {
+	if (
+		map::get()->get_mode() == map_mode::culture
+		|| (map::get()->get_mode() == map_mode::culture_group && old_culture_group != culture_group)
+	) {
 		this->update_image();
 	}
 }
