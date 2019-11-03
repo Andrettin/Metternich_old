@@ -210,6 +210,10 @@ void landed_title::check() const
 		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has a different province and capital province.");
 	}
 
+	if (this->get_tier() >= landed_title_tier::duchy) {
+		this->get_flag_path(); //throws an exception if the flag isn't found
+	}
+
 	if (game::get()->is_starting()) {
 		if (this->get_capital_province() == nullptr) {
 			throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has no capital province.");
