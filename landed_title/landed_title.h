@@ -118,6 +118,7 @@ public:
 	}
 
 	landed_title *get_realm() const;
+	landed_title *get_liege_title() const;
 
 	landed_title *get_de_jure_liege_title() const
 	{
@@ -140,6 +141,15 @@ public:
 	{
 		this->de_jure_vassal_titles.erase(std::remove(this->de_jure_vassal_titles.begin(), this->de_jure_vassal_titles.end(), title), this->de_jure_vassal_titles.end());
 	}
+
+	landed_title *get_county() const;
+	landed_title *get_de_jure_county() const;
+	landed_title *get_duchy() const;
+	landed_title *get_de_jure_duchy() const;
+	landed_title *get_kingdom() const;
+	landed_title *get_de_jure_kingdom() const;
+	landed_title *get_empire() const;
+	landed_title *get_de_jure_empire() const;
 
 	bool is_titular() const
 	{

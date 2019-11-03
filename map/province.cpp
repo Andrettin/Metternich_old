@@ -11,6 +11,7 @@
 #include "holding/holding_slot.h"
 #include "holding/holding_type.h"
 #include "landed_title/landed_title.h"
+#include "landed_title/landed_title_tier.h"
 #include "map/map.h"
 #include "map/map_mode.h"
 #include "map/region.h"
@@ -348,42 +349,84 @@ void province::set_county(landed_title *county)
 }
 
 /**
-**	@brief	Get the province's (de jure) duchy
+**	@brief	Get the province's de facto duchy
 **
-**	@return	The province's (de jure) duchy
+**	@return	The province's de facto duchy
 */
 landed_title *province::get_duchy() const
 {
 	if (this->get_county() != nullptr) {
-		return this->get_county()->get_de_jure_liege_title();
+		return this->get_county()->get_duchy();
 	}
 
 	return nullptr;
 }
 
 /**
-**	@brief	Get the province's (de jure) kingdom
+**	@brief	Get the province's de jure duchy
 **
-**	@return	The province's (de jure) kingdom
+**	@return	The province's de jure duchy
+*/
+landed_title *province::get_de_jure_duchy() const
+{
+	if (this->get_county() != nullptr) {
+		return this->get_county()->get_de_jure_duchy();
+	}
+
+	return nullptr;
+}
+
+/**
+**	@brief	Get the province's de facto kingdom
+**
+**	@return	The province's de facto kingdom
 */
 landed_title *province::get_kingdom() const
 {
-	if (this->get_duchy() != nullptr) {
-		return this->get_duchy()->get_de_jure_liege_title();
+	if (this->get_county() != nullptr) {
+		return this->get_county()->get_kingdom();
 	}
 
 	return nullptr;
 }
 
 /**
-**	@brief	Get the province's (de jure) empire
+**	@brief	Get the province's de jure kingdom
 **
-**	@return	The province's (de jure) empire
+**	@return	The province's de jure kingdom
+*/
+landed_title *province::get_de_jure_kingdom() const
+{
+	if (this->get_county() != nullptr) {
+		return this->get_county()->get_de_jure_kingdom();
+	}
+
+	return nullptr;
+}
+
+/**
+**	@brief	Get the province's (de facto) empire
+**
+**	@return	The province's (de facto) empire
 */
 landed_title *province::get_empire() const
 {
-	if (this->get_kingdom() != nullptr) {
-		return this->get_kingdom()->get_de_jure_liege_title();
+	if (this->get_county() != nullptr) {
+		return this->get_county()->get_empire();
+	}
+
+	return nullptr;
+}
+
+/**
+**	@brief	Get the province's de jure empire
+**
+**	@return	The province's de jure empire
+*/
+landed_title *province::get_de_jure_empire() const
+{
+	if (this->get_county() != nullptr) {
+		return this->get_county()->get_de_jure_empire();
 	}
 
 	return nullptr;

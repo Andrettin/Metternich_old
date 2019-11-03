@@ -238,6 +238,11 @@ public:
 		return this->landed_titles;
 	}
 
+	bool has_landed_title(const landed_title *title) const
+	{
+		return std::find(this->landed_titles.begin(), this->landed_titles.end(), title) != this->landed_titles.end();
+	}
+
 	void add_landed_title(landed_title *title);
 	void remove_landed_title(landed_title *title);
 

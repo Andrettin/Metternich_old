@@ -39,8 +39,11 @@ class province : public data_entry, public data_type<province>
 
 	Q_PROPERTY(metternich::landed_title* county READ get_county WRITE set_county NOTIFY county_changed)
 	Q_PROPERTY(metternich::landed_title* duchy READ get_duchy NOTIFY duchy_changed)
+	Q_PROPERTY(metternich::landed_title* de_jure_duchy READ get_de_jure_duchy NOTIFY de_jure_duchy_changed)
 	Q_PROPERTY(metternich::landed_title* kingdom READ get_kingdom NOTIFY kingdom_changed)
+	Q_PROPERTY(metternich::landed_title* de_jure_kingdom READ get_de_jure_kingdom NOTIFY de_jure_kingdom_changed)
 	Q_PROPERTY(metternich::landed_title* empire READ get_empire NOTIFY empire_changed)
+	Q_PROPERTY(metternich::landed_title* de_jure_empire READ get_de_jure_empire NOTIFY de_jure_empire_changed)
 	Q_PROPERTY(QColor color READ get_color CONSTANT)
 	Q_PROPERTY(QRect rect READ get_rect CONSTANT)
 	Q_PROPERTY(QImage image READ get_image NOTIFY image_changed)
@@ -109,8 +112,11 @@ public:
 	void set_county(landed_title *county);
 
 	landed_title *get_duchy() const;
+	landed_title *get_de_jure_duchy() const;
 	landed_title *get_kingdom() const;
+	landed_title *get_de_jure_kingdom() const;
 	landed_title *get_empire() const;
+	landed_title *get_de_jure_empire() const;
 
 	const QColor &get_color() const
 	{
@@ -341,8 +347,11 @@ public:
 signals:
 	void county_changed();
 	void duchy_changed();
+	void de_jure_duchy_changed();
 	void kingdom_changed();
+	void de_jure_kingdom_changed();
 	void empire_changed();
+	void de_jure_empire_changed();
 	void image_changed();
 	void terrain_changed();
 	void culture_changed();

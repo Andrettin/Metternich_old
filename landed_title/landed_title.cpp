@@ -394,6 +394,46 @@ landed_title *landed_title::get_realm() const
 	return nullptr;
 }
 
+/**
+**	@brief	Get the landed title's (de facto) liege title
+**
+**	@return	The (de facto) liege title
+*/
+landed_title *landed_title::get_liege_title() const
+{
+	character *holder = this->get_holder();
+
+	if (holder != nullptr) {
+		landed_title *holder_primary_title = holder->get_primary_title();
+		if (holder_primary_title->get_tier() == this->get_tier()) {
+			character *liege = holder->get_liege();
+			if (liege != nullptr) {
+				return liege->get_primary_title();
+			}
+		} else {
+			if (this->get_tier() < landed_title_tier::county && holder_primary_title->get_tier() >= landed_title_tier::county && holder->has_landed_title(this->get_de_jure_county())) {
+				return this->get_de_jure_county();
+			}
+
+			if (this->get_tier() < landed_title_tier::duchy && holder_primary_title->get_tier() >= landed_title_tier::duchy && holder->has_landed_title(this->get_de_jure_duchy())) {
+				return this->get_de_jure_duchy();
+			}
+
+			if (this->get_tier() < landed_title_tier::kingdom && holder_primary_title->get_tier() >= landed_title_tier::kingdom && holder->has_landed_title(this->get_de_jure_kingdom())) {
+				return this->get_de_jure_kingdom();
+			}
+
+			if (this->get_tier() < landed_title_tier::empire && holder_primary_title->get_tier() >= landed_title_tier::empire && holder->has_landed_title(this->get_de_jure_empire())) {
+				return this->get_de_jure_empire();
+			}
+
+			return holder_primary_title;
+		}
+	}
+
+	return nullptr;
+}
+
 void landed_title::set_holder_title(landed_title *title)
 {
 	this->holder_title = title;
@@ -419,6 +459,226 @@ void landed_title::set_de_jure_liege_title(landed_title *title)
 	title->add_de_jure_vassal_title(this);
 
 	emit de_jure_liege_title_changed();
+}
+
+/**
+**	@brief	Get the title's (de facto) county
+**
+**	@return	The title's (de facto) county
+*/
+landed_title *landed_title::get_county() const
+{
+	if (this->get_tier() > landed_title_tier::county) {
+		return nullptr;
+	} else if (this->get_tier() == landed_title_tier::county) {
+		return const_cast<landed_title *>(this);
+	}
+
+	landed_title *liege_title = this->get_liege_title();
+	if (liege_title != nullptr && liege_title->get_tier() == landed_title_tier::county) {
+		return liege_title;
+	}
+
+	return nullptr;
+}
+
+/**
+**	@brief	Get the title's de jure county
+**
+**	@return	The title's de jure county
+*/
+landed_title *landed_title::get_de_jure_county() const
+{
+	if (this->get_tier() > landed_title_tier::county) {
+		return nullptr;
+	} else if (this->get_tier() == landed_title_tier::county) {
+		return const_cast<landed_title *>(this);
+	}
+
+	return this->get_de_jure_liege_title();
+}
+
+/**
+**	@brief	Get the title's (de facto) duchy
+**
+**	@return	The title's (de facto) duchy
+*/
+landed_title *landed_title::get_duchy() const
+{
+	if (this->get_tier() > landed_title_tier::duchy) {
+		return nullptr;
+	} else if (this->get_tier() == landed_title_tier::duchy) {
+		return const_cast<landed_title *>(this);
+	}
+
+	landed_title *county = this->get_county();
+	if (county != nullptr) {
+		landed_title *liege_title = county->get_liege_title();
+		if (liege_title != nullptr && liege_title->get_tier() == landed_title_tier::duchy) {
+			return liege_title;
+		}
+
+		return nullptr;
+	}
+
+	landed_title *liege_title = this->get_liege_title();
+	if (liege_title != nullptr && liege_title->get_tier() == landed_title_tier::duchy) {
+		return liege_title;
+	}
+
+	return nullptr;
+}
+
+/**
+**	@brief	Get the title's de jure duchy
+**
+**	@return	The title's de jure duchy
+*/
+landed_title *landed_title::get_de_jure_duchy() const
+{
+	if (this->get_tier() > landed_title_tier::duchy) {
+		return nullptr;
+	} else if (this->get_tier() == landed_title_tier::duchy) {
+		return const_cast<landed_title *>(this);
+	}
+
+	if (this->get_de_jure_county() != nullptr) {
+		return this->get_de_jure_county()->get_de_jure_liege_title();
+	}
+
+	return nullptr;
+}
+
+/**
+**	@brief	Get the title's (de facto) kingdom
+**
+**	@return	The title's (de facto) kingdom
+*/
+landed_title *landed_title::get_kingdom() const
+{
+	if (this->get_tier() > landed_title_tier::kingdom) {
+		return nullptr;
+	} else if (this->get_tier() == landed_title_tier::kingdom) {
+		return const_cast<landed_title *>(this);
+	}
+
+	landed_title *duchy = this->get_duchy();
+	if (duchy != nullptr) {
+		landed_title *liege_title = duchy->get_liege_title();
+		if (liege_title != nullptr && liege_title->get_tier() == landed_title_tier::kingdom) {
+			return liege_title;
+		}
+
+		return nullptr;
+	}
+
+	landed_title *county = this->get_county();
+	if (county != nullptr) {
+		landed_title *liege_title = county->get_liege_title();
+		if (liege_title != nullptr && liege_title->get_tier() == landed_title_tier::kingdom) {
+			return liege_title;
+		}
+
+		return nullptr;
+	}
+
+	landed_title *liege_title = this->get_liege_title();
+	if (liege_title != nullptr && liege_title->get_tier() == landed_title_tier::kingdom) {
+		return liege_title;
+	}
+
+	return nullptr;
+}
+
+/**
+**	@brief	Get the title's de jure kingdom
+**
+**	@return	The title's de jure kingdom
+*/
+landed_title *landed_title::get_de_jure_kingdom() const
+{
+	if (this->get_tier() > landed_title_tier::kingdom) {
+		return nullptr;
+	} else if (this->get_tier() == landed_title_tier::kingdom) {
+		return const_cast<landed_title *>(this);
+	}
+
+	if (this->get_de_jure_duchy() != nullptr) {
+		return this->get_de_jure_duchy()->get_de_jure_liege_title();
+	}
+
+	return nullptr;
+}
+
+/**
+**	@brief	Get the title's (de facto) empire
+**
+**	@return	The title's (de facto) empire
+*/
+landed_title *landed_title::get_empire() const
+{
+	if (this->get_tier() > landed_title_tier::empire) {
+		return nullptr;
+	} else if (this->get_tier() == landed_title_tier::empire) {
+		return const_cast<landed_title *>(this);
+	}
+
+	landed_title *kingdom = this->get_kingdom();
+	if (kingdom != nullptr) {
+		landed_title *liege_title = kingdom->get_liege_title();
+		if (liege_title != nullptr && liege_title->get_tier() == landed_title_tier::empire) {
+			return liege_title;
+		}
+
+		return nullptr;
+	}
+
+	landed_title *duchy = this->get_duchy();
+	if (duchy != nullptr) {
+		landed_title *liege_title = duchy->get_liege_title();
+		if (liege_title != nullptr && liege_title->get_tier() == landed_title_tier::empire) {
+			return liege_title;
+		}
+
+		return nullptr;
+	}
+
+	landed_title *county = this->get_county();
+	if (county != nullptr) {
+		landed_title *liege_title = county->get_liege_title();
+		if (liege_title != nullptr && liege_title->get_tier() == landed_title_tier::empire) {
+			return liege_title;
+		}
+
+		return nullptr;
+	}
+
+	landed_title *liege_title = this->get_liege_title();
+	if (liege_title != nullptr && liege_title->get_tier() == landed_title_tier::empire) {
+		return liege_title;
+	}
+
+	return nullptr;
+}
+
+/**
+**	@brief	Get the title's de jure empire
+**
+**	@return	The title's de jure empire
+*/
+landed_title *landed_title::get_de_jure_empire() const
+{
+	if (this->get_tier() > landed_title_tier::empire) {
+		return nullptr;
+	} else if (this->get_tier() == landed_title_tier::empire) {
+		return const_cast<landed_title *>(this);
+	}
+
+	if (this->get_de_jure_kingdom() != nullptr) {
+		return this->get_de_jure_kingdom()->get_de_jure_liege_title();
+	}
+
+	return nullptr;
 }
 
 QVariantList landed_title::get_laws_qvariant_list() const
