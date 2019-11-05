@@ -229,7 +229,6 @@ public:
 
 	QVariantList get_holding_slots_qvariant_list() const;
 
-	holding *get_holding(holding_slot *holding_slot) const;
 	void create_holding(holding_slot *holding_slot, holding_type *type);
 	void destroy_holding(holding_slot *holding_slot);
 
@@ -377,7 +376,6 @@ private:
 	int population_growth_modifier = 0; //the population growth modifier which the province provides to its holdings
 	std::vector<holding_slot *> holding_slots;
 	std::vector<holding *> holdings;
-	std::map<holding_slot *, std::unique_ptr<holding>> holdings_by_slot; //the province's holdings, mapped to their respective holding slots
 	holding *capital_holding = nullptr;
 	std::vector<region *> regions; //the regions to which this province belongs
 	std::set<province *> border_provinces; //provinces bordering this one

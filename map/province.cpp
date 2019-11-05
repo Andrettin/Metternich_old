@@ -9,6 +9,7 @@
 #include "holding/building.h"
 #include "holding/holding.h"
 #include "holding/holding_slot.h"
+#include "holding/holding_slot_type.h"
 #include "holding/holding_type.h"
 #include "landed_title/landed_title.h"
 #include "landed_title/landed_title_tier.h"
@@ -116,7 +117,7 @@ void province::process_gsml_property(const gsml_property &property)
 	if (property.get_key().substr(0, 2) == holding_slot::prefix) {
 		//a property related to one of the province's holdings
 		holding_slot *holding_slot = holding_slot::get(property.get_key());
-		holding *holding = this->get_holding(holding_slot);
+		holding *holding = holding_slot->get_holding();
 		if (property.get_operator() == gsml_operator::assignment) {
 			//the assignment operator sets the holding's type (creating the holding if it doesn't exist)
 			holding_type *holding_type = holding_type::get(property.get_value());
@@ -204,7 +205,7 @@ void province::process_gsml_dated_scope(const gsml_data &scope, const QDateTime 
 		//a change to the data of one of the province's holdings
 
 		holding_slot *holding_slot = holding_slot::get(tag);
-		holding *holding = this->get_holding(holding_slot);
+		holding *holding = holding_slot->get_holding();
 		if (holding != nullptr) {
 			for (const gsml_property &property : scope.get_properties()) {
 				holding->process_gsml_dated_property(property, date);
@@ -930,21 +931,6 @@ QVariantList province::get_holding_slots_qvariant_list() const
 }
 
 /**
-**	@brief	Get one of the province's holdings
-**
-**	@param	holding_slot	The holding's slot
-*/
-holding *province::get_holding(holding_slot *holding_slot) const
-{
-	auto find_iterator = this->holdings_by_slot.find(holding_slot);
-	if (find_iterator != this->holdings_by_slot.end()) {
-		return find_iterator->second.get();
-	}
-
-	return nullptr;
-}
-
-/**
 **	@brief	Create a holding in the province
 **
 **	@param	holding_slot	The holding's slot
@@ -955,11 +941,17 @@ void province::create_holding(holding_slot *holding_slot, holding_type *type)
 {
 	auto new_holding = std::make_unique<holding>(holding_slot, type);
 	new_holding->moveToThread(QApplication::instance()->thread());
-	this->holdings.push_back(new_holding.get());
-	this->holdings_by_slot.insert({holding_slot, std::move(new_holding)});
-	emit holdings_changed();
-	if (this->get_capital_holding() == nullptr) {
-		this->set_capital_holding(this->holdings.front());
+	holding_slot->set_holding(std::move(new_holding));
+	switch (holding_slot->get_type()) {
+		case holding_slot_type::settlement:
+			this->holdings.push_back(new_holding.get());
+			emit holdings_changed();
+
+			if (this->get_capital_holding() == nullptr) {
+				this->set_capital_holding(this->holdings.front());
+			}
+		default:
+			break;
 	}
 }
 
@@ -970,7 +962,7 @@ void province::create_holding(holding_slot *holding_slot, holding_type *type)
 */
 void province::destroy_holding(holding_slot *holding_slot)
 {
-	holding *holding = this->get_holding(holding_slot);
+	holding *holding = holding_slot->get_holding();
 	if (holding == this->get_capital_holding()) {
 		//if the capital holding is being destroyed, set the next holding as the capital, if any exists, or otherwise set the capital holding to null
 		if (this->holdings.size() > 1) {
@@ -979,8 +971,9 @@ void province::destroy_holding(holding_slot *holding_slot)
 			this->set_capital_holding(nullptr);
 		}
 	}
+
 	this->holdings.erase(std::remove(this->holdings.begin(), this->holdings.end(), holding), this->holdings.end());
-	this->holdings_by_slot.erase(holding_slot);
+	holding_slot->set_holding(nullptr);
 	emit holdings_changed();
 }
 

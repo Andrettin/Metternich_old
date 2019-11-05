@@ -3,6 +3,7 @@
 #include "culture/culture.h"
 #include "culture/culture_group.h"
 #include "economy/commodity.h"
+#include "holding/holding.h"
 #include "landed_title/landed_title.h"
 #include "map/province.h"
 #include "random.h"
@@ -11,6 +12,22 @@
 #include "util/container_util.h"
 
 namespace metternich {
+
+/**
+**	@brief	Constructor
+**
+**	@param	identifier	The holding slot's identifier
+*/
+holding_slot::holding_slot(const std::string &identifier) : data_entry(identifier)
+{
+}
+
+/**
+**	@brief	Destructor
+*/
+holding_slot::~holding_slot()
+{
+}
 
 /**
 **	@brief	Initialize the holding slot
@@ -67,6 +84,17 @@ void holding_slot::set_barony(landed_title *barony)
 QVariantList holding_slot::get_available_commodities_qvariant_list() const
 {
 	return util::container_to_qvariant_list(this->get_available_commodities());
+}
+
+/**
+**	@brief	Set the holding slot's holding
+**
+**	@param	holding	The holding
+*/
+void holding_slot::set_holding(std::unique_ptr<metternich::holding> &&holding)
+{
+	this->holding = std::move(holding);
+	emit holding_changed();
 }
 
 /**

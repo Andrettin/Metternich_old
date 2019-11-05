@@ -34,7 +34,6 @@ namespace metternich {
 */
 holding::holding(metternich::holding_slot *slot, holding_type *type) : data_entry(slot->get_identifier()), slot(slot)
 {
-	slot->set_holding(this);
 	this->change_base_population_growth(defines::get()->get_base_population_growth());
 	this->set_type(type);
 	this->set_owner(this->get_barony()->get_holder());

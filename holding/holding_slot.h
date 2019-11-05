@@ -40,7 +40,8 @@ public:
 		return holding_slot;
 	}
 
-	holding_slot(const std::string &identifier) : data_entry(identifier) {}
+	holding_slot(const std::string &identifier);
+	virtual ~holding_slot() override;
 
 	virtual void initialize() override;
 	virtual void check() const override;
@@ -66,18 +67,10 @@ public:
 
 	holding *get_holding() const
 	{
-		return this->holding;
+		return this->holding.get();
 	}
 
-	void set_holding(holding *holding)
-	{
-		if (holding == this->get_holding()) {
-			return;
-		}
-
-		this->holding = holding;
-		emit holding_changed();
-	}
+	void set_holding(std::unique_ptr<holding> &&holding);
 
 	province *get_province() const
 	{
@@ -113,7 +106,7 @@ signals:
 private:
 	holding_slot_type type; //the type of the holding slot
 	landed_title *barony = nullptr; //the barony corresponding to this holding slot
-	holding *holding = nullptr; //the holding built on this slot, if any
+	std::unique_ptr<holding> holding; //the holding built on this slot, if any
 	province *province = nullptr; //to which province this holding slot belongs
 	std::vector<metternich::commodity *> available_commodities; //the commodities available for production by the holding (if any)
 };
