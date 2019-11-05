@@ -34,6 +34,20 @@ inline holding_slot_type string_to_holding_slot_type(const std::string str)
 	throw std::runtime_error("Invalid holding slot type: \"" + str + "\".");
 }
 
+inline bool is_extra_holding_slot_type(const holding_slot_type type)
+{
+	switch (type) {
+		case holding_slot_type::temple:
+		case holding_slot_type::fort:
+		case holding_slot_type::trading_post:
+		case holding_slot_type::hospital:
+		case holding_slot_type::university:
+			return true;
+		default:
+			return false;
+	}
+}
+
 }
 
 Q_DECLARE_METATYPE(metternich::holding_slot_type)
