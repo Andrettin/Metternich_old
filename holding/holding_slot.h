@@ -43,6 +43,7 @@ public:
 	holding_slot(const std::string &identifier) : data_entry(identifier) {}
 
 	virtual void initialize() override;
+	virtual void check() const override;
 
 	virtual std::string get_name() const override;
 

@@ -24,6 +24,16 @@ void holding_slot::initialize()
 }
 
 /**
+**	@brief	Check whether the holding slot is in a valid state
+*/
+void holding_slot::check() const
+{
+	if (this->get_barony()->get_de_jure_liege_title() != this->get_province()->get_county()) {
+		throw std::runtime_error("The barony of holding slot \"" + this->get_identifier() + "\" is in county \"" + this->get_barony()->get_de_jure_liege_title()->get_identifier() + "\", but its province belongs to county \"" + this->get_province()->get_county()->get_identifier() + "\".");
+	}
+}
+
+/**
 **	@brief	Get the holding's name
 **
 **	@return	The holding's name
