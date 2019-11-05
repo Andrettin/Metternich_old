@@ -5,6 +5,7 @@
 #include "game/game_speed.h"
 #include "history/history.h"
 #include "holding/holding.h"
+#include "holding/holding_slot.h"
 #include "landed_title/landed_title.h"
 #include "map/province.h"
 
@@ -123,6 +124,14 @@ void game::do_tick()
 */
 void game::do_day()
 {
+	for (holding_slot *holding_slot : holding_slot::get_all()) {
+		if (holding_slot->get_holding() == nullptr) {
+			continue;
+		}
+
+		holding_slot->get_holding()->do_day();
+	}
+
 	for (province *province : province::get_all()) {
 		if (province->get_county() == nullptr) {
 			continue;
@@ -130,7 +139,6 @@ void game::do_day()
 
 		province->do_day();
 	}
-
 }
 
 /**
@@ -138,6 +146,14 @@ void game::do_day()
 */
 void game::do_month()
 {
+	for (holding_slot *holding_slot : holding_slot::get_all()) {
+		if (holding_slot->get_holding() == nullptr) {
+			continue;
+		}
+
+		holding_slot->get_holding()->do_month();
+	}
+
 	for (province *province : province::get_all()) {
 		if (province->get_county() == nullptr) {
 			continue;

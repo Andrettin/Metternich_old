@@ -49,7 +49,7 @@ void history::generate_population_units()
 
 	//add population units with discount existing enabled to the vector of population units used for generation (holding-level population units with that enabled are not used for generation per se, but generated population units may still be discounted from their size), as well as any population units in provinces or regions
 	for (province *province : province::get_all()) {
-		for (holding *holding : province->get_holdings()) {
+		for (holding *holding : province->get_settlement_holdings()) {
 			for (const std::unique_ptr<population_unit> &population_unit : holding->get_population_units()) {
 				if (population_unit->discounts_existing()) {
 					base_population_units.push_back(population_unit.get());
@@ -110,7 +110,7 @@ void history::generate_population_units()
 
 		//distribute province and region population units to the settlement holdings located in them
 		if (population_unit->get_province() != nullptr) {
-			population_unit->distribute_to_holdings(population_unit->get_province()->get_holdings());
+			population_unit->distribute_to_holdings(population_unit->get_province()->get_settlement_holdings());
 		} else if (population_unit->get_region() != nullptr) {
 			population_unit->distribute_to_holdings(population_unit->get_region()->get_holdings());
 		}

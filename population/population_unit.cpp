@@ -247,7 +247,7 @@ void population_unit::subtract_existing_sizes()
 	if (this->get_holding() != nullptr) {
 		this->subtract_existing_sizes_in_holding(this->get_holding());
 	} else if (this->get_province() != nullptr) {
-		this->subtract_existing_sizes_in_holdings(this->get_province()->get_holdings());
+		this->subtract_existing_sizes_in_holdings(this->get_province()->get_settlement_holdings());
 	} else if (this->get_region() != nullptr) {
 		this->subtract_existing_sizes_in_holdings(this->get_region()->get_holdings());
 	}

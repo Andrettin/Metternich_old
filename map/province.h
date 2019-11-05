@@ -51,8 +51,8 @@ class province : public data_entry, public data_type<province>
 	Q_PROPERTY(metternich::culture* culture READ get_culture WRITE set_culture NOTIFY culture_changed)
 	Q_PROPERTY(metternich::religion* religion READ get_religion WRITE set_religion NOTIFY religion_changed)
 	Q_PROPERTY(int population READ get_population WRITE set_population NOTIFY population_changed)
-	Q_PROPERTY(QVariantList holding_slots READ get_holding_slots_qvariant_list NOTIFY holding_slots_changed)
-	Q_PROPERTY(QVariantList holdings READ get_holdings_qvariant_list NOTIFY holdings_changed)
+	Q_PROPERTY(QVariantList settlement_holding_slots READ get_settlement_holding_slots_qvariant_list NOTIFY settlement_holding_slots_changed)
+	Q_PROPERTY(QVariantList settlement_holdings READ get_settlement_holdings_qvariant_list NOTIFY settlement_holdings_changed)
 	Q_PROPERTY(metternich::holding* capital_holding READ get_capital_holding WRITE set_capital_holding NOTIFY capital_holding_changed)
 	Q_PROPERTY(bool selected READ is_selected WRITE set_selected NOTIFY selected_changed)
 	Q_PROPERTY(bool selectable READ is_selectable CONSTANT)
@@ -215,19 +215,19 @@ public:
 
 	void calculate_population_groups();
 
-	const std::vector<holding *> &get_holdings() const
+	const std::vector<holding_slot *> &get_settlement_holding_slots() const
 	{
-		return this->holdings;
+		return this->settlement_holding_slots;
 	}
 
-	QVariantList get_holdings_qvariant_list() const;
+	QVariantList get_settlement_holding_slots_qvariant_list() const;
 
-	const std::vector<holding_slot *> &get_holding_slots() const
+	const std::vector<holding *> &get_settlement_holdings() const
 	{
-		return this->holding_slots;
+		return this->settlement_holdings;
 	}
 
-	QVariantList get_holding_slots_qvariant_list() const;
+	QVariantList get_settlement_holdings_qvariant_list() const;
 
 	void create_holding(holding_slot *holding_slot, holding_type *type);
 	void destroy_holding(holding_slot *holding_slot);
@@ -357,8 +357,8 @@ signals:
 	void religion_changed();
 	void population_changed();
 	void population_groups_changed();
-	void holdings_changed();
-	void holding_slots_changed();
+	void settlement_holding_slots_changed();
+	void settlement_holdings_changed();
 	void capital_holding_changed();
 	void selected_changed();
 
@@ -374,8 +374,8 @@ private:
 	int population_capacity_additive_modifier = 0; //the population capacity additive modifier which the province provides to its holdings
 	int population_capacity_modifier = 0; //the population capacity modifier which the province provides to its holdings
 	int population_growth_modifier = 0; //the population growth modifier which the province provides to its holdings
-	std::vector<holding_slot *> holding_slots;
-	std::vector<holding *> holdings;
+	std::vector<holding_slot *> settlement_holding_slots;
+	std::vector<holding *> settlement_holdings;
 	holding *capital_holding = nullptr;
 	std::vector<region *> regions; //the regions to which this province belongs
 	std::set<province *> border_provinces; //provinces bordering this one

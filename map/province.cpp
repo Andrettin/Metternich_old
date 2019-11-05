@@ -184,7 +184,7 @@ void province::process_gsml_scope(const gsml_data &scope)
 		}
 	} else if (tag.substr(0, 2) == holding_slot::prefix) {
 		holding_slot *holding_slot = holding_slot::add(tag, this);
-		this->holding_slots.push_back(holding_slot);
+		this->settlement_holding_slots.push_back(holding_slot);
 		database::process_gsml_data(holding_slot, scope);
 	} else {
 		data_entry_base::process_gsml_scope(scope);
@@ -298,9 +298,6 @@ gsml_data province::get_cache_data() const
 */
 void province::do_day()
 {
-	for (holding *holding : this->get_holdings()) {
-		holding->do_day();
-	}
 }
 
 /**
@@ -308,10 +305,6 @@ void province::do_day()
 */
 void province::do_month()
 {
-	for (holding *holding : this->get_holdings()) {
-		holding->do_month();
-	}
-
 	this->calculate_population_groups();
 }
 
@@ -785,7 +778,7 @@ void province::set_population(const int population)
 void province::calculate_population()
 {
 	int population = 0;
-	for (const holding *holding : this->get_holdings()) {
+	for (const holding *holding : this->get_settlement_holdings()) {
 		population += holding->get_population();
 	}
 	this->set_population(population);
@@ -802,13 +795,13 @@ void province::set_population_capacity_additive_modifier(const int population_ca
 		return;
 	}
 
-	for (holding *holding : this->get_holdings()) {
+	for (holding *holding : this->get_settlement_holdings()) {
 		holding->change_base_population_capacity(-this->get_population_capacity_additive_modifier());
 	}
 
 	this->population_capacity_additive_modifier = population_capacity_modifier;
 
-	for (holding *holding : this->get_holdings()) {
+	for (holding *holding : this->get_settlement_holdings()) {
 		holding->change_base_population_capacity(this->get_population_capacity_additive_modifier());
 	}
 }
@@ -824,13 +817,13 @@ void province::set_population_capacity_modifier(const int population_capacity_mo
 		return;
 	}
 
-	for (holding *holding : this->get_holdings()) {
+	for (holding *holding : this->get_settlement_holdings()) {
 		holding->change_population_capacity_modifier(-this->get_population_capacity_modifier());
 	}
 
 	this->population_capacity_modifier = population_capacity_modifier;
 
-	for (holding *holding : this->get_holdings()) {
+	for (holding *holding : this->get_settlement_holdings()) {
 		holding->change_population_capacity_modifier(this->get_population_capacity_modifier());
 	}
 }
@@ -846,13 +839,13 @@ void province::set_population_growth_modifier(const int population_growth_modifi
 		return;
 	}
 
-	for (holding *holding : this->get_holdings()) {
+	for (holding *holding : this->get_settlement_holdings()) {
 		holding->change_base_population_growth(-this->get_population_growth_modifier());
 	}
 
 	this->population_growth_modifier = population_growth_modifier;
 
-	for (holding *holding : this->get_holdings()) {
+	for (holding *holding : this->get_settlement_holdings()) {
 		holding->change_base_population_growth(this->get_population_growth_modifier());
 	}
 }
@@ -866,7 +859,7 @@ void province::calculate_population_groups()
 	this->population_per_culture.clear();
 	this->population_per_religion.clear();
 
-	for (holding *holding : this->get_holdings()) {
+	for (holding *holding : this->get_settlement_holdings()) {
 		for (const auto &kv_pair : holding->get_population_per_type()) {
 			this->population_per_type[kv_pair.first] += kv_pair.second;
 		}
@@ -911,19 +904,19 @@ void province::calculate_population_groups()
 }
 
 /**
-**	@brief	Get the province's holdings
+**	@brief	Get the province's settlement holding slots
 */
-QVariantList province::get_holdings_qvariant_list() const
+QVariantList province::get_settlement_holding_slots_qvariant_list() const
 {
-	return util::container_to_qvariant_list(this->get_holdings());
+	return util::container_to_qvariant_list(this->get_settlement_holding_slots());
 }
 
 /**
-**	@brief	Get the province's holding slots
+**	@brief	Get the province's settlement holdings
 */
-QVariantList province::get_holding_slots_qvariant_list() const
+QVariantList province::get_settlement_holdings_qvariant_list() const
 {
-	return util::container_to_qvariant_list(this->get_holding_slots());
+	return util::container_to_qvariant_list(this->get_settlement_holdings());
 }
 
 /**
@@ -940,11 +933,11 @@ void province::create_holding(holding_slot *holding_slot, holding_type *type)
 	holding_slot->set_holding(std::move(new_holding));
 	switch (holding_slot->get_type()) {
 		case holding_slot_type::settlement:
-			this->holdings.push_back(new_holding.get());
-			emit holdings_changed();
+			this->settlement_holdings.push_back(new_holding.get());
+			emit settlement_holdings_changed();
 
 			if (this->get_capital_holding() == nullptr) {
-				this->set_capital_holding(this->holdings.front());
+				this->set_capital_holding(new_holding.get());
 			}
 		default:
 			break;
@@ -961,16 +954,16 @@ void province::destroy_holding(holding_slot *holding_slot)
 	holding *holding = holding_slot->get_holding();
 	if (holding == this->get_capital_holding()) {
 		//if the capital holding is being destroyed, set the next holding as the capital, if any exists, or otherwise set the capital holding to null
-		if (this->holdings.size() > 1) {
-			this->set_capital_holding(this->holdings.at(1));
+		if (this->settlement_holdings.size() > 1) {
+			this->set_capital_holding(this->settlement_holdings.at(1));
 		} else {
 			this->set_capital_holding(nullptr);
 		}
 	}
 
-	this->holdings.erase(std::remove(this->holdings.begin(), this->holdings.end(), holding), this->holdings.end());
+	this->settlement_holdings.erase(std::remove(this->settlement_holdings.begin(), this->settlement_holdings.end(), holding), this->settlement_holdings.end());
 	holding_slot->set_holding(nullptr);
-	emit holdings_changed();
+	emit settlement_holdings_changed();
 }
 
 /**

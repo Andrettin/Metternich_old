@@ -74,7 +74,7 @@ void region::add_province(province *province)
 	province->add_region(this);
 
 	//add the holdings belonging to the province to the region
-	for (holding_slot *holding_slot : province->get_holding_slots()) {
+	for (holding_slot *holding_slot : province->get_settlement_holding_slots()) {
 		this->add_holding(holding_slot);
 	}
 }
@@ -85,7 +85,7 @@ void region::remove_province(province *province)
 	province->remove_region(this);
 
 	//add the holdings belonging to the province to the region
-	for (holding_slot *holding_slot : province->get_holding_slots()) {
+	for (holding_slot *holding_slot : province->get_settlement_holding_slots()) {
 		this->remove_holding(holding_slot);
 	}
 }
