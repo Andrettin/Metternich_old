@@ -12,15 +12,16 @@ class commodity;
 class holding;
 class landed_title;
 class province;
+enum class holding_slot_type : int;
 
 class holding_slot : public data_entry, public data_type<holding_slot>
 {
 	Q_OBJECT
 
 	Q_PROPERTY(QString name READ get_name_qstring NOTIFY name_changed)
+	Q_PROPERTY(metternich::holding_slot_type type MEMBER type READ get_type)
 	Q_PROPERTY(metternich::landed_title* barony READ get_barony WRITE set_barony NOTIFY barony_changed)
 	Q_PROPERTY(metternich::holding* holding READ get_holding WRITE set_holding NOTIFY holding_changed)
-	Q_PROPERTY(bool settlement MEMBER settlement READ is_settlement)
 	Q_PROPERTY(QVariantList available_commodities READ get_available_commodities_qvariant_list NOTIFY available_commodities_changed)
 
 public:
@@ -50,6 +51,11 @@ public:
 		return QString::fromStdString(this->get_name());
 	}
 
+	holding_slot_type get_type() const
+	{
+		return this->type;
+	}
+
 	landed_title *get_barony() const
 	{
 		return this->barony;
@@ -76,12 +82,6 @@ public:
 	{
 		return this->province;
 	}
-
-	bool is_settlement() const
-	{
-		return this->settlement;
-	}
-
 
 	const std::vector<commodity *> &get_available_commodities() const
 	{
@@ -110,10 +110,10 @@ signals:
 	void available_commodities_changed();
 
 private:
+	holding_slot_type type; //the type of the holding slot
 	landed_title *barony = nullptr; //the barony corresponding to this holding slot
 	holding *holding = nullptr; //the holding built on this slot, if any
 	province *province = nullptr; //to which province this holding slot belongs
-	bool settlement = false; //whether the holding slot is a settlement one
 	std::vector<metternich::commodity *> available_commodities; //the commodities available for production by the holding (if any)
 };
 

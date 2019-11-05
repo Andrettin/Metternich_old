@@ -104,6 +104,7 @@ HEADERS += \
     holding/building.h \
     holding/holding.h \
     holding/holding_slot.h \
+    holding/holding_slot_type.h \
     holding/holding_type.h \
     landed_title/landed_title.h \
     landed_title/landed_title_tier.h \

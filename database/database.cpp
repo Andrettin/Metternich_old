@@ -17,6 +17,7 @@
 #include "history/history.h"
 #include "holding/holding.h"
 #include "holding/holding_slot.h"
+#include "holding/holding_slot_type.h"
 #include "holding/holding_type.h"
 #include "landed_title/landed_title.h"
 #include "map/province.h"
@@ -50,6 +51,7 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 	for (int i = 0; i < property_count; ++i) {
 		QMetaProperty meta_property = meta_object->property(i);
 		const char *property_name = meta_property.name();
+		std::string property_class_name = meta_property.typeName();
 
 		if (property_name != property.get_key()) {
 			continue;
@@ -137,6 +139,8 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 				} else {
 					throw std::runtime_error("Unknown type for object reference property \"" + std::string(property_name) + "\".");
 				}
+			} else if (property_class_name == "metternich::holding_slot_type") {
+				new_property_value = QVariant::fromValue(string_to_holding_slot_type(property.get_value()));
 			} else {
 				throw std::runtime_error("Unknown type for object reference property \"" + std::string(property_name) + "\".");
 			}
