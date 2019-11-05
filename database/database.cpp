@@ -274,7 +274,7 @@ void database::load()
 
 void database::initialize_history()
 {
-	//initialize data entries are valid for each data type
+	//initialize data entries' history for each data type
 	for (const std::unique_ptr<data_type_metadata> &metadata : this->metadata) {
 		metadata->get_history_initialization_function()();
 	}

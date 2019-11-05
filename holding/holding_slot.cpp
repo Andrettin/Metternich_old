@@ -40,6 +40,17 @@ void holding_slot::initialize()
 	}
 }
 
+
+/**
+**	@brief	Initialize the holding slot's history
+*/
+void holding_slot::initialize_history()
+{
+	if (this->get_holding() != nullptr) {
+		this->get_holding()->initialize_history();
+	}
+}
+
 /**
 **	@brief	Check whether the holding slot is in a valid state
 */

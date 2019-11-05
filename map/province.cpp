@@ -225,10 +225,6 @@ void province::initialize_history()
 {
 	this->population_units.clear();
 
-	for (holding *holding : this->get_holdings()) {
-		holding->initialize_history();
-	}
-
 	this->calculate_population();
 	this->calculate_population_groups();
 
