@@ -158,7 +158,9 @@ void landed_title::process_gsml_scope(const gsml_data &scope)
 void landed_title::initialize()
 {
 	if (this->get_tier() == landed_title_tier::barony) {
-		if (this->get_de_jure_liege_title() != nullptr) {
+		if (this->get_holding_slot() != nullptr) {
+			this->capital_province = this->get_holding_slot()->get_province();
+		} else if (this->get_de_jure_liege_title() != nullptr && !this->get_de_jure_liege_title()->is_titular()) {
 			//set the barony's capital province to its county's province
 			this->capital_province = this->get_de_jure_liege_title()->get_province();
 		}
