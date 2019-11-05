@@ -19,7 +19,7 @@ class holding_slot : public data_entry, public data_type<holding_slot>
 	Q_OBJECT
 
 	Q_PROPERTY(QString name READ get_name_qstring NOTIFY name_changed)
-	Q_PROPERTY(metternich::holding_slot_type type MEMBER type READ get_type)
+	Q_PROPERTY(metternich::holding_slot_type type READ get_type WRITE set_type)
 	Q_PROPERTY(metternich::landed_title* barony READ get_barony WRITE set_barony NOTIFY barony_changed)
 	Q_PROPERTY(metternich::holding* holding READ get_holding NOTIFY holding_changed)
 	Q_PROPERTY(QVariantList available_commodities READ get_available_commodities_qvariant_list NOTIFY available_commodities_changed)
@@ -57,6 +57,11 @@ public:
 	holding_slot_type get_type() const
 	{
 		return this->type;
+	}
+
+	void set_type(const holding_slot_type type)
+	{
+		this->type = type;
 	}
 
 	landed_title *get_barony() const

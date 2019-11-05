@@ -184,8 +184,17 @@ void province::process_gsml_scope(const gsml_data &scope)
 		}
 	} else if (tag.substr(0, 2) == holding_slot::prefix) {
 		holding_slot *holding_slot = holding_slot::add(tag, this);
-		this->settlement_holding_slots.push_back(holding_slot);
 		database::process_gsml_data(holding_slot, scope);
+		switch (holding_slot->get_type()) {
+			case holding_slot_type::settlement:
+				this->settlement_holding_slots.push_back(holding_slot);
+				break;
+			case holding_slot_type::university:
+				this->university_holding_slot = holding_slot;
+				break;
+			default:
+				break;
+		}
 	} else {
 		data_entry_base::process_gsml_scope(scope);
 	}
@@ -215,6 +224,19 @@ void province::process_gsml_dated_scope(const gsml_data &scope, const QDateTime 
 		}
 	} else {
 		data_entry_base::process_gsml_scope(scope);
+	}
+}
+
+/**
+**	@brief	Initialize the province
+*/
+void province::initialize()
+{
+	//create an university holding slot for this province if none exists
+	if (this->get_university_holding_slot() == nullptr) {
+		std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier() + "_university";
+		holding_slot *holding_slot = holding_slot::add(holding_slot_identifier, this);
+		holding_slot->set_type(holding_slot_type::university);
 	}
 }
 
@@ -939,6 +961,7 @@ void province::create_holding(holding_slot *holding_slot, holding_type *type)
 			if (this->get_capital_holding() == nullptr) {
 				this->set_capital_holding(new_holding.get());
 			}
+			break;
 		default:
 			break;
 	}

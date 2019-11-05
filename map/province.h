@@ -54,6 +54,7 @@ class province : public data_entry, public data_type<province>
 	Q_PROPERTY(QVariantList settlement_holding_slots READ get_settlement_holding_slots_qvariant_list NOTIFY settlement_holding_slots_changed)
 	Q_PROPERTY(QVariantList settlement_holdings READ get_settlement_holdings_qvariant_list NOTIFY settlement_holdings_changed)
 	Q_PROPERTY(metternich::holding* capital_holding READ get_capital_holding WRITE set_capital_holding NOTIFY capital_holding_changed)
+	Q_PROPERTY(metternich::holding_slot* university_holding_slot READ get_university_holding_slot CONSTANT)
 	Q_PROPERTY(bool selected READ is_selected WRITE set_selected NOTIFY selected_changed)
 	Q_PROPERTY(bool selectable READ is_selectable CONSTANT)
 	Q_PROPERTY(QGeoCoordinate center_coordinate READ get_center_coordinate CONSTANT)
@@ -95,6 +96,7 @@ public:
 	virtual void process_gsml_property(const gsml_property &property) override;
 	virtual void process_gsml_scope(const gsml_data &scope) override;
 	virtual void process_gsml_dated_scope(const gsml_data &scope, const QDateTime &date) override;
+	virtual void initialize() override;
 	virtual void initialize_history() override;
 	virtual void check() const override;
 	virtual gsml_data get_cache_data() const override;
@@ -247,6 +249,11 @@ public:
 		emit capital_holding_changed();
 	}
 
+	holding_slot *get_university_holding_slot() const
+	{
+		return this->university_holding_slot;
+	}
+
 	const std::vector<region *> &get_regions() const
 	{
 		return this->regions;
@@ -377,6 +384,7 @@ private:
 	std::vector<holding_slot *> settlement_holding_slots;
 	std::vector<holding *> settlement_holdings;
 	holding *capital_holding = nullptr;
+	holding_slot *university_holding_slot = nullptr;
 	std::vector<region *> regions; //the regions to which this province belongs
 	std::set<province *> border_provinces; //provinces bordering this one
 	bool selected = false;
