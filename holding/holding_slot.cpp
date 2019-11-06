@@ -4,6 +4,7 @@
 #include "culture/culture_group.h"
 #include "economy/commodity.h"
 #include "holding/holding.h"
+#include "holding/holding_slot_type.h"
 #include "landed_title/landed_title.h"
 #include "map/province.h"
 #include "random.h"
@@ -68,7 +69,13 @@ void holding_slot::check() const
 */
 std::string holding_slot::get_name() const
 {
-	return translator::get()->translate(this->get_barony()->get_identifier(), {this->get_province()->get_culture()->get_identifier(), this->get_province()->get_culture()->get_culture_group()->get_identifier(), this->get_province()->get_religion()->get_identifier()});
+	std::vector<std::string> suffixes{this->get_province()->get_culture()->get_identifier(), this->get_province()->get_culture()->get_culture_group()->get_identifier(), this->get_province()->get_religion()->get_identifier()};
+
+	if (this->get_barony() != nullptr) {
+		return translator::get()->translate(this->get_barony()->get_identifier(), suffixes);
+	}
+
+	return translator::get()->translate(holding_slot_type_to_string(this->get_type()), suffixes) + " Slot";
 }
 
 /**
