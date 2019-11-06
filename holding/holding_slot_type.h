@@ -13,7 +13,7 @@ enum class holding_slot_type : int
 	university
 };
 
-inline holding_slot_type string_to_holding_slot_type(const std::string str)
+inline holding_slot_type string_to_holding_slot_type(const std::string &str)
 {
 	if (str == "settlement") {
 		return holding_slot_type::settlement;
@@ -32,6 +32,28 @@ inline holding_slot_type string_to_holding_slot_type(const std::string str)
 	}
 
 	throw std::runtime_error("Invalid holding slot type: \"" + str + "\".");
+}
+
+inline std::string holding_slot_type_to_string(const holding_slot_type type)
+{
+	switch (type) {
+		case holding_slot_type::settlement:
+			return "settlement";
+		case holding_slot_type::palace:
+			return "palace";
+		case holding_slot_type::temple:
+			return "temple";
+		case holding_slot_type::fort:
+			return "fort";
+		case holding_slot_type::trading_post:
+			return "trading_post";
+		case holding_slot_type::hospital:
+			return "hospital";
+		case holding_slot_type::university:
+			return "university";
+	}
+
+	throw std::runtime_error("Invalid holding slot type: \"" + std::to_string(static_cast<int>(type)) + "\".");
 }
 
 inline bool is_extra_holding_slot_type(const holding_slot_type type)
