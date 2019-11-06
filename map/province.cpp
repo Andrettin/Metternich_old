@@ -955,11 +955,11 @@ void province::create_holding(holding_slot *holding_slot, holding_type *type)
 	holding_slot->set_holding(std::move(new_holding));
 	switch (holding_slot->get_type()) {
 		case holding_slot_type::settlement:
-			this->settlement_holdings.push_back(new_holding.get());
+			this->settlement_holdings.push_back(holding_slot->get_holding());
 			emit settlement_holdings_changed();
 
 			if (this->get_capital_holding() == nullptr) {
-				this->set_capital_holding(new_holding.get());
+				this->set_capital_holding(holding_slot->get_holding());
 			}
 			break;
 		default:
