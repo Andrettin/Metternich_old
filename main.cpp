@@ -10,6 +10,7 @@
 #include "game/game.h"
 #include "holding/building.h"
 #include "holding/holding.h"
+#include "holding/holding_slot.h"
 #include "holding/holding_type.h"
 #include "landed_title/landed_title.h"
 #include "map/map.h"
@@ -73,6 +74,7 @@ int main(int argc, char *argv[])
 		qmlRegisterType<culture>();
 		qmlRegisterType<game>();
 		qmlRegisterType<holding>();
+		qmlRegisterType<holding_slot>();
 		qmlRegisterType<holding_type>();
 		qmlRegisterType<landed_title>();
 		qmlRegisterType<population_type>();
