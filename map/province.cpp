@@ -237,6 +237,7 @@ void province::initialize()
 		std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier() + "_university";
 		holding_slot *holding_slot = holding_slot::add(holding_slot_identifier, this);
 		holding_slot->set_type(holding_slot_type::university);
+		this->university_holding_slot = holding_slot;
 	}
 }
 
