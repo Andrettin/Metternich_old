@@ -56,6 +56,15 @@ inline std::string holding_slot_type_to_string(const holding_slot_type type)
 	throw std::runtime_error("Invalid holding slot type: \"" + std::to_string(static_cast<int>(type)) + "\".");
 }
 
+inline bool is_holding_slot_type_string(const std::string &str)
+{
+	if (str == "settlement" || str == "palace" || str == "temple" || str == "fort" || str == "trading_post" || str == "hospital" || str == "university") {
+		return true;
+	}
+
+	return false;
+}
+
 inline bool is_extra_holding_slot_type(const holding_slot_type type)
 {
 	switch (type) {

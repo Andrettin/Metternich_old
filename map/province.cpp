@@ -114,9 +114,22 @@ province::~province()
 */
 void province::process_gsml_property(const gsml_property &property)
 {
-	if (property.get_key().substr(0, 2) == holding_slot::prefix) {
+	if (property.get_key().substr(0, 2) == holding_slot::prefix || is_holding_slot_type_string(property.get_key())) {
 		//a property related to one of the province's holdings
-		holding_slot *holding_slot = holding_slot::get(property.get_key());
+		holding_slot *holding_slot = nullptr;
+		if (property.get_key().substr(0, 2) == holding_slot::prefix) {
+			holding_slot = holding_slot::get(property.get_key());
+		} else {
+			holding_slot_type slot_type = string_to_holding_slot_type(property.get_key());
+			switch (slot_type) {
+				case holding_slot_type::university:
+					holding_slot = this->get_university_holding_slot();
+					break;
+				default:
+					break;
+			}
+		}
+
 		holding *holding = holding_slot->get_holding();
 		if (property.get_operator() == gsml_operator::assignment) {
 			//the assignment operator sets the holding's type (creating the holding if it doesn't exist)
