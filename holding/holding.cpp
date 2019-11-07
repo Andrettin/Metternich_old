@@ -128,7 +128,24 @@ void holding::do_month()
 */
 std::string holding::get_name() const
 {
-	return translator::get()->translate(this->get_barony()->get_identifier(), {this->get_culture()->get_identifier(), this->get_culture()->get_culture_group()->get_identifier(), this->get_religion()->get_identifier()});
+	const metternich::culture *culture = nullptr;
+	const metternich::religion *religion = nullptr;
+
+	if (this->is_settlement()) {
+		culture = this->get_culture();
+		religion = this->get_religion();
+	} else {
+		culture = this->get_province()->get_culture();
+		religion = this->get_province()->get_religion();
+	}
+
+	std::vector<std::string> suffixes{culture->get_identifier(), culture->get_culture_group()->get_identifier(), religion->get_identifier()};
+
+	if (this->get_barony() != nullptr) {
+		return translator::get()->translate(this->get_barony()->get_identifier(), suffixes);
+	}
+
+	return translator::get()->translate(this->get_province()->get_name(), suffixes);
 }
 
 /**
@@ -138,8 +155,16 @@ std::string holding::get_name() const
 */
 std::string holding::get_type_name() const
 {
-	const metternich::culture *culture = this->get_culture();
-	const metternich::religion *religion = this->get_religion();
+	const metternich::culture *culture = nullptr;
+	const metternich::religion *religion = nullptr;
+
+	if (this->is_settlement()) {
+		culture = this->get_culture();
+		religion = this->get_religion();
+	} else {
+		culture = this->get_province()->get_culture();
+		religion = this->get_province()->get_religion();
+	}
 
 	std::vector<std::string> suffixes;
 	suffixes.push_back(culture->get_identifier());
