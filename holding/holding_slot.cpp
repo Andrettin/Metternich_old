@@ -63,9 +63,9 @@ void holding_slot::check() const
 }
 
 /**
-**	@brief	Get the holding's name
+**	@brief	Get the holding slot's name
 **
-**	@return	The holding's name
+**	@return	The holding slot's name
 */
 std::string holding_slot::get_name() const
 {
@@ -76,6 +76,16 @@ std::string holding_slot::get_name() const
 	}
 
 	return translator::get()->translate(holding_slot_type_to_string(this->get_type()), suffixes) + " Slot";
+}
+
+/**
+**	@brief	Get whether the holding slot is a settlement one
+**
+**	@return	True if the holding slot is a settlement one, or false otherwise
+*/
+bool holding_slot::is_settlement() const
+{
+	return this->get_type() == holding_slot_type::settlement;
 }
 
 /**

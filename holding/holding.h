@@ -33,9 +33,10 @@ class holding : public data_entry
 
 	Q_PROPERTY(QString name READ get_name_qstring NOTIFY name_changed)
 	Q_PROPERTY(QString titled_name READ get_titled_name_qstring NOTIFY titled_name_changed)
-	Q_PROPERTY(metternich::holding_slot* slot MEMBER slot CONSTANT)
+	Q_PROPERTY(metternich::holding_slot* slot MEMBER slot READ get_slot CONSTANT)
 	Q_PROPERTY(metternich::holding_type* type READ get_type NOTIFY type_changed)
 	Q_PROPERTY(metternich::landed_title* barony READ get_barony CONSTANT)
+	Q_PROPERTY(bool settlement READ is_settlement CONSTANT)
 	Q_PROPERTY(int population READ get_population WRITE set_population NOTIFY population_changed)
 	Q_PROPERTY(int population_capacity READ get_population_capacity NOTIFY population_capacity_changed)
 	Q_PROPERTY(int population_growth READ get_population_growth NOTIFY population_growth_changed)
@@ -91,6 +92,13 @@ public:
 	}
 
 	void set_type(holding_type *type);
+
+	holding_slot *get_slot() const
+	{
+		return this->slot;
+	}
+
+	bool is_settlement() const;
 
 	character *get_owner() const
 	{

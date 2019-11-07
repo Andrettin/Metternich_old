@@ -196,6 +196,16 @@ void holding::set_type(holding_type *type)
 }
 
 /**
+**	@brief	Get whether the holding is a settlement one
+**
+**	@return	True if the holding is a settlement one, or false otherwise
+*/
+bool holding::is_settlement() const
+{
+	return this->get_slot()->is_settlement();
+}
+
+/**
 **	@brief	Get the holding's province
 **
 **	@return	The holding's province
