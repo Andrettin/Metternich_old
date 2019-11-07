@@ -8,7 +8,7 @@ namespace metternich {
 /**
 **	@brief	Constructor
 */
-holding_type::holding_type(const std::string &identifier) : data_entry(identifier)
+holding_type::holding_type(const std::string &identifier) : data_entry(identifier), portrait_tag(identifier)
 {
 }
 

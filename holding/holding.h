@@ -37,6 +37,7 @@ class holding : public data_entry
 	Q_PROPERTY(metternich::holding_type* type READ get_type NOTIFY type_changed)
 	Q_PROPERTY(metternich::landed_title* barony READ get_barony CONSTANT)
 	Q_PROPERTY(bool settlement READ is_settlement CONSTANT)
+	Q_PROPERTY(QString portrait_path READ get_portrait_path_qstring NOTIFY portrait_path_changed)
 	Q_PROPERTY(int population READ get_population WRITE set_population NOTIFY population_changed)
 	Q_PROPERTY(int population_capacity READ get_population_capacity NOTIFY population_capacity_changed)
 	Q_PROPERTY(int population_growth READ get_population_growth NOTIFY population_growth_changed)
@@ -99,6 +100,13 @@ public:
 	}
 
 	bool is_settlement() const;
+
+	std::filesystem::path get_portrait_path() const;
+
+	QString get_portrait_path_qstring() const
+	{
+		return "file:///" + QString::fromStdString(this->get_portrait_path().string());
+	}
 
 	character *get_owner() const
 	{
@@ -439,6 +447,7 @@ signals:
 	void name_changed();
 	void titled_name_changed();
 	void type_changed();
+	void portrait_path_changed();
 	void owner_changed();
 	void population_units_changed();
 	void population_changed();

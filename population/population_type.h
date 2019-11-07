@@ -41,11 +41,6 @@ public:
 		return this->icon_tag;
 	}
 
-	QString get_icon_tag_qstring() const
-	{
-		return QString::fromStdString(this->get_icon_tag());
-	}
-
 	void set_icon_tag(const std::string &icon_tag)
 	{
 		if (icon_tag == this->get_icon_tag()) {
@@ -53,6 +48,11 @@ public:
 		}
 
 		this->icon_tag = icon_tag;
+	}
+
+	QString get_icon_tag_qstring() const
+	{
+		return QString::fromStdString(this->get_icon_tag());
 	}
 
 	void set_icon_tag_qstring(const QString &icon_tag)

@@ -56,6 +56,9 @@ holding::holding(metternich::holding_slot *slot, holding_type *type) : data_entr
 	}
 
 	connect(this, &holding::type_changed, this, &holding::titled_name_changed);
+	connect(this, &holding::type_changed, this, &holding::portrait_path_changed);
+	connect(this, &holding::culture_changed, this, &holding::portrait_path_changed);
+	connect(this, &holding::religion_changed, this, &holding::portrait_path_changed);
 }
 
 /**
@@ -241,6 +244,35 @@ void holding::set_type(holding_type *type)
 bool holding::is_settlement() const
 {
 	return this->get_slot()->is_settlement();
+}
+
+/**
+**	@brief	Get the path to the holding's portrait
+**
+**	@return	The path to the portrait
+*/
+std::filesystem::path holding::get_portrait_path() const
+{
+	std::string base_tag = this->get_type()->get_portrait_tag();
+
+	std::vector<std::vector<std::string>> tag_list_with_fallbacks;
+
+	const metternich::culture *culture = nullptr;
+	const metternich::religion *religion = nullptr;
+
+	if (this->is_settlement()) {
+		culture = this->get_culture();
+		religion = this->get_religion();
+	} else {
+		culture = this->get_province()->get_culture();
+		religion = this->get_province()->get_religion();
+	}
+
+	tag_list_with_fallbacks.push_back({culture->get_identifier(), culture->get_culture_group()->get_identifier()});
+	tag_list_with_fallbacks.push_back({religion->get_identifier()});
+
+	std::filesystem::path portrait_path = database::get_tagged_image_path(database::get_holding_portraits_path(), base_tag, tag_list_with_fallbacks, ".png");
+	return portrait_path;
 }
 
 /**

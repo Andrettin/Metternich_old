@@ -62,14 +62,19 @@ public:
 		return database::get_graphics_path() / "icons";
 	}
 
-	static std::filesystem::path get_flags_path()
-	{
-		return database::get_graphics_path() / "flags";
-	}
-
 	static std::filesystem::path get_population_icons_path()
 	{
 		return database::get_icons_path() / "population";
+	}
+
+	static std::filesystem::path get_holding_portraits_path()
+	{
+		return database::get_graphics_path() / "holdings";
+	}
+
+	static std::filesystem::path get_flags_path()
+	{
+		return database::get_graphics_path() / "flags";
 	}
 
 	static std::filesystem::path get_documents_path()

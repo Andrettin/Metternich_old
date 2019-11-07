@@ -17,6 +17,7 @@ class holding_type : public data_entry, public data_type<holding_type>
 	Q_OBJECT
 
 	Q_PROPERTY(metternich::holding_slot_type slot_type MEMBER slot_type READ get_slot_type)
+	Q_PROPERTY(QString portrait_tag READ get_portrait_tag_qstring WRITE set_portrait_tag_qstring)
 
 public:
 	static constexpr const char *class_identifier = "holding_type";
@@ -30,6 +31,30 @@ public:
 	holding_slot_type get_slot_type() const
 	{
 		return this->slot_type;
+	}
+
+	const std::string &get_portrait_tag() const
+	{
+		return this->portrait_tag;
+	}
+
+	void set_portrait_tag(const std::string &portrait_tag)
+	{
+		if (portrait_tag == this->get_portrait_tag()) {
+			return;
+		}
+
+		this->portrait_tag = portrait_tag;
+	}
+
+	QString get_portrait_tag_qstring() const
+	{
+		return QString::fromStdString(this->get_portrait_tag());
+	}
+
+	void set_portrait_tag_qstring(const QString &portrait_tag)
+	{
+		this->set_portrait_tag(portrait_tag.toStdString());
 	}
 
 	const std::vector<building *> &get_buildings() const
@@ -54,6 +79,7 @@ public:
 
 private:
 	holding_slot_type slot_type;	//the slot type which the holding type occupies
+	std::string portrait_tag;
 	std::vector<building *> buildings;
 	std::unique_ptr<metternich::modifier> modifier; //the modifier applied to holdings of this type
 };
