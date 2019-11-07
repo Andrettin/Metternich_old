@@ -324,6 +324,12 @@ public:
 	}
 
 	QVariantList get_buildings_qvariant_list() const;
+
+	bool has_building(building *building) const
+	{
+		return this->get_buildings().contains(building);
+	}
+
 	Q_INVOKABLE void add_building(building *building);
 	Q_INVOKABLE void remove_building(building *building);
 	void apply_building_effects(const building *building, const int change);

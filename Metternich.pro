@@ -127,6 +127,8 @@ HEADERS += \
     script/condition/borders_water_condition.h \
     script/condition/commodity_condition.h \
     script/condition/condition.h \
+    script/condition/has_building_condition.h \
+    script/condition/holding_type_condition.h \
     script/condition/not_condition.h \
     script/condition/or_condition.h \
     script/condition/terrain_condition.h \

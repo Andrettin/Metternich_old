@@ -19,6 +19,12 @@ public:
 		this->conditions.push_back(std::move(condition));
 	}
 
+	virtual void process_gsml_scope(const gsml_data &scope) override
+	{
+		std::unique_ptr<condition> condition = condition::from_gsml_scope(scope);
+		this->conditions.push_back(std::move(condition));
+	}
+
 	virtual const std::string &get_identifier() const override
 	{
 		static std::string identifier = "and";

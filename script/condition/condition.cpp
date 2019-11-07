@@ -6,6 +6,8 @@
 #include "script/condition/and_condition.h"
 #include "script/condition/borders_water_condition.h"
 #include "script/condition/commodity_condition.h"
+#include "script/condition/has_building_condition.h"
+#include "script/condition/holding_type_condition.h"
 #include "script/condition/not_condition.h"
 #include "script/condition/or_condition.h"
 #include "script/condition/terrain_condition.h"
@@ -28,6 +30,10 @@ std::unique_ptr<condition> condition::from_gsml_property(const gsml_property &pr
 		condition = std::make_unique<borders_water_condition>(util::string_to_bool(property.get_value()));
 	} else if (condition_identifier == "commodity") {
 		condition = std::make_unique<commodity_condition>(property.get_value());
+	} else if (condition_identifier == "has_building") {
+		condition = std::make_unique<has_building_condition>(property.get_value());
+	} else if (condition_identifier == "holding_type") {
+		condition = std::make_unique<holding_type_condition>(property.get_value());
 	} else if (condition_identifier == "terrain") {
 		condition = std::make_unique<terrain_condition>(property.get_value());
 	} else {
