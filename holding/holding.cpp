@@ -10,6 +10,7 @@
 #include "game/game.h"
 #include "holding/building.h"
 #include "holding/holding_slot.h"
+#include "holding/holding_slot_type.h"
 #include "holding/holding_type.h"
 #include "landed_title/landed_title.h"
 #include "map/province.h"
@@ -36,16 +37,22 @@ holding::holding(metternich::holding_slot *slot, holding_type *type) : data_entr
 {
 	this->change_base_population_growth(defines::get()->get_base_population_growth());
 	this->set_type(type);
-	this->set_owner(this->get_barony()->get_holder());
+
+	if (this->get_barony() != nullptr) {
+		this->set_owner(this->get_barony()->get_holder());
+	}
+
 	this->change_base_population_capacity(this->get_province()->get_population_capacity_additive_modifier());
 	this->change_population_capacity_modifier(this->get_province()->get_population_capacity_modifier());
 	this->change_base_population_growth(this->get_province()->get_population_growth_modifier());
 
-	if (!slot->get_available_commodities().empty()) {
-		metternich::commodity *commodity = slot->get_available_commodities()[random::generate(slot->get_available_commodities().size())];
-		this->set_commodity(commodity);
-	} else {
-		throw std::runtime_error("Holding slot \"" + slot->get_identifier() + "\" has no available commodities to produce.");
+	if (this->is_settlement()) {
+		if (!slot->get_available_commodities().empty()) {
+			metternich::commodity *commodity = slot->get_available_commodities()[random::generate(slot->get_available_commodities().size())];
+			this->set_commodity(commodity);
+		} else {
+			throw std::runtime_error("Holding slot \"" + slot->get_identifier() + "\" has no available commodities to produce.");
+		}
 	}
 
 	connect(this, &holding::type_changed, this, &holding::titled_name_changed);
@@ -63,7 +70,11 @@ holding::~holding()
 */
 void holding::initialize_history()
 {
-	if (this->get_province() != nullptr) {
+	if (this->get_owner() == nullptr) {
+		this->set_owner(this->get_province()->get_county()->get_holder());
+	}
+
+	if (this->is_settlement()) {
 		if (this->get_culture() == nullptr) {
 			this->set_culture(this->get_province()->get_culture());
 		}
@@ -71,17 +82,17 @@ void holding::initialize_history()
 		if (this->get_religion() == nullptr) {
 			this->set_religion(this->get_province()->get_religion());
 		}
-	}
 
-	for (const std::unique_ptr<population_unit> &population_unit : this->get_population_units()) {
-		population_unit->initialize_history();
-	}
+		for (const std::unique_ptr<population_unit> &population_unit : this->get_population_units()) {
+			population_unit->initialize_history();
+		}
 
-	this->remove_empty_population_units();
-	this->sort_population_units();
-	this->calculate_population();
-	this->calculate_population_groups();
-	this->check_overpopulation();
+		this->remove_empty_population_units();
+		this->sort_population_units();
+		this->calculate_population();
+		this->calculate_population_groups();
+		this->check_overpopulation();
+	}
 }
 
 /**
@@ -109,16 +120,18 @@ void holding::do_day()
 */
 void holding::do_month()
 {
-	this->do_population_growth();
+	if (this->is_settlement()) {
+		this->do_population_growth();
 
-	//use index-based for loop, as pop. units may add new ones in their do_month() function, e.g. due to mixing
-	size_t pop_units_size = this->population_units.size();
-	for (size_t i = 0; i < pop_units_size; ++i) {
-		this->population_units[i]->do_month();
+		//use index-based for loop, as pop. units may add new ones in their do_month() function, e.g. due to mixing
+		size_t pop_units_size = this->population_units.size();
+		for (size_t i = 0; i < pop_units_size; ++i) {
+			this->population_units[i]->do_month();
+		}
+
+		this->remove_empty_population_units();
+		this->calculate_population_groups();
 	}
-
-	this->remove_empty_population_units();
-	this->calculate_population_groups();
 }
 
 /**
