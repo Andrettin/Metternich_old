@@ -57,7 +57,7 @@ QVariantList building::get_holding_types_qvariant_list() const
 */
 void building::add_holding_type(holding_type *holding_type)
 {
-	this->holding_types.push_back(holding_type);
+	this->holding_types.insert(holding_type);
 	holding_type->add_building(this);
 }
 
@@ -68,7 +68,7 @@ void building::add_holding_type(holding_type *holding_type)
 */
 void building::remove_holding_type(holding_type *holding_type)
 {
-	this->holding_types.erase(std::remove(this->holding_types.begin(), this->holding_types.end(), holding_type), this->holding_types.end());
+	this->holding_types.erase(holding_type);
 	holding_type->remove_building(this);
 }
 

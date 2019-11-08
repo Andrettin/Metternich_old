@@ -31,6 +31,7 @@ SOURCES += \
         game/game.cpp \
         history/history.cpp \
         holding/building.cpp \
+        holding/building_slot.cpp \
         holding/holding.cpp \
         holding/holding_slot.cpp \
         holding/holding_type.cpp \
@@ -102,6 +103,7 @@ HEADERS += \
     game/game_speed.h \
     history/history.h \
     holding/building.h \
+    holding/building_slot.h \
     holding/holding.h \
     holding/holding_slot.h \
     holding/holding_slot_type.h \

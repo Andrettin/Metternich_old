@@ -12,6 +12,7 @@
 namespace metternich {
 
 class building;
+class building_slot;
 class character;
 class commodity;
 class culture;
@@ -318,23 +319,15 @@ public:
 
 	void calculate_population_groups();
 
-	const std::set<building *> &get_buildings() const
-	{
-		return this->buildings;
-	}
-
+	std::set<building *> get_buildings() const;
 	QVariantList get_buildings_qvariant_list() const;
-
-	bool has_building(building *building) const
-	{
-		return this->get_buildings().contains(building);
-	}
-
+	bool has_building(building *building) const;
 	Q_INVOKABLE void add_building(building *building);
 	Q_INVOKABLE void remove_building(building *building);
 	void apply_building_effects(const building *building, const int change);
 	std::vector<building *> get_available_buildings() const;
 	QVariantList get_available_buildings_qvariant_list() const;
+	void calculate_building_slots();
 
 	building *get_under_construction_building() const
 	{
@@ -449,6 +442,17 @@ public:
 	Q_INVOKABLE QVariantList get_population_per_religion_qvariant_list() const;
 	Q_INVOKABLE void order_construction(const QVariant &building_variant);
 
+private:
+	building_slot *get_building_slot(building *building) const
+	{
+		auto find_iterator = this->building_slots.find(building);
+		if (find_iterator == this->building_slots.end()) {
+			return nullptr;
+		}
+
+		return find_iterator->second.get();
+	}
+
 signals:
 	void name_changed();
 	void titled_name_changed();
@@ -481,7 +485,7 @@ private:
 	int population = 0; //the size of this holding's total population
 	int base_population_growth = 0; //the base population growth
 	int population_growth = 0; //the population growth, in permyriad (per 10,000)
-	std::set<building *> buildings;
+	std::map<building *, std::unique_ptr<building_slot>> building_slots; //the building slots for each building
 	building *under_construction_building = nullptr; //the building currently under construction
 	int construction_days = 0; //the amount of days remaining to construct the building under construction
 	metternich::commodity *commodity = nullptr; //the commodity produced by the holding (if any)

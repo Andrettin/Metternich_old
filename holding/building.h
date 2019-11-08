@@ -57,7 +57,7 @@ public:
 		this->set_icon_path(icon_path.toStdString());
 	}
 
-	const std::vector<holding_type *> &get_holding_types() const
+	const std::set<holding_type *> &get_holding_types() const
 	{
 		return this->holding_types;
 	}
@@ -89,7 +89,7 @@ signals:
 
 private:
 	std::string icon_path;
-	std::vector<holding_type *> holding_types;
+	std::set<holding_type *> holding_types;
 	int construction_days = 0; //how many days does it take to construct this building
 	std::unique_ptr<condition> preconditions;
 	std::unique_ptr<condition> conditions;

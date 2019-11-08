@@ -9,6 +9,7 @@
 #include "engine_interface.h"
 #include "game/game.h"
 #include "holding/building.h"
+#include "holding/building_slot.h"
 #include "holding/holding_slot.h"
 #include "holding/holding_slot_type.h"
 #include "holding/holding_type.h"
@@ -58,7 +59,11 @@ holding::holding(metternich::holding_slot *slot, holding_type *type) : data_entr
 	connect(this, &holding::type_changed, this, &holding::titled_name_changed);
 	connect(this, &holding::type_changed, this, &holding::portrait_path_changed);
 	connect(this, &holding::culture_changed, this, &holding::portrait_path_changed);
+	connect(this, &holding::culture_changed, this, &holding::available_buildings_changed);
 	connect(this, &holding::religion_changed, this, &holding::portrait_path_changed);
+	connect(this, &holding::religion_changed, this, &holding::available_buildings_changed);
+	connect(this, &holding::commodity_changed, this, &holding::available_buildings_changed);
+	connect(this, &holding::buildings_changed, this, &holding::available_buildings_changed);
 }
 
 /**
@@ -234,6 +239,7 @@ void holding::set_type(holding_type *type)
 	}
 
 	emit type_changed();
+	this->calculate_building_slots();
 }
 
 /**
@@ -539,6 +545,24 @@ void holding::calculate_population_groups()
 }
 
 /**
+**	@brief	Get the holding's buildings
+**
+**	@return	The buildings
+*/
+std::set<building *> holding::get_buildings() const
+{
+	std::set<building *> buildings;
+
+	for (const auto &kv_pair : this->building_slots) {
+		if (kv_pair.second->is_built()) {
+			buildings.insert(kv_pair.first);
+		}
+	}
+
+	return buildings;
+}
+
+/**
 **	@brief	Get the holding's buildings as a QVariantList
 **
 **	@return	The buildings as a QVariantList
@@ -548,26 +572,22 @@ QVariantList holding::get_buildings_qvariant_list() const
 	return util::container_to_qvariant_list(this->get_buildings());
 }
 
+bool holding::has_building(building *building) const
+{
+	building_slot *building_slot = this->get_building_slot(building);
+	return building_slot != nullptr && building_slot->is_built();
+}
+
 void holding::add_building(building *building)
 {
-	if (this->buildings.find(building) != this->buildings.end()) {
-		throw std::runtime_error("Tried to add the \"" + building->get_identifier() + "\" building to a holding that already has it.");
-	}
-
-	this->buildings.insert(building);
-	this->apply_building_effects(building, 1);
-	emit buildings_changed();
+	building_slot *building_slot = this->get_building_slot(building);
+	building_slot->set_built(true);
 }
 
 void holding::remove_building(building *building)
 {
-	if (this->buildings.find(building) == this->buildings.end()) {
-		throw std::runtime_error("Tried to remove the \"" + building->get_identifier() + "\" building to a holding that does not have it.");
-	}
-
-	this->buildings.erase(building);
-	this->apply_building_effects(building, -1);
-	emit buildings_changed();
+	building_slot *building_slot = this->get_building_slot(building);
+	building_slot->set_built(false);
 }
 
 /**
@@ -600,10 +620,16 @@ std::vector<building *> holding::get_available_buildings() const
 
 	std::sort(available_buildings.begin(), available_buildings.end(), [this](building *a, building *b) {
 		//give priority to buildings that have already been built, so that they will be displayed first
-		bool a_built = this->get_buildings().find(a) != this->get_buildings().end();
-		bool b_built = this->get_buildings().find(b) != this->get_buildings().end();
+		const bool a_built = this->has_building(a);
+		const bool b_built = this->has_building(b);
 		if (a_built != b_built) {
 			return a_built;
+		}
+
+		const bool a_buildable = a->is_buildable_in_holding(this);
+		const bool b_buildable = b->is_buildable_in_holding(this);
+		if (a_buildable != b_buildable) {
+			return a_buildable;
 		}
 
 		return a->get_name() < b->get_name();
@@ -620,6 +646,36 @@ std::vector<building *> holding::get_available_buildings() const
 QVariantList holding::get_available_buildings_qvariant_list() const
 {
 	return util::container_to_qvariant_list(this->get_available_buildings());
+}
+
+/**
+**	@brief	Calculate the building slots for the holding
+*/
+void holding::calculate_building_slots()
+{
+	std::set<building *> buildings_to_remove;
+	for (const auto &kv_pair : this->building_slots) {
+		if (!this->get_type()->has_building(kv_pair.first)) {
+			buildings_to_remove.insert(kv_pair.first);
+		}
+	}
+
+	for (building *building : buildings_to_remove) {
+		this->building_slots.erase(building);
+	}
+
+	std::set<building *> buildings_to_add;
+	for (building *building : this->get_type()->get_buildings()) {
+		if (!this->building_slots.contains(building)) {
+			buildings_to_add.insert(building);
+		}
+	}
+
+	for (building *building : buildings_to_add) {
+		auto new_building_slot = std::make_unique<building_slot>(building, this);
+		connect(new_building_slot.get(), &building_slot::built_changed, this, &holding::buildings_changed);
+		this->building_slots[building] = std::move(new_building_slot);
+	}
 }
 
 /**
