@@ -27,6 +27,7 @@ void building_slot::set_built(const bool built)
 
 	this->holding->apply_building_effects(this->get_building(), built ? 1 : -1);
 	emit built_changed();
+	this->holding->calculate_building_availability();
 }
 
 }

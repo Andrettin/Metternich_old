@@ -43,8 +43,8 @@ class holding : public data_entry
 	Q_PROPERTY(int population_capacity READ get_population_capacity NOTIFY population_capacity_changed)
 	Q_PROPERTY(int population_growth READ get_population_growth NOTIFY population_growth_changed)
 	Q_PROPERTY(QVariantList population_units READ get_population_units_qvariant_list NOTIFY population_units_changed)
+	Q_PROPERTY(QVariantList building_slots READ get_building_slots_qvariant_list NOTIFY building_slots_changed)
 	Q_PROPERTY(QVariantList buildings READ get_buildings_qvariant_list NOTIFY buildings_changed)
-	Q_PROPERTY(QVariantList available_buildings READ get_available_buildings_qvariant_list NOTIFY available_buildings_changed)
 	Q_PROPERTY(metternich::building* under_construction_building READ get_under_construction_building NOTIFY under_construction_building_changed)
 	Q_PROPERTY(int construction_days READ get_construction_days NOTIFY construction_days_changed)
 	Q_PROPERTY(metternich::commodity* commodity READ get_commodity WRITE set_commodity NOTIFY commodity_changed)
@@ -319,15 +319,16 @@ public:
 
 	void calculate_population_groups();
 
+	std::vector<building_slot *> get_building_slots() const;
+	QVariantList get_building_slots_qvariant_list() const;
 	std::set<building *> get_buildings() const;
 	QVariantList get_buildings_qvariant_list() const;
 	bool has_building(building *building) const;
 	Q_INVOKABLE void add_building(building *building);
 	Q_INVOKABLE void remove_building(building *building);
 	void apply_building_effects(const building *building, const int change);
-	std::vector<building *> get_available_buildings() const;
-	QVariantList get_available_buildings_qvariant_list() const;
 	void calculate_building_slots();
+	void calculate_building_availability();
 
 	building *get_under_construction_building() const
 	{
@@ -369,6 +370,7 @@ public:
 
 		this->commodity = commodity;
 		emit commodity_changed();
+		this->calculate_building_availability();
 	}
 
 	metternich::culture *get_culture() const
@@ -384,6 +386,7 @@ public:
 
 		this->culture = culture;
 		emit culture_changed();
+		this->calculate_building_availability();
 	}
 
 	metternich::religion *get_religion() const
@@ -399,6 +402,7 @@ public:
 
 		this->religion = religion;
 		emit religion_changed();
+		this->calculate_building_availability();
 	}
 
 	int get_holding_size() const
@@ -464,8 +468,8 @@ signals:
 	void population_capacity_changed();
 	void population_growth_changed();
 	void population_groups_changed();
+	void building_slots_changed();
 	void buildings_changed();
-	void available_buildings_changed();
 	void under_construction_building_changed();
 	void construction_days_changed();
 	void commodity_changed();
