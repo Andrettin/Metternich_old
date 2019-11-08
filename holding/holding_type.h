@@ -57,19 +57,24 @@ public:
 		this->set_portrait_tag(portrait_tag.toStdString());
 	}
 
-	const std::vector<building *> &get_buildings() const
+	const std::set<building *> &get_buildings() const
 	{
 		return this->buildings;
 	}
 
+	bool has_building(building *building) const
+	{
+		return this->buildings.contains(building);
+	}
+
 	void add_building(building *building)
 	{
-		this->buildings.push_back(building);
+		this->buildings.insert(building);
 	}
 
 	void remove_building(building *building)
 	{
-		this->buildings.erase(std::remove(this->buildings.begin(), this->buildings.end(), building), this->buildings.end());
+		this->buildings.erase(building);
 	}
 
 	const std::unique_ptr<metternich::modifier> &get_modifier() const
@@ -80,7 +85,7 @@ public:
 private:
 	holding_slot_type slot_type;	//the slot type which the holding type occupies
 	std::string portrait_tag;
-	std::vector<building *> buildings;
+	std::set<building *> buildings;
 	std::unique_ptr<metternich::modifier> modifier; //the modifier applied to holdings of this type
 };
 
