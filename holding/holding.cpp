@@ -19,7 +19,6 @@
 #include "population/population_unit.h"
 #include "random.h"
 #include "religion.h"
-#include "script/condition/condition.h"
 #include "script/identifiable_modifier.h"
 #include "script/modifier.h"
 #include "translator.h"

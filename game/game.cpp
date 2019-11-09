@@ -8,7 +8,7 @@
 #include "holding/holding_slot.h"
 #include "landed_title/landed_title.h"
 #include "map/province.h"
-#include "script/condition/condition_check.h"
+#include "script/condition/condition_check_base.h"
 
 #include <chrono>
 
