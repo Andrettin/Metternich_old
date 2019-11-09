@@ -8,6 +8,7 @@
 #include "holding/holding_slot.h"
 #include "landed_title/landed_title.h"
 #include "map/province.h"
+#include "script/condition/condition_check.h"
 
 #include <chrono>
 
@@ -99,6 +100,8 @@ void game::run()
 */
 void game::do_tick()
 {
+	condition_check_base::recalculate_pending_checks();
+
 	//process the orders given by the player
 	this->do_orders();
 

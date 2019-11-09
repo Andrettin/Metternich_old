@@ -8,6 +8,9 @@ class holding;
 class holding_slot;
 class province;
 
+template <typename T>
+class condition_check;
+
 /**
 **	@brief	A scripted condition
 */
@@ -40,6 +43,24 @@ public:
 	{
 		Q_UNUSED(holding_slot)
 		throw std::runtime_error("Invalid condition for holding slot: \"" + this->get_identifier() + "\".");
+	}
+
+	virtual void bind_condition_check(condition_check<province> &check, const province *province) const
+	{
+		Q_UNUSED(check)
+		Q_UNUSED(province)
+	}
+
+	virtual void bind_condition_check(condition_check<holding> &check, const holding *holding) const
+	{
+		Q_UNUSED(check)
+		Q_UNUSED(holding)
+	}
+
+	virtual void bind_condition_check(condition_check<holding_slot> &check, const holding_slot *holding_slot) const
+	{
+		Q_UNUSED(check)
+		Q_UNUSED(holding_slot)
 	}
 };
 

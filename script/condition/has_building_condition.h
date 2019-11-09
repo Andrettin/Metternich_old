@@ -4,6 +4,7 @@
 #include "holding/holding.h"
 #include "holding/holding_slot.h"
 #include "script/condition/condition.h"
+#include "script/condition/condition_check.h"
 
 namespace metternich {
 
@@ -29,9 +30,9 @@ public:
 		return holding->has_building(this->building);
 	}
 
-	virtual bool check(const holding_slot *holding_slot) const override
+	virtual void bind_condition_check(condition_check<holding> &check, const holding *holding) const override
 	{
-		return holding_slot->get_holding() != nullptr && this->check(holding_slot->get_holding());
+		holding->connect(holding, &holding::buildings_changed, holding, [&check](){ check.set_result_recalculation_needed(); }, Qt::ConnectionType::DirectConnection);
 	}
 
 private:

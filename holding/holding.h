@@ -328,7 +328,6 @@ public:
 	Q_INVOKABLE void remove_building(building *building);
 	void apply_building_effects(const building *building, const int change);
 	void calculate_building_slots();
-	void calculate_building_availability();
 
 	building *get_under_construction_building() const
 	{
@@ -370,7 +369,6 @@ public:
 
 		this->commodity = commodity;
 		emit commodity_changed();
-		this->calculate_building_availability();
 	}
 
 	metternich::culture *get_culture() const
@@ -386,7 +384,6 @@ public:
 
 		this->culture = culture;
 		emit culture_changed();
-		this->calculate_building_availability();
 	}
 
 	metternich::religion *get_religion() const
@@ -402,7 +399,6 @@ public:
 
 		this->religion = religion;
 		emit religion_changed();
-		this->calculate_building_availability();
 	}
 
 	int get_holding_size() const

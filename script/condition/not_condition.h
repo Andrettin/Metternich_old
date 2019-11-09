@@ -53,6 +53,21 @@ public:
 		return this->check_internal(holding_slot);
 	}
 
+	virtual void bind_condition_check(condition_check<province> &check, const province *province) const override
+	{
+		this->bind_condition_check_internal(check, province);
+	}
+
+	virtual void bind_condition_check(condition_check<holding> &check, const holding *holding) const override
+	{
+		this->bind_condition_check_internal(check, holding);
+	}
+
+	virtual void bind_condition_check(condition_check<holding_slot> &check, const holding_slot *holding_slot) const override
+	{
+		this->bind_condition_check_internal(check, holding_slot);
+	}
+
 private:
 	template <typename T>
 	bool check_internal(const T *scope) const
@@ -66,6 +81,13 @@ private:
 		return true;
 	}
 
+	template <typename T>
+	void bind_condition_check_internal(condition_check<T> &check, const T *scope) const
+	{
+		for (const std::unique_ptr<condition> &condition : this->conditions) {
+			condition->bind_condition_check(check, scope);
+		}
+	}
 
 private:
 	std::vector<std::unique_ptr<condition>> conditions;

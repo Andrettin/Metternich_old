@@ -19,6 +19,7 @@
 #include "population/population_unit.h"
 #include "random.h"
 #include "religion.h"
+#include "script/condition/condition.h"
 #include "script/identifiable_modifier.h"
 #include "script/modifier.h"
 #include "translator.h"
@@ -679,26 +680,6 @@ void holding::calculate_building_slots()
 
 	if (changed) {
 		emit building_slots_changed();
-		this->calculate_building_availability();
-	}
-}
-
-/**
-**	@brief	Calculate building availability for the holding
-*/
-void holding::calculate_building_availability()
-{
-	for (const auto &kv_pair : this->building_slots) {
-		building *building = kv_pair.first;
-		building_slot *building_slot = kv_pair.second.get();
-
-		const bool available = building->is_available_for_holding(this);
-		building_slot->set_available(available);
-
-		if (available) {
-			const bool buildable = building->is_buildable_in_holding(this);
-			building_slot->set_buildable(buildable);
-		}
 	}
 }
 

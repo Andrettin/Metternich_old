@@ -81,8 +81,15 @@ public:
 		return this->workforce;
 	}
 
-	bool is_available_for_holding(const holding *holding) const;
-	bool is_buildable_in_holding(const holding *holding) const;
+	const condition *get_preconditions() const
+	{
+		return this->preconditions.get();
+	}
+
+	const condition *get_conditions() const
+	{
+		return this->conditions.get();
+	}
 
 signals:
 	void icon_path_changed();

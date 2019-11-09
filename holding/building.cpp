@@ -72,40 +72,4 @@ void building::remove_holding_type(holding_type *holding_type)
 	holding_type->remove_building(this);
 }
 
-/**
-**	@brief	Get whether the building is available at all for a holding (i.e. whether it shows up on its building list)
-**
-**	@param	holding	The holding
-**
-**	@return	True if the building is available for the holding, or false otherwise
-*/
-bool building::is_available_for_holding(const holding *holding) const
-{
-	if (!this->preconditions) {
-		return true;
-	}
-
-	return this->preconditions->check(holding);
-}
-
-/**
-**	@brief	Get whether the building is buildable in a holding
-**
-**	@param	holding	The holding
-**
-**	@return	True if the building is buildable in the holding, or false otherwise
-*/
-bool building::is_buildable_in_holding(const holding *holding) const
-{
-	if (!this->is_available_for_holding(holding)) {
-		return false;
-	}
-
-	if (!this->conditions) {
-		return true;
-	}
-
-	return this->conditions->check(holding);
-}
-
 }

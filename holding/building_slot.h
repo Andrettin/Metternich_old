@@ -7,6 +7,9 @@ namespace metternich {
 class building;
 class holding;
 
+template <typename T>
+class condition_check;
+
 /**
 **	@brief	The slot for a given building in a holding
 */
@@ -20,10 +23,7 @@ class building_slot : public QObject
 	Q_PROPERTY(bool built READ is_built NOTIFY built_changed)
 
 public:
-	building_slot(building *building, holding *holding) : building(building), holding(holding)
-	{
-	}
-
+	building_slot(building *building, holding *holding);
 	~building_slot();
 
 	building *get_building() const
@@ -84,6 +84,8 @@ private:
 	bool available = false; //whether building is at all available
 	bool buildable = false; //whether the building is buildable
 	bool built = false;
+	std::unique_ptr<condition_check<metternich::holding>> precondition_check;
+	std::unique_ptr<condition_check<metternich::holding>> condition_check;
 };
 
 }
