@@ -54,6 +54,7 @@ class province : public data_entry, public data_type<province>
 	Q_PROPERTY(QVariantList settlement_holding_slots READ get_settlement_holding_slots_qvariant_list NOTIFY settlement_holding_slots_changed)
 	Q_PROPERTY(QVariantList settlement_holdings READ get_settlement_holdings_qvariant_list NOTIFY settlement_holdings_changed)
 	Q_PROPERTY(metternich::holding* capital_holding READ get_capital_holding WRITE set_capital_holding NOTIFY capital_holding_changed)
+	Q_PROPERTY(metternich::holding_slot* fort_holding_slot READ get_fort_holding_slot CONSTANT)
 	Q_PROPERTY(metternich::holding_slot* university_holding_slot READ get_university_holding_slot CONSTANT)
 	Q_PROPERTY(bool selected READ is_selected WRITE set_selected NOTIFY selected_changed)
 	Q_PROPERTY(bool selectable READ is_selectable CONSTANT)
@@ -249,6 +250,11 @@ public:
 		emit capital_holding_changed();
 	}
 
+	holding_slot *get_fort_holding_slot() const
+	{
+		return this->fort_holding_slot;
+	}
+
 	holding_slot *get_university_holding_slot() const
 	{
 		return this->university_holding_slot;
@@ -384,6 +390,7 @@ private:
 	std::vector<holding_slot *> settlement_holding_slots;
 	std::vector<holding *> settlement_holdings;
 	holding *capital_holding = nullptr;
+	holding_slot *fort_holding_slot = nullptr;
 	holding_slot *university_holding_slot = nullptr;
 	std::vector<region *> regions; //the regions to which this province belongs
 	std::set<province *> border_provinces; //provinces bordering this one

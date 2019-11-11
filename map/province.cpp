@@ -122,6 +122,9 @@ void province::process_gsml_property(const gsml_property &property)
 		} else {
 			holding_slot_type slot_type = string_to_holding_slot_type(property.get_key());
 			switch (slot_type) {
+				case holding_slot_type::fort:
+					holding_slot = this->get_fort_holding_slot();
+					break;
 				case holding_slot_type::university:
 					holding_slot = this->get_university_holding_slot();
 					break;
@@ -202,6 +205,9 @@ void province::process_gsml_scope(const gsml_data &scope)
 			case holding_slot_type::settlement:
 				this->settlement_holding_slots.push_back(holding_slot);
 				break;
+			case holding_slot_type::fort:
+				this->fort_holding_slot = holding_slot;
+				break;
 			case holding_slot_type::university:
 				this->university_holding_slot = holding_slot;
 				break;
@@ -245,7 +251,15 @@ void province::process_gsml_dated_scope(const gsml_data &scope, const QDateTime 
 */
 void province::initialize()
 {
-	//create an university holding slot for this province if none exists
+	//create a fort holding slot for this province if none exists
+	if (this->get_fort_holding_slot() == nullptr) {
+		std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier() + "_fort";
+		holding_slot *holding_slot = holding_slot::add(holding_slot_identifier, this);
+		holding_slot->set_type(holding_slot_type::fort);
+		this->fort_holding_slot = holding_slot;
+	}
+
+	//create a university holding slot for this province if none exists
 	if (this->get_university_holding_slot() == nullptr) {
 		std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier() + "_university";
 		holding_slot *holding_slot = holding_slot::add(holding_slot_identifier, this);
@@ -975,6 +989,12 @@ void province::create_holding(holding_slot *holding_slot, holding_type *type)
 			if (this->get_capital_holding() == nullptr) {
 				this->set_capital_holding(holding_slot->get_holding());
 			}
+
+			break;
+		case holding_slot_type::fort:
+		case holding_slot_type::hospital:
+		case holding_slot_type::university:
+			holding_slot->get_holding()->set_owner(this->get_county()->get_holder());
 			break;
 		default:
 			break;
