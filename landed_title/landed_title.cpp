@@ -340,9 +340,20 @@ void landed_title::set_holder(character *character)
 	}
 	this->holder_title = nullptr; //set the holder title to null, so that the new holder (null or otherwise) isn't overwritten by a previous holder title
 
-	//if this is a non-titular county, then the character holding it must also possess the county's capital holding
 	if (this->get_province() != nullptr) {
+		//if this is a non-titular county, then the character holding it must also possess the county's capital holding
 		this->get_province()->get_capital_holding()->get_barony()->set_holder(character);
+
+		//if this is a non-titular county, the fort, university and hospital of its province must belong to the county holder
+		holding *fort_holding = this->get_province()->get_fort_holding_slot()->get_holding();
+		if (fort_holding != nullptr) {
+			fort_holding->set_owner(character);
+		}
+
+		holding *university_holding = this->get_province()->get_university_holding_slot()->get_holding();
+		if (university_holding != nullptr) {
+			university_holding->set_owner(character);
+		}
 	}
 
 	//if this title is associated with a holding (i.e. it is a non-titular barony), then its holder must also be the owner of the holding
