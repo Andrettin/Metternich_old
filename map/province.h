@@ -56,6 +56,7 @@ class province : public data_entry, public data_type<province>
 	Q_PROPERTY(metternich::holding* capital_holding READ get_capital_holding WRITE set_capital_holding NOTIFY capital_holding_changed)
 	Q_PROPERTY(metternich::holding_slot* fort_holding_slot READ get_fort_holding_slot CONSTANT)
 	Q_PROPERTY(metternich::holding_slot* university_holding_slot READ get_university_holding_slot CONSTANT)
+	Q_PROPERTY(metternich::holding_slot* hospital_holding_slot READ get_hospital_holding_slot CONSTANT)
 	Q_PROPERTY(bool selected READ is_selected WRITE set_selected NOTIFY selected_changed)
 	Q_PROPERTY(bool selectable READ is_selectable CONSTANT)
 	Q_PROPERTY(QGeoCoordinate center_coordinate READ get_center_coordinate CONSTANT)
@@ -260,6 +261,11 @@ public:
 		return this->university_holding_slot;
 	}
 
+	holding_slot *get_hospital_holding_slot() const
+	{
+		return this->hospital_holding_slot;
+	}
+
 	const std::vector<region *> &get_regions() const
 	{
 		return this->regions;
@@ -392,6 +398,7 @@ private:
 	holding *capital_holding = nullptr;
 	holding_slot *fort_holding_slot = nullptr;
 	holding_slot *university_holding_slot = nullptr;
+	holding_slot *hospital_holding_slot = nullptr;
 	std::vector<region *> regions; //the regions to which this province belongs
 	std::set<province *> border_provinces; //provinces bordering this one
 	bool selected = false;

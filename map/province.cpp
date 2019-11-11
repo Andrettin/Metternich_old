@@ -128,6 +128,9 @@ void province::process_gsml_property(const gsml_property &property)
 				case holding_slot_type::university:
 					holding_slot = this->get_university_holding_slot();
 					break;
+				case holding_slot_type::hospital:
+					holding_slot = this->get_hospital_holding_slot();
+					break;
 				default:
 					break;
 			}
@@ -211,6 +214,9 @@ void province::process_gsml_scope(const gsml_data &scope)
 			case holding_slot_type::university:
 				this->university_holding_slot = holding_slot;
 				break;
+			case holding_slot_type::hospital:
+				this->hospital_holding_slot = holding_slot;
+				break;
 			default:
 				break;
 		}
@@ -265,6 +271,14 @@ void province::initialize()
 		holding_slot *holding_slot = holding_slot::add(holding_slot_identifier, this);
 		holding_slot->set_type(holding_slot_type::university);
 		this->university_holding_slot = holding_slot;
+	}
+
+	//create a hospital holding slot for this province if none exists
+	if (this->get_hospital_holding_slot() == nullptr) {
+		std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier() + "_hospital";
+		holding_slot *holding_slot = holding_slot::add(holding_slot_identifier, this);
+		holding_slot->set_type(holding_slot_type::hospital);
+		this->hospital_holding_slot = holding_slot;
 	}
 }
 
