@@ -270,14 +270,14 @@ std::string landed_title::get_name() const
 */
 std::string landed_title::get_tier_title_name() const
 {
-	const culture *culture = this->get_culture();
-
 	std::vector<std::string> suffixes;
 
 	if (this->get_holding() != nullptr) {
 		//for non-titular baronies, use the holding's type for the localization
 		suffixes.push_back(this->get_holding()->get_type()->get_identifier());
 	}
+
+	const culture *culture = this->get_culture();
 
 	if (culture != nullptr) {
 		suffixes.push_back(culture->get_identifier());

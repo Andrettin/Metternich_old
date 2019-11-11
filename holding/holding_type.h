@@ -35,6 +35,10 @@ public:
 
 	const std::string &get_portrait_tag() const
 	{
+		if (this->portrait_tag.empty()) {
+			return this->get_identifier();
+		}
+
 		return this->portrait_tag;
 	}
 

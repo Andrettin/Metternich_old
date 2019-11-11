@@ -37,7 +37,7 @@ class landed_title : public data_entry, public data_type<landed_title>
 	Q_PROPERTY(QVariantList laws READ get_laws_qvariant_list)
 
 public:
-	landed_title(const std::string &identifier) : data_entry(identifier), flag_tag(identifier) {}
+	landed_title(const std::string &identifier) : data_entry(identifier) {}
 
 	static constexpr const char *class_identifier = "landed_title";
 	static constexpr const char *database_folder = "landed_titles";
@@ -173,12 +173,11 @@ public:
 
 	const std::string &get_flag_tag() const
 	{
-		return this->flag_tag;
-	}
+		if (this->flag_tag.empty()) {
+			return this->get_identifier();
+		}
 
-	QString get_flag_tag_qstring() const
-	{
-		return QString::fromStdString(this->get_flag_tag());
+		return this->flag_tag;
 	}
 
 	void set_flag_tag(const std::string &flag_tag)
@@ -188,6 +187,11 @@ public:
 		}
 
 		this->flag_tag = flag_tag;
+	}
+
+	QString get_flag_tag_qstring() const
+	{
+		return QString::fromStdString(this->get_flag_tag());
 	}
 
 	void set_flag_tag_qstring(const QString &flag_tag)

@@ -26,7 +26,7 @@ public:
 	static constexpr const char *database_folder = "population_types";
 
 public:
-	population_type(const std::string &identifier) : data_entry(identifier), icon_tag(identifier) {}
+	population_type(const std::string &identifier) : data_entry(identifier) {}
 
 	virtual void process_gsml_scope(const gsml_data &scope) override;
 	virtual void check() const override;
@@ -38,6 +38,10 @@ public:
 
 	const std::string &get_icon_tag() const
 	{
+		if (this->icon_tag.empty()) {
+			return this->get_identifier();
+		}
+
 		return this->icon_tag;
 	}
 
