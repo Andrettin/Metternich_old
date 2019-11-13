@@ -18,7 +18,8 @@
 #include "population/population_type.h"
 #include "population/population_unit.h"
 #include "random.h"
-#include "religion.h"
+#include "religion/religion.h"
+#include "religion/religion_group.h"
 #include "script/identifiable_modifier.h"
 #include "script/modifier.h"
 #include "translator.h"
@@ -271,7 +272,7 @@ std::filesystem::path holding::get_portrait_path() const
 	}
 
 	tag_list_with_fallbacks.push_back({culture->get_identifier(), culture->get_culture_group()->get_identifier()});
-	tag_list_with_fallbacks.push_back({religion->get_identifier()});
+	tag_list_with_fallbacks.push_back({religion->get_identifier(), religion->get_religion_group()->get_identifier()});
 
 	std::filesystem::path portrait_path = database::get_tagged_image_path(database::get_holding_portraits_path(), base_tag, tag_list_with_fallbacks, ".png");
 	return portrait_path;

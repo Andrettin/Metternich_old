@@ -1,4 +1,4 @@
-#include "religion.h"
+#include "religion/religion_group.h"
 
 namespace metternich {
 
@@ -7,7 +7,7 @@ namespace metternich {
 **
 **	@param	scope	The scope
 */
-void religion::process_gsml_scope(const gsml_data &scope)
+void religion_group::process_gsml_scope(const gsml_data &scope)
 {
 	const std::string &tag = scope.get_tag();
 	const std::vector<std::string> &values = scope.get_values();
@@ -29,10 +29,10 @@ void religion::process_gsml_scope(const gsml_data &scope)
 /**
 **	@brief	Check whether the religion is in a valid state
 */
-void religion::check() const
+void religion_group::check() const
 {
 	if (!this->get_color().isValid()) {
-		throw std::runtime_error("Religion \"" + this->get_identifier() + "\" has no valid color.");
+		throw std::runtime_error("Religion group \"" + this->get_identifier() + "\" has no valid color.");
 	}
 }
 

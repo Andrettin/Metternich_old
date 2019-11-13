@@ -11,7 +11,7 @@
 #include "landed_title/landed_title_tier.h"
 #include "map/province.h"
 #include "politics/law.h"
-#include "religion.h"
+#include "religion/religion.h"
 #include "translator.h"
 #include "util/container_util.h"
 

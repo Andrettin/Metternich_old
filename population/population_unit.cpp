@@ -12,7 +12,8 @@
 #include "phenotype.h"
 #include "population/population_type.h"
 #include "random.h"
-#include "religion.h"
+#include "religion/religion.h"
+#include "religion/religion_group.h"
 #include "util/container_util.h"
 
 #include <QApplication>
@@ -415,7 +416,7 @@ std::filesystem::path population_unit::get_icon_path() const
 	std::string base_tag = this->get_type()->get_icon_tag();
 	std::vector<std::vector<std::string>> tag_list_with_fallbacks;
 	tag_list_with_fallbacks.push_back({this->get_culture()->get_identifier(), this->get_culture()->get_culture_group()->get_identifier()});
-	tag_list_with_fallbacks.push_back({this->get_religion()->get_identifier()});
+	tag_list_with_fallbacks.push_back({this->get_religion()->get_identifier(), this->get_religion()->get_religion_group()->get_identifier()});
 
 	std::vector<std::string> phenotype_tag_with_fallbacks;
 	phenotype_tag_with_fallbacks.push_back(this->get_phenotype()->get_identifier());

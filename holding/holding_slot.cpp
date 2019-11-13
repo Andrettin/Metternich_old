@@ -8,7 +8,7 @@
 #include "landed_title/landed_title.h"
 #include "map/province.h"
 #include "random.h"
-#include "religion.h"
+#include "religion/religion.h"
 #include "translator.h"
 #include "util/container_util.h"
 

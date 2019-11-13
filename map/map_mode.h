@@ -10,7 +10,8 @@ enum class map_mode : int
 	de_jure_duchy,
 	culture,
 	culture_group,
-	religion
+	religion,
+	religion_group
 };
 
 }

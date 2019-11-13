@@ -27,7 +27,8 @@
 #include "politics/law.h"
 #include "politics/law_group.h"
 #include "population/population_type.h"
-#include "religion.h"
+#include "religion/religion.h"
+#include "religion/religion_group.h"
 #include "translator.h"
 #include "util/parse_util.h"
 #include "util/string_util.h"
@@ -141,8 +142,10 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 				}
 			} else if (property_class_name == "metternich::holding_slot_type") {
 				new_property_value = QVariant::fromValue(string_to_holding_slot_type(property.get_value()));
+			} else if (property_class_name == "metternich::religion_group*") {
+				new_property_value = QVariant::fromValue(religion_group::get(property.get_value()));
 			} else {
-				throw std::runtime_error("Unknown type for object reference property \"" + std::string(property_name) + "\".");
+				throw std::runtime_error("Unknown type for object reference property \"" + std::string(property_name) + "\" (\"" + property_class_name + "\").");
 			}
 		} else if (property_type == QVariant::Type::List) {
 			if (property.get_operator() == gsml_operator::assignment) {

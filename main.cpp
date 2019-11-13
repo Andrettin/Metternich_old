@@ -1,7 +1,6 @@
 #include "character/dynasty.h"
 #include "character/trait.h"
 #include "culture/culture.h"
-#include "culture/culture_group.h"
 #include "database/database.h"
 #include "defines.h"
 #include "economy/commodity.h"
@@ -20,7 +19,7 @@
 #include "map/terrain_type.h"
 #include "population/population_type.h"
 #include "population/population_unit.h"
-#include "religion.h"
+#include "religion/religion.h"
 #include "translator.h"
 
 #include "third_party/maskedmousearea/maskedmousearea.h"

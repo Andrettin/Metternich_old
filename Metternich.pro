@@ -44,7 +44,8 @@ SOURCES += \
         map/terrain_type.cpp \
         population/population_type.cpp \
         population/population_unit.cpp \
-        religion.cpp \
+        religion/religion.cpp \
+        religion/religion_group.cpp \
         script/chance_factor.cpp \
         script/condition/condition.cpp \
         script/factor_modifier.cpp \
@@ -123,7 +124,8 @@ HEADERS += \
     population/population_type.h \
     population/population_unit.h \
     random.h \
-    religion.h \
+    religion/religion.h \
+    religion/religion_group.h \
     script/chance_factor.h \
     script/condition/and_condition.h \
     script/condition/borders_water_condition.h \

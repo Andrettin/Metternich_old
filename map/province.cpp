@@ -19,7 +19,8 @@
 #include "map/terrain_type.h"
 #include "population/population_type.h"
 #include "population/population_unit.h"
-#include "religion.h"
+#include "religion/religion.h"
+#include "religion/religion_group.h"
 #include "script/modifier.h"
 #include "translator.h"
 #include "util/container_util.h"
@@ -541,6 +542,9 @@ const QColor &province::get_map_mode_color(const map_mode mode) const
 			case map_mode::religion: {
 				return this->get_religion()->get_color();
 			}
+			case map_mode::religion_group: {
+				return this->get_religion()->get_religion_group()->get_color();
+			}
 		}
 	}
 
@@ -816,10 +820,17 @@ void province::set_religion(metternich::religion *religion)
 		return;
 	}
 
+	metternich::religion *old_religion = this->get_religion();
+	metternich::religion_group *old_religion_group = old_religion ? old_religion->get_religion_group() : nullptr;
+
 	this->religion = religion;
 	emit religion_changed();
+	metternich::religion_group *religion_group = religion ? religion->get_religion_group() : nullptr;
 
-	if (map::get()->get_mode() == map_mode::religion) {
+	if (
+		map::get()->get_mode() == map_mode::religion
+		|| (map::get()->get_mode() == map_mode::religion_group && old_religion_group != religion_group)
+	) {
 		this->update_image();
 	}
 }
