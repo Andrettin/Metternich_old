@@ -54,6 +54,7 @@ class province : public data_entry, public data_type<province>
 	Q_PROPERTY(QVariantList settlement_holding_slots READ get_settlement_holding_slots_qvariant_list NOTIFY settlement_holding_slots_changed)
 	Q_PROPERTY(QVariantList settlement_holdings READ get_settlement_holdings_qvariant_list NOTIFY settlement_holdings_changed)
 	Q_PROPERTY(metternich::holding* capital_holding READ get_capital_holding WRITE set_capital_holding NOTIFY capital_holding_changed)
+	Q_PROPERTY(QVariantList palace_holding_slots READ get_palace_holding_slots_qvariant_list CONSTANT)
 	Q_PROPERTY(metternich::holding_slot* fort_holding_slot READ get_fort_holding_slot CONSTANT)
 	Q_PROPERTY(metternich::holding_slot* university_holding_slot READ get_university_holding_slot CONSTANT)
 	Q_PROPERTY(metternich::holding_slot* hospital_holding_slot READ get_hospital_holding_slot CONSTANT)
@@ -251,6 +252,13 @@ public:
 		emit capital_holding_changed();
 	}
 
+	const std::vector<holding_slot *> &get_palace_holding_slots() const
+	{
+		return this->palace_holding_slots;
+	}
+
+	QVariantList get_palace_holding_slots_qvariant_list() const;
+
 	holding_slot *get_fort_holding_slot() const
 	{
 		return this->fort_holding_slot;
@@ -396,6 +404,7 @@ private:
 	std::vector<holding_slot *> settlement_holding_slots;
 	std::vector<holding *> settlement_holdings;
 	holding *capital_holding = nullptr;
+	std::vector<holding_slot *> palace_holding_slots;
 	holding_slot *fort_holding_slot = nullptr;
 	holding_slot *university_holding_slot = nullptr;
 	holding_slot *hospital_holding_slot = nullptr;

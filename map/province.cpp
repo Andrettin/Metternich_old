@@ -208,6 +208,9 @@ void province::process_gsml_scope(const gsml_data &scope)
 			case holding_slot_type::settlement:
 				this->settlement_holding_slots.push_back(holding_slot);
 				break;
+			case holding_slot_type::palace:
+				this->palace_holding_slots.push_back(holding_slot);
+				break;
 			case holding_slot_type::fort:
 				this->fort_holding_slot = holding_slot;
 				break;
@@ -1023,18 +1026,30 @@ void province::create_holding(holding_slot *holding_slot, holding_type *type)
 void province::destroy_holding(holding_slot *holding_slot)
 {
 	holding *holding = holding_slot->get_holding();
-	if (holding == this->get_capital_holding()) {
-		//if the capital holding is being destroyed, set the next holding as the capital, if any exists, or otherwise set the capital holding to null
-		if (this->settlement_holdings.size() > 1) {
-			this->set_capital_holding(this->settlement_holdings.at(1));
-		} else {
-			this->set_capital_holding(nullptr);
+
+	if (holding_slot->get_type() == holding_slot_type::settlement) {
+		if (holding == this->get_capital_holding()) {
+			//if the capital holding is being destroyed, set the next holding as the capital, if any exists, or otherwise set the capital holding to null
+			if (this->settlement_holdings.size() > 1) {
+				this->set_capital_holding(this->settlement_holdings.at(1));
+			} else {
+				this->set_capital_holding(nullptr);
+			}
 		}
+
+		this->settlement_holdings.erase(std::remove(this->settlement_holdings.begin(), this->settlement_holdings.end(), holding), this->settlement_holdings.end());
+		emit settlement_holdings_changed();
 	}
 
-	this->settlement_holdings.erase(std::remove(this->settlement_holdings.begin(), this->settlement_holdings.end(), holding), this->settlement_holdings.end());
 	holding_slot->set_holding(nullptr);
-	emit settlement_holdings_changed();
+}
+
+/**
+**	@brief	Get the province's palace holding slots
+*/
+QVariantList province::get_palace_holding_slots_qvariant_list() const
+{
+	return util::container_to_qvariant_list(this->get_palace_holding_slots());
 }
 
 /**
