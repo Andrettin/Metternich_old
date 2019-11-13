@@ -74,7 +74,6 @@ public:
 
 	virtual std::string get_name() const override;
 	std::string get_tier_title_name() const;
-
 	std::string get_titled_name() const;
 
 	QString get_titled_name_qstring() const
@@ -83,6 +82,8 @@ public:
 	}
 
 	std::string get_holder_title_name() const;
+
+	std::vector<std::vector<std::string>> get_tag_suffix_list_with_fallbacks() const;
 
 	const QColor &get_color() const
 	{

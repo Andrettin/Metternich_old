@@ -109,6 +109,8 @@ public:
 
 	virtual std::string get_name() const override;
 
+	std::vector<std::vector<std::string>> get_tag_suffix_list_with_fallbacks() const;
+
 	landed_title *get_county() const
 	{
 		return this->county;

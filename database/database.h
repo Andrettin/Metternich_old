@@ -95,36 +95,7 @@ public:
 		return cache_path;
 	}
 
-	static std::filesystem::path get_tagged_image_path(const std::filesystem::path &base_path, const std::string &base_tag, const std::vector<std::vector<std::string>> &suffix_list_with_fallbacks, const std::string &final_suffix)
-	{
-		std::vector<std::string> suffix_combinations; //possible combinations of tags, from more specific to less specific
-
-		for (const std::vector<std::string> &suffix_with_fallbacks : suffix_list_with_fallbacks) {
-			unsigned int added_suffixes = 0;
-			for (unsigned int i = 0; i < suffix_combinations.size(); i += (1 + added_suffixes)) {
-				added_suffixes = 0;
-				for (const std::string &suffix_tag : suffix_with_fallbacks) {
-					suffix_combinations.insert(suffix_combinations.begin() + i + added_suffixes, suffix_combinations[i] + "_" + suffix_tag);
-					added_suffixes++;
-				}
-			}
-
-			for (const std::string &suffix_tag : suffix_with_fallbacks) {
-				suffix_combinations.push_back("_" + suffix_tag);
-			}
-		}
-
-		suffix_combinations.push_back("");
-
-		for (const std::string &suffix : suffix_combinations) {
-			std::filesystem::path image_path = base_path / (base_tag + suffix + final_suffix);
-			if (std::filesystem::exists(image_path)) {
-				return image_path;
-			}
-		}
-
-		throw std::runtime_error("No image found for base tag \"" + base_tag + "\" in path \"" + base_path.string() + "\".");
-	}
+	static std::filesystem::path get_tagged_image_path(const std::filesystem::path &base_path, const std::string &base_tag, const std::vector<std::vector<std::string>> &suffix_list_with_fallbacks, const std::string &final_suffix);
 
 public:
 	database();

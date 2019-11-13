@@ -59,6 +59,8 @@ public:
 	void do_month();
 	void do_mixing();
 
+	std::vector<std::vector<std::string>> get_tag_suffix_list_with_fallbacks() const;
+
 	population_type *get_type() const
 	{
 		return this->type;

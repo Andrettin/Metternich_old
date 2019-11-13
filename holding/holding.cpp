@@ -146,24 +146,11 @@ void holding::do_month()
 */
 std::string holding::get_name() const
 {
-	const metternich::culture *culture = nullptr;
-	const metternich::religion *religion = nullptr;
-
-	if (this->is_settlement()) {
-		culture = this->get_culture();
-		religion = this->get_religion();
-	} else {
-		culture = this->get_province()->get_culture();
-		religion = this->get_province()->get_religion();
-	}
-
-	std::vector<std::string> suffixes{culture->get_identifier(), culture->get_culture_group()->get_identifier(), religion->get_identifier()};
-
 	if (this->get_barony() != nullptr) {
-		return translator::get()->translate(this->get_barony()->get_identifier(), suffixes);
+		return translator::get()->translate(this->get_barony()->get_identifier(), this->get_tag_suffix_list_with_fallbacks());
 	}
 
-	return translator::get()->translate(this->get_province()->get_name(), suffixes);
+	return translator::get()->translate(this->get_province()->get_name(), this->get_tag_suffix_list_with_fallbacks());
 }
 
 /**
@@ -173,23 +160,7 @@ std::string holding::get_name() const
 */
 std::string holding::get_type_name() const
 {
-	const metternich::culture *culture = nullptr;
-	const metternich::religion *religion = nullptr;
-
-	if (this->is_settlement()) {
-		culture = this->get_culture();
-		religion = this->get_religion();
-	} else {
-		culture = this->get_province()->get_culture();
-		religion = this->get_province()->get_religion();
-	}
-
-	std::vector<std::string> suffixes;
-	suffixes.push_back(culture->get_identifier());
-	suffixes.push_back(culture->get_culture_group()->get_identifier());
-	suffixes.push_back(religion->get_identifier());
-
-	return translator::get()->translate(this->get_type()->get_identifier(), suffixes);
+	return translator::get()->translate(this->get_type()->get_identifier(), this->get_tag_suffix_list_with_fallbacks());
 }
 
 /**
@@ -202,6 +173,27 @@ std::string holding::get_titled_name() const
 	std::string titled_name = this->get_type_name() + " of ";
 	titled_name += this->get_name();
 	return titled_name;
+}
+
+std::vector<std::vector<std::string>> holding::get_tag_suffix_list_with_fallbacks() const
+{
+	std::vector<std::vector<std::string>> tag_list_with_fallbacks;
+
+	const metternich::culture *culture = nullptr;
+	const metternich::religion *religion = nullptr;
+
+	if (this->is_settlement()) {
+		culture = this->get_culture();
+		religion = this->get_religion();
+	} else {
+		culture = this->get_province()->get_culture();
+		religion = this->get_province()->get_religion();
+	}
+
+	tag_list_with_fallbacks.push_back({culture->get_identifier(), culture->get_culture_group()->get_identifier()});
+	tag_list_with_fallbacks.push_back({religion->get_identifier(), religion->get_religion_group()->get_identifier()});
+
+	return tag_list_with_fallbacks;
 }
 
 /**
@@ -258,23 +250,7 @@ std::filesystem::path holding::get_portrait_path() const
 {
 	std::string base_tag = this->get_type()->get_portrait_tag();
 
-	std::vector<std::vector<std::string>> tag_list_with_fallbacks;
-
-	const metternich::culture *culture = nullptr;
-	const metternich::religion *religion = nullptr;
-
-	if (this->is_settlement()) {
-		culture = this->get_culture();
-		religion = this->get_religion();
-	} else {
-		culture = this->get_province()->get_culture();
-		religion = this->get_province()->get_religion();
-	}
-
-	tag_list_with_fallbacks.push_back({culture->get_identifier(), culture->get_culture_group()->get_identifier()});
-	tag_list_with_fallbacks.push_back({religion->get_identifier(), religion->get_religion_group()->get_identifier()});
-
-	std::filesystem::path portrait_path = database::get_tagged_image_path(database::get_holding_portraits_path(), base_tag, tag_list_with_fallbacks, ".png");
+	std::filesystem::path portrait_path = database::get_tagged_image_path(database::get_holding_portraits_path(), base_tag, this->get_tag_suffix_list_with_fallbacks(), ".png");
 	return portrait_path;
 }
 

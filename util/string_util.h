@@ -94,4 +94,28 @@ inline std::string get_singular_form(const std::string &str)
 	return singular_form;
 }
 
+inline std::vector<std::string> get_suffix_combinations(const std::vector<std::vector<std::string>> &suffix_list_with_fallbacks)
+{
+	std::vector<std::string> suffix_combinations; //possible combinations of tags/suffixes, from more specific to less specific
+
+	for (const std::vector<std::string> &suffix_with_fallbacks : suffix_list_with_fallbacks) {
+		unsigned int added_suffixes = 0;
+		for (unsigned int i = 0; i < suffix_combinations.size(); i += (1 + added_suffixes)) {
+			added_suffixes = 0;
+			for (const std::string &suffix_tag : suffix_with_fallbacks) {
+				suffix_combinations.insert(suffix_combinations.begin() + i + added_suffixes, suffix_combinations[i] + "_" + suffix_tag);
+				added_suffixes++;
+			}
+		}
+
+		for (const std::string &suffix_tag : suffix_with_fallbacks) {
+			suffix_combinations.push_back("_" + suffix_tag);
+		}
+	}
+
+	suffix_combinations.push_back(""); //no suffix
+
+	return suffix_combinations;
+}
+
 }

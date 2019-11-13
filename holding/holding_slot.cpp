@@ -9,6 +9,7 @@
 #include "map/province.h"
 #include "random.h"
 #include "religion/religion.h"
+#include "religion/religion_group.h"
 #include "translator.h"
 #include "util/container_util.h"
 
@@ -69,13 +70,21 @@ void holding_slot::check() const
 */
 std::string holding_slot::get_name() const
 {
-	std::vector<std::string> suffixes{this->get_province()->get_culture()->get_identifier(), this->get_province()->get_culture()->get_culture_group()->get_identifier(), this->get_province()->get_religion()->get_identifier()};
-
 	if (this->get_barony() != nullptr) {
-		return translator::get()->translate(this->get_barony()->get_identifier(), suffixes);
+		return translator::get()->translate(this->get_barony()->get_identifier(), this->get_tag_suffix_list_with_fallbacks());
 	}
 
-	return translator::get()->translate(holding_slot_type_to_string(this->get_type()), suffixes) + " Slot";
+	return translator::get()->translate(holding_slot_type_to_string(this->get_type()), this->get_tag_suffix_list_with_fallbacks()) + " Slot";
+}
+
+std::vector<std::vector<std::string>> holding_slot::get_tag_suffix_list_with_fallbacks() const
+{
+	std::vector<std::vector<std::string>> tag_list_with_fallbacks;
+
+	tag_list_with_fallbacks.push_back({this->get_province()->get_culture()->get_identifier(), this->get_province()->get_culture()->get_culture_group()->get_identifier()});
+	tag_list_with_fallbacks.push_back({this->get_province()->get_religion()->get_identifier(), this->get_province()->get_religion()->get_religion_group()->get_identifier()});
+
+	return tag_list_with_fallbacks;
 }
 
 /**

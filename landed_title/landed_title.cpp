@@ -12,6 +12,7 @@
 #include "map/province.h"
 #include "politics/law.h"
 #include "religion/religion.h"
+#include "religion/religion_group.h"
 #include "translator.h"
 #include "util/container_util.h"
 
@@ -246,21 +247,7 @@ void landed_title::check() const
 */
 std::string landed_title::get_name() const
 {
-	const culture *culture = this->get_culture();
-
-	std::vector<std::string> suffixes;
-
-	if (culture != nullptr) {
-		suffixes.push_back(culture->get_identifier());
-		suffixes.push_back(culture->get_culture_group()->get_identifier());
-	}
-
-	if (this->get_holder() != nullptr && this->get_holder()->get_dynasty() != nullptr) {
-		//allow for different localizations depending on the title holder's dynasty
-		suffixes.push_back(this->get_holder()->get_dynasty()->get_identifier());
-	}
-
-	return translator::get()->translate(this->get_identifier(), suffixes);
+	return translator::get()->translate(this->get_identifier(), this->get_tag_suffix_list_with_fallbacks());
 }
 
 /**
@@ -270,21 +257,7 @@ std::string landed_title::get_name() const
 */
 std::string landed_title::get_tier_title_name() const
 {
-	std::vector<std::string> suffixes;
-
-	if (this->get_holding() != nullptr) {
-		//for non-titular baronies, use the holding's type for the localization
-		suffixes.push_back(this->get_holding()->get_type()->get_identifier());
-	}
-
-	const culture *culture = this->get_culture();
-
-	if (culture != nullptr) {
-		suffixes.push_back(culture->get_identifier());
-		suffixes.push_back(culture->get_culture_group()->get_identifier());
-	}
-
-	return translator::get()->translate(landed_title::get_tier_identifier(this->get_tier()), suffixes);
+	return translator::get()->translate(landed_title::get_tier_identifier(this->get_tier()), this->get_tag_suffix_list_with_fallbacks());
 }
 
 /**
@@ -306,21 +279,34 @@ std::string landed_title::get_titled_name() const
 */
 std::string landed_title::get_holder_title_name() const
 {
-	const culture *culture = this->get_culture();
+	return translator::get()->translate(landed_title::get_tier_holder_identifier(this->get_tier()), this->get_tag_suffix_list_with_fallbacks());
+}
 
-	std::vector<std::string> suffixes;
+std::vector<std::vector<std::string>> landed_title::get_tag_suffix_list_with_fallbacks() const
+{
+	std::vector<std::vector<std::string>> tag_list_with_fallbacks;
 
 	if (this->get_holding() != nullptr) {
 		//for non-titular baronies, use the holding's type for the localization, so that e.g. a city's holder title name will be "mayor", regardless of the character's actual government
-		suffixes.push_back(this->get_holding()->get_type()->get_identifier());
+		tag_list_with_fallbacks.push_back({this->get_holding()->get_type()->get_identifier()});
 	}
 
+	const culture *culture = this->get_culture();
 	if (culture != nullptr) {
-		suffixes.push_back(culture->get_identifier());
-		suffixes.push_back(culture->get_culture_group()->get_identifier());
+		tag_list_with_fallbacks.push_back({culture->get_identifier(), culture->get_culture_group()->get_identifier()});
 	}
 
-	return translator::get()->translate(landed_title::get_tier_holder_identifier(this->get_tier()), suffixes);
+	const religion *religion = this->get_religion();
+	if (religion != nullptr) {
+		tag_list_with_fallbacks.push_back({religion->get_identifier(), religion->get_religion_group()->get_identifier()});
+	}
+
+	if (this->get_holder() != nullptr && this->get_holder()->get_dynasty() != nullptr) {
+		//allow for different localizations/flags depending on the title holder's dynasty
+		tag_list_with_fallbacks.push_back({this->get_holder()->get_dynasty()->get_identifier()});
+	}
+
+	return tag_list_with_fallbacks;
 }
 
 void landed_title::set_holder(character *character)
@@ -642,19 +628,8 @@ religion *landed_title::get_religion() const
 std::filesystem::path landed_title::get_flag_path() const
 {
 	std::string base_tag = this->get_flag_tag();
-	std::vector<std::vector<std::string>> tag_list_with_fallbacks;
 
-	culture *culture = this->get_culture();
-	if (culture != nullptr) {
-		tag_list_with_fallbacks.push_back({culture->get_identifier(), culture->get_culture_group()->get_identifier()});
-	}
-
-	religion *religion = this->get_religion();
-	if (religion != nullptr) {
-		tag_list_with_fallbacks.push_back({religion->get_identifier()});
-	}
-
-	std::filesystem::path flag_path = database::get_tagged_image_path(database::get_flags_path(), base_tag, tag_list_with_fallbacks, ".svg");
+	std::filesystem::path flag_path = database::get_tagged_image_path(database::get_flags_path(), base_tag, this->get_tag_suffix_list_with_fallbacks(), ".svg");
 	return flag_path;
 }
 

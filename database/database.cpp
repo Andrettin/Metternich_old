@@ -215,6 +215,20 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 	throw std::runtime_error("Invalid " + std::string(meta_object->className()) + " property: \"" + property.get_key() + "\".");
 }
 
+std::filesystem::path database::get_tagged_image_path(const std::filesystem::path &base_path, const std::string &base_tag, const std::vector<std::vector<std::string>> &suffix_list_with_fallbacks, const std::string &final_suffix)
+{
+	std::vector<std::string> suffix_combinations = util::get_suffix_combinations(suffix_list_with_fallbacks);
+
+	for (const std::string &suffix : suffix_combinations) {
+		std::filesystem::path image_path = base_path / (base_tag + suffix + final_suffix);
+		if (std::filesystem::exists(image_path)) {
+			return image_path;
+		}
+	}
+
+	throw std::runtime_error("No image found for base tag \"" + base_tag + "\" in path \"" + base_path.string() + "\".");
+}
+
 /**
 **	@brief	Constructor
 */

@@ -55,6 +55,8 @@ public:
 		return QString::fromStdString(this->get_name());
 	}
 
+	std::vector<std::vector<std::string>> get_tag_suffix_list_with_fallbacks() const;
+
 	holding_slot_type get_type() const
 	{
 		return this->type;

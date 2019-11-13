@@ -87,6 +87,8 @@ public:
 		return QString::fromStdString(this->get_titled_name());
 	}
 
+	std::vector<std::vector<std::string>> get_tag_suffix_list_with_fallbacks() const;
+
 	landed_title *get_barony() const;
 
 	holding_type *get_type() const

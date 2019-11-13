@@ -8,51 +8,27 @@
 
 namespace metternich {
 
-std::string translator::translate(const std::string &source_text, const std::vector<std::string> &suffixes) const
+std::string translator::translate(const std::string &base_tag, const std::vector<std::vector<std::string>> &suffix_list_with_fallbacks) const
 {
-	if (!suffixes.empty()) {
-		std::vector<std::string> suffix_combinations; //possible combinations of suffixes, from more specific to less specific
+	std::vector<std::string> suffix_combinations = util::get_suffix_combinations(suffix_list_with_fallbacks);
 
-		for (const std::string &suffix : suffixes) {
-			for (unsigned int i = 0; i < suffix_combinations.size(); i += 2) {
-				suffix_combinations.insert(suffix_combinations.begin() + i, suffix_combinations[i] + "_" + suffix);
-			}
-
-			suffix_combinations.push_back("_" + suffix);
-		}
-
-		for (const std::string &suffix : suffix_combinations) {
-			const auto &suffix_find_iterator = this->translations.find(source_text + suffix);
-			if (suffix_find_iterator != this->translations.end())  {
-				return suffix_find_iterator->second;
-			}
+	for (const std::string &suffix : suffix_combinations) {
+		const auto &suffix_find_iterator = this->translations.find(base_tag + suffix);
+		if (suffix_find_iterator != this->translations.end())  {
+			return suffix_find_iterator->second;
 		}
 	}
 
-	const auto &find_iterator = this->translations.find(source_text);
-	if (find_iterator != this->translations.end())  {
-		return find_iterator->second;
-	}
-
-	return source_text;
+	return base_tag;
 }
 
 QString translator::translate(const char *context, const char *source_text, const char *disambiguation, int n) const
 {
 	Q_UNUSED(context)
 	Q_UNUSED(n)
+	Q_UNUSED(disambiguation)
 
-	std::vector<std::string> suffixes;
-
-	if (disambiguation != nullptr) {
-		std::string base_suffix_str = disambiguation;
-
-		if (!base_suffix_str.empty()) {
-			suffixes = util::split_string(base_suffix_str, ';');
-		}
-	}
-
-	return QString::fromStdString(this->translate(source_text, suffixes));
+	return QString::fromStdString(this->translate(source_text));
 }
 
 void translator::load_locale(const std::string &language)
