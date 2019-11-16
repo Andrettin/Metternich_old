@@ -244,15 +244,7 @@ public:
 		return this->capital_holding;
 	}
 
-	void set_capital_holding(holding *holding)
-	{
-		if (holding == this->get_capital_holding()) {
-			return;
-		}
-
-		this->capital_holding = holding;
-		emit capital_holding_changed();
-	}
+	void set_capital_holding(holding *holding);
 
 	const std::vector<holding_slot *> &get_palace_holding_slots() const
 	{

@@ -137,6 +137,10 @@ void province::process_gsml_property(const gsml_property &property)
 			}
 		}
 
+		if (holding_slot->get_province() != this) {
+			throw std::runtime_error("Tried to set history for holding slot \"" + holding_slot->get_identifier() + "\" in the history file of province \"" + this->get_identifier() + "\", but the holding slot belongs to another province.");
+		}
+
 		holding *holding = holding_slot->get_holding();
 		if (property.get_operator() == gsml_operator::assignment) {
 			//the assignment operator sets the holding's type (creating the holding if it doesn't exist)
@@ -1063,6 +1067,31 @@ void province::destroy_holding(holding_slot *holding_slot)
 	}
 
 	holding_slot->set_holding(nullptr);
+}
+
+/**
+**	@brief	Set a holding as the province's capital holding
+**
+**	@param	holding	The holding
+*/
+void province::set_capital_holding(holding *holding)
+{
+	if (holding == this->get_capital_holding()) {
+		return;
+	}
+
+	if (holding != nullptr) {
+		if (holding->get_province() != this) {
+			throw std::runtime_error("Tried to set holding \"" + holding->get_slot()->get_identifier() + "\" as the capital holding of province \"" + this->get_identifier() + "\", but it belongs to another province.");
+		}
+
+		if (holding->get_slot()->get_type() != holding_slot_type::settlement) {
+			throw std::runtime_error("Tried to set holding \"" + holding->get_slot()->get_identifier() + "\" as the capital holding of province \"" + this->get_identifier() + "\", but it is not a settlement holding.");
+		}
+	}
+
+	this->capital_holding = holding;
+	emit capital_holding_changed();
 }
 
 /**
