@@ -193,6 +193,10 @@ std::vector<std::vector<std::string>> holding::get_tag_suffix_list_with_fallback
 	tag_list_with_fallbacks.push_back({culture->get_identifier(), culture->get_culture_group()->get_identifier()});
 	tag_list_with_fallbacks.push_back({religion->get_identifier(), religion->get_religion_group()->get_identifier()});
 
+	if (this->get_province()->is_coastal()) {
+		tag_list_with_fallbacks.push_back({"coastal"});
+	}
+
 	return tag_list_with_fallbacks;
 }
 
