@@ -180,9 +180,11 @@ void terrain_type::write_geoshape_to_image(QImage &image, const QGeoShape &geosh
 
 		if (show_progress) {
 			const int progress_percent = (x - start_x) * 100 / pixel_width;
-			engine_interface::get()->set_loading_message(terrain_loading_message + "\nWriting Geopolygon to Image... (" + QString::number(progress_percent) + "%)");
+			engine_interface::get()->set_loading_message(terrain_loading_message + "\nWriting Geoshape to Image... (" + QString::number(progress_percent) + "%)");
 		}
 	}
+
+	engine_interface::get()->set_loading_message(terrain_loading_message);
 }
 
 }
