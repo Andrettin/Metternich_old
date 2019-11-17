@@ -16,8 +16,9 @@ class building : public data_entry, public data_type<building>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(QString icon READ get_icon_path_qstring WRITE set_icon_path_qstring NOTIFY icon_path_changed)
-	Q_PROPERTY(QString icon_path READ get_icon_path_qstring WRITE set_icon_path_qstring NOTIFY icon_path_changed)
+	Q_PROPERTY(QString icon_tag READ get_icon_tag_qstring WRITE set_icon_tag_qstring)
+	Q_PROPERTY(QString icon_folder READ get_icon_folder_qstring WRITE set_icon_folder_qstring)
+	Q_PROPERTY(QString icon_path READ get_icon_path_qstring CONSTANT)
 	Q_PROPERTY(QVariantList holding_types READ get_holding_types_qvariant_list)
 	Q_PROPERTY(int construction_days MEMBER construction_days READ get_construction_days)
 	Q_PROPERTY(metternich::employment_type* employment_type MEMBER employment_type READ get_employment_type)
@@ -32,29 +33,73 @@ public:
 
 	virtual void process_gsml_scope(const gsml_data &scope) override;
 
-	const std::string &get_icon_path() const
+	virtual void check() const override
 	{
-		return this->icon_path;
+		this->get_icon_path(); //throws an exception if the icon isn't found
 	}
 
-	QString get_icon_path_qstring() const
+	const std::string &get_icon_tag() const
 	{
-		return QString::fromStdString(this->icon_path);
+		if (this->icon_tag.empty()) {
+			return this->get_identifier();
+		}
+
+		return this->icon_tag;
 	}
 
-	void set_icon_path(const std::string &icon_path)
+	void set_icon_tag(const std::string &icon_tag)
 	{
-		if (icon_path == this->get_icon_path()) {
+		if (icon_tag == this->get_icon_tag()) {
 			return;
 		}
 
-		this->icon_path = icon_path;
-		emit icon_path_changed();
+		this->icon_tag = icon_tag;
 	}
 
-	void set_icon_path_qstring(const QString &icon_path)
+	QString get_icon_tag_qstring() const
 	{
-		this->set_icon_path(icon_path.toStdString());
+		return QString::fromStdString(this->get_icon_tag());
+	}
+
+	void set_icon_tag_qstring(const QString &icon_tag)
+	{
+		this->set_icon_tag(icon_tag.toStdString());
+	}
+
+	const std::string &get_icon_folder() const
+	{
+		if (this->icon_folder.empty()) {
+			static std::string default_icon_folder = "buildings";
+			return default_icon_folder;
+		}
+
+		return this->icon_folder;
+	}
+
+	void set_icon_folder(const std::string &icon_folder)
+	{
+		if (icon_folder == this->get_icon_folder()) {
+			return;
+		}
+
+		this->icon_folder = icon_folder;
+	}
+
+	QString get_icon_folder_qstring() const
+	{
+		return QString::fromStdString(this->get_icon_folder());
+	}
+
+	void set_icon_folder_qstring(const QString &icon_folder)
+	{
+		this->set_icon_folder(icon_folder.toStdString());
+	}
+
+	std::filesystem::path get_icon_path() const;
+
+	QString get_icon_path_qstring() const
+	{
+		return "file:///" + QString::fromStdString(this->get_icon_path().string());
 	}
 
 	const std::set<holding_type *> &get_holding_types() const
@@ -91,11 +136,9 @@ public:
 		return this->conditions.get();
 	}
 
-signals:
-	void icon_path_changed();
-
 private:
-	std::string icon_path;
+	std::string icon_tag;
+	std::string icon_folder;
 	std::set<holding_type *> holding_types;
 	int construction_days = 0; //how many days does it take to construct this building
 	std::unique_ptr<condition> preconditions;

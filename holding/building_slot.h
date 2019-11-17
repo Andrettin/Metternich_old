@@ -18,6 +18,7 @@ class building_slot : public QObject
 	Q_OBJECT
 
 	Q_PROPERTY(metternich::building* building READ get_building CONSTANT)
+	Q_PROPERTY(QString icon_path READ get_icon_path_qstring CONSTANT)
 	Q_PROPERTY(bool available READ is_available NOTIFY available_changed)
 	Q_PROPERTY(bool buildable READ is_buildable NOTIFY buildable_changed)
 	Q_PROPERTY(bool built READ is_built NOTIFY built_changed)
@@ -31,25 +32,19 @@ public:
 		return this->building;
 	}
 
+	std::filesystem::path get_icon_path() const;
+
+	QString get_icon_path_qstring() const
+	{
+		return "file:///" + QString::fromStdString(this->get_icon_path().string());
+	}
+
 	bool is_available() const
 	{
 		return this->available;
 	}
 
-	void set_available(const bool available)
-	{
-		if (available == this->is_available()) {
-			return;
-		}
-
-		this->available = available;
-		emit available_changed();
-
-		if (!available) {
-			this->set_buildable(false);
-			this->set_built(false);
-		}
-	}
+	void set_available(const bool available);
 
 	bool is_buildable() const
 	{
