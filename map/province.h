@@ -64,6 +64,7 @@ class province : public data_entry, public data_type<province>
 	Q_PROPERTY(QVariantList geopolygons READ get_geopolygons_qvariant_list CONSTANT)
 	Q_PROPERTY(QVariantList geopaths READ get_geopaths_qvariant_list CONSTANT)
 	Q_PROPERTY(bool always_write_geodata MEMBER always_write_geodata READ always_writes_geodata)
+	Q_PROPERTY(bool write_geojson MEMBER write_geojson_value READ writes_geojson)
 
 public:
 	static constexpr const char *class_identifier = "province";
@@ -140,9 +141,10 @@ public:
 	void create_image(const std::vector<int> &pixel_indexes);
 	void set_border_pixels(const std::vector<int> &pixel_indexes);
 	void update_image();
-	void write_geodata_to_image(QImage &image, QImage &terrain_image);
-	void write_geoshape_to_image(QImage &image, const QGeoShape &geoshape, QImage &terrain_image);
-	void write_geopath_endpoints_to_image(QImage &image, QImage &terrain_image);
+	void write_geodata_to_image(QImage &image, QImage &terrain_image) const;
+	void write_geopath_endpoints_to_image(QImage &image, QImage &terrain_image) const;
+	void write_geoshape_to_image(QImage &image, const QGeoShape &geoshape, QImage &terrain_image) const;
+	void write_geojson() const;
 
 	const QImage &get_image() const
 	{
@@ -336,7 +338,6 @@ public:
 	}
 
 	QVariantList get_geopolygons_qvariant_list() const;
-
 	QVariantList get_geopaths_qvariant_list() const;
 
 	bool contains_coordinate(const QGeoCoordinate &coordinate) const
@@ -362,6 +363,11 @@ public:
 	bool always_writes_geodata() const
 	{
 		return this->always_write_geodata;
+	}
+
+	bool writes_geojson() const
+	{
+		return this->write_geojson_value;
 	}
 
 signals:
@@ -413,6 +419,7 @@ private:
 	std::vector<QGeoPath> geopaths;
 	bool inner_river = false; //whether the province has a minor river flowing through it
 	bool always_write_geodata = false;
+	bool write_geojson_value = false;
 };
 
 }

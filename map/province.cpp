@@ -30,6 +30,7 @@
 #include <QApplication>
 #include <QGeoCircle>
 #include <QPainter>
+#include <QtLocation/private/qgeojson_p.h>
 
 namespace metternich {
 
@@ -649,7 +650,7 @@ void province::update_image()
 **	@param	image			The image to which the province's geodata will be written to
 **	@param	terrain_image	The terrain image to be updated from the province's geodata, if the province has preset terrain
 */
-void province::write_geodata_to_image(QImage &image, QImage &terrain_image)
+void province::write_geodata_to_image(QImage &image, QImage &terrain_image) const
 {
 	for (const QGeoPolygon &geopolygon : this->geopolygons) {
 		this->write_geoshape_to_image(image, geopolygon, terrain_image);
@@ -666,7 +667,7 @@ void province::write_geodata_to_image(QImage &image, QImage &terrain_image)
 **	@param	image			The image to which the province's geodata will be written to
 **	@param	terrain_image	The terrain image to be updated from the province's geodata, if the province has preset terrain
 */
-void province::write_geopath_endpoints_to_image(QImage &image, QImage &terrain_image)
+void province::write_geopath_endpoints_to_image(QImage &image, QImage &terrain_image) const
 {
 	const int circle_radius = this->get_terrain()->get_path_width() / 2;
 
@@ -686,7 +687,7 @@ void province::write_geopath_endpoints_to_image(QImage &image, QImage &terrain_i
 **	@param	geoshape		The geoshape
 **	@param	terrain_image	The terrain image to which the geoshape is to be written, if the province has preset terrain
 */
-void province::write_geoshape_to_image(QImage &image, const QGeoShape &geoshape, QImage &terrain_image)
+void province::write_geoshape_to_image(QImage &image, const QGeoShape &geoshape, QImage &terrain_image) const
 {
 	const QString province_loading_message = engine_interface::get()->get_loading_message();
 
@@ -759,6 +760,58 @@ void province::write_geoshape_to_image(QImage &image, const QGeoShape &geoshape,
 	}
 
 	engine_interface::get()->set_loading_message(province_loading_message);
+}
+
+/**
+**	@brief	Write the province's geodata to a GeoJSON file
+*/
+void province::write_geojson() const
+{
+	QVariantList top_list;
+
+	QVariantMap feature_collection;
+	feature_collection["type"] = "FeatureCollection";
+
+	QVariantList features;
+
+	QVariantMap feature;
+	QVariantMap feature_properties;
+	feature_properties["name"] = QString::fromStdString(this->get_identifier());
+	feature["properties"] = feature_properties;
+
+	QVariantList shapes;
+
+	if (!this->geopolygons.empty()) {
+		feature["type"] = "MultiPolygon";
+
+		for (const QGeoPolygon &geopolygon : this->geopolygons) {
+			QVariantMap polygon;
+			polygon["type"] = "Polygon";
+			polygon["data"] = QVariant::fromValue(geopolygon);
+			shapes.push_back(polygon);
+		}
+	} else {
+		feature["type"] = "MultiLineString";
+
+		for (const QGeoPath &geopath : this->geopaths) {
+			QVariantMap line;
+			line["type"] = "LineString";
+			line["data"] = QVariant::fromValue(geopath);
+			shapes.push_back(line);
+		}
+	}
+
+	feature["data"] = shapes;
+
+	features.push_back(feature);
+	feature_collection["data"] = features;
+
+	top_list.push_back(feature_collection);
+
+	QJsonDocument geojson = QGeoJson::exportGeoJson(top_list);
+	std::filesystem::path filepath = database::get_map_path() / province::database_folder  / (this->get_identifier() + ".geojson");
+	std::ofstream ofstream(filepath);
+	ofstream << geojson.toJson().constData();
 }
 
 /**

@@ -52,6 +52,12 @@ void map::load()
 		terrain_type::process_map_database();
 
 		this->write_geodata_to_image();
+
+		for (province *province : province::get_all()) {
+			if (province->writes_geojson()) {
+				province->write_geojson();
+			}
+		}
 	}
 
 	this->load_terrain();
@@ -155,7 +161,7 @@ void map::set_mode(const map_mode mode)
 */
 void map::load_geojson_files()
 {
-	std::filesystem::path province_data_path("./map/provinces");
+	std::filesystem::path province_data_path = database::get_map_path() / "provinces";
 
 	if (!std::filesystem::exists(province_data_path)) {
 		return;
@@ -330,7 +336,7 @@ void map::save_geojson_data_to_gsml()
 		}
 
 		data.add_child(std::move(geopolygons));
-		data.print_to_dir("./map/provinces/");
+		data.print_to_dir(database::get_map_path() / "provinces");
 	}
 
 	this->geojson_polygon_data.clear();
@@ -346,7 +352,7 @@ void map::save_geojson_data_to_gsml()
 		}
 
 		data.add_child(std::move(geopaths));
-		data.print_to_dir("./map/provinces/");
+		data.print_to_dir(database::get_map_path() / "provinces");
 	}
 
 	this->geojson_path_data.clear();
@@ -463,7 +469,7 @@ void map::load_terrain()
 bool map::check_cache()
 {
 	QCryptographicHash hash(QCryptographicHash::Md5);
-	util::add_files_to_checksum(hash, "./map");
+	util::add_files_to_checksum(hash, database::get_map_path());
 
 	this->checksum = hash.result().toHex().toStdString(); //save the checksum
 
@@ -517,8 +523,8 @@ void map::save_cache()
 */
 void map::write_geodata_to_image()
 {
-	QImage terrain_image("./map/terrain.png");
-	QImage province_image("./map/provinces.png");
+	QImage terrain_image((database::get_map_path() / "terrain.png").string().c_str());
+	QImage province_image((database::get_map_path() / "provinces.png").string().c_str());
 
 	this->write_terrain_geodata_to_image(terrain_image);
 	this->write_province_geodata_to_image(province_image, terrain_image);

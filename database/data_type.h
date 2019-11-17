@@ -309,7 +309,7 @@ public:
 			return;
 		}
 
-		std::filesystem::path map_path("./map/" + std::string(T::database_folder));
+		std::filesystem::path map_path = database::get_map_path() / T::database_folder;
 
 		if (!std::filesystem::exists(map_path)) {
 			return;

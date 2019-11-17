@@ -40,7 +40,7 @@ public:
 	*/
 	static void process_map_database()
 	{
-		std::filesystem::path map_path("./map/" + std::string(terrain_type::database_folder));
+		std::filesystem::path map_path(database::get_map_path() / terrain_type::database_folder);
 
 		if (!std::filesystem::exists(map_path)) {
 			return;

@@ -52,6 +52,11 @@ public:
 		return std::filesystem::current_path();
 	}
 
+	static std::filesystem::path get_map_path()
+	{
+		return database::get_root_path() / "map";
+	}
+
 	static std::filesystem::path get_graphics_path()
 	{
 		return database::get_root_path() / "graphics";
