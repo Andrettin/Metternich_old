@@ -52,9 +52,79 @@ public:
 		return std::filesystem::current_path();
 	}
 
+	static std::vector<std::filesystem::path> get_base_paths()
+	{
+		std::vector<std::filesystem::path> base_paths;
+		base_paths.push_back(database::get_root_path());
+
+		std::vector<std::filesystem::path> module_paths = database::get_module_paths();
+		base_paths.insert(base_paths.end(), module_paths.begin(), module_paths.end());
+
+		return base_paths;
+	}
+
+	static std::filesystem::path get_modules_path()
+	{
+		return database::get_root_path() / "modules";
+	}
+
+	static std::filesystem::path get_documents_modules_path()
+	{
+		return database::get_documents_path() / "modules";
+	}
+
+	static std::vector<std::filesystem::path> get_module_paths()
+	{
+		std::vector<std::filesystem::path> module_paths;
+		if (std::filesystem::exists(database::get_modules_path())) {
+			module_paths = database::get_module_paths_at_dir(database::get_modules_path());
+		}
+
+		if (std::filesystem::exists(database::get_documents_modules_path())) {
+			std::vector<std::filesystem::path> documents_module_paths = database::get_module_paths_at_dir(database::get_documents_modules_path());
+			module_paths.insert(module_paths.end(), documents_module_paths.begin(), documents_module_paths.end());
+		}
+
+		return module_paths;
+	}
+
+	static std::vector<std::filesystem::path> get_module_paths_at_dir(const std::filesystem::path &path)
+	{
+		std::vector<std::filesystem::path> module_paths;
+
+		std::filesystem::directory_iterator dir_iterator(path);
+
+		for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
+			if (!dir_entry.is_directory()) {
+				continue;
+			}
+
+			module_paths.push_back(dir_entry);
+
+			std::filesystem::path submodules_path = dir_entry.path() / "modules";
+			if (std::filesystem::exists(submodules_path)) {
+				std::vector<std::filesystem::path> submodules = get_module_paths_at_dir(submodules_path);
+				module_paths.insert(module_paths.end(), submodules.begin(), submodules.end());
+			}
+		}
+
+		return module_paths;
+	}
+
 	static std::filesystem::path get_data_path()
 	{
 		return database::get_root_path() / "data";
+	}
+
+	static std::vector<std::filesystem::path> get_data_paths()
+	{
+		std::vector<std::filesystem::path> paths = database::get_base_paths();
+
+		for (std::filesystem::path &path : paths) {
+			path /= "data";
+		}
+
+		return paths;
 	}
 
 	static std::filesystem::path get_common_path()
@@ -62,9 +132,26 @@ public:
 		return database::get_data_path() / "common";
 	}
 
-	static std::filesystem::path get_history_path()
+	static std::vector<std::filesystem::path> get_common_paths()
 	{
-		return database::get_data_path() / "history";
+		std::vector<std::filesystem::path> paths = database::get_data_paths();
+
+		for (std::filesystem::path &path : paths) {
+			path /= "common";
+		}
+
+		return paths;
+	}
+
+	static std::vector<std::filesystem::path> get_history_paths()
+	{
+		std::vector<std::filesystem::path> paths = database::get_data_paths();
+
+		for (std::filesystem::path &path : paths) {
+			path /= "history";
+		}
+
+		return paths;
 	}
 
 	static std::filesystem::path get_map_path()

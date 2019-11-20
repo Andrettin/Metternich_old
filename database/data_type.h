@@ -164,21 +164,23 @@ public:
 			return;
 		}
 
-		std::filesystem::path database_path(database::get_common_path() / T::database_folder);
+		for (const std::filesystem::path &path : database::get_common_paths()) {
+			std::filesystem::path database_path(path / T::database_folder);
 
-		if (!std::filesystem::exists(database_path)) {
-			return;
-		}
-
-		std::filesystem::recursive_directory_iterator dir_iterator(database_path);
-
-		for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
-			if (!dir_entry.is_regular_file()) {
+			if (!std::filesystem::exists(database_path)) {
 				continue;
 			}
 
-			gsml_parser parser(dir_entry.path());
-			T::gsml_data_to_process.push_back(parser.parse());
+			std::filesystem::recursive_directory_iterator dir_iterator(database_path);
+
+			for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
+				if (!dir_entry.is_regular_file()) {
+					continue;
+				}
+
+				gsml_parser parser(dir_entry.path());
+				T::gsml_data_to_process.push_back(parser.parse());
+			}
 		}
 	}
 
@@ -231,28 +233,30 @@ public:
 			return;
 		}
 
-		std::filesystem::path history_path(database::get_history_path() / T::database_folder);
+		for (const std::filesystem::path &path : database::get_history_paths()) {
+			std::filesystem::path history_path(path / T::database_folder);
 
-		if (!std::filesystem::exists(history_path)) {
-			return;
-		}
-
-		std::filesystem::recursive_directory_iterator dir_iterator(history_path);
-
-		for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
-			if (!dir_entry.is_regular_file()) {
+			if (!std::filesystem::exists(history_path)) {
 				continue;
 			}
 
-			if constexpr (T::history_only == false) {
-				//non-history only data types have files with the same name as their identifiers, while for history only data types the file name is not relevant, with the identifier being scoped to within a file
-				if (T::get(dir_entry.path().stem().string(), false) == nullptr) {
-					throw std::runtime_error(dir_entry.path().stem().string() + " is not a valid \"" + T::class_identifier + "\" instance identifier.");
-				}
-			}
+			std::filesystem::recursive_directory_iterator dir_iterator(history_path);
 
-			gsml_parser parser(dir_entry.path());
-			T::gsml_history_data_to_process.push_back(parser.parse());
+			for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
+				if (!dir_entry.is_regular_file()) {
+					continue;
+				}
+
+				if constexpr (T::history_only == false) {
+					//non-history only data types have files with the same name as their identifiers, while for history only data types the file name is not relevant, with the identifier being scoped to within a file
+					if (T::get(dir_entry.path().stem().string(), false) == nullptr) {
+						throw std::runtime_error(dir_entry.path().stem().string() + " is not a valid \"" + T::class_identifier + "\" instance identifier.");
+					}
+				}
+
+				gsml_parser parser(dir_entry.path());
+				T::gsml_history_data_to_process.push_back(parser.parse());
+			}
 		}
 	}
 
