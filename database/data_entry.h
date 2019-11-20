@@ -25,13 +25,13 @@ public:
 
 	virtual void process_gsml_dated_property(const gsml_property &property, const QDateTime &date)
 	{
-		Q_UNUSED(date);
+		Q_UNUSED(date)
 		this->process_gsml_property(property);
 	}
 
 	virtual void process_gsml_dated_scope(const gsml_data &scope, const QDateTime &date)
 	{
-		Q_UNUSED(date);
+		Q_UNUSED(date)
 		this->process_gsml_scope(scope);
 	}
 

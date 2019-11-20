@@ -164,7 +164,7 @@ public:
 			return;
 		}
 
-		std::filesystem::path database_path("./data/common/" + std::string(T::database_folder));
+		std::filesystem::path database_path(database::get_common_path() / T::database_folder);
 
 		if (!std::filesystem::exists(database_path)) {
 			return;
@@ -231,7 +231,7 @@ public:
 			return;
 		}
 
-		std::filesystem::path history_path("./data/history/" + std::string(T::database_folder));
+		std::filesystem::path history_path(database::get_history_path() / T::database_folder);
 
 		if (!std::filesystem::exists(history_path)) {
 			return;

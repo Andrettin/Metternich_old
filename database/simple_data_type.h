@@ -26,7 +26,7 @@ public:
 			return;
 		}
 
-		std::filesystem::path history_path("./data/history/" + std::string(T::database_folder));
+		std::filesystem::path history_path(database::get_history_path() / T::database_folder);
 
 		if (!std::filesystem::exists(history_path)) {
 			return;

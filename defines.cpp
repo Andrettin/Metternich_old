@@ -12,7 +12,7 @@ namespace metternich {
 */
 void defines::load()
 {
-	std::filesystem::path defines_path("./data/common/defines.txt");
+	std::filesystem::path defines_path(database::get_common_path() / "defines.txt");
 
 	if (!std::filesystem::exists(defines_path)) {
 		return;

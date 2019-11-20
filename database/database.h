@@ -52,6 +52,21 @@ public:
 		return std::filesystem::current_path();
 	}
 
+	static std::filesystem::path get_data_path()
+	{
+		return database::get_root_path() / "data";
+	}
+
+	static std::filesystem::path get_common_path()
+	{
+		return database::get_data_path() / "common";
+	}
+
+	static std::filesystem::path get_history_path()
+	{
+		return database::get_data_path() / "history";
+	}
+
 	static std::filesystem::path get_map_path()
 	{
 		return database::get_root_path() / "map";
