@@ -36,6 +36,7 @@ public:
 	}
 
 	void load_history(gsml_data &data);
+	void load_date_scope(const gsml_data &date_scope, const QDateTime &date);
 
 	virtual void initialize()
 	{

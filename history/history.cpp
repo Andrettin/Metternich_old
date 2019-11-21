@@ -3,6 +3,7 @@
 #include "character/character.h"
 #include "database/database.h"
 #include "engine_interface.h"
+#include "history/timeline.h"
 #include "holding/holding.h"
 #include "landed_title/landed_title.h"
 #include "map/province.h"
@@ -155,6 +156,17 @@ QDateTime history::string_to_date(const std::string &date_str)
 	}
 
 	return date;
+}
+
+bool history::contains_timeline_date(const metternich::timeline *timeline, const QDateTime &date) const
+{
+	if (this->get_timeline() == timeline) {
+		return date <= this->get_start_date();
+	} else if (this->get_timeline() == nullptr) {
+		return false;
+	}
+
+	return this->get_timeline()->contains_timeline_date(timeline, date);
 }
 
 }

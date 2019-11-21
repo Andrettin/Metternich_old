@@ -26,10 +26,12 @@ game::game() : speed(game_speed::fast)
 **
 **	@param	start_date	The game's start date
 */
-void game::start(const QDateTime &start_date)
+void game::start(const timeline *timeline, const QDateTime &start_date)
 {
 	this->starting = true;
 
+	history::get()->set_timeline(timeline);
+	history::get()->set_start_date(start_date);
 	this->current_date = start_date;
 	emit current_date_changed();
 

@@ -103,6 +103,7 @@ HEADERS += \
     game/game.h \
     game/game_speed.h \
     history/history.h \
+    history/timeline.h \
     holding/building.h \
     holding/building_slot.h \
     holding/holding.h \

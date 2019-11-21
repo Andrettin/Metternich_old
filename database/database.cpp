@@ -15,6 +15,7 @@
 #include "engine_interface.h"
 #include "game/game.h"
 #include "history/history.h"
+#include "history/timeline.h"
 #include "holding/holding.h"
 #include "holding/holding_slot.h"
 #include "holding/holding_slot_type.h"
@@ -144,6 +145,8 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 				new_property_value = QVariant::fromValue(string_to_holding_slot_type(property.get_value()));
 			} else if (property_class_name == "metternich::religion_group*") {
 				new_property_value = QVariant::fromValue(religion_group::get(property.get_value()));
+			} else if (property_class_name == "metternich::timeline*") {
+				new_property_value = QVariant::fromValue(timeline::get(property.get_value()));
 			} else {
 				throw std::runtime_error("Unknown type for object reference property \"" + std::string(property_name) + "\" (\"" + property_class_name + "\").");
 			}
@@ -250,8 +253,6 @@ void database::load()
 {
 	engine_interface::get()->set_loading_message("Loading Database...");
 
-	defines::get()->load();
-
 	//sort the metadata instances so they are placed after their class' dependencies' metadata
 	std::sort(this->metadata.begin(), this->metadata.end(), [](const std::unique_ptr<data_type_metadata> &a, const std::unique_ptr<data_type_metadata> &b) {
 		if (a->has_database_dependency_on(b)) {
@@ -272,6 +273,8 @@ void database::load()
 	for (const std::unique_ptr<data_type_metadata> &metadata : this->metadata) {
 		metadata->get_processing_function()(true);
 	}
+
+	defines::get()->load(); //load the defines here so that they can refer to data entries
 
 	//actually define the data entries for each data type
 	for (const std::unique_ptr<data_type_metadata> &metadata : this->metadata) {

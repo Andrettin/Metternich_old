@@ -38,7 +38,7 @@ namespace metternich {
 		try {
 			database::get()->load();
 			map::get()->load();
-			game::get()->start(defines::get()->get_start_date());
+			game::get()->start(defines::get()->get_default_timeline(), defines::get()->get_start_date());
 		} catch (const std::exception &exception) {
 			qCritical() << exception.what() << '\n';
 			QMetaObject::invokeMethod(QApplication::instance(), []{ QApplication::exit(EXIT_FAILURE); }, Qt::QueuedConnection);

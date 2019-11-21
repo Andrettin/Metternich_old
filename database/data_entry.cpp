@@ -3,6 +3,7 @@
 #include "database/database.h"
 #include "game/game.h"
 #include "history/history.h"
+#include "history/timeline.h"
 #include "translator.h"
 #include "util/string_util.h"
 
@@ -36,17 +37,45 @@ void data_entry_base::load_history(gsml_data &data)
 	data.sort_children(); //sort by date, so that they are applied chronologically
 
 	for (const gsml_data &history_entry : data.get_children()) {
-		QDateTime date = history::string_to_date(history_entry.get_tag());
+		const timeline *timeline = nullptr;
 
-		if (date <= game::get()->get_current_date()) {
-			for (const gsml_property &property : history_entry.get_properties()) {
-				this->process_gsml_dated_property(property, date);
+		if (!std::isdigit(history_entry.get_tag().front()) && history_entry.get_tag().front() != '-') {
+			timeline = timeline::get(history_entry.get_tag(), false);
+		}
+
+		if (timeline != nullptr) {
+			if (history::get()->get_timeline() == nullptr || (history::get()->get_timeline() != timeline && !history::get()->get_timeline()->derives_from_timeline(timeline))) {
+				continue;
 			}
 
-			for (const gsml_data &scope : history_entry.get_children()) {
-				this->process_gsml_dated_scope(scope, date);
+			for (const gsml_data &history_entry : data.get_children()) {
+				QDateTime date = history::string_to_date(history_entry.get_tag());
+
+				if (history::get()->contains_timeline_date(timeline, date)) {
+					this->load_date_scope(history_entry, date);
+				}
+			}
+		} else {
+			QDateTime date = history::string_to_date(history_entry.get_tag());
+
+			if (history::get()->contains_timeline_date(nullptr, date)) {
+				this->load_date_scope(history_entry, date);
 			}
 		}
+	}
+}
+
+/**
+**	@brief	Load date scope for the data entry
+*/
+void data_entry_base::load_date_scope(const gsml_data &date_scope, const QDateTime &date)
+{
+	for (const gsml_property &property : date_scope.get_properties()) {
+		this->process_gsml_dated_property(property, date);
+	}
+
+	for (const gsml_data &scope : date_scope.get_children()) {
+		this->process_gsml_dated_scope(scope, date);
 	}
 }
 

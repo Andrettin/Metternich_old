@@ -14,6 +14,7 @@
 namespace metternich {
 
 class character;
+class timeline;
 enum class game_speed : int;
 
 /**
@@ -31,7 +32,7 @@ class game : public QObject, public singleton<game>
 public:
 	game();
 
-	void start(const QDateTime &start_date);
+	void start(const timeline *timeline, const QDateTime &start_date);
 	void run();
 	void do_tick();
 	void do_day();
