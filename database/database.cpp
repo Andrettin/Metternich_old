@@ -111,7 +111,7 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 			} else if (property.get_key() == "holding" || property.get_key() == "capital_holding") {
 				const holding_slot *holding_slot = holding_slot::get(property.get_value());
 				holding *holding = holding_slot->get_holding();
-				if (holding == nullptr) {
+				if (holding == nullptr && class_name != "metternich::population_unit") {
 					throw std::runtime_error("Holding slot \"" + property.get_value() + "\" has no constructed holding, but a holding property is being set using it as the holding's identifier.");
 				}
 				new_property_value = QVariant::fromValue(holding);
