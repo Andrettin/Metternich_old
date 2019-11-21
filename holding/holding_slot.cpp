@@ -7,6 +7,7 @@
 #include "holding/holding_slot_type.h"
 #include "landed_title/landed_title.h"
 #include "map/province.h"
+#include "map/province_profile.h"
 #include "random.h"
 #include "religion/religion.h"
 #include "religion/religion_group.h"
@@ -36,6 +37,11 @@ holding_slot::~holding_slot()
 */
 void holding_slot::initialize()
 {
+	if (this->province_profile != nullptr) {
+		this->set_province(this->province_profile->get_province());
+		this->province_profile = nullptr;
+	}
+
 	if (this->get_available_commodities().empty()) {
 		//generate an available commodity for the holding if it has none
 		this->generate_available_commodity();

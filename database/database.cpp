@@ -22,6 +22,7 @@
 #include "holding/holding_type.h"
 #include "landed_title/landed_title.h"
 #include "map/province.h"
+#include "map/province_profile.h"
 #include "map/region.h"
 #include "map/terrain_type.h"
 #include "phenotype.h"
@@ -143,6 +144,8 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 				}
 			} else if (property_class_name == "metternich::holding_slot_type") {
 				new_property_value = QVariant::fromValue(string_to_holding_slot_type(property.get_value()));
+			} else if (property_class_name == "metternich::province_profile*") {
+				new_property_value = QVariant::fromValue(province_profile::get(property.get_value()));
 			} else if (property_class_name == "metternich::religion_group*") {
 				new_property_value = QVariant::fromValue(religion_group::get(property.get_value()));
 			} else if (property_class_name == "metternich::timeline*") {

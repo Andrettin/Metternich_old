@@ -18,7 +18,8 @@ std::set<std::string> region::get_database_dependencies()
 {
 	return {
 		//so that when regions are processed provinces already have their holding slots set
-		province::class_identifier
+		province::class_identifier,
+		holding_slot::class_identifier
 	};
 }
 

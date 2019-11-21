@@ -20,7 +20,6 @@
 
 namespace metternich {
 
-class csv_data;
 class culture;
 class holding;
 class holding_slot;
@@ -272,19 +271,24 @@ public:
 		return this->hospital_holding_slot;
 	}
 
-	const std::vector<region *> &get_regions() const
+	const std::set<region *> &get_regions() const
 	{
 		return this->regions;
 	}
 
 	void add_region(region *region)
 	{
-		this->regions.push_back(region);
+		this->regions.insert(region);
 	}
 
 	void remove_region(region *region)
 	{
-		this->regions.erase(std::remove(this->regions.begin(), this->regions.end(), region), this->regions.end());
+		this->regions.erase(region);
+	}
+
+	bool is_in_region(region *region) const
+	{
+		return this->regions.contains(region);
 	}
 
 	void add_border_province(province *province)
@@ -410,7 +414,7 @@ private:
 	holding_slot *fort_holding_slot = nullptr;
 	holding_slot *university_holding_slot = nullptr;
 	holding_slot *hospital_holding_slot = nullptr;
-	std::vector<region *> regions; //the regions to which this province belongs
+	std::set<region *> regions; //the regions to which this province belongs
 	std::set<province *> border_provinces; //provinces bordering this one
 	bool selected = false;
 	std::vector<std::unique_ptr<population_unit>> population_units; //population units set for this province in history, used during initialization to generate population units in the province's settlements

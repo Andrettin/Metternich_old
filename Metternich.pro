@@ -40,6 +40,7 @@ SOURCES += \
         map/map.cpp \
         map/province.cpp \
         map/province_image_provider.cpp \
+        map/province_profile.cpp \
         map/region.cpp \
         map/terrain_type.cpp \
         population/population_type.cpp \
@@ -116,6 +117,7 @@ HEADERS += \
     map/map_mode.h \
     map/province.h \
     map/province_image_provider.h \
+    map/province_profile.h \
     map/region.h \
     map/terrain_type.h \
     pch.h \

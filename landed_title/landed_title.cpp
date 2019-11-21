@@ -160,7 +160,16 @@ void landed_title::initialize()
 {
 	if (this->get_tier() == landed_title_tier::barony) {
 		if (this->get_holding_slot() != nullptr) {
+			if (!this->get_holding_slot()->is_initialized()) {
+				this->get_holding_slot()->initialize();
+			}
+
 			this->capital_province = this->get_holding_slot()->get_province();
+
+			//if a non-titular barony has no de jure liege, set it to be the county of its holding slot's province
+			if (this->get_de_jure_liege_title() == nullptr) {
+				this->set_de_jure_liege_title(this->get_holding_slot()->get_province()->get_county());
+			}
 		} else if (this->get_de_jure_liege_title() != nullptr && !this->get_de_jure_liege_title()->is_titular()) {
 			//set the barony's capital province to its county's province
 			this->capital_province = this->get_de_jure_liege_title()->get_province();

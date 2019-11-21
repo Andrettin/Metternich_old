@@ -12,6 +12,7 @@ class commodity;
 class holding;
 class landed_title;
 class province;
+class province_profile;
 enum class holding_slot_type : int;
 
 class holding_slot : public data_entry, public data_type<holding_slot>
@@ -20,6 +21,7 @@ class holding_slot : public data_entry, public data_type<holding_slot>
 
 	Q_PROPERTY(QString name READ get_name_qstring NOTIFY name_changed)
 	Q_PROPERTY(metternich::province* province READ get_province WRITE set_province)
+	Q_PROPERTY(metternich::province_profile* province_profile MEMBER province_profile)
 	Q_PROPERTY(metternich::holding_slot_type type READ get_type WRITE set_type)
 	Q_PROPERTY(bool settlement READ is_settlement CONSTANT)
 	Q_PROPERTY(metternich::landed_title* barony READ get_barony WRITE set_barony NOTIFY barony_changed)
@@ -121,6 +123,7 @@ private:
 	landed_title *barony = nullptr; //the barony corresponding to this holding slot
 	std::unique_ptr<holding> holding; //the holding built on this slot, if any
 	province *province = nullptr; //to which province this holding slot belongs
+	province_profile *province_profile = nullptr;
 	std::vector<metternich::commodity *> available_commodities; //the commodities available for production by the holding (if any)
 };
 
