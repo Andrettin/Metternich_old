@@ -38,6 +38,7 @@ namespace metternich {
 		try {
 			database::get()->load();
 			map::get()->load();
+			database::get()->initialize();
 			game::get()->start(defines::get()->get_default_timeline(), defines::get()->get_start_date());
 		} catch (const std::exception &exception) {
 			qCritical() << exception.what() << '\n';

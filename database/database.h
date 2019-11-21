@@ -230,6 +230,7 @@ public:
 	~database();
 
 	void load();
+	void initialize();
 	void initialize_history();
 	void register_metadata(std::unique_ptr<data_type_metadata> &&metadata);
 
