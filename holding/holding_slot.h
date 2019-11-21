@@ -27,6 +27,7 @@ class holding_slot : public data_entry, public data_type<holding_slot>
 	Q_PROPERTY(metternich::landed_title* barony READ get_barony WRITE set_barony NOTIFY barony_changed)
 	Q_PROPERTY(metternich::holding* holding READ get_holding NOTIFY holding_changed)
 	Q_PROPERTY(QVariantList available_commodities READ get_available_commodities_qvariant_list NOTIFY available_commodities_changed)
+	Q_PROPERTY(bool population_distribution_allowed MEMBER population_distribution_allowed READ is_population_distribution_allowed)
 
 public:
 	static constexpr const char *class_identifier = "holding_slot";
@@ -113,6 +114,11 @@ public:
 
 	void generate_available_commodity();
 
+	bool is_population_distribution_allowed() const
+	{
+		return this->population_distribution_allowed;
+	}
+
 signals:
 	void barony_changed();
 	void holding_changed();
@@ -125,6 +131,7 @@ private:
 	province *province = nullptr; //to which province this holding slot belongs
 	province_profile *province_profile = nullptr;
 	std::vector<metternich::commodity *> available_commodities; //the commodities available for production by the holding (if any)
+	bool population_distribution_allowed = true;
 };
 
 }

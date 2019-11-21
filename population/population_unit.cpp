@@ -7,6 +7,7 @@
 #include "economy/employment_type.h"
 #include "game/game.h"
 #include "holding/holding.h"
+#include "holding/holding_slot.h"
 #include "map/province.h"
 #include "map/region.h"
 #include "phenotype.h"
@@ -311,6 +312,10 @@ void population_unit::subtract_existing_sizes_in_holding(const metternich::holdi
 void population_unit::subtract_existing_sizes_in_holdings(const std::vector<metternich::holding *> &holdings)
 {
 	for (const metternich::holding *holding : holdings) {
+		if (!holding->get_slot()->is_population_distribution_allowed()) {
+			continue; //if cannot distribute population to a given holding, then don't subtract its population from the size either
+		}
+
 		this->subtract_existing_sizes_in_holding(holding);
 	}
 }
@@ -324,6 +329,10 @@ void population_unit::subtract_existing_sizes_in_holdings(const std::vector<mett
 */
 bool population_unit::can_distribute_to_holding(const metternich::holding *holding) const
 {
+	if (!holding->get_slot()->is_population_distribution_allowed()) {
+		return false;
+	}
+
 	if (this->get_type()->get_holding_types().find(holding->get_type()) == this->get_type()->get_holding_types().end()) {
 		return false;
 	}
