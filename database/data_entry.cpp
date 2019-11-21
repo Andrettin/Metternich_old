@@ -40,7 +40,7 @@ void data_entry_base::load_history(gsml_data &data)
 		const timeline *timeline = nullptr;
 
 		if (!std::isdigit(history_entry.get_tag().front()) && history_entry.get_tag().front() != '-') {
-			timeline = timeline::get(history_entry.get_tag(), false);
+			timeline = timeline::try_get(history_entry.get_tag());
 		}
 
 		if (timeline != nullptr) {

@@ -30,10 +30,39 @@ public:
 	/**
 	**	@brief	Get an instance of the class by its identifier
 	**	@param	identifier	The instance's identifier
-	**	@param	should_find	Whether it is expected that an instance should be found (i.e. if none is, then it is an error).
+	**	@return	The instance
+	*/
+	static T *get(const KEY &identifier)
+	{
+		if constexpr (std::is_same_v<KEY, std::string>) {
+			if (identifier == "none") {
+				return nullptr;
+			}
+		} else if constexpr (std::is_arithmetic_v<KEY>) {
+			if (identifier == 0) {
+				return nullptr;
+			}
+		}
+
+		T *instance = data_type::try_get(identifier);
+
+		if (instance == nullptr) {
+			if constexpr (std::is_arithmetic_v<KEY>) {
+				throw std::runtime_error("Invalid \"" + std::string(T::class_identifier) + "\" instance: \"" + std::to_string(identifier) + "\".");
+			} else {
+				throw std::runtime_error("Invalid \"" + std::string(T::class_identifier) + "\" instance: \"" + identifier + "\".");
+			}
+		}
+
+		return instance;
+	}
+
+	/**
+	**	@brief	Try to get an instance of the class by its identifier
+	**	@param	identifier	The instance's identifier
 	**	@return	The instance if found, or null otherwise
 	*/
-	static T *get(const KEY &identifier, const bool should_find = true)
+	static T *try_get(const KEY &identifier)
 	{
 		if constexpr (std::is_same_v<KEY, std::string>) {
 			if (identifier == "none") {
@@ -49,14 +78,6 @@ public:
 
 		if (find_iterator != data_type::instances_by_identifier.end()) {
 			return find_iterator->second.get();
-		}
-
-		if (should_find) {
-			if constexpr (std::is_arithmetic_v<KEY>) {
-				throw std::runtime_error("Invalid \"" + std::string(T::class_identifier) + "\" instance: \"" + std::to_string(identifier) + "\".");
-			} else {
-				throw std::runtime_error("Invalid \"" + std::string(T::class_identifier) + "\" instance: \"" + identifier + "\".");
-			}
 		}
 
 		return nullptr;
@@ -249,7 +270,7 @@ public:
 
 				if constexpr (T::history_only == false) {
 					//non-history only data types have files with the same name as their identifiers, while for history only data types the file name is not relevant, with the identifier being scoped to within a file
-					if (T::get(dir_entry.path().stem().string(), false) == nullptr) {
+					if (T::try_get(dir_entry.path().stem().string()) == nullptr) {
 						throw std::runtime_error(dir_entry.path().stem().string() + " is not a valid \"" + T::class_identifier + "\" instance identifier.");
 					}
 				}
@@ -328,7 +349,7 @@ public:
 				continue;
 			}
 
-			if (T::get(dir_entry.path().stem().string(), false) == nullptr) {
+			if (T::try_get(dir_entry.path().stem().string()) == nullptr) {
 				throw std::runtime_error(dir_entry.path().stem().string() + " is not a valid \"" + T::class_identifier + "\" instance identifier.");
 			}
 
@@ -366,7 +387,7 @@ public:
 				continue;
 			}
 
-			if (T::get(dir_entry.path().stem().string(), false) == nullptr) {
+			if (T::try_get(dir_entry.path().stem().string()) == nullptr) {
 				throw std::runtime_error(dir_entry.path().stem().string() + " is not a valid \"" + T::class_identifier + "\" instance identifier.");
 			}
 
