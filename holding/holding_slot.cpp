@@ -113,6 +113,12 @@ void holding_slot::set_barony(landed_title *barony)
 	emit barony_changed();
 }
 
+void holding_slot::set_province(metternich::province *province)
+{
+	this->province = province;
+	province->add_holding_slot(this);
+}
+
 /**
 **	@brief	Get the holding slot's available commodities as a QVariantList
 **

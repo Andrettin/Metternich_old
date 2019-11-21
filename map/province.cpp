@@ -208,27 +208,9 @@ void province::process_gsml_scope(const gsml_data &scope)
 			this->border_provinces.insert(border_province);
 		}
 	} else if (tag.substr(0, 2) == holding_slot::prefix) {
-		holding_slot *holding_slot = holding_slot::add(tag, this);
+		holding_slot *holding_slot = holding_slot::add(tag);
 		database::process_gsml_data(holding_slot, scope);
-		switch (holding_slot->get_type()) {
-			case holding_slot_type::settlement:
-				this->settlement_holding_slots.push_back(holding_slot);
-				break;
-			case holding_slot_type::palace:
-				this->palace_holding_slots.push_back(holding_slot);
-				break;
-			case holding_slot_type::fort:
-				this->fort_holding_slot = holding_slot;
-				break;
-			case holding_slot_type::university:
-				this->university_holding_slot = holding_slot;
-				break;
-			case holding_slot_type::hospital:
-				this->hospital_holding_slot = holding_slot;
-				break;
-			default:
-				break;
-		}
+		holding_slot->set_province(this);
 	} else {
 		data_entry_base::process_gsml_scope(scope);
 	}
@@ -269,25 +251,25 @@ void province::initialize()
 	//create a fort holding slot for this province if none exists
 	if (this->get_fort_holding_slot() == nullptr) {
 		std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier() + "_fort";
-		holding_slot *holding_slot = holding_slot::add(holding_slot_identifier, this);
+		holding_slot *holding_slot = holding_slot::add(holding_slot_identifier);
 		holding_slot->set_type(holding_slot_type::fort);
-		this->fort_holding_slot = holding_slot;
+		holding_slot->set_province(this);
 	}
 
 	//create a university holding slot for this province if none exists
 	if (this->get_university_holding_slot() == nullptr) {
 		std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier() + "_university";
-		holding_slot *holding_slot = holding_slot::add(holding_slot_identifier, this);
+		holding_slot *holding_slot = holding_slot::add(holding_slot_identifier);
 		holding_slot->set_type(holding_slot_type::university);
-		this->university_holding_slot = holding_slot;
+		holding_slot->set_province(this);
 	}
 
 	//create a hospital holding slot for this province if none exists
 	if (this->get_hospital_holding_slot() == nullptr) {
 		std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier() + "_hospital";
-		holding_slot *holding_slot = holding_slot::add(holding_slot_identifier, this);
+		holding_slot *holding_slot = holding_slot::add(holding_slot_identifier);
 		holding_slot->set_type(holding_slot_type::hospital);
-		this->hospital_holding_slot = holding_slot;
+		holding_slot->set_province(this);
 	}
 }
 
@@ -1048,6 +1030,29 @@ void province::calculate_population_groups()
 
 	this->set_culture(plurality_culture);
 	this->set_religion(plurality_religion);
+}
+
+void province::add_holding_slot(holding_slot *holding_slot)
+{
+	switch (holding_slot->get_type()) {
+		case holding_slot_type::settlement:
+			this->settlement_holding_slots.push_back(holding_slot);
+			break;
+		case holding_slot_type::palace:
+			this->palace_holding_slots.push_back(holding_slot);
+			break;
+		case holding_slot_type::fort:
+			this->fort_holding_slot = holding_slot;
+			break;
+		case holding_slot_type::university:
+			this->university_holding_slot = holding_slot;
+			break;
+		case holding_slot_type::hospital:
+			this->hospital_holding_slot = holding_slot;
+			break;
+		default:
+			break;
+	}
 }
 
 /**

@@ -224,6 +224,8 @@ public:
 
 	void calculate_population_groups();
 
+	void add_holding_slot(holding_slot *holding_slot);
+
 	const std::vector<holding_slot *> &get_settlement_holding_slots() const
 	{
 		return this->settlement_holding_slots;

@@ -19,6 +19,7 @@ class holding_slot : public data_entry, public data_type<holding_slot>
 	Q_OBJECT
 
 	Q_PROPERTY(QString name READ get_name_qstring NOTIFY name_changed)
+	Q_PROPERTY(metternich::province* province READ get_province WRITE set_province)
 	Q_PROPERTY(metternich::holding_slot_type type READ get_type WRITE set_type)
 	Q_PROPERTY(bool settlement READ is_settlement CONSTANT)
 	Q_PROPERTY(metternich::landed_title* barony READ get_barony WRITE set_barony NOTIFY barony_changed)
@@ -27,17 +28,16 @@ class holding_slot : public data_entry, public data_type<holding_slot>
 
 public:
 	static constexpr const char *class_identifier = "holding_slot";
-	static constexpr const char *database_folder = "";
+	static constexpr const char *database_folder = "holding_slots";
 	static constexpr const char *prefix = "h_";
 
-	static holding_slot *add(const std::string &identifier, province *province = nullptr)
+	static holding_slot *add(const std::string &identifier)
 	{
 		if (identifier.substr(0, 2) != holding_slot::prefix) {
 			throw std::runtime_error("Invalid identifier for new holding slot: \"" + identifier + "\". Holding slot identifiers must begin with \"" + holding_slot::prefix + "\".");
 		}
 
 		holding_slot *holding_slot = data_type<metternich::holding_slot>::add(identifier);
-		holding_slot->province = province;
 		return holding_slot;
 	}
 
@@ -87,6 +87,8 @@ public:
 	{
 		return this->province;
 	}
+
+	void set_province(province *province);
 
 	const std::vector<commodity *> &get_available_commodities() const
 	{
