@@ -1,5 +1,6 @@
 #include "translator.h"
 
+#include "database/database.h"
 #include "database/gsml_data.h"
 #include "database/gsml_parser.h"
 #include "util/string_util.h"
@@ -35,28 +36,30 @@ void translator::load_locale(const std::string &language)
 {
 	this->translations.clear();
 
-	std::filesystem::path translation_path("./localization/" + language);
+	for (const std::filesystem::path &path : database::get_localization_paths()) {
+		std::filesystem::path localization_path(path / language);
 
-	if (!std::filesystem::exists(translation_path)) {
-		return;
-	}
-
-	std::filesystem::recursive_directory_iterator dir_iterator(translation_path);
-
-	for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
-		if (!dir_entry.is_regular_file()) {
+		if (!std::filesystem::exists(localization_path)) {
 			continue;
 		}
 
-		gsml_parser parser(dir_entry.path());
-		gsml_data gsml_data = parser.parse();
+		std::filesystem::recursive_directory_iterator dir_iterator(localization_path);
 
-		for (const gsml_property &property : gsml_data.get_properties()) {
-			if (property.get_operator() != gsml_operator::assignment) {
-				throw std::runtime_error("Only assignment operators are allowed in translation files!");
+		for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
+			if (!dir_entry.is_regular_file()) {
+				continue;
 			}
 
-			this->add_translation(property.get_key(), property.get_value());
+			gsml_parser parser(dir_entry.path());
+			gsml_data gsml_data = parser.parse();
+
+			for (const gsml_property &property : gsml_data.get_properties()) {
+				if (property.get_operator() != gsml_operator::assignment) {
+					throw std::runtime_error("Only assignment operators are allowed in translation files!");
+				}
+
+				this->add_translation(property.get_key(), property.get_value());
+			}
 		}
 	}
 }
