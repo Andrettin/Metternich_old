@@ -203,15 +203,21 @@ void game::generate_missing_title_holders()
 			continue;
 		}
 
-		const province *province = landed_title->get_province();
-		if (province == nullptr) {
-			province = landed_title->get_holding()->get_province();
+		culture *culture = nullptr;
+		religion *religion = nullptr;
+
+		if (landed_title->get_province() != nullptr) {
+			culture = landed_title->get_province()->get_culture();
+			religion = landed_title->get_province()->get_religion();
+		} else if (landed_title->get_holding() != nullptr) {
+			culture = landed_title->get_holding()->get_culture();
+			religion = landed_title->get_holding()->get_religion();
 		}
 
-		character *holder = character::generate(province->get_culture(), province->get_religion());
+		character *holder = character::generate(culture, religion);
 		landed_title->set_holder(holder);
 
-		//set the liege of generated holding owners to the county holder
+		//set the county holder as the liege of the generated owner for the holding
 		if (landed_title->get_holding() != nullptr) {
 			character *county_holder = landed_title->get_holding()->get_province()->get_county()->get_holder();
 			holder->set_liege(county_holder);
