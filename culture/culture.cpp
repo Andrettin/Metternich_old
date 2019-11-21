@@ -7,12 +7,26 @@
 namespace metternich {
 
 /**
+**	@brief	Initialize the culture
+*/
+void culture::initialize()
+{
+	if (this->get_species() == nullptr) {
+		this->set_species(this->get_culture_group()->get_species());
+	}
+}
+
+/**
 **	@brief	Check whether the culture is in a valid state
 */
 void culture::check() const
 {
 	if (this->get_culture_group() == nullptr) {
 		throw std::runtime_error("Culture \"" + this->get_identifier() + "\" has no culture group.");
+	}
+
+	if (this->get_species() == nullptr) {
+		throw std::runtime_error("Culture \"" + this->get_identifier() + "\" has no species.");
 	}
 
 	if (!this->get_color().isValid()) {

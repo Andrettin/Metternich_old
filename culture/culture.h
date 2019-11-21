@@ -23,6 +23,7 @@ public:
 
 	culture(const std::string &identifier) : culture_base(identifier) {}
 
+	virtual void initialize() override;
 	virtual void check() const override;
 
 	metternich::culture_group *get_culture_group() const

@@ -31,6 +31,7 @@
 #include "population/population_type.h"
 #include "religion/religion.h"
 #include "religion/religion_group.h"
+#include "species.h"
 #include "translator.h"
 #include "util/parse_util.h"
 #include "util/string_util.h"
@@ -148,6 +149,8 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 				new_property_value = QVariant::fromValue(province_profile::get(property.get_value()));
 			} else if (property_class_name == "metternich::religion_group*") {
 				new_property_value = QVariant::fromValue(religion_group::get(property.get_value()));
+			} else if (property_class_name == "metternich::species*") {
+				new_property_value = QVariant::fromValue(species::get(property.get_value()));
 			} else if (property_class_name == "metternich::timeline*") {
 				new_property_value = QVariant::fromValue(timeline::get(property.get_value()));
 			} else {
