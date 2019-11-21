@@ -55,7 +55,7 @@ void game::start(const timeline *timeline, const QDateTime &start_date)
 */
 void game::run()
 {
-	while (true) {
+	while (!this->should_stop) {
 		std::chrono::time_point<std::chrono::system_clock> tick_start = std::chrono::system_clock::now();
 
 		this->do_tick();
@@ -95,6 +95,9 @@ void game::run()
 			std::this_thread::sleep_for(tick_ms);
 		}
 	}
+
+	this->running = false;
+	this->should_stop = false;
 }
 
 /**

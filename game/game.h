@@ -33,6 +33,11 @@ public:
 	game();
 
 	void start(const timeline *timeline, const QDateTime &start_date);
+
+	void stop() {
+		this->should_stop = true;
+	}
+
 	void run();
 	void do_tick();
 	void do_day();
@@ -102,6 +107,7 @@ signals:
 private:
 	bool starting = false;
 	bool running = false;
+	std::atomic<bool> should_stop = false;
 	QDateTime current_date;
 	game_speed speed;
 	character *player_character = nullptr;

@@ -62,7 +62,6 @@ int main(int argc, char *argv[])
 		app.installTranslator(translator);
 
 		std::thread data_load_thread(load_data);
-		data_load_thread.detach();
 
 		QQmlApplicationEngine engine;
 
@@ -93,7 +92,15 @@ int main(int argc, char *argv[])
 		}, Qt::QueuedConnection);
 		engine.load(url);
 
-		return app.exec();
+		const int result = app.exec();
+
+		if (game::get()->is_running()) {
+			game::get()->stop();
+		}
+
+		data_load_thread.join();
+
+		return result;
 	} catch (const std::exception &exception) {
 		qCritical() << exception.what() << '\n';
 		return -1;
