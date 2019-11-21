@@ -44,10 +44,9 @@ public:
 	region(const std::string &identifier);
 	virtual ~region() override;
 
-	virtual void initialize() override;
 	virtual void initialize_history() override;
 
-	const std::vector<province *> &get_provinces() const
+	const std::set<province *> &get_provinces() const
 	{
 		return this->provinces;
 	}
@@ -60,12 +59,30 @@ public:
 
 	Q_INVOKABLE void add_subregion(metternich::region *subregion)
 	{
-		this->subregions.push_back(subregion);
+		this->subregions.insert(subregion);
+		subregion->superregions.insert(this);
+
+		for (province *province : subregion->get_provinces()) {
+			this->add_province(province);
+		}
+
+		for (holding_slot *holding_slot : subregion->holding_slots) {
+			this->add_holding(holding_slot);
+		}
 	}
 
 	Q_INVOKABLE void remove_subregion(metternich::region *subregion)
 	{
-		this->subregions.erase(std::remove(this->subregions.begin(), this->subregions.end(), subregion), this->subregions.end());
+		this->subregions.erase(subregion);
+		subregion->superregions.erase(this);
+
+		for (province *province : subregion->get_provinces()) {
+			this->remove_province(province);
+		}
+
+		for (holding_slot *holding_slot : subregion->holding_slots) {
+			this->remove_holding(holding_slot);
+		}
 	}
 
 	std::vector<holding *> get_holdings() const;
@@ -74,12 +91,20 @@ public:
 
 	Q_INVOKABLE void add_holding(holding_slot *holding_slot)
 	{
-		this->holding_slots.push_back(holding_slot);
+		this->holding_slots.insert(holding_slot);
+
+		for (region *superregion : this->superregions) {
+			superregion->add_holding(holding_slot);
+		}
 	}
 
 	Q_INVOKABLE void remove_holding(holding_slot *holding_slot)
 	{
-		this->holding_slots.erase(std::remove(this->holding_slots.begin(), this->holding_slots.end(), holding_slot), this->holding_slots.end());
+		this->holding_slots.erase(holding_slot);
+
+		for (region *superregion : this->superregions) {
+			superregion->remove_holding(holding_slot);
+		}
 	}
 
 	const std::vector<std::unique_ptr<population_unit>> &get_population_units() const
@@ -93,9 +118,10 @@ signals:
 	void provinces_changed();
 
 private:
-	std::vector<province *> provinces;
-	std::vector<holding_slot *> holding_slots; //the slots for the holdings contained by this region
-	std::vector<region *> subregions; //subregions of this region
+	std::set<province *> provinces;
+	std::set<holding_slot *> holding_slots; //the slots for the holdings contained by this region
+	std::set<region *> subregions; //subregions of this region
+	std::set<region *> superregions; //regions for which this region is a subregion
 	std::vector<std::unique_ptr<population_unit>> population_units; //population units set for this region in history, used during initialization to generate population units in the region's settlements
 };
 

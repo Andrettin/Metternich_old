@@ -38,25 +38,6 @@ region::~region()
 }
 
 /**
-**	@brief	Initialize the region
-*/
-void region::initialize()
-{
-	//add each subregion's provinces to this one
-	for (region *subregion : this->subregions) {
-		if (!subregion->is_initialized()) {
-			subregion->initialize();
-		}
-
-		for (province *province : subregion->get_provinces()) {
-			this->add_province(province);
-		}
-	}
-
-	data_entry_base::initialize();
-}
-
-/**
 **	@brief	Initialize the region's history
 */
 void region::initialize_history()
@@ -71,23 +52,31 @@ QVariantList region::get_provinces_qvariant_list() const
 
 void region::add_province(province *province)
 {
-	this->provinces.push_back(province);
+	this->provinces.insert(province);
 	province->add_region(this);
 
 	//add the holdings belonging to the province to the region
 	for (holding_slot *holding_slot : province->get_settlement_holding_slots()) {
 		this->add_holding(holding_slot);
 	}
+
+	for (region *superregion : this->superregions) {
+		superregion->add_province(province);
+	}
 }
 
 void region::remove_province(province *province)
 {
-	this->provinces.erase(std::remove(this->provinces.begin(), this->provinces.end(), province), this->provinces.end());
+	this->provinces.erase(province);
 	province->remove_region(this);
 
-	//add the holdings belonging to the province to the region
+	//remove the holdings belonging to the province from the region
 	for (holding_slot *holding_slot : province->get_settlement_holding_slots()) {
 		this->remove_holding(holding_slot);
+	}
+
+	for (region *superregion : this->superregions) {
+		superregion->remove_province(province);
 	}
 }
 
