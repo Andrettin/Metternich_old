@@ -11,6 +11,11 @@
 
 namespace metternich {
 
+QVariantList world::get_provinces_qvariant_list() const
+{
+	return util::container_to_qvariant_list(this->get_provinces());
+}
+
 /**
 **	@brief	Convert a pixel index to a pixel position
 **

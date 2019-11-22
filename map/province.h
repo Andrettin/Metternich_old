@@ -44,6 +44,7 @@ class province : public data_entry, public data_type<province>
 	Q_PROPERTY(metternich::landed_title* de_jure_kingdom READ get_de_jure_kingdom NOTIFY de_jure_kingdom_changed)
 	Q_PROPERTY(metternich::landed_title* empire READ get_empire NOTIFY empire_changed)
 	Q_PROPERTY(metternich::landed_title* de_jure_empire READ get_de_jure_empire NOTIFY de_jure_empire_changed)
+	Q_PROPERTY(metternich::world* world READ get_world CONSTANT)
 	Q_PROPERTY(QColor color READ get_color CONSTANT)
 	Q_PROPERTY(QRect rect READ get_rect CONSTANT)
 	Q_PROPERTY(QImage image READ get_image NOTIFY image_changed)

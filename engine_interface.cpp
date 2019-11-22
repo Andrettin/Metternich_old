@@ -22,16 +22,10 @@ world *engine_interface::get_current_world() const
 	return map::get()->get_current_world();
 }
 
-QVariantList engine_interface::get_provinces() const
+QVariantList engine_interface::get_worlds() const
 {
-	QVariantList province_list = util::container_to_qvariant_list(province::get_all());
-	return province_list;
-}
-
-QVariantList engine_interface::get_river_provinces() const
-{
-	QVariantList province_list = util::container_to_qvariant_list(province::get_river_provinces());
-	return province_list;
+	QVariantList world_list = util::container_to_qvariant_list(world::get_all());
+	return world_list;
 }
 
 province *engine_interface::get_selected_province() const

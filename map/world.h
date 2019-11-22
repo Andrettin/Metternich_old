@@ -14,6 +14,8 @@ class world : public data_entry, public data_type<world>
 {
 	Q_OBJECT
 
+	Q_PROPERTY(QVariantList provinces READ get_provinces_qvariant_list CONSTANT)
+
 public:
 	static constexpr const char *class_identifier = "world";
 	static constexpr const char *database_folder = "worlds";
@@ -36,6 +38,8 @@ public:
 	{
 		return this->provinces;
 	}
+
+	QVariantList get_provinces_qvariant_list() const;
 
 	std::filesystem::path get_map_path() const
 	{
