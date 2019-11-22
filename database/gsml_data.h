@@ -23,12 +23,17 @@ class gsml_parser;
 class gsml_data
 {
 public:
-	gsml_data(const std::string tag = std::string()) : tag(tag) {}
+	gsml_data(const std::string tag = std::string(), gsml_operator scope_operator = gsml_operator::assignment) : tag(tag), scope_operator(scope_operator) {}
 
 public:
 	const std::string &get_tag() const
 	{
 		return this->tag;
+	}
+
+	gsml_operator get_operator() const
+	{
+		return this->scope_operator;
 	}
 
 	const gsml_data *get_parent() const
@@ -169,7 +174,20 @@ public:
 			ofstream << " ";
 		}
 		if (!this->get_tag().empty()) {
-			ofstream << this->get_tag() << " = ";
+			ofstream << this->get_tag() << " ";
+			switch (this->get_operator()) {
+				case gsml_operator::assignment:
+					ofstream << "=";
+					break;
+				case gsml_operator::addition:
+					ofstream << "+=";
+					break;
+				case gsml_operator::subtraction:
+					ofstream << "-=";
+					break;
+				case gsml_operator::none:
+					throw std::runtime_error("Cannot print the GSML \"none\" operator.");
+			}
 		}
 		ofstream << "{";
 		if (!this->is_minor()) {
@@ -232,6 +250,7 @@ private:
 
 private:
 	std::string tag;
+	gsml_operator scope_operator;
 	gsml_data *parent = nullptr;
 	std::vector<gsml_data> children;
 	std::vector<gsml_property> properties;
