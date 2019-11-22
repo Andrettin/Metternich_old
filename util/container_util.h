@@ -41,4 +41,16 @@ inline std::set<typename T::value_type> container_to_set(const T &container)
 	return set;
 }
 
+template <typename T>
+inline std::vector<typename T::value_type> container_to_vector(const T &container)
+{
+	std::vector<typename T::value_type> vector;
+
+	for (const typename T::value_type &element : container) {
+		vector.push_back(element);
+	}
+
+	return vector;
+}
+
 }

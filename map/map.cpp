@@ -4,6 +4,7 @@
 #include "map/map_mode.h"
 #include "map/province.h"
 #include "map/terrain_type.h"
+#include "map/world.h"
 #include "util/filesystem_util.h"
 #include "util/image_util.h"
 #include "util/location_util.h"
@@ -35,7 +36,6 @@ void map::load()
 
 	if (cache_valid) {
 		engine_interface::get()->set_loading_message("Loading Map Cache...");
-		terrain_type::process_cache();
 		province::process_cache();
 	} else {
 		engine_interface::get()->set_loading_message("Building Map Cache...");
@@ -47,11 +47,13 @@ void map::load()
 
 		this->load_geojson_files();
 
-		//load map data for terrain types and provinces
-		province::process_map_database();
-		terrain_type::process_map_database();
+		for (world *world : world::get_all()) {
+			//load map data for terrain types and provinces
+			world->process_province_map_database();
+			world->process_terrain_map_database();
 
-		this->write_geodata_to_image();
+			world->write_geodata_to_image();
+		}
 
 		for (province *province : province::get_all()) {
 			if (province->writes_geojson()) {
@@ -60,80 +62,24 @@ void map::load()
 		}
 	}
 
-	this->load_terrain();
-	this->load_provinces();
-
-	if (this->terrain_image.size() != this->province_image.size()) {
-		throw std::runtime_error("The terrain and province images have different sizes.");
+	for (world *world : world::get_all()) {
+		world->load_terrain_map();
+		world->load_province_map();
 	}
 
 	if (!cache_valid) {
 		this->save_cache();
 	}
-
-	//clear the terrain and province images, as there is no need to keep them in memory
-	this->terrain_image = QImage();
-	this->province_image = QImage();
 }
 
-/**
-**	@brief	Convert a pixel index to a pixel position
-**
-**	@param	index	The index
-**
-**	@return The pixel position
-*/
-QPoint map::get_pixel_pos(const int index) const
+void map::set_current_world(world *world)
 {
-	return util::index_to_point(index, this->size);
-}
-
-/**
-**	@brief	Convert a coordinate to a pixel position on the map
-**
-**	@param	coordinate	The geocoordinate
-**
-**	@return The pixel position corresponding to the coordinate
-*/
-QPoint map::get_coordinate_pos(const QGeoCoordinate &coordinate) const
-{
-	const double lon_per_pixel = 360.0 / static_cast<double>(this->size.width());
-	const double lat_per_pixel = 180.0 / static_cast<double>(this->size.height());
-	return util::coordinate_to_point(coordinate, lon_per_pixel, lat_per_pixel);
-}
-
-/**
-**	@brief	Convert a pixel position on the map to a geocoordinate
-**
-**	@param	pos	The pixel position
-**
-**	@return The geocoordinate corresponding to the pixel position
-*/
-QGeoCoordinate map::get_pixel_pos_coordinate(const QPoint &pixel_pos) const
-{
-	return util::point_to_coordinate(pixel_pos, this->size);
-}
-
-terrain_type *map::get_coordinate_terrain(const QGeoCoordinate &coordinate) const
-{
-	if (this->terrain_image.isNull()) {
-		throw std::runtime_error("Cannot get coordinate terrain after clearing the terrain image from memory.");
+	if (world == this->get_current_world()) {
+		return;
 	}
 
-	QPoint pos = this->get_coordinate_pos(coordinate);
-	QRgb rgb = this->terrain_image.pixel(pos);
-	return terrain_type::get_by_rgb(rgb);
-}
-
-province *map::get_coordinate_province(const QGeoCoordinate &coordinate) const
-{
-	if (this->province_image.isNull()) {
-		throw std::runtime_error("Cannot get coordinate province after clearing the province image from memory.");
-	}
-
-	QPoint pos = this->get_coordinate_pos(coordinate);
-	QRgb rgb = this->province_image.pixel(pos);
-	return province::get_by_rgb(rgb);
+	this->current_world = world;
+	emit engine_interface::get()->current_world_changed();
 }
 
 /**
@@ -161,13 +107,13 @@ void map::set_mode(const map_mode mode)
 */
 void map::load_geojson_files()
 {
-	std::filesystem::path province_data_path = database::get_map_path() / "provinces";
+	std::filesystem::path map_path = database::get_map_path();
 
-	if (!std::filesystem::exists(province_data_path)) {
+	if (!std::filesystem::exists(map_path)) {
 		return;
 	}
 
-	std::filesystem::recursive_directory_iterator dir_iterator(province_data_path);
+	std::filesystem::recursive_directory_iterator dir_iterator(map_path);
 
 	for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
 		if (!dir_entry.is_regular_file() || dir_entry.path().extension() != ".geojson") {
@@ -358,109 +304,6 @@ void map::save_geojson_data_to_gsml()
 	this->geojson_path_data.clear();
 }
 
-void map::load_provinces()
-{
-	engine_interface::get()->set_loading_message("Loading Provinces... (0%)");
-
-	this->province_image = QImage(QString::fromStdString((database::get_cache_path() / "provinces.png").string()));
-
-	this->size = this->province_image.size(); //set the map's size to that of the province map
-	const int pixel_count = this->province_image.width() * this->province_image.height();
-
-	std::map<province *, std::vector<int>> province_pixel_indexes;
-	std::map<province *, std::vector<int>> province_border_pixel_indexes;
-	std::map<province *, std::map<terrain_type *, int>> province_terrain_counts;
-
-	const QRgb *rgb_data = reinterpret_cast<const QRgb *>(this->province_image.constBits());
-	const QRgb *terrain_rgb_data = reinterpret_cast<const QRgb *>(this->terrain_image.constBits());
-
-	province *previous_pixel_province = nullptr; //used to see which provinces border which horizontally
-	for (int i = 0; i < pixel_count; ++i) {
-		const bool line_start = ((i % this->province_image.width()) == 0);
-		if (line_start) {
-			//new line, set the previous pixel province to null
-			previous_pixel_province = nullptr;
-
-			//update the progress in the loading message
-			const long long int progress_percent = static_cast<long long int>(i) * 100 / pixel_count;
-			engine_interface::get()->set_loading_message("Loading Provinces... (" + QString::number(progress_percent) + "%)");
-		}
-
-		const QRgb &pixel_rgb = rgb_data[i];
-
-		province *pixel_province = province::get_by_rgb(pixel_rgb, false);
-		if (pixel_province != nullptr) {
-			province_pixel_indexes[pixel_province].push_back(i);
-
-			if (previous_pixel_province != pixel_province && previous_pixel_province != nullptr) {
-				province_border_pixel_indexes[pixel_province].push_back(i);
-				province_border_pixel_indexes[previous_pixel_province].push_back(i - 1);
-				pixel_province->add_border_province(previous_pixel_province);
-				previous_pixel_province->add_border_province(pixel_province);
-			}
-
-			if (i > this->province_image.width()) { //second line or below
-				//the pixel just above this one
-				const int adjacent_pixel_index = i - this->province_image.width();
-				const QRgb &previous_vertical_pixel_rgb = rgb_data[adjacent_pixel_index];
-				province *previous_vertical_pixel_province = province::get_by_rgb(previous_vertical_pixel_rgb, false);
-				if (previous_vertical_pixel_province != pixel_province && previous_vertical_pixel_province != nullptr) {
-					province_border_pixel_indexes[pixel_province].push_back(i);
-						province_border_pixel_indexes[previous_vertical_pixel_province].push_back(adjacent_pixel_index);
-					pixel_province->add_border_province(previous_vertical_pixel_province);
-					previous_vertical_pixel_province->add_border_province(pixel_province);
-				}
-			}
-
-			const QRgb &terrain_pixel_rgb = terrain_rgb_data[i];
-			terrain_type *pixel_terrain = terrain_type::get_by_rgb(terrain_pixel_rgb);
-			std::map<terrain_type *, int> &province_terrain_count = province_terrain_counts[pixel_province];
-			province_terrain_count[pixel_terrain]++;
-		}
-
-		previous_pixel_province = pixel_province;
-	}
-
-	for (const auto &province_terrain_count : province_terrain_counts) {
-		province *province = province_terrain_count.first;
-		terrain_type *best_terrain = nullptr;
-		int best_terrain_count = 0;
-		bool inner_river = false;
-		for (const auto &kv_pair : province_terrain_count.second) {
-			terrain_type *terrain = kv_pair.first;
-
-			if (terrain != nullptr && terrain->is_river() && !inner_river) {
-				inner_river = true;
-			}
-
-			const int count = kv_pair.second;
-			if (count > best_terrain_count) {
-				best_terrain = terrain;
-				best_terrain_count = count;
-			}
-		}
-		province->set_terrain(best_terrain);
-
-		province->set_inner_river(inner_river);
-	}
-
-	for (const auto &kv_pair : province_pixel_indexes) {
-		province *province = kv_pair.first;
-		province->create_image(kv_pair.second);
-	}
-
-	for (const auto &kv_pair : province_border_pixel_indexes) {
-		province *province = kv_pair.first;
-		province->set_border_pixels(kv_pair.second);
-	}
-}
-
-void map::load_terrain()
-{
-	engine_interface::get()->set_loading_message("Loading Terrain...");
-	this->terrain_image = QImage(QString::fromStdString((database::get_cache_path() / "terrain.png").string()));
-}
-
 /**
 **	@brief	Check to see if the cache is valid
 **
@@ -516,79 +359,6 @@ void map::save_cache()
 	ofstream.close();
 
 	province::save_cache();
-}
-
-/**
-**	@brief	Write geodata to image files
-*/
-void map::write_geodata_to_image()
-{
-	QImage terrain_image((database::get_map_path() / "terrain.png").string().c_str());
-	QImage province_image((database::get_map_path() / "provinces.png").string().c_str());
-
-	this->write_terrain_geodata_to_image(terrain_image);
-	this->write_province_geodata_to_image(province_image, terrain_image);
-
-	terrain_image.save(QString::fromStdString((database::get_cache_path() / "terrain.png").string()));
-	province_image.save(QString::fromStdString((database::get_cache_path() / "provinces.png").string()));
-}
-
-/**
-**	@brief	Write terrain geodata to the terrain image, caching the result
-**
-**	@param	terrain_image	The terrain image to be written to
-*/
-void map::write_terrain_geodata_to_image(QImage &terrain_image)
-{
-	int processed_terrain_types = 0;
-
-	for (terrain_type *terrain_type : terrain_type::get_all()) {
-		const int progress_percent = processed_terrain_types * 100 / static_cast<int>(terrain_type::get_all().size());
-		engine_interface::get()->set_loading_message("Writing Terrain to Image... (" + QString::number(progress_percent) + "%)");
-
-		terrain_type->write_geodata_to_image(terrain_image);
-
-		processed_terrain_types++;
-	}
-}
-
-/**
-**	@brief	Write province geodata to the province image, caching the result
-**
-**	@param	terrain_image	The terrain image to be written to, for terrain that is written from province data
-*/
-void map::write_province_geodata_to_image(QImage &province_image, QImage &terrain_image)
-{
-	std::vector<province *> provinces = province::get_all();
-	std::sort(provinces.begin(), provinces.end(), [](const province *a, const province *b) {
-		if (a->is_ocean() != b->is_ocean()) {
-			return a->is_ocean();
-		}
-
-		return a < b;
-	});
-
-	int processed_provinces = 0;
-
-	std::set<QRgb> province_image_rgbs = util::get_image_rgbs(province_image);
-
-	for (province *province : provinces) {
-		const int progress_percent = processed_provinces * 100 / static_cast<int>(province::get_all().size());
-		engine_interface::get()->set_loading_message("Writing Provinces to Image... (" + QString::number(progress_percent) + "%)");
-
-		if (!province_image_rgbs.contains(province->get_color().rgb()) || province->always_writes_geodata()) {
-			province->write_geodata_to_image(province_image, terrain_image);
-		}
-
-		processed_provinces++;
-	}
-
-	//write river endpoints, but only after everything else, as they should have lower priority than the rivers themselves
-	for (province *province : province::get_river_provinces()) {
-		if (!province_image_rgbs.contains(province->get_color().rgb()) || province->always_writes_geodata()) {
-			province->write_geopath_endpoints_to_image(province_image, terrain_image);
-		}
-	}
 }
 
 }

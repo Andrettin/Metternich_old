@@ -5,6 +5,7 @@
 #include "holding/holding.h"
 #include "map/map.h"
 #include "map/province.h"
+#include "map/world.h"
 #include "util/container_util.h"
 
 #include <QList>
@@ -14,6 +15,11 @@ namespace metternich {
 game *engine_interface::get_game() const
 {
 	return game::get();
+}
+
+world *engine_interface::get_current_world() const
+{
+	return map::get()->get_current_world();
 }
 
 QVariantList engine_interface::get_provinces() const
@@ -36,18 +42,6 @@ province *engine_interface::get_selected_province() const
 holding *engine_interface::get_selected_holding() const
 {
 	return holding::get_selected_holding();
-}
-
-/**
-**	@brief	Convert a coordinate to a pixel position on the map
-**
-**	@param	coordinate	The geocoordinate
-**
-**	@return The pixel position corresponding to the coordinate
-*/
-QPoint engine_interface::coordinate_to_point(const QGeoCoordinate &coordinate) const
-{
-	return map::get()->get_coordinate_pos(coordinate);
 }
 
 /**

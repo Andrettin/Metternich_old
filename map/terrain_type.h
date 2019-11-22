@@ -35,40 +35,6 @@ public:
 		return terrain_type::default_terrain;
 	}
 
-	/**
-	**	@brief	Process the map database for the terrain type
-	*/
-	static void process_map_database()
-	{
-		std::filesystem::path map_path(database::get_map_path() / terrain_type::database_folder);
-
-		if (!std::filesystem::exists(map_path)) {
-			return;
-		}
-
-		std::filesystem::directory_iterator dir_iterator(map_path);
-
-		for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
-			terrain_type *terrain = terrain_type::get(dir_entry.path().stem().string());
-
-			if (dir_entry.is_directory()) {
-				std::filesystem::recursive_directory_iterator subdir_iterator(dir_entry);
-
-				for (const std::filesystem::directory_entry &subdir_entry : subdir_iterator) {
-					if (!subdir_entry.is_regular_file() || subdir_entry.path().extension() != ".txt") {
-						continue;
-					}
-
-					gsml_parser parser(subdir_entry.path());
-					database::process_gsml_data(terrain, parser.parse());
-				}
-			} else if (dir_entry.is_regular_file() && dir_entry.path().extension() == ".txt") {
-				gsml_parser parser(dir_entry.path());
-				database::process_gsml_data(terrain, parser.parse());
-			}
-		}
-	}
-
 private:
 	static inline std::map<QRgb, terrain_type *> instances_by_rgb;
 	static inline terrain_type *default_terrain = nullptr;
@@ -130,27 +96,6 @@ public:
 		return this->modifier;
 	}
 
-	const std::vector<QGeoPolygon> &get_geopolygons() const
-	{
-		return this->geopolygons;
-	}
-
-	bool contains_coordinate(const QGeoCoordinate &coordinate) const
-	{
-		//get whether the areas of this terrain type contain the given coordinate
-		for (const QGeoPolygon &geopolygon : this->geopolygons) {
-			if (geopolygon.contains(coordinate)) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	void write_geodata_to_image(QImage &image);
-	void write_geoshape_to_image(QImage &image, const QGeoShape &geoshape);
-	void write_geopath_endpoints_to_image(QImage &image);
-
 signals:
 	void water_changed();
 
@@ -162,8 +107,6 @@ private:
 	bool river = false;
 	int path_width = 0;
 	std::unique_ptr<metternich::modifier> modifier; //the modifier applied to provinces with this terrain
-	std::vector<QGeoPolygon> geopolygons;
-	std::vector<QGeoPath> geopaths;
 };
 
 }

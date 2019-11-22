@@ -30,6 +30,7 @@ class population_unit;
 class region;
 class religion;
 class terrain_type;
+class world;
 enum class map_mode : int;
 
 class province : public data_entry, public data_type<province>
@@ -124,6 +125,13 @@ public:
 	landed_title *get_de_jure_kingdom() const;
 	landed_title *get_empire() const;
 	landed_title *get_de_jure_empire() const;
+
+	world *get_world() const
+	{
+		return this->world;
+	}
+
+	void set_world(world *world);
 
 	const QColor &get_color() const
 	{
@@ -397,6 +405,7 @@ signals:
 
 private:
 	landed_title *county = nullptr;
+	world *world = nullptr;
 	QColor color; //the color used to identify the province in the province map
 	QRect rect; //the rectangle that the province occupies
 	QImage image; //the province's image to be drawn on-screen

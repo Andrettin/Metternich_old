@@ -326,44 +326,6 @@ public:
 	}
 
 	/**
-	**	@brief	Process the map database for the class
-	*/
-	static void process_map_database()
-	{
-		if (std::string(T::database_folder).empty()) {
-			return;
-		}
-
-		std::filesystem::path map_path = database::get_map_path() / T::database_folder;
-
-		if (!std::filesystem::exists(map_path)) {
-			return;
-		}
-
-		std::vector<gsml_data> gsml_map_data_to_process;
-
-		std::filesystem::recursive_directory_iterator dir_iterator(map_path);
-
-		for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
-			if (!dir_entry.is_regular_file() || dir_entry.path().extension() != ".txt") {
-				continue;
-			}
-
-			if (T::try_get(dir_entry.path().stem().string()) == nullptr) {
-				throw std::runtime_error(dir_entry.path().stem().string() + " is not a valid \"" + T::class_identifier + "\" instance identifier.");
-			}
-
-			gsml_parser parser(dir_entry.path());
-			gsml_map_data_to_process.push_back(parser.parse());
-		}
-
-		for (gsml_data &data : gsml_map_data_to_process) {
-			T *instance = T::get(data.get_tag());
-			database::process_gsml_data<T>(instance, data);
-		}
-	}
-
-	/**
 	**	@brief	Process the cache for the class
 	*/
 	static void process_cache()

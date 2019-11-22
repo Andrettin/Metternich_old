@@ -14,6 +14,7 @@ namespace metternich {
 class game;
 class holding;
 class province;
+class world;
 
 /**
 **	@brief	Interface for the engine, to be used in the context of QML
@@ -23,6 +24,7 @@ class engine_interface : public QObject, public singleton<engine_interface>
 	Q_OBJECT
 
 	Q_PROPERTY(metternich::game* game READ get_game CONSTANT)
+	Q_PROPERTY(metternich::world* current_world READ get_current_world NOTIFY current_world_changed)
 	Q_PROPERTY(QVariantList provinces READ get_provinces CONSTANT)
 	Q_PROPERTY(QVariantList river_provinces READ get_river_provinces CONSTANT)
 	Q_PROPERTY(metternich::province* selected_province READ get_selected_province NOTIFY selected_province_changed)
@@ -32,6 +34,7 @@ class engine_interface : public QObject, public singleton<engine_interface>
 
 public:
 	game *get_game() const;
+	world *get_current_world() const;
 	QVariantList get_provinces() const;
 	QVariantList get_river_provinces() const;
 	province *get_selected_province() const;
@@ -52,12 +55,11 @@ public:
 		emit loading_message_changed();
 	}
 
-	Q_INVOKABLE QPoint coordinate_to_point(const QGeoCoordinate &coordinate) const;
-
 	int get_map_mode() const;
 	void set_map_mode(const int map_mode);
 
 signals:
+	void current_world_changed();
 	void selected_province_changed();
 	void selected_holding_changed();
 	void loading_message_changed();

@@ -17,6 +17,7 @@
 #include "map/map_mode.h"
 #include "map/region.h"
 #include "map/terrain_type.h"
+#include "map/world.h"
 #include "population/population_type.h"
 #include "population/population_unit.h"
 #include "religion/religion.h"
@@ -487,6 +488,15 @@ landed_title *province::get_de_jure_empire() const
 	return nullptr;
 }
 
+void province::set_world(metternich::world *world)
+{
+	if (world == this->get_world()) {
+		return;
+	}
+
+	this->world = world;
+}
+
 /**
 **	@brief	Get the province's color for a given map mode
 **
@@ -563,7 +573,7 @@ void province::create_image(const std::vector<int> &pixel_indexes)
 	QPoint end_pos(-1, -1);
 
 	for (const int index : pixel_indexes) {
-		QPoint pixel_pos = map::get()->get_pixel_pos(index);
+		QPoint pixel_pos = this->get_world()->get_pixel_pos(index);
 		if (start_pos.x() == -1 || pixel_pos.x() < start_pos.x()) {
 			start_pos.setX(pixel_pos.x());
 		}
@@ -587,7 +597,7 @@ void province::create_image(const std::vector<int> &pixel_indexes)
 	this->image.fill(0);
 
 	for (const int index : pixel_indexes) {
-		QPoint pixel_pos = map::get()->get_pixel_pos(index) - this->rect.topLeft();
+		QPoint pixel_pos = this->get_world()->get_pixel_pos(index) - this->rect.topLeft();
 		this->image.setPixel(pixel_pos, 1);
 	}
 }
@@ -600,7 +610,7 @@ void province::create_image(const std::vector<int> &pixel_indexes)
 void province::set_border_pixels(const std::vector<int> &pixel_indexes)
 {
 	for (const int index : pixel_indexes) {
-		QPoint pixel_pos = map::get()->get_pixel_pos(index) - this->rect.topLeft();
+		QPoint pixel_pos = this->get_world()->get_pixel_pos(index) - this->rect.topLeft();
 		this->image.setPixel(pixel_pos, 2);
 	}
 }
@@ -1352,7 +1362,7 @@ QVariantList province::get_geopaths_qvariant_list() const
 
 QGeoCoordinate province::get_center_coordinate() const
 {
-	return map::get()->get_pixel_pos_coordinate(this->rect.center());
+	return this->get_world()->get_pixel_pos_coordinate(this->rect.center());
 }
 
 }

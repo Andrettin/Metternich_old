@@ -25,6 +25,7 @@
 #include "map/province_profile.h"
 #include "map/region.h"
 #include "map/terrain_type.h"
+#include "map/world.h"
 #include "phenotype.h"
 #include "politics/law.h"
 #include "politics/law_group.h"
@@ -153,6 +154,8 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 				new_property_value = QVariant::fromValue(species::get(property.get_value()));
 			} else if (property_class_name == "metternich::timeline*") {
 				new_property_value = QVariant::fromValue(timeline::get(property.get_value()));
+			} else if (property_class_name == "metternich::world*") {
+				new_property_value = QVariant::fromValue(world::get(property.get_value()));
 			} else {
 				throw std::runtime_error("Unknown type for object reference property \"" + std::string(property_name) + "\" (\"" + property_class_name + "\").");
 			}
