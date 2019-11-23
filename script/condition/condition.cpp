@@ -12,6 +12,7 @@
 #include "script/condition/or_condition.h"
 #include "script/condition/region_condition.h"
 #include "script/condition/terrain_condition.h"
+#include "script/condition/world_condition.h"
 #include "util/parse_util.h"
 #include "util/string_util.h"
 
@@ -39,6 +40,8 @@ std::unique_ptr<condition> condition::from_gsml_property(const gsml_property &pr
 		condition = std::make_unique<region_condition>(property.get_value());
 	} else if (condition_identifier == "terrain") {
 		condition = std::make_unique<terrain_condition>(property.get_value());
+	} else if (condition_identifier == "world") {
+		condition = std::make_unique<world_condition>(property.get_value());
 	} else {
 		throw std::runtime_error("Invalid property condition: \"" + condition_identifier + "\".");
 	}

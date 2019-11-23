@@ -68,6 +68,7 @@ holding::holding(metternich::holding_slot *slot, holding_type *type) : data_entr
 */
 holding::~holding()
 {
+	this->building_slots.clear();
 }
 
 /**

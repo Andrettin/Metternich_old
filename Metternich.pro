@@ -144,6 +144,7 @@ HEADERS += \
     script/condition/or_condition.h \
     script/condition/region_condition.h \
     script/condition/terrain_condition.h \
+    script/condition/world_condition.h \
     script/factor_modifier.h \
     script/identifiable_modifier.h \
     script/modifier.h \
