@@ -126,7 +126,7 @@ void world::process_province_map_database()
 void world::process_terrain_map_database()
 {
 	for (const std::filesystem::path &path : database::get_map_paths()) {
-		std::filesystem::path map_path = path / this->get_identifier() / terrain_type::database_folder;
+		std::filesystem::path map_path = path / this->get_identifier() / "terrain";
 
 		if (!std::filesystem::exists(map_path)) {
 			continue;
