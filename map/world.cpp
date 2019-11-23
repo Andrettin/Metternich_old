@@ -207,7 +207,7 @@ void world::load_province_map()
 
 			//update the progress in the loading message
 			const long long int progress_percent = static_cast<long long int>(i) * 100 / pixel_count;
-			engine_interface::get()->set_loading_message("Loading Provinces... (" + QString::number(progress_percent) + "%)");
+			engine_interface::get()->set_loading_message("Loading " + this->get_loading_message_name() + " Provinces... (" + QString::number(progress_percent) + "%)");
 		}
 
 		const QRgb &pixel_rgb = rgb_data[i];
