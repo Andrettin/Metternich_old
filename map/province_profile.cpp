@@ -82,6 +82,10 @@ province *province_profile::get_province()
 
 	std::vector<metternich::province *> potential_provinces;
 	for (metternich::province *province : province::get_all()) {
+		if (province->get_county() == nullptr) {
+			continue; //only take into account provinces that belong to counties
+		}
+
 		if (!this->conditions || this->conditions->check(province)) {
 			potential_provinces.push_back(province);
 		}

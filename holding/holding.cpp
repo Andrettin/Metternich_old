@@ -76,7 +76,7 @@ holding::~holding()
 */
 void holding::initialize_history()
 {
-	if (this->get_owner() == nullptr) {
+	if (this->get_owner() == nullptr && this->get_barony() == nullptr) {
 		this->set_owner(this->get_province()->get_county()->get_holder());
 	}
 
