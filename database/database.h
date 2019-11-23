@@ -159,6 +159,17 @@ public:
 		return database::get_root_path() / "map";
 	}
 
+	static std::vector<std::filesystem::path> get_map_paths()
+	{
+		std::vector<std::filesystem::path> paths = database::get_base_paths();
+
+		for (std::filesystem::path &path : paths) {
+			path /= "map";
+		}
+
+		return paths;
+	}
+
 	static std::vector<std::filesystem::path> get_localization_paths()
 	{
 		std::vector<std::filesystem::path> paths = database::get_base_paths();

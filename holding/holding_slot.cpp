@@ -41,11 +41,6 @@ void holding_slot::initialize()
 	if (this->province_profile != nullptr) {
 		this->set_province(this->province_profile->get_province());
 		this->province_profile = nullptr;
-
-		//add the holding slot to its province's regions
-		for (region *region : this->get_province()->get_regions()) {
-			region->add_holding(this);
-		}
 	}
 
 	if (this->get_available_commodities().empty()) {

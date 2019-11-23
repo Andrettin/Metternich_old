@@ -282,7 +282,7 @@ void map::save_geojson_data_to_gsml()
 		}
 
 		data.add_child(std::move(geopolygons));
-		data.print_to_dir(database::get_map_path() / "provinces");
+		data.print_to_dir(database::get_map_path());
 	}
 
 	this->geojson_polygon_data.clear();
@@ -298,7 +298,7 @@ void map::save_geojson_data_to_gsml()
 		}
 
 		data.add_child(std::move(geopaths));
-		data.print_to_dir(database::get_map_path() / "provinces");
+		data.print_to_dir(database::get_map_path());
 	}
 
 	this->geojson_path_data.clear();
@@ -312,7 +312,13 @@ void map::save_geojson_data_to_gsml()
 bool map::check_cache()
 {
 	QCryptographicHash hash(QCryptographicHash::Md5);
-	util::add_files_to_checksum(hash, database::get_map_path());
+	for (const std::filesystem::path &map_path : database::get_map_paths()) {
+		if (!std::filesystem::exists(map_path)) {
+			continue;
+		}
+
+		util::add_files_to_checksum(hash, map_path);
+	}
 
 	this->checksum = hash.result().toHex().toStdString(); //save the checksum
 

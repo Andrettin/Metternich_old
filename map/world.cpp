@@ -85,35 +85,37 @@ void world::process_province_map_database()
 		return;
 	}
 
-	std::filesystem::path map_path = this->get_map_path() / province::database_folder;
+	for (const std::filesystem::path &path : database::get_map_paths()) {
+		std::filesystem::path map_path = path / this->get_identifier() / province::database_folder;
 
-	if (!std::filesystem::exists(map_path)) {
-		return;
-	}
-
-	std::vector<gsml_data> gsml_map_data_to_process;
-
-	std::filesystem::recursive_directory_iterator dir_iterator(map_path);
-
-	for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
-		if (!dir_entry.is_regular_file() || dir_entry.path().extension() != ".txt") {
+		if (!std::filesystem::exists(map_path)) {
 			continue;
 		}
 
-		if (province::try_get(dir_entry.path().stem().string()) == nullptr) {
-			throw std::runtime_error(dir_entry.path().stem().string() + " is not a valid \"" + province::class_identifier + "\" instance identifier.");
+		std::vector<gsml_data> gsml_map_data_to_process;
+
+		std::filesystem::recursive_directory_iterator dir_iterator(map_path);
+
+		for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
+			if (!dir_entry.is_regular_file() || dir_entry.path().extension() != ".txt") {
+				continue;
+			}
+
+			if (province::try_get(dir_entry.path().stem().string()) == nullptr) {
+				throw std::runtime_error(dir_entry.path().stem().string() + " is not a valid \"" + province::class_identifier + "\" instance identifier.");
+			}
+
+			gsml_parser parser(dir_entry.path());
+			gsml_map_data_to_process.push_back(parser.parse());
 		}
 
-		gsml_parser parser(dir_entry.path());
-		gsml_map_data_to_process.push_back(parser.parse());
-	}
+		for (gsml_data &data : gsml_map_data_to_process) {
+			province *province = province::get(data.get_tag());
 
-	for (gsml_data &data : gsml_map_data_to_process) {
-		province *province = province::get(data.get_tag());
+			this->add_province(province);
 
-		this->add_province(province);
-
-		database::process_gsml_data<metternich::province>(province, data);
+			database::process_gsml_data<metternich::province>(province, data);
+		}
 	}
 }
 
@@ -123,31 +125,33 @@ void world::process_province_map_database()
 */
 void world::process_terrain_map_database()
 {
-	std::filesystem::path map_path(database::get_map_path() / terrain_type::database_folder);
+	for (const std::filesystem::path &path : database::get_map_paths()) {
+		std::filesystem::path map_path = path / this->get_identifier() / terrain_type::database_folder;
 
-	if (!std::filesystem::exists(map_path)) {
-		return;
-	}
+		if (!std::filesystem::exists(map_path)) {
+			continue;
+		}
 
-	std::filesystem::directory_iterator dir_iterator(map_path);
+		std::filesystem::directory_iterator dir_iterator(map_path);
 
-	for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
-		terrain_type *terrain = terrain_type::get(dir_entry.path().stem().string());
+		for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
+			terrain_type *terrain = terrain_type::get(dir_entry.path().stem().string());
 
-		if (dir_entry.is_directory()) {
-			std::filesystem::recursive_directory_iterator subdir_iterator(dir_entry);
+			if (dir_entry.is_directory()) {
+				std::filesystem::recursive_directory_iterator subdir_iterator(dir_entry);
 
-			for (const std::filesystem::directory_entry &subdir_entry : subdir_iterator) {
-				if (!subdir_entry.is_regular_file() || subdir_entry.path().extension() != ".txt") {
-					continue;
+				for (const std::filesystem::directory_entry &subdir_entry : subdir_iterator) {
+					if (!subdir_entry.is_regular_file() || subdir_entry.path().extension() != ".txt") {
+						continue;
+					}
+
+					gsml_parser parser(subdir_entry.path());
+					this->process_terrain_gsml_data(terrain, parser.parse());
 				}
-
-				gsml_parser parser(subdir_entry.path());
+			} else if (dir_entry.is_regular_file() && dir_entry.path().extension() == ".txt") {
+				gsml_parser parser(dir_entry.path());
 				this->process_terrain_gsml_data(terrain, parser.parse());
 			}
-		} else if (dir_entry.is_regular_file() && dir_entry.path().extension() == ".txt") {
-			gsml_parser parser(dir_entry.path());
-			this->process_terrain_gsml_data(terrain, parser.parse());
 		}
 	}
 }
@@ -243,9 +247,12 @@ void world::load_province_map()
 
 	for (const auto &province_terrain_count : province_terrain_counts) {
 		province *province = province_terrain_count.first;
+		this->add_province(province);
+
 		terrain_type *best_terrain = nullptr;
 		int best_terrain_count = 0;
 		bool inner_river = false;
+
 		for (const auto &kv_pair : province_terrain_count.second) {
 			terrain_type *terrain = kv_pair.first;
 
@@ -259,14 +266,17 @@ void world::load_province_map()
 				best_terrain_count = count;
 			}
 		}
-		province->set_terrain(best_terrain);
 
+		province->set_terrain(best_terrain);
 		province->set_inner_river(inner_river);
+
+		if (province->is_river()) {
+			this->geopath_provinces.insert(province);
+		}
 	}
 
 	for (const auto &kv_pair : province_pixel_indexes) {
 		province *province = kv_pair.first;
-		this->add_province(province);
 		province->create_image(kv_pair.second);
 	}
 
@@ -287,18 +297,51 @@ void world::load_terrain_map()
 */
 void world::write_geodata_to_image()
 {
-	QImage terrain_image((this->get_map_path() / "terrain.png").string().c_str());
-	QImage province_image((this->get_map_path() / "provinces.png").string().c_str());
-
-	this->write_terrain_geodata_to_image(terrain_image);
-	this->write_province_geodata_to_image(province_image, terrain_image);
-
 	if (!std::filesystem::exists(this->get_cache_path())) {
 		std::filesystem::create_directories(this->get_cache_path());
 	}
 
+	QImage terrain_image;
+
+	for (const std::filesystem::path &path : database::get_map_paths()) {
+		const std::filesystem::path map_path = path / this->get_identifier();
+
+		if (!std::filesystem::exists(map_path)) {
+			continue;
+		}
+
+		const std::filesystem::path terrain_image_path = map_path / "terrain.png";
+
+		if (!std::filesystem::exists(terrain_image_path)) {
+			continue;
+		}
+
+		terrain_image =  QImage(terrain_image_path.string().c_str());
+		this->write_terrain_geodata_to_image(terrain_image);
+		break;
+	}
+
+	for (const std::filesystem::path &path : database::get_map_paths()) {
+		const std::filesystem::path map_path = path / this->get_identifier();
+
+		if (!std::filesystem::exists(map_path)) {
+			continue;
+		}
+
+		const std::filesystem::path province_image_path = map_path / "provinces.png";
+
+		if (!std::filesystem::exists(province_image_path)) {
+			continue;
+		}
+
+		QImage province_image(province_image_path.string().c_str());
+		this->write_province_geodata_to_image(province_image, terrain_image);
+		province_image.save(QString::fromStdString((this->get_cache_path() / "provinces.png").string()));
+		break;
+	}
+
+	//the terrain image has to be saved after the province image has been written, because provinces can also write to it
 	terrain_image.save(QString::fromStdString((this->get_cache_path() / "terrain.png").string()));
-	province_image.save(QString::fromStdString((this->get_cache_path() / "provinces.png").string()));
 }
 
 /**
@@ -462,12 +505,14 @@ void world::write_province_geodata_to_image(QImage &province_image, QImage &terr
 		processed_provinces++;
 	}
 
-	//write river endpoints, but only after everything else, as they should have lower priority than the rivers themselves
-	for (province *province : province::get_river_provinces()) {
+	//write geopath endpoints, but only after everything else, as they should have lower priority than the geopaths themselves
+	for (province *province : this->get_geopath_provinces()) {
 		if (!province_image_rgbs.contains(province->get_color().rgb()) || province->always_writes_geodata()) {
 			province->write_geopath_endpoints_to_image(province_image, terrain_image);
 		}
 	}
+
+	this->geopath_provinces.clear();
 }
 
 void world::add_province(province *province)

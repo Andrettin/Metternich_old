@@ -24,7 +24,7 @@ class engine_interface : public QObject, public singleton<engine_interface>
 	Q_OBJECT
 
 	Q_PROPERTY(metternich::game* game READ get_game CONSTANT)
-	Q_PROPERTY(metternich::world* current_world READ get_current_world NOTIFY current_world_changed)
+	Q_PROPERTY(metternich::world* current_world READ get_current_world WRITE set_current_world NOTIFY current_world_changed)
 	Q_PROPERTY(QVariantList worlds READ get_worlds CONSTANT)
 	Q_PROPERTY(metternich::province* selected_province READ get_selected_province NOTIFY selected_province_changed)
 	Q_PROPERTY(metternich::holding* selected_holding READ get_selected_holding NOTIFY selected_holding_changed)
@@ -34,6 +34,7 @@ class engine_interface : public QObject, public singleton<engine_interface>
 public:
 	game *get_game() const;
 	world *get_current_world() const;
+	void set_current_world(world *world);
 	QVariantList get_worlds() const;
 	province *get_selected_province() const;
 	holding *get_selected_holding() const;

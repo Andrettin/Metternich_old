@@ -3,6 +3,7 @@
 #include "database/data_entry.h"
 #include "database/data_type.h"
 
+#include <filesystem>
 #include <set>
 
 namespace metternich {
@@ -15,6 +16,7 @@ class world : public data_entry, public data_type<world>
 	Q_OBJECT
 
 	Q_PROPERTY(QVariantList provinces READ get_provinces_qvariant_list CONSTANT)
+	Q_PROPERTY(QString cache_path READ get_cache_path_qstring CONSTANT)
 
 public:
 	static constexpr const char *class_identifier = "world";
@@ -39,16 +41,21 @@ public:
 		return this->provinces;
 	}
 
-	QVariantList get_provinces_qvariant_list() const;
-
-	std::filesystem::path get_map_path() const
+	const std::set<province *> &get_geopath_provinces()
 	{
-		return database::get_map_path() / this->get_identifier();
+		return this->geopath_provinces;
 	}
+
+	QVariantList get_provinces_qvariant_list() const;
 
 	std::filesystem::path get_cache_path() const
 	{
 		return database::get_cache_path() / this->get_identifier();
+	}
+
+	QString get_cache_path_qstring() const
+	{
+		return "file:///" + QString::fromStdString(this->get_cache_path().string());
 	}
 
 	QPoint get_pixel_pos(const int index) const;
@@ -80,6 +87,7 @@ public:
 		}
 	}
 
+
 	Q_INVOKABLE QPoint coordinate_to_point(const QGeoCoordinate &coordinate) const
 	{
 		return this->get_coordinate_pos(coordinate);
@@ -90,9 +98,10 @@ private:
 
 private:
 	std::set<province *> provinces;
+	std::set<province *> geopath_provinces;
 	QSize pixel_size = QSize(0, 0); //the size of the world, in pixels
-	QImage province_image;
 	QImage terrain_image;
+	QImage province_image;
 	std::map<const terrain_type *, std::vector<QGeoPolygon>> terrain_geopolygons;
 	std::map<const terrain_type *, std::vector<QGeoPath>> terrain_geopaths;
 };

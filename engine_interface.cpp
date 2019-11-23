@@ -22,6 +22,13 @@ world *engine_interface::get_current_world() const
 	return map::get()->get_current_world();
 }
 
+void engine_interface::set_current_world(world *world)
+{
+	game::get()->post_order([world]() {
+		map::get()->set_current_world(world);
+	});
+}
+
 QVariantList engine_interface::get_worlds() const
 {
 	QVariantList world_list = util::container_to_qvariant_list(world::get_all());

@@ -801,7 +801,7 @@ void province::write_geojson() const
 	top_list.push_back(feature_collection);
 
 	QJsonDocument geojson = QGeoJson::exportGeoJson(top_list);
-	std::filesystem::path filepath = database::get_map_path() / province::database_folder  / (this->get_identifier() + ".geojson");
+	std::filesystem::path filepath = database::get_map_path() / (this->get_identifier() + ".geojson");
 	std::ofstream ofstream(filepath);
 	ofstream << geojson.toJson().constData();
 }
@@ -823,10 +823,6 @@ void province::set_terrain(metternich::terrain_type *terrain)
 		if (old_terrain->get_modifier() != nullptr) {
 			old_terrain->get_modifier()->remove(this);
 		}
-
-		if (old_terrain->is_river()) {
-			province::river_provinces.erase(this);
-		}
 	}
 
 	this->terrain = terrain;
@@ -834,10 +830,6 @@ void province::set_terrain(metternich::terrain_type *terrain)
 	if (terrain != nullptr) {
 		if (terrain->get_modifier() != nullptr) {
 			terrain->get_modifier()->apply(this);
-		}
-
-		if (terrain->is_river()) {
-			province::river_provinces.insert(this);
 		}
 	}
 
@@ -1047,6 +1039,11 @@ void province::add_holding_slot(holding_slot *holding_slot)
 	switch (holding_slot->get_type()) {
 		case holding_slot_type::settlement:
 			this->settlement_holding_slots.push_back(holding_slot);
+			//add the holding slot to its province's regions
+			for (region *region : this->get_regions()) {
+				region->add_holding(holding_slot);
+			}
+			emit settlement_holding_slots_changed();
 			break;
 		case holding_slot_type::palace:
 			this->palace_holding_slots.push_back(holding_slot);
