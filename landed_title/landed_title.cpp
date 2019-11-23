@@ -266,7 +266,11 @@ std::string landed_title::get_name() const
 */
 std::string landed_title::get_tier_title_name() const
 {
-	return translator::get()->translate(landed_title::get_tier_identifier(this->get_tier()), this->get_tag_suffix_list_with_fallbacks());
+	std::vector<std::vector<std::string>> tag_suffix_list_with_fallbacks = this->get_tag_suffix_list_with_fallbacks();
+
+	tag_suffix_list_with_fallbacks.push_back({this->get_identifier()});
+
+	return translator::get()->translate(landed_title::get_tier_identifier(this->get_tier()), tag_suffix_list_with_fallbacks);
 }
 
 /**
@@ -288,7 +292,15 @@ std::string landed_title::get_titled_name() const
 */
 std::string landed_title::get_holder_title_name() const
 {
-	return translator::get()->translate(landed_title::get_tier_holder_identifier(this->get_tier()), this->get_tag_suffix_list_with_fallbacks());
+	std::vector<std::vector<std::string>> tag_suffix_list_with_fallbacks = this->get_tag_suffix_list_with_fallbacks();
+
+	tag_suffix_list_with_fallbacks.push_back({this->get_identifier()});
+
+	if (this->get_holder() != nullptr && this->get_holder()->is_female()) {
+		tag_suffix_list_with_fallbacks.push_back({"female"});
+	}
+
+	return translator::get()->translate(landed_title::get_tier_holder_identifier(this->get_tier()), tag_suffix_list_with_fallbacks);
 }
 
 std::vector<std::vector<std::string>> landed_title::get_tag_suffix_list_with_fallbacks() const
