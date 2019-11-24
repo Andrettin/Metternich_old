@@ -60,6 +60,21 @@ protected:
 		this->species = species;
 	}
 
+	void set_default_phenotype(phenotype *phenotype)
+	{
+		this->default_phenotype = phenotype;
+	}
+
+	void add_male_name(const std::string &name)
+	{
+		this->male_names.push_back(name);
+	}
+
+	void add_female_name(const std::string &name)
+	{
+		this->female_names.push_back(name);
+	}
+
 private:
 	species *species = nullptr;
 	QColor color;

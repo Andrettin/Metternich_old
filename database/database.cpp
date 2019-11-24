@@ -128,8 +128,6 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 				new_property_value = QVariant::fromValue(culture_group::get(property.get_value()));
 			} else if (property.get_key() == "religion") {
 				new_property_value = QVariant::fromValue(religion::get(property.get_value()));
-			} else if (property.get_key() == "phenotype" || property.get_key() == "default_phenotype" || property.get_key() == "icon_fallback_phenotype") {
-				new_property_value = QVariant::fromValue(phenotype::get(property.get_value()));
 			} else if (property.get_key() == "dynasty") {
 				new_property_value = QVariant::fromValue(dynasty::get(property.get_value()));
 			} else if (property.get_key() == "character" || property.get_key() == "holder" || property.get_key() == "father" || property.get_key() == "mother" || property.get_key() == "spouse" || property.get_key() == "liege" || property.get_key() == "employer") {
@@ -146,6 +144,8 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 				}
 			} else if (property_class_name == "metternich::holding_slot_type") {
 				new_property_value = QVariant::fromValue(string_to_holding_slot_type(property.get_value()));
+			} else if (property_class_name == "metternich::phenotype*") {
+				new_property_value = QVariant::fromValue(phenotype::get(property.get_value()));
 			} else if (property_class_name == "metternich::province_profile*") {
 				new_property_value = QVariant::fromValue(province_profile::get(property.get_value()));
 			} else if (property_class_name == "metternich::religion_group*") {

@@ -14,6 +14,18 @@ void culture::initialize()
 	if (this->get_species() == nullptr) {
 		this->set_species(this->get_culture_group()->get_species());
 	}
+
+	if (this->get_default_phenotype() == nullptr) {
+		this->set_default_phenotype(this->get_culture_group()->get_default_phenotype());
+	}
+
+	for (const std::string &name : this->get_culture_group()->get_male_names()) {
+		this->add_male_name(name);
+	}
+
+	for (const std::string &name : this->get_culture_group()->get_female_names()) {
+		this->add_female_name(name);
+	}
 }
 
 /**
@@ -33,16 +45,16 @@ void culture::check() const
 		throw std::runtime_error("Culture \"" + this->get_identifier() + "\" has no valid color.");
 	}
 
-	if (this->get_default_phenotype() == nullptr && this->get_culture_group()->get_default_phenotype() == nullptr) {
-		throw std::runtime_error("Culture \"" + this->get_identifier() + "\" has no default phenotype, and neither does its culture group.");
+	if (this->get_default_phenotype() == nullptr) {
+		throw std::runtime_error("Culture \"" + this->get_identifier() + "\" has no default phenotype.");
 	}
 
-	if (this->get_male_names().empty() && this->get_culture_group()->get_male_names().empty()) {
-		throw std::runtime_error("Culture \"" + this->get_identifier() + "\" has no male names, and neither does its culture group (\"" + this->get_culture_group()->get_identifier() + "\").");
+	if (this->get_male_names().empty()) {
+		throw std::runtime_error("Culture \"" + this->get_identifier() + "\" has no male names.");
 	}
 
-	if (this->get_female_names().empty() && this->get_culture_group()->get_female_names().empty()) {
-		throw std::runtime_error("Culture \"" + this->get_identifier() + "\" has no female names, and neither does its culture group (\"" + this->get_culture_group()->get_identifier() + "\").");
+	if (this->get_female_names().empty()) {
+		throw std::runtime_error("Culture \"" + this->get_identifier() + "\" has no female names.");
 	}
 
 	culture_base::check();
@@ -57,10 +69,6 @@ std::string culture::generate_male_name() const
 		return this->get_male_names()[random::generate(this->get_male_names().size())];
 	}
 
-	if (!this->get_culture_group()->get_male_names().empty()) {
-		return this->get_culture_group()->get_male_names()[random::generate(this->get_culture_group()->get_male_names().size())];
-	}
-
 	return std::string();
 }
 
@@ -71,10 +79,6 @@ std::string culture::generate_female_name() const
 {
 	if (!this->get_female_names().empty()) {
 		return this->get_female_names()[random::generate(this->get_female_names().size())];
-	}
-
-	if (!this->get_culture_group()->get_female_names().empty()) {
-		return this->get_culture_group()->get_female_names()[random::generate(this->get_culture_group()->get_female_names().size())];
 	}
 
 	return std::string();

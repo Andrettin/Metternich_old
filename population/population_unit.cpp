@@ -140,9 +140,6 @@ void population_unit::set_culture(metternich::culture *culture)
 
 	if (this->get_phenotype() == nullptr) {
 		metternich::phenotype *phenotype = culture->get_default_phenotype();
-		if (phenotype == nullptr) {
-			phenotype = culture->get_culture_group()->get_default_phenotype();
-		}
 		this->set_phenotype(phenotype);
 	}
 }

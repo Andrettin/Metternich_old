@@ -78,11 +78,7 @@ void character::process_gsml_dated_property(const gsml_property &property, const
 void character::initialize_history()
 {
 	if (this->get_phenotype() == nullptr) {
-		if (this->get_culture()->get_default_phenotype() != nullptr) {
-			this->phenotype = this->get_culture()->get_default_phenotype();
-		} else if (this->get_culture()->get_culture_group()->get_default_phenotype() != nullptr) {
-			this->phenotype = this->get_culture()->get_culture_group()->get_default_phenotype();
-		}
+		this->phenotype = this->get_culture()->get_default_phenotype();
 	}
 
 	if (this->name.empty() && this->get_culture() != nullptr) {
