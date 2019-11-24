@@ -21,6 +21,8 @@ public:
 	static constexpr const char *class_identifier = "culture";
 	static constexpr const char *database_folder = "cultures";
 
+	static std::set<std::string> get_database_dependencies();
+
 	culture(const std::string &identifier) : culture_base(identifier) {}
 
 	virtual void initialize() override;

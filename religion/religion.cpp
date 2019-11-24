@@ -1,6 +1,16 @@
 #include "religion/religion.h"
 
+#include "religion/religion_group.h"
+
 namespace metternich {
+
+std::set<std::string> religion::get_database_dependencies()
+{
+	return {
+		//so that religions inheriting characteristics from their religions groups during initialization works properly
+		religion_group::class_identifier
+	};
+}
 
 /**
 **	@brief	Process a GSML scope

@@ -7,6 +7,14 @@
 
 namespace metternich {
 
+std::set<std::string> culture::get_database_dependencies()
+{
+	return {
+		//so that cultures inheriting characteristics from their culture groups during initialization works properly
+		culture_group::class_identifier
+	};
+}
+
 /**
 **	@brief	Initialize the culture
 */
