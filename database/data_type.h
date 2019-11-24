@@ -227,6 +227,10 @@ public:
 
 				T *instance = nullptr;
 				if (definition) {
+					if (data_entry.get_operator() == gsml_operator::addition) {
+						continue; //addition operators for data entry scopes mean modifying already-defined entries
+					}
+
 					instance = T::add(identifier);
 				} else {
 					instance = T::get(identifier);
@@ -311,6 +315,10 @@ public:
 
 					T *instance = nullptr;
 					if (definition) {
+						if (data_entry.get_operator() == gsml_operator::addition) {
+							continue; //addition operators for data entry scopes mean modifying already-defined entries
+						}
+
 						instance = T::add(identifier);
 					} else {
 						instance = T::get(identifier);

@@ -192,12 +192,12 @@ void gsml_parser::parse_tokens()
 
 		//value
 		if (token == "{") { //opens tag
-			if (this->property_operator != gsml_operator::assignment) {
-				throw std::runtime_error("Only the assignment operator is valid after a tag!");
+			if (this->property_operator != gsml_operator::assignment && this->property_operator != gsml_operator::addition) {
+				throw std::runtime_error("Only the assignment and addition operators are valid after a tag.");
 			}
 
-			std::string tag_name = this->key;
-			this->current_gsml_data->children.emplace_back(tag_name);
+			const std::string &tag_name = this->key;
+			this->current_gsml_data->children.emplace_back(tag_name, this->property_operator);
 			gsml_data &new_gsml_data = this->current_gsml_data->children.back();
 			new_gsml_data.parent = this->current_gsml_data;
 			this->current_gsml_data = &new_gsml_data;
