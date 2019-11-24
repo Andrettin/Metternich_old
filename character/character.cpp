@@ -85,8 +85,10 @@ void character::initialize_history()
 			//add the character's name to its culture's name list
 			if (this->is_female()) {
 				this->get_culture()->add_female_name(this->name);
+				this->get_culture()->get_culture_group()->add_female_name(this->name);
 			} else {
 				this->get_culture()->add_male_name(this->name);
+				this->get_culture()->get_culture_group()->add_male_name(this->name);
 			}
 		}
 	}
