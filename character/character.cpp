@@ -6,6 +6,7 @@
 #include "culture/culture_group.h"
 #include "database/gsml_property.h"
 #include "game/game.h"
+#include "history/history.h"
 #include "holding/holding.h"
 #include "landed_title/landed_title.h"
 #include "landed_title/landed_title_tier.h"
@@ -37,7 +38,9 @@ character *character::generate(metternich::culture *culture, metternich::religio
 	//generate the character's birth date to be between 60 and 20 years before the current date
 	const QDateTime &current_date = game::get()->get_current_date();
 	character->birth_date = current_date.addDays(random::generate_in_range(-60 * 365, -20 * 365));
-	character->initialize_history(); //generates a name and sets the phenotype if none was given
+	if (!history::get()->is_loading()) { //if history is loading then this entry's history will already be initialized anyway
+		character->initialize_history(); //generates a name and sets the phenotype if none was given
+	}
 	return character;
 }
 
@@ -77,13 +80,13 @@ void character::process_gsml_dated_property(const gsml_property &property, const
 */
 void character::initialize_history()
 {
-	if (game::get()->is_starting()) {
-		if (!this->name.empty() && this->get_culture() != nullptr) {
-			//increase the weight of the name in the character's culture's name list
+	if (history::get()->is_loading()) {
+		if (this->get_culture() != nullptr && !this->name.empty()) {
+			//add the character's name to its culture's name list
 			if (this->is_female()) {
-				this->get_culture()->increase_female_name_weight(this->name);
+				this->get_culture()->add_female_name(this->name);
 			} else {
-				this->get_culture()->increase_male_name_weight(this->name);
+				this->get_culture()->add_male_name(this->name);
 			}
 		}
 	}
@@ -99,6 +102,16 @@ void character::initialize_history()
 			this->name = this->get_culture()->generate_male_name();
 		}
 	}
+}
+
+void character::set_name(const std::string &name)
+{
+	if (name == this->name) {
+		return;
+	}
+
+	this->name = name;
+	emit name_changed();
 }
 
 /**
@@ -135,6 +148,16 @@ std::string character::get_titled_name() const
 	}
 
 	return titled_name;
+}
+
+void character::set_culture(metternich::culture *culture)
+{
+	if (culture == this->get_culture()) {
+		return;
+	}
+
+	this->culture = culture;
+	emit culture_changed();
 }
 
 void character::choose_primary_title()

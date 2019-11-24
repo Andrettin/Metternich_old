@@ -7,14 +7,6 @@
 
 namespace metternich {
 
-std::set<std::string> culture::get_database_dependencies()
-{
-	return {
-		//so that cultures inheriting characteristics from their culture groups during initialization works properly
-		culture_group::class_identifier
-	};
-}
-
 /**
 **	@brief	Initialize the culture
 */
@@ -27,17 +19,6 @@ void culture::initialize()
 	if (this->get_default_phenotype() == nullptr) {
 		this->set_default_phenotype(this->get_culture_group()->get_default_phenotype());
 	}
-
-	for (const std::string &name : this->get_culture_group()->get_male_names()) {
-		this->add_male_name(name);
-	}
-
-	for (const std::string &name : this->get_culture_group()->get_female_names()) {
-		this->add_female_name(name);
-	}
-
-	this->male_name_generation_list = util::container_to_vector(this->get_male_names());
-	this->female_name_generation_list = util::container_to_vector(this->get_female_names());
 }
 
 /**
@@ -61,12 +42,12 @@ void culture::check() const
 		throw std::runtime_error("Culture \"" + this->get_identifier() + "\" has no default phenotype.");
 	}
 
-	if (this->get_male_names().empty()) {
-		throw std::runtime_error("Culture \"" + this->get_identifier() + "\" has no male names.");
+	if (this->get_male_names().empty() && this->get_culture_group()->get_male_names().empty()) {
+		throw std::runtime_error("Culture \"" + this->get_identifier() + "\" has no male names, and nor does its culture group.");
 	}
 
-	if (this->get_female_names().empty()) {
-		throw std::runtime_error("Culture \"" + this->get_identifier() + "\" has no female names.");
+	if (this->get_female_names().empty() && this->get_culture_group()->get_female_names().empty()) {
+		throw std::runtime_error("Culture \"" + this->get_identifier() + "\" has no female names, and nor does its culture group.");
 	}
 
 	culture_base::check();
@@ -77,11 +58,15 @@ void culture::check() const
 */
 std::string culture::generate_male_name() const
 {
-	if (!this->male_name_generation_list.empty()) {
-		return this->male_name_generation_list[random::generate(this->male_name_generation_list.size())];
+	if (!this->get_male_names().empty()) {
+		return this->get_male_names()[random::generate(this->get_male_names().size())];
 	}
 
-	return std::string();
+	if (!this->get_culture_group()->get_male_names().empty()) {
+		return this->get_culture_group()->get_male_names()[random::generate(this->get_culture_group()->get_male_names().size())];
+	}
+
+	throw std::runtime_error("No male name could be generated for culture \"" + this->get_identifier() + "\"");
 }
 
 /**
@@ -89,11 +74,15 @@ std::string culture::generate_male_name() const
 */
 std::string culture::generate_female_name() const
 {
-	if (!this->female_name_generation_list.empty()) {
-		return this->female_name_generation_list[random::generate(this->female_name_generation_list.size())];
+	if (!this->get_female_names().empty()) {
+		return this->get_female_names()[random::generate(this->get_female_names().size())];
 	}
 
-	return std::string();
+	if (!this->get_culture_group()->get_female_names().empty()) {
+		return this->get_culture_group()->get_female_names()[random::generate(this->get_culture_group()->get_female_names().size())];
+	}
+
+	throw std::runtime_error("No female name could be generated for culture \"" + this->get_identifier() + "\"");
 }
 
 /**

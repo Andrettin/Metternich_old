@@ -30,7 +30,7 @@ class character : public numeric_data_entry, public data_type<character, int>
 	Q_PROPERTY(QString titled_name READ get_titled_name_qstring NOTIFY titled_name_changed)
 	Q_PROPERTY(bool female MEMBER female READ is_female)
 	Q_PROPERTY(metternich::dynasty* dynasty READ get_dynasty WRITE set_dynasty NOTIFY dynasty_changed)
-	Q_PROPERTY(metternich::culture* culture MEMBER culture READ get_culture NOTIFY culture_changed)
+	Q_PROPERTY(metternich::culture* culture READ get_culture WRITE set_culture NOTIFY culture_changed)
 	Q_PROPERTY(metternich::religion* religion MEMBER religion READ get_religion NOTIFY religion_changed)
 	Q_PROPERTY(metternich::phenotype* phenotype MEMBER phenotype READ get_phenotype)
 	Q_PROPERTY(metternich::landed_title* primary_title READ get_primary_title WRITE set_primary_title NOTIFY primary_title_changed)
@@ -140,9 +140,11 @@ public:
 		return this->name;
 	}
 
+	void set_name(const std::string &name);
+
 	void set_name_qstring(const QString &name)
 	{
-		this->name = name.toStdString();
+		this->set_name(name.toStdString());
 	}
 
 	std::string get_full_name() const;
@@ -204,6 +206,8 @@ public:
 	{
 		return this->culture;
 	}
+
+	void set_culture(culture *culture);
 
 	metternich::religion *get_religion() const
 	{

@@ -5,6 +5,7 @@
 #include "culture/culture.h"
 #include "culture/culture_group.h"
 #include "game/game.h"
+#include "history/history.h"
 #include "holding/holding.h"
 #include "holding/holding_slot.h"
 #include "holding/holding_type.h"
@@ -226,7 +227,7 @@ void landed_title::check() const
 		this->get_flag_path(); //throws an exception if the flag isn't found
 	}
 
-	if (game::get()->is_starting()) {
+	if (history::get()->is_loading()) {
 		if (this->get_capital_province() == nullptr) {
 			throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has no capital province.");
 		}

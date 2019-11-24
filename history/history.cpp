@@ -15,36 +15,6 @@
 namespace metternich {
 
 /**
-**	@brief	Load history
-*/
-void history::load()
-{
-	engine_interface::get()->set_loading_message("Loading History...");
-
-	region::parse_history_database();
-	province::parse_history_database();
-	province_profile::parse_history_database();
-	character::parse_history_database();
-	landed_title::parse_history_database();
-	population_unit::parse_history_database();
-
-	character::process_history_database(true);
-
-	region::process_history_database(false);
-	province::process_history_database(false);
-	province_profile::process_history_database(false);
-	character::process_history_database(false);
-	landed_title::process_history_database(false);
-
-	//process after the province history, so that holdings will have been created
-	population_unit::process_history_database();
-
-	history::generate_population_units();
-
-	database::get()->initialize_history();
-}
-
-/**
 **	@brief	Create population units, based on population history for regions, provinces and settlement holdings
 */
 void history::generate_population_units()
@@ -159,6 +129,40 @@ QDateTime history::string_to_date(const std::string &date_str)
 	}
 
 	return date;
+}
+
+
+/**
+**	@brief	Load history
+*/
+void history::load()
+{
+	this->loading = true;
+	engine_interface::get()->set_loading_message("Loading History...");
+
+	region::parse_history_database();
+	province::parse_history_database();
+	province_profile::parse_history_database();
+	character::parse_history_database();
+	landed_title::parse_history_database();
+	population_unit::parse_history_database();
+
+	character::process_history_database(true);
+
+	region::process_history_database(false);
+	province::process_history_database(false);
+	province_profile::process_history_database(false);
+	character::process_history_database(false);
+	landed_title::process_history_database(false);
+
+	//process after the province history, so that holdings will have been created
+	population_unit::process_history_database();
+
+	history::generate_population_units();
+
+	database::get()->initialize_history();
+
+	this->loading = false;
 }
 
 bool history::contains_timeline_date(const metternich::timeline *timeline, const QDateTime &date) const

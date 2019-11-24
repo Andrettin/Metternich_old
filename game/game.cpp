@@ -35,7 +35,7 @@ void game::start(const timeline *timeline, const QDateTime &start_date)
 	this->current_date = start_date;
 	emit current_date_changed();
 
-	history::load();
+	history::get()->load();
 
 	this->generate_missing_title_holders();
 	this->purge_superfluous_characters();

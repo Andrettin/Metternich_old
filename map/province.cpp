@@ -6,6 +6,7 @@
 #include "database/gsml_property.h"
 #include "engine_interface.h"
 #include "game/game.h"
+#include "history/history.h"
 #include "holding/building.h"
 #include "holding/holding.h"
 #include "holding/holding_slot.h"
@@ -297,15 +298,15 @@ void province::initialize_history()
 */
 void province::check() const
 {
-	if (game::get()->is_starting()) {
-		if (this->get_terrain() == nullptr) {
-			throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no terrain.");
-		}
+	if (this->get_terrain() == nullptr) {
+		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no terrain.");
+	}
 
-		if (!this->get_color().isValid()) {
-			throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no color.");
-		}
+	if (!this->get_color().isValid()) {
+		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no color.");
+	}
 
+	if (history::get()->is_loading()) {
 		/*
 		if (this->border_provinces.empty()) {
 			throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no border provinces.");

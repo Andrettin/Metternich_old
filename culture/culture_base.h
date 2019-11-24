@@ -4,8 +4,8 @@
 
 #include <QColor>
 
-#include <set>
 #include <string>
+#include <vector>
 
 namespace metternich {
 
@@ -44,24 +44,24 @@ public:
 		return this->default_phenotype;
 	}
 
-	const std::set<std::string> &get_male_names() const
+	const std::vector<std::string> &get_male_names() const
 	{
 		return this->male_names;
 	}
 
-	bool has_male_name(const std::string &name) const
+	void add_male_name(const std::string &name)
 	{
-		return this->male_names.contains(name);
+		this->male_names.push_back(name);
 	}
 
-	const std::set<std::string> &get_female_names() const
+	const std::vector<std::string> &get_female_names() const
 	{
 		return this->female_names;
 	}
 
-	bool has_female_name(const std::string &name) const
+	void add_female_name(const std::string &name)
 	{
-		return this->female_names.contains(name);
+		this->female_names.push_back(name);
 	}
 
 protected:
@@ -75,22 +75,12 @@ protected:
 		this->default_phenotype = phenotype;
 	}
 
-	void add_male_name(const std::string &name)
-	{
-		this->male_names.insert(name);
-	}
-
-	void add_female_name(const std::string &name)
-	{
-		this->female_names.insert(name);
-	}
-
 private:
 	species *species = nullptr;
 	QColor color;
 	phenotype *default_phenotype = nullptr;
-	std::set<std::string> male_names;
-	std::set<std::string> female_names;
+	std::vector<std::string> male_names;
+	std::vector<std::string> female_names;
 };
 
 }

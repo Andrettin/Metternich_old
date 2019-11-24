@@ -19,8 +19,6 @@ class religion : public data_entry, public data_type<religion>
 	Q_PROPERTY(QColor color MEMBER color READ get_color)
 
 public:
-	static std::set<std::string> get_database_dependencies();
-
 	religion(const std::string &identifier) : data_entry(identifier) {}
 
 	static constexpr const char *class_identifier = "religion";
