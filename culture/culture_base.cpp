@@ -1,6 +1,7 @@
 #include "culture/culture_base.h"
 
 #include "database/gsml_data.h"
+#include "util/container_util.h"
 
 namespace metternich {
 
@@ -24,9 +25,9 @@ void culture_base::process_gsml_scope(const gsml_data &scope)
 		const int blue = std::stoi(values.at(2));
 		this->color.setRgb(red, green, blue);
 	} else if (tag == "male_names") {
-		this->male_names = values;
+		this->male_names = util::container_to_set(values);
 	} else if (tag == "female_names") {
-		this->female_names = values;
+		this->female_names = util::container_to_set(values);
 	} else {
 		data_entry_base::process_gsml_scope(scope);
 	}

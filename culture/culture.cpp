@@ -3,6 +3,7 @@
 #include "character/dynasty.h"
 #include "culture/culture_group.h"
 #include "random.h"
+#include "util/container_util.h"
 
 namespace metternich {
 
@@ -26,6 +27,9 @@ void culture::initialize()
 	for (const std::string &name : this->get_culture_group()->get_female_names()) {
 		this->add_female_name(name);
 	}
+
+	this->male_name_generation_list = util::container_to_vector(this->get_male_names());
+	this->female_name_generation_list = util::container_to_vector(this->get_female_names());
 }
 
 /**
@@ -65,8 +69,8 @@ void culture::check() const
 */
 std::string culture::generate_male_name() const
 {
-	if (!this->get_male_names().empty()) {
-		return this->get_male_names()[random::generate(this->get_male_names().size())];
+	if (!this->male_name_generation_list.empty()) {
+		return this->male_name_generation_list[random::generate(this->male_name_generation_list.size())];
 	}
 
 	return std::string();
@@ -77,8 +81,8 @@ std::string culture::generate_male_name() const
 */
 std::string culture::generate_female_name() const
 {
-	if (!this->get_female_names().empty()) {
-		return this->get_female_names()[random::generate(this->get_female_names().size())];
+	if (!this->female_name_generation_list.empty()) {
+		return this->female_name_generation_list[random::generate(this->female_name_generation_list.size())];
 	}
 
 	return std::string();

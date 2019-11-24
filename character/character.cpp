@@ -77,6 +77,17 @@ void character::process_gsml_dated_property(const gsml_property &property, const
 */
 void character::initialize_history()
 {
+	if (game::get()->is_starting()) {
+		if (!this->name.empty() && this->get_culture() != nullptr) {
+			//increase the weight of the name in the character's culture's name list
+			if (this->is_female()) {
+				this->get_culture()->increase_female_name_weight(this->name);
+			} else {
+				this->get_culture()->increase_male_name_weight(this->name);
+			}
+		}
+	}
+
 	if (this->get_phenotype() == nullptr) {
 		this->phenotype = this->get_culture()->get_default_phenotype();
 	}

@@ -36,7 +36,26 @@ public:
 		this->dynasties.push_back(dynasty);
 	}
 
+	void increase_male_name_weight(const std::string &name)
+	{
+		if (!this->has_male_name(name)) {
+			return;
+		}
+
+		this->male_name_generation_list.push_back(name);
+	}
+
 	std::string generate_male_name() const;
+
+	void increase_female_name_weight(const std::string &name)
+	{
+		if (!this->has_female_name(name)) {
+			return;
+		}
+
+		this->female_name_generation_list.push_back(name);
+	}
+
 	std::string generate_female_name() const;
 	std::string generate_dynasty_name() const;
 
@@ -46,6 +65,8 @@ signals:
 private:
 	metternich::culture_group *culture_group = nullptr;
 	std::vector<dynasty *> dynasties;
+	std::vector<std::string> male_name_generation_list; //the male name generation list; the content is similar to the male_names set in the culture_base class, except that the same name can appear multiple times in the list, as a form of weighting certain names more than others for generation
+	std::vector<std::string> female_name_generation_list;
 };
 
 }
