@@ -350,7 +350,9 @@ void landed_title::set_holder(character *character)
 
 	if (this->get_province() != nullptr) {
 		//if this is a non-titular county, then the character holding it must also possess the county's capital holding
-		this->get_province()->get_capital_holding()->get_barony()->set_holder(character);
+		if (this->get_province()->get_capital_holding() != nullptr) {
+			this->get_province()->get_capital_holding()->get_barony()->set_holder(character);
+		}
 
 		//if this is a non-titular county, the fort, university and hospital of its province must belong to the county holder
 		holding *fort_holding = this->get_province()->get_fort_holding_slot()->get_holding();

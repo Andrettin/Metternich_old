@@ -93,15 +93,17 @@ void character::initialize_history()
 		}
 	}
 
-	if (this->get_phenotype() == nullptr) {
-		this->phenotype = this->get_culture()->get_default_phenotype();
-	}
+	if (this->get_culture() != nullptr) {
+		if (this->get_phenotype() == nullptr) {
+			this->phenotype = this->get_culture()->get_default_phenotype();
+		}
 
-	if (this->name.empty() && this->get_culture() != nullptr) {
-		if (this->is_female()) {
-			this->name = this->get_culture()->generate_female_name();
-		} else {
-			this->name = this->get_culture()->generate_male_name();
+		if (this->name.empty()) {
+			if (this->is_female()) {
+				this->name = this->get_culture()->generate_female_name();
+			} else {
+				this->name = this->get_culture()->generate_male_name();
+			}
 		}
 	}
 }
