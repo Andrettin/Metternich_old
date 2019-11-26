@@ -111,13 +111,6 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 			} else if (property.get_key() == "province" || property.get_key() == "capital_province") {
 				province *province = province::get(property.get_value());
 				new_property_value = QVariant::fromValue(province);
-			} else if (property.get_key() == "holding" || property.get_key() == "capital_holding") {
-				const holding_slot *holding_slot = holding_slot::get(property.get_value());
-				holding *holding = holding_slot->get_holding();
-				if (holding == nullptr && class_name != "metternich::population_unit") {
-					throw std::runtime_error("Holding slot \"" + property.get_value() + "\" has no constructed holding, but a holding property is being set using it as the holding's identifier.");
-				}
-				new_property_value = QVariant::fromValue(holding);
 			} else if (property.get_key() == "region") {
 				new_property_value = QVariant::fromValue(region::get(property.get_value()));
 			} else if (property.get_key() == "terrain") {
@@ -142,6 +135,15 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 				} else {
 					throw std::runtime_error("Unknown type for object reference property \"" + std::string(property_name) + "\".");
 				}
+			} else if (property_class_name == "metternich::holding*") {
+				const holding_slot *holding_slot = holding_slot::get(property.get_value());
+				holding *holding = holding_slot->get_holding();
+				if (holding == nullptr && class_name != "metternich::population_unit") {
+					throw std::runtime_error("Holding slot \"" + property.get_value() + "\" has no constructed holding, but a holding property is being set using it as the holding's identifier.");
+				}
+				new_property_value = QVariant::fromValue(holding);
+			} else if (property_class_name == "metternich::holding_slot*") {
+				new_property_value = QVariant::fromValue(holding_slot::get(property.get_value()));
 			} else if (property_class_name == "metternich::holding_slot_type") {
 				new_property_value = QVariant::fromValue(string_to_holding_slot_type(property.get_value()));
 			} else if (property_class_name == "metternich::phenotype*") {

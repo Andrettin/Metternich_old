@@ -286,6 +286,11 @@ void province::initialize_history()
 {
 	this->population_units.clear();
 
+	if (this->get_capital_holding_slot() == nullptr && !this->get_settlement_holding_slots().empty()) {
+		//set the first settlement holding slot as the capital if none has been set
+		this->set_capital_holding_slot(this->get_settlement_holding_slots().front());
+	}
+
 	this->calculate_population();
 	this->calculate_population_groups();
 
@@ -317,7 +322,7 @@ void province::check() const
 		}
 		*/
 
-		if (this->get_county() != nullptr && this->get_owner() != nullptr) {
+		if (this->get_county() != nullptr && !this->get_settlement_holdings().empty()) {
 			if (this->get_culture() == nullptr) {
 				throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no culture.");
 			}
@@ -327,8 +332,8 @@ void province::check() const
 			}
 		}
 
-		if (this->get_capital_holding() != nullptr && this->get_capital_holding()->get_province() != this) {
-			throw std::runtime_error("Province \"" + this->get_identifier() + "\"'s capital holding (\"" + this->get_capital_holding()->get_barony()->get_identifier() + "\") belongs to another province (\"" + this->get_capital_holding()->get_province()->get_identifier() + "\").");
+		if (this->get_capital_holding_slot() != nullptr && this->get_capital_holding_slot()->get_province() != this) {
+			throw std::runtime_error("Province \"" + this->get_identifier() + "\"'s capital holding slot (\"" + this->get_capital_holding_slot()->get_barony()->get_identifier() + "\") belongs to another province (\"" + this->get_capital_holding_slot()->get_province()->get_identifier() + "\").");
 		}
 	}
 }
@@ -1163,6 +1168,35 @@ void province::destroy_holding(holding_slot *holding_slot)
 	holding_slot->set_holding(nullptr);
 }
 
+void province::set_capital_holding_slot(holding_slot *holding_slot)
+{
+	if (holding_slot == this->get_capital_holding_slot()) {
+		return;
+	}
+
+	if (holding_slot != nullptr) {
+		if (holding_slot->get_province() != this) {
+			throw std::runtime_error("Tried to set holding \"" + holding_slot->get_identifier() + "\" as the capital holding of province \"" + this->get_identifier() + "\", but it belongs to another province.");
+		}
+
+		if (holding_slot->get_type() != holding_slot_type::settlement) {
+			throw std::runtime_error("Tried to set holding \"" + holding_slot->get_identifier() + "\" as the capital holding of province \"" + this->get_identifier() + "\", but it is not a settlement holding.");
+		}
+	}
+
+	this->capital_holding_slot = holding_slot;
+	emit capital_holding_slot_changed();
+}
+
+holding *province::get_capital_holding() const
+{
+	if (this->get_capital_holding_slot() != nullptr) {
+		this->get_capital_holding_slot()->get_holding();
+	}
+
+	return nullptr;
+}
+
 /**
 **	@brief	Set a holding as the province's capital holding
 **
@@ -1175,17 +1209,12 @@ void province::set_capital_holding(holding *holding)
 	}
 
 	if (holding != nullptr) {
-		if (holding->get_province() != this) {
-			throw std::runtime_error("Tried to set holding \"" + holding->get_slot()->get_identifier() + "\" as the capital holding of province \"" + this->get_identifier() + "\", but it belongs to another province.");
-		}
-
-		if (holding->get_slot()->get_type() != holding_slot_type::settlement) {
-			throw std::runtime_error("Tried to set holding \"" + holding->get_slot()->get_identifier() + "\" as the capital holding of province \"" + this->get_identifier() + "\", but it is not a settlement holding.");
-		}
+		this->set_capital_holding_slot(holding->get_slot());
+	} else if (!this->get_settlement_holding_slots().empty()) {
+		this->set_capital_holding_slot(this->get_settlement_holding_slots().front());
+	} else {
+		this->set_capital_holding_slot(nullptr);
 	}
-
-	this->capital_holding = holding;
-	emit capital_holding_changed();
 }
 
 /**
