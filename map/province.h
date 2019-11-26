@@ -20,6 +20,7 @@
 
 namespace metternich {
 
+class character;
 class culture;
 class holding;
 class holding_slot;
@@ -49,6 +50,7 @@ class province : public data_entry, public data_type<province>
 	Q_PROPERTY(QRect rect READ get_rect CONSTANT)
 	Q_PROPERTY(QImage image READ get_image NOTIFY image_changed)
 	Q_PROPERTY(metternich::terrain_type* terrain READ get_terrain WRITE set_terrain NOTIFY terrain_changed)
+	Q_PROPERTY(metternich::character* owner READ get_owner NOTIFY owner_changed)
 	Q_PROPERTY(metternich::culture* culture READ get_culture WRITE set_culture NOTIFY culture_changed)
 	Q_PROPERTY(metternich::religion* religion READ get_religion WRITE set_religion NOTIFY religion_changed)
 	Q_PROPERTY(int population READ get_population WRITE set_population NOTIFY population_changed)
@@ -159,6 +161,8 @@ public:
 	}
 
 	void set_terrain(terrain_type *terrain);
+
+	character *get_owner() const;
 
 	metternich::culture *get_culture() const
 	{
@@ -389,6 +393,7 @@ signals:
 	void de_jure_empire_changed();
 	void image_changed();
 	void terrain_changed();
+	void owner_changed();
 	void culture_changed();
 	void religion_changed();
 	void population_changed();

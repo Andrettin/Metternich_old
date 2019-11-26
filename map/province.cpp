@@ -250,6 +250,10 @@ void province::process_gsml_dated_scope(const gsml_data &scope, const QDateTime 
 */
 void province::initialize()
 {
+	if (this->get_county() != nullptr) {
+		connect(this->get_county(), &landed_title::holder_changed, this, &province::owner_changed);
+	}
+
 	//create a fort holding slot for this province if none exists
 	if (this->get_fort_holding_slot() == nullptr) {
 		std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier() + "_fort";
@@ -313,7 +317,7 @@ void province::check() const
 		}
 		*/
 
-		if (this->get_county() != nullptr) {
+		if (this->get_county() != nullptr && this->get_owner() != nullptr) {
 			if (this->get_culture() == nullptr) {
 				throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no culture.");
 			}
@@ -321,10 +325,10 @@ void province::check() const
 			if (this->get_religion() == nullptr) {
 				throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no religion.");
 			}
+		}
 
-			if (this->get_capital_holding() != nullptr && this->get_capital_holding()->get_province() != this) {
-				throw std::runtime_error("Province \"" + this->get_identifier() + "\"'s capital holding (\"" + this->get_capital_holding()->get_barony()->get_identifier() + "\") belongs to another province (\"" + this->get_capital_holding()->get_province()->get_identifier() + "\").");
-			}
+		if (this->get_capital_holding() != nullptr && this->get_capital_holding()->get_province() != this) {
+			throw std::runtime_error("Province \"" + this->get_identifier() + "\"'s capital holding (\"" + this->get_capital_holding()->get_barony()->get_identifier() + "\") belongs to another province (\"" + this->get_capital_holding()->get_province()->get_identifier() + "\").");
 		}
 	}
 }
@@ -383,8 +387,13 @@ std::vector<std::vector<std::string>> province::get_tag_suffix_list_with_fallbac
 {
 	std::vector<std::vector<std::string>> tag_list_with_fallbacks;
 
-	tag_list_with_fallbacks.push_back({this->get_culture()->get_identifier(), this->get_culture()->get_culture_group()->get_identifier()});
-	tag_list_with_fallbacks.push_back({this->get_religion()->get_identifier(), this->get_religion()->get_religion_group()->get_identifier()});
+	if (this->get_culture() != nullptr) {
+		tag_list_with_fallbacks.push_back({this->get_culture()->get_identifier(), this->get_culture()->get_culture_group()->get_identifier()});
+	}
+
+	if (this->get_religion() != nullptr) {
+		tag_list_with_fallbacks.push_back({this->get_religion()->get_identifier(), this->get_religion()->get_religion_group()->get_identifier()});
+	}
 
 	return tag_list_with_fallbacks;
 }
@@ -513,45 +522,53 @@ const QColor &province::get_map_mode_color(const map_mode mode) const
 				const landed_title *realm = this->get_county()->get_realm();
 				if (realm != nullptr) {
 					return realm->get_color();
-				} else {
-					return this->get_county()->get_color();
 				}
+				break;
 			}
 			case map_mode::de_jure_empire: {
 				const landed_title *empire = this->get_de_jure_empire();
 				if (empire != nullptr) {
 					return empire->get_color();
-				} else {
-					return province::wasteland_province_color;
 				}
+				break;
 			}
 			case map_mode::de_jure_kingdom: {
 				const landed_title *kingdom = this->get_de_jure_kingdom();
 				if (kingdom != nullptr) {
 					return kingdom->get_color();
-				} else {
-					return province::wasteland_province_color;
 				}
+				break;
 			}
 			case map_mode::de_jure_duchy: {
 				const landed_title *duchy = this->get_de_jure_duchy();
 				if (duchy != nullptr) {
 					return duchy->get_color();
-				} else {
-					return province::wasteland_province_color;
 				}
+				break;
 			}
 			case map_mode::culture: {
-				return this->get_culture()->get_color();
+				if (this->get_culture() != nullptr) {
+					return this->get_culture()->get_color();
+				}
+				break;
 			}
 			case map_mode::culture_group: {
-				return this->get_culture()->get_culture_group()->get_color();
+				if (this->get_culture() != nullptr) {
+					return this->get_culture()->get_culture_group()->get_color();
+				}
+				break;
 			}
 			case map_mode::religion: {
-				return this->get_religion()->get_color();
+				if (this->get_religion() != nullptr) {
+					return this->get_religion()->get_color();
+				}
+				break;
 			}
 			case map_mode::religion_group: {
-				return this->get_religion()->get_religion_group()->get_color();
+				if (this->get_religion() != nullptr) {
+					return this->get_religion()->get_religion_group()->get_color();
+				}
+				break;
 			}
 		}
 	}
@@ -837,6 +854,15 @@ void province::set_terrain(metternich::terrain_type *terrain)
 	emit terrain_changed();
 }
 
+character *province::get_owner() const
+{
+	if (this->get_county() != nullptr) {
+		return this->get_county()->get_holder();
+	}
+
+	return nullptr;
+}
+
 /**
 **	@brief	Set the province's culture
 **
@@ -1104,7 +1130,7 @@ void province::create_holding(holding_slot *holding_slot, holding_type *type)
 		case holding_slot_type::fort:
 		case holding_slot_type::hospital:
 		case holding_slot_type::university:
-			holding_slot->get_holding()->set_owner(this->get_county()->get_holder());
+			holding_slot->get_holding()->set_owner(this->get_owner());
 			break;
 		default:
 			break;

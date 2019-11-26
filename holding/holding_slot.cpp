@@ -88,8 +88,13 @@ std::vector<std::vector<std::string>> holding_slot::get_tag_suffix_list_with_fal
 {
 	std::vector<std::vector<std::string>> tag_list_with_fallbacks;
 
-	tag_list_with_fallbacks.push_back({this->get_province()->get_culture()->get_identifier(), this->get_province()->get_culture()->get_culture_group()->get_identifier()});
-	tag_list_with_fallbacks.push_back({this->get_province()->get_religion()->get_identifier(), this->get_province()->get_religion()->get_religion_group()->get_identifier()});
+	if (this->get_province()->get_culture() != nullptr) {
+		tag_list_with_fallbacks.push_back({this->get_province()->get_culture()->get_identifier(), this->get_province()->get_culture()->get_culture_group()->get_identifier()});
+	}
+
+	if (this->get_province()->get_religion()) {
+		tag_list_with_fallbacks.push_back({this->get_province()->get_religion()->get_identifier(), this->get_province()->get_religion()->get_religion_group()->get_identifier()});
+	}
 
 	return tag_list_with_fallbacks;
 }

@@ -199,7 +199,7 @@ void game::generate_missing_title_holders()
 		}
 
 		//generate missing title holders for county associated with provinces, or baronies associated with holdings
-		if (landed_title->get_province() == nullptr && landed_title->get_holding() == nullptr) {
+		if ((landed_title->get_province() == nullptr || landed_title->get_province()->get_settlement_holdings().empty()) && landed_title->get_holding() == nullptr) {
 			continue;
 		}
 
