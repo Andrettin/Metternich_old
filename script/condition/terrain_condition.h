@@ -1,7 +1,5 @@
 #pragma once
 
-#include "holding/holding.h"
-#include "holding/holding_slot.h"
 #include "map/province.h"
 #include "map/terrain_type.h"
 #include "script/condition/condition.h"
@@ -13,7 +11,8 @@ class terrain_type;
 /**
 **	@brief	A scripted terrain condition
 */
-class terrain_condition : public condition
+template <typename T>
+class terrain_condition : public condition<T>
 {
 public:
 	terrain_condition(const std::string &terrain_identifier)
@@ -27,23 +26,19 @@ public:
 		return identifier;
 	}
 
-	virtual bool check(const province *province) const override
+	virtual bool check(const T *scope) const override
 	{
+		const province *province = nullptr;
+		if constexpr (std::is_same_v<T, metternich::province>) {
+			province = scope;
+		} else {
+			province = scope->get_province();
+		}
 		return province->get_terrain() == this->terrain;
 	}
 
-	virtual bool check(const holding *holding) const override
-	{
-		return this->check(holding->get_province());
-	}
-
-	virtual bool check(const holding_slot *holding_slot) const override
-	{
-		return this->check(holding_slot->get_province());
-	}
-
 private:
-	terrain_type *terrain = nullptr;
+	const terrain_type *terrain = nullptr;
 };
 
 }

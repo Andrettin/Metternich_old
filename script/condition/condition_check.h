@@ -5,6 +5,7 @@
 
 namespace metternich {
 
+template <typename T>
 class condition;
 
 /**
@@ -14,8 +15,8 @@ template <typename T>
 class condition_check : public condition_check_base
 {
 public:
-	condition_check(const metternich::condition *condition, const T *checked_instance, const std::function<void(bool)> &result_setter)
-		: condition_check_base(condition, result_setter), checked_instance(checked_instance)
+	condition_check(const metternich::condition<T> *condition, const T *checked_instance, const std::function<void(bool)> &result_setter)
+		: condition_check_base(result_setter), condition(condition), checked_instance(checked_instance)
 	{
 		if (this->get_condition() != nullptr) {
 			this->get_condition()->bind_condition_check(*this, this->checked_instance);
@@ -36,6 +37,13 @@ public:
 	}
 
 private:
+	const condition<T> *get_condition() const
+	{
+		return this->condition;
+	}
+
+private:
+	const condition<T> *condition = nullptr;
 	const T *checked_instance = nullptr;
 };
 

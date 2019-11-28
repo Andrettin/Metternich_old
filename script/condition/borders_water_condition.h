@@ -1,16 +1,17 @@
 #pragma once
 
-#include "holding/holding.h"
-#include "holding/holding_slot.h"
 #include "map/province.h"
 #include "script/condition/condition.h"
+
+#include <type_traits>
 
 namespace metternich {
 
 /**
 **	@brief	A scripted "borders water" condition
 */
-class borders_water_condition : public condition
+template <typename T>
+class borders_water_condition : public condition<T>
 {
 public:
 	borders_water_condition(const bool borders_water) : borders_water(borders_water) {}
@@ -21,19 +22,15 @@ public:
 		return identifier;
 	}
 
-	virtual bool check(const province *province) const override
+	virtual bool check(const T *scope) const override
 	{
+		const province *province = nullptr;
+		if constexpr (std::is_same_v<T, metternich::province>) {
+			province = scope;
+		} else {
+			province = scope->get_province();
+		}
 		return province->borders_water() == this->borders_water;
-	}
-
-	virtual bool check(const holding *holding) const override
-	{
-		return this->check(holding->get_province());
-	}
-
-	virtual bool check(const holding_slot *holding_slot) const override
-	{
-		return this->check(holding_slot->get_province());
 	}
 
 private:

@@ -10,14 +10,16 @@ namespace metternich {
 /**
 **	@brief	Constructor
 */
-factor_modifier::factor_modifier()
+template <typename T>
+factor_modifier<T>::factor_modifier()
 {
 }
 
 /**
 **	@brief	Destructor
 */
-factor_modifier::~factor_modifier()
+template <typename T>
+factor_modifier<T>::~factor_modifier()
 {
 }
 
@@ -26,7 +28,8 @@ factor_modifier::~factor_modifier()
 **
 **	@param	property	The property
 */
-void factor_modifier::process_gsml_property(const gsml_property &property)
+template <typename T>
+void factor_modifier<T>::process_gsml_property(const gsml_property &property)
 {
 	const std::string &key = property.get_key();
 	const gsml_operator gsml_operator = property.get_operator();
@@ -39,7 +42,7 @@ void factor_modifier::process_gsml_property(const gsml_property &property)
 			throw std::runtime_error("Invalid operator for property (\"" + property.get_key() + "\").");
 		}
 	} else {
-		std::unique_ptr<condition> condition = condition::from_gsml_property(property);
+		std::unique_ptr<condition<T>> condition = metternich::condition<T>::from_gsml_property(property);
 		this->conditions.push_back(std::move(condition));
 	}
 }
@@ -49,10 +52,13 @@ void factor_modifier::process_gsml_property(const gsml_property &property)
 **
 **	@param	scope	The scope
 */
-void factor_modifier::process_gsml_scope(const gsml_data &scope)
+template <typename T>
+void factor_modifier<T>::process_gsml_scope(const gsml_data &scope)
 {
-	std::unique_ptr<condition> condition = condition::from_gsml_scope(scope);
+	std::unique_ptr<condition<T>> condition = metternich::condition<T>::from_gsml_scope(scope);
 	this->conditions.push_back(std::move(condition));
 }
+
+template class factor_modifier<holding_slot>;
 
 }

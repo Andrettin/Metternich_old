@@ -11,14 +11,16 @@ namespace metternich {
 /**
 **	@brief	Constructor
 */
-chance_factor::chance_factor()
+template <typename T>
+chance_factor<T>::chance_factor()
 {
 }
 
 /**
 **	@brief	Destructor
 */
-chance_factor::~chance_factor()
+template <typename T>
+chance_factor<T>::~chance_factor()
 {
 }
 
@@ -27,7 +29,8 @@ chance_factor::~chance_factor()
 **
 **	@param	property	The property
 */
-void chance_factor::process_gsml_property(const gsml_property &property)
+template <typename T>
+void chance_factor<T>::process_gsml_property(const gsml_property &property)
 {
 	const std::string &key = property.get_key();
 	const gsml_operator gsml_operator = property.get_operator();
@@ -49,15 +52,18 @@ void chance_factor::process_gsml_property(const gsml_property &property)
 **
 **	@param	scope	The scope
 */
-void chance_factor::process_gsml_scope(const gsml_data &scope)
+template <typename T>
+void chance_factor<T>::process_gsml_scope(const gsml_data &scope)
 {
 	if (scope.get_tag() == "modifier") {
-		auto modifier = std::make_unique<factor_modifier>();
+		auto modifier = std::make_unique<factor_modifier<T>>();
 		database::process_gsml_data(modifier, scope);
 		this->modifiers.push_back(std::move(modifier));
 	} else {
 		throw std::runtime_error("Invalid chance scope: " + scope.get_tag() + ".");
 	}
 }
+
+template class chance_factor<holding_slot>;
 
 }

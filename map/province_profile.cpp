@@ -42,7 +42,7 @@ std::set<std::string> province_profile::get_database_dependencies()
 void province_profile::process_gsml_scope(const gsml_data &scope)
 {
 	if (scope.get_tag() == "conditions") {
-		this->conditions = std::make_unique<and_condition>();
+		this->conditions = std::make_unique<and_condition<metternich::province>>();
 		database::process_gsml_data(this->conditions.get(), scope);
 	} else {
 		data_entry_base::process_gsml_scope(scope);

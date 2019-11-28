@@ -7,13 +7,16 @@
 
 namespace metternich {
 
-class factor_modifier;
 class gsml_data;
 class gsml_property;
+
+template <typename T>
+class factor_modifier;
 
 /**
 **	@brief	A chance factor, used e.g. for determining the probability of a settlement holding having a particular resource
 */
+template <typename T>
 class chance_factor
 {
 public:
@@ -29,7 +32,7 @@ public:
 		//get the resulting chance factor after taking into account all modifiers
 		int result = this->factor;
 
-		for (const std::unique_ptr<factor_modifier> &modifier : this->modifiers) {
+		for (const std::unique_ptr<factor_modifier<T>> &modifier : this->modifiers) {
 			if (modifier->check_conditions(scope)) {
 				result *= modifier->get_factor();
 				result /= 100;
@@ -41,7 +44,9 @@ public:
 
 private:
 	int factor = 0; //the base factor for the random chance
-	std::vector<std::unique_ptr<factor_modifier>> modifiers; //modifiers for the chance factor
+	std::vector<std::unique_ptr<factor_modifier<T>>> modifiers; //modifiers for the chance factor
 };
+
+extern template class chance_factor<holding_slot>;
 
 }

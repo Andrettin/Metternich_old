@@ -9,8 +9,10 @@
 
 namespace metternich {
 
-class condition;
 class province;
+
+template <typename T>
+class condition;
 
 class province_profile : public data_entry, public data_type<province_profile>
 {
@@ -34,7 +36,7 @@ public:
 
 private:
 	province *province = nullptr;
-	std::unique_ptr<condition> conditions;
+	std::unique_ptr<condition<metternich::province>> conditions;
 };
 
 }

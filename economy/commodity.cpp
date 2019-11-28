@@ -33,7 +33,7 @@ void commodity::process_gsml_scope(const gsml_data &scope)
 	const std::string &tag = scope.get_tag();
 
 	if (tag == "chance") {
-		this->chance = std::make_unique<chance_factor>();
+		this->chance = std::make_unique<chance_factor<holding_slot>>();
 		database::process_gsml_data(this->chance, scope);
 	} else {
 		data_entry_base::process_gsml_scope(scope);

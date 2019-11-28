@@ -2,8 +2,6 @@
 
 namespace metternich {
 
-class condition;
-
 class condition_check_base
 {
 public:
@@ -21,7 +19,7 @@ private:
 	static inline std::set<condition_check_base *> checks_to_recalculate;
 
 protected:
-	condition_check_base(const metternich::condition *condition, const std::function<void(bool)> &result_setter) : condition(condition), result_setter(result_setter)
+	condition_check_base(const std::function<void(bool)> &result_setter) : result_setter(result_setter)
 	{
 	}
 
@@ -45,14 +43,7 @@ public:
 
 	virtual void calculate_result() = 0;
 
-protected:
-	const condition *get_condition() const
-	{
-		return this->condition;
-	}
-
 private:
-	const condition *condition = nullptr;
 	std::function<void(bool)> result_setter; //setter for the result
 	bool result_recalculation_needed = false;
 };

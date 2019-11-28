@@ -1,7 +1,6 @@
 #pragma once
 
 #include "economy/commodity.h"
-#include "holding/holding.h"
 #include "script/condition/condition.h"
 #include "script/condition/condition_check.h"
 
@@ -12,7 +11,8 @@ class commodity;
 /**
 **	@brief	A scripted commodity condition
 */
-class commodity_condition : public condition
+template <typename T>
+class commodity_condition : public condition<T>
 {
 public:
 	commodity_condition(const std::string &commodity_identifier)
@@ -26,19 +26,19 @@ public:
 		return identifier;
 	}
 
-	virtual bool check(const holding *holding) const override
+	virtual bool check(const T *scope) const override
 	{
-		//check whether the holding's commodity is the same as that for this condition
-		return holding->get_commodity() == this->commodity;
+		//check whether the scope's commodity is the same as that for this condition
+		return scope->get_commodity() == this->commodity;
 	}
 
-	virtual void bind_condition_check(condition_check<holding> &check, const holding *holding) const override
+	virtual void bind_condition_check(condition_check<T> &check, const T *scope) const override
 	{
-		holding->connect(holding, &holding::commodity_changed, holding, [&check](){ check.set_result_recalculation_needed(); }, Qt::ConnectionType::DirectConnection);
+		scope->connect(scope, &T::commodity_changed, scope, [&check](){ check.set_result_recalculation_needed(); }, Qt::ConnectionType::DirectConnection);
 	}
 
 private:
-	metternich::commodity *commodity = nullptr;
+	const metternich::commodity *commodity = nullptr;
 };
 
 }

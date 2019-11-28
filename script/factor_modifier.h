@@ -7,13 +7,16 @@
 
 namespace metternich {
 
-class condition;
 class gsml_data;
 class gsml_property;
+
+template <typename T>
+class condition;
 
 /**
 **	@brief	A modifier for a factor, e.g. a random chance, weight or mean-time-to-happen
 */
+template <typename T>
 class factor_modifier
 {
 public:
@@ -33,10 +36,9 @@ public:
 		return this->additive;
 	}
 
-	template <typename T>
-	bool check_conditions(T *scope) const
+	bool check_conditions(const T *scope) const
 	{
-		for (const std::unique_ptr<condition> &condition : this->conditions) {
+		for (const std::unique_ptr<condition<T>> &condition : this->conditions) {
 			if (!condition->check(scope)) {
 				return false;
 			}
@@ -47,7 +49,9 @@ public:
 private:
 	int factor = 0; //the factor of the modifier itself
 	bool additive = false; //whether the modifier is additive instead of multiplicative
-	std::vector<std::unique_ptr<condition>> conditions; //conditions for whether the modifier is to be applied
+	std::vector<std::unique_ptr<condition<T>>> conditions; //conditions for whether the modifier is to be applied
 };
+
+extern template class factor_modifier<holding_slot>;
 
 }

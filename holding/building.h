@@ -7,10 +7,12 @@
 
 namespace metternich {
 
-class condition;
 class employment_type;
 class holding;
 class holding_type;
+
+template <typename T>
+class condition;
 
 class building : public data_entry, public data_type<building>
 {
@@ -126,12 +128,12 @@ public:
 		return this->workforce;
 	}
 
-	const condition *get_preconditions() const
+	const condition<holding> *get_preconditions() const
 	{
 		return this->preconditions.get();
 	}
 
-	const condition *get_conditions() const
+	const condition<holding> *get_conditions() const
 	{
 		return this->conditions.get();
 	}
@@ -141,8 +143,8 @@ private:
 	std::string icon_folder;
 	std::set<holding_type *> holding_types;
 	int construction_days = 0; //how many days does it take to construct this building
-	std::unique_ptr<condition> preconditions;
-	std::unique_ptr<condition> conditions;
+	std::unique_ptr<condition<holding>> preconditions;
+	std::unique_ptr<condition<holding>> conditions;
 	metternich::employment_type *employment_type = nullptr;
 	int workforce = 0; //how many workers does this building allow for its employment type
 };

@@ -9,10 +9,11 @@
 
 namespace metternich {
 
-class chance_factor;
 class gsml_data;
-class holding;
 class holding_slot;
+
+template <typename T>
+class chance_factor;
 
 class commodity : public data_entry, public data_type<commodity>
 {
@@ -77,7 +78,7 @@ signals:
 private:
 	int base_price = 0; //the commodity's base price
 	std::string icon_path;
-	std::unique_ptr<chance_factor> chance; //the chance of the commodity being picked as the one for a given settlement holding
+	std::unique_ptr<chance_factor<holding_slot>> chance; //the chance of the commodity being picked as the one for a given settlement holding
 };
 
 }

@@ -13,7 +13,8 @@ class world;
 /**
 **	@brief	A scripted world condition
 */
-class world_condition : public condition
+template <typename T>
+class world_condition : public condition<T>
 {
 public:
 	world_condition(const std::string &world_identifier)
@@ -27,19 +28,15 @@ public:
 		return identifier;
 	}
 
-	virtual bool check(const province *province) const override
+	virtual bool check(const T *scope) const override
 	{
+		const province *province = nullptr;
+		if constexpr (std::is_same_v<T, metternich::province>) {
+			province = scope;
+		} else {
+			province = scope->get_province();
+		}
 		return province->get_world() == this->world;
-	}
-
-	virtual bool check(const holding *holding) const override
-	{
-		return this->check(holding->get_province());
-	}
-
-	virtual bool check(const holding_slot *holding_slot) const override
-	{
-		return this->check(holding_slot->get_province());
 	}
 
 private:
