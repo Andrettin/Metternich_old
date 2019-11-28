@@ -1191,7 +1191,7 @@ void province::set_capital_holding_slot(holding_slot *holding_slot)
 holding *province::get_capital_holding() const
 {
 	if (this->get_capital_holding_slot() != nullptr) {
-		this->get_capital_holding_slot()->get_holding();
+		return this->get_capital_holding_slot()->get_holding();
 	}
 
 	return nullptr;
