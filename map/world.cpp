@@ -85,7 +85,7 @@ void world::process_province_map_database()
 		return;
 	}
 
-	for (const std::filesystem::path &path : database::get_map_paths()) {
+	for (const std::filesystem::path &path : database::get()->get_map_paths()) {
 		std::filesystem::path map_path = path / this->get_identifier() / province::database_folder;
 
 		if (!std::filesystem::exists(map_path)) {
@@ -125,7 +125,7 @@ void world::process_province_map_database()
 */
 void world::process_terrain_map_database()
 {
-	for (const std::filesystem::path &path : database::get_map_paths()) {
+	for (const std::filesystem::path &path : database::get()->get_map_paths()) {
 		std::filesystem::path map_path = path / this->get_identifier() / "terrain";
 
 		if (!std::filesystem::exists(map_path)) {
@@ -303,7 +303,7 @@ void world::write_geodata_to_image()
 
 	QImage terrain_image;
 
-	for (const std::filesystem::path &path : database::get_map_paths()) {
+	for (const std::filesystem::path &path : database::get()->get_map_paths()) {
 		const std::filesystem::path map_path = path / this->get_identifier();
 
 		if (!std::filesystem::exists(map_path)) {
@@ -321,7 +321,7 @@ void world::write_geodata_to_image()
 		break;
 	}
 
-	for (const std::filesystem::path &path : database::get_map_paths()) {
+	for (const std::filesystem::path &path : database::get()->get_map_paths()) {
 		const std::filesystem::path map_path = path / this->get_identifier();
 
 		if (!std::filesystem::exists(map_path)) {

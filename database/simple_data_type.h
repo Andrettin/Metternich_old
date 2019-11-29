@@ -27,7 +27,7 @@ public:
 			return;
 		}
 
-		for (const std::filesystem::path &path : database::get_history_paths()) {
+		for (const std::filesystem::path &path : database::get()->get_history_paths()) {
 			std::filesystem::path history_path(path / T::database_folder);
 
 			if (!std::filesystem::exists(history_path)) {

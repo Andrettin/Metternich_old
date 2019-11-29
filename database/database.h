@@ -16,6 +16,7 @@ namespace metternich {
 
 class data_entry;
 class data_type_metadata;
+class module;
 
 /**
 **	@brief	The database
@@ -46,21 +47,11 @@ public:
 	}
 
 	static void process_gsml_property_for_object(QObject *object, const gsml_property &property);
+	static QVariant process_gsml_property_value(const gsml_property &property, const QMetaProperty &meta_property, const QObject *object);
 
 	static std::filesystem::path get_root_path()
 	{
 		return std::filesystem::current_path();
-	}
-
-	static std::vector<std::filesystem::path> get_base_paths()
-	{
-		std::vector<std::filesystem::path> base_paths;
-		base_paths.push_back(database::get_root_path());
-
-		std::vector<std::filesystem::path> module_paths = database::get_module_paths();
-		base_paths.insert(base_paths.end(), module_paths.begin(), module_paths.end());
-
-		return base_paths;
 	}
 
 	static std::filesystem::path get_modules_path()
@@ -73,58 +64,9 @@ public:
 		return database::get_documents_path() / "modules";
 	}
 
-	static std::vector<std::filesystem::path> get_module_paths()
-	{
-		std::vector<std::filesystem::path> module_paths;
-		if (std::filesystem::exists(database::get_modules_path())) {
-			module_paths = database::get_module_paths_at_dir(database::get_modules_path());
-		}
-
-		if (std::filesystem::exists(database::get_documents_modules_path())) {
-			std::vector<std::filesystem::path> documents_module_paths = database::get_module_paths_at_dir(database::get_documents_modules_path());
-			module_paths.insert(module_paths.end(), documents_module_paths.begin(), documents_module_paths.end());
-		}
-
-		return module_paths;
-	}
-
-	static std::vector<std::filesystem::path> get_module_paths_at_dir(const std::filesystem::path &path)
-	{
-		std::vector<std::filesystem::path> module_paths;
-
-		std::filesystem::directory_iterator dir_iterator(path);
-
-		for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
-			if (!dir_entry.is_directory()) {
-				continue;
-			}
-
-			module_paths.push_back(dir_entry);
-
-			std::filesystem::path submodules_path = dir_entry.path() / "modules";
-			if (std::filesystem::exists(submodules_path)) {
-				std::vector<std::filesystem::path> submodules = get_module_paths_at_dir(submodules_path);
-				module_paths.insert(module_paths.end(), submodules.begin(), submodules.end());
-			}
-		}
-
-		return module_paths;
-	}
-
 	static std::filesystem::path get_data_path()
 	{
 		return database::get_root_path() / "data";
-	}
-
-	static std::vector<std::filesystem::path> get_data_paths()
-	{
-		std::vector<std::filesystem::path> paths = database::get_base_paths();
-
-		for (std::filesystem::path &path : paths) {
-			path /= "data";
-		}
-
-		return paths;
 	}
 
 	static std::filesystem::path get_common_path()
@@ -132,53 +74,9 @@ public:
 		return database::get_data_path() / "common";
 	}
 
-	static std::vector<std::filesystem::path> get_common_paths()
-	{
-		std::vector<std::filesystem::path> paths = database::get_data_paths();
-
-		for (std::filesystem::path &path : paths) {
-			path /= "common";
-		}
-
-		return paths;
-	}
-
-	static std::vector<std::filesystem::path> get_history_paths()
-	{
-		std::vector<std::filesystem::path> paths = database::get_data_paths();
-
-		for (std::filesystem::path &path : paths) {
-			path /= "history";
-		}
-
-		return paths;
-	}
-
 	static std::filesystem::path get_map_path()
 	{
 		return database::get_root_path() / "map";
-	}
-
-	static std::vector<std::filesystem::path> get_map_paths()
-	{
-		std::vector<std::filesystem::path> paths = database::get_base_paths();
-
-		for (std::filesystem::path &path : paths) {
-			path /= "map";
-		}
-
-		return paths;
-	}
-
-	static std::vector<std::filesystem::path> get_localization_paths()
-	{
-		std::vector<std::filesystem::path> paths = database::get_base_paths();
-
-		for (std::filesystem::path &path : paths) {
-			path /= "localization";
-		}
-
-		return paths;
 	}
 
 	static std::filesystem::path get_graphics_path()
@@ -244,9 +142,90 @@ public:
 	void initialize();
 	void initialize_history();
 	void register_metadata(std::unique_ptr<data_type_metadata> &&metadata);
+	void process_modules();
+	void process_modules_at_dir(const std::filesystem::path &path, module *parent_module = nullptr);
+	std::vector<std::filesystem::path> get_module_paths() const;
+
+	module *get_module(const std::string &identifier) const
+	{
+		auto find_iterator = this->modules_by_identifier.find(identifier);
+		if (find_iterator != this->modules_by_identifier.end()) {
+			return find_iterator->second;
+		}
+
+		throw std::runtime_error("No module found with identifier \"" + identifier + "\".");
+	}
+
+	std::vector<std::filesystem::path> get_base_paths() const
+	{
+		std::vector<std::filesystem::path> base_paths;
+		base_paths.push_back(database::get_root_path());
+
+		std::vector<std::filesystem::path> module_paths = this->get_module_paths();
+		base_paths.insert(base_paths.end(), module_paths.begin(), module_paths.end());
+
+		return base_paths;
+	}
+
+	std::vector<std::filesystem::path> get_data_paths() const
+	{
+		std::vector<std::filesystem::path> paths = this->get_base_paths();
+
+		for (std::filesystem::path &path : paths) {
+			path /= "data";
+		}
+
+		return paths;
+	}
+
+	std::vector<std::filesystem::path> get_common_paths() const
+	{
+		std::vector<std::filesystem::path> paths = this->get_data_paths();
+
+		for (std::filesystem::path &path : paths) {
+			path /= "common";
+		}
+
+		return paths;
+	}
+
+	std::vector<std::filesystem::path> get_history_paths() const
+	{
+		std::vector<std::filesystem::path> paths = this->get_data_paths();
+
+		for (std::filesystem::path &path : paths) {
+			path /= "history";
+		}
+
+		return paths;
+	}
+
+	std::vector<std::filesystem::path> get_map_paths() const
+	{
+		std::vector<std::filesystem::path> paths = this->get_base_paths();
+
+		for (std::filesystem::path &path : paths) {
+			path /= "map";
+		}
+
+		return paths;
+	}
+
+	std::vector<std::filesystem::path> get_localization_paths() const
+	{
+		std::vector<std::filesystem::path> paths = this->get_base_paths();
+
+		for (std::filesystem::path &path : paths) {
+			path /= "localization";
+		}
+
+		return paths;
+	}
 
 private:
 	std::vector<std::unique_ptr<data_type_metadata>> metadata;
+	std::vector<std::unique_ptr<module>> modules;
+	std::map<std::string, module *> modules_by_identifier;
 };
 
 }

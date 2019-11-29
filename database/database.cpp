@@ -9,6 +9,7 @@
 #include "database/gsml_data.h"
 #include "database/gsml_operator.h"
 #include "database/gsml_property.h"
+#include "database/module.h"
 #include "defines.h"
 #include "economy/commodity.h"
 #include "economy/employment_type.h"
@@ -56,112 +57,16 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 	for (int i = 0; i < property_count; ++i) {
 		QMetaProperty meta_property = meta_object->property(i);
 		const char *property_name = meta_property.name();
-		std::string property_class_name = meta_property.typeName();
 
 		if (property_name != property.get_key()) {
 			continue;
 		}
 
+		QVariant new_property_value = database::process_gsml_property_value(property, meta_property, object);
+
 		QVariant::Type property_type = meta_property.type();
 
-		QVariant new_property_value;
-		if (property_type == QVariant::Bool) {
-			if (property.get_operator() != gsml_operator::assignment) {
-				throw std::runtime_error("Only the assignment operator is available for boolean properties.");
-			}
-
-			new_property_value = util::string_to_bool(property.get_value());
-		} else if (property_type == QVariant::Int) {
-			int value = 0;
-
-			if (property.get_key() == "efficiency" || property.get_key() == "output_value" || property.get_key() == "output_modifier" || property.get_key() == "workforce_proportion" || property.get_key() == "proportion_to_workforce" || property.get_key() == "income_share" || property.get_key() == "base_price") {
-				value = util::centesimal_number_string_to_int(property.get_value());
-			} else if (property.get_key() == "base_population_growth") {
-				value = util::fractional_number_string_to_int<4>(property.get_value());
-			} else {
-				value = std::stoi(property.get_value());
-			}
-
-			if (property.get_operator() == gsml_operator::addition) {
-				value = object->property(property_name).toInt() + value;
-			} else if (property.get_operator() == gsml_operator::subtraction) {
-				value = object->property(property_name).toInt() - value;
-			}
-
-			new_property_value = value;
-		} else if (property_type == QVariant::String) {
-			if (property.get_operator() != gsml_operator::assignment) {
-				throw std::runtime_error("Only the assignment operator is available for string properties.");
-			}
-
-			new_property_value = QString::fromStdString(property.get_value());
-		} else if (property_type == QVariant::DateTime) {
-			if (property.get_operator() != gsml_operator::assignment) {
-				throw std::runtime_error("Only the assignment operator is available for date-time properties.");
-			}
-
-			new_property_value = history::string_to_date(property.get_value());
-		} else if (property_type == QVariant::Type::UserType) {
-			if (property.get_operator() != gsml_operator::assignment) {
-				throw std::runtime_error("Only the assignment operator is available for object reference properties.");
-			}
-
-			if (property.get_key() == "landed_title" || property.get_key() == "barony" || property.get_key() == "county" || property.get_key() == "duchy" || property.get_key() == "kingdom" || property.get_key() == "empire" || property.get_key() == "holder_title" || property.get_key() == "liege_title" || property.get_key() == "de_jure_liege_title") {
-				new_property_value = QVariant::fromValue(landed_title::get(property.get_value()));
-			} else if (property.get_key() == "province" || property.get_key() == "capital_province") {
-				province *province = province::get(property.get_value());
-				new_property_value = QVariant::fromValue(province);
-			} else if (property.get_key() == "region") {
-				new_property_value = QVariant::fromValue(region::get(property.get_value()));
-			} else if (property.get_key() == "terrain") {
-				new_property_value = QVariant::fromValue(terrain_type::get(property.get_value()));
-			} else if (property.get_key() == "culture") {
-				new_property_value = QVariant::fromValue(culture::get(property.get_value()));
-			} else if (property.get_key() == "culture_group") {
-				new_property_value = QVariant::fromValue(culture_group::get(property.get_value()));
-			} else if (property.get_key() == "religion") {
-				new_property_value = QVariant::fromValue(religion::get(property.get_value()));
-			} else if (property.get_key() == "dynasty") {
-				new_property_value = QVariant::fromValue(dynasty::get(property.get_value()));
-			} else if (property.get_key() == "character" || property.get_key() == "holder" || property.get_key() == "father" || property.get_key() == "mother" || property.get_key() == "spouse" || property.get_key() == "liege" || property.get_key() == "employer") {
-				new_property_value = QVariant::fromValue(character::get(std::stoi(property.get_value())));
-			} else if (property.get_key() == "commodity" || property.get_key() == "output_commodity") {
-				new_property_value = QVariant::fromValue(commodity::get(property.get_value()));
-			} else if (property.get_key() == "employment_type") {
-				new_property_value = QVariant::fromValue(employment_type::get(property.get_value()));
-			} else if (property.get_key() == "group") {
-				if (class_name == "metternich::law") {
-					new_property_value = QVariant::fromValue(law_group::get_or_add(property.get_value()));
-				} else {
-					throw std::runtime_error("Unknown type for object reference property \"" + std::string(property_name) + "\".");
-				}
-			} else if (property_class_name == "metternich::holding*") {
-				const holding_slot *holding_slot = holding_slot::get(property.get_value());
-				holding *holding = holding_slot->get_holding();
-				if (holding == nullptr && class_name != "metternich::population_unit") {
-					throw std::runtime_error("Holding slot \"" + property.get_value() + "\" has no constructed holding, but a holding property is being set using it as the holding's identifier.");
-				}
-				new_property_value = QVariant::fromValue(holding);
-			} else if (property_class_name == "metternich::holding_slot*") {
-				new_property_value = QVariant::fromValue(holding_slot::get(property.get_value()));
-			} else if (property_class_name == "metternich::holding_slot_type") {
-				new_property_value = QVariant::fromValue(string_to_holding_slot_type(property.get_value()));
-			} else if (property_class_name == "metternich::phenotype*") {
-				new_property_value = QVariant::fromValue(phenotype::get(property.get_value()));
-			} else if (property_class_name == "metternich::province_profile*") {
-				new_property_value = QVariant::fromValue(province_profile::get(property.get_value()));
-			} else if (property_class_name == "metternich::religion_group*") {
-				new_property_value = QVariant::fromValue(religion_group::get(property.get_value()));
-			} else if (property_class_name == "metternich::species*") {
-				new_property_value = QVariant::fromValue(species::get(property.get_value()));
-			} else if (property_class_name == "metternich::timeline*") {
-				new_property_value = QVariant::fromValue(timeline::get(property.get_value()));
-			} else if (property_class_name == "metternich::world*") {
-				new_property_value = QVariant::fromValue(world::get(property.get_value()));
-			} else {
-				throw std::runtime_error("Unknown type for object reference property \"" + std::string(property_name) + "\" (\"" + property_class_name + "\").");
-			}
-		} else if (property_type == QVariant::Type::List) {
+		if (property_type == QVariant::Type::List) {
 			if (property.get_operator() == gsml_operator::assignment) {
 				throw std::runtime_error("The assignment operator is not available for list properties.");
 			}
@@ -175,39 +80,49 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 
 			method_name += util::get_singular_form(property.get_key());
 
-			bool success = false;
-			if (property.get_key() == "traits") {
-				trait *trait_value = trait::get(property.get_value());
-				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(trait *, trait_value));
-			} else if (property.get_key() == "holdings") {
-				holding_slot *slot = holding_slot::get(property.get_value());
-				if (class_name == "metternich::region") {
-					success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(holding_slot *, slot));
-				} else {
-					holding *holding = slot->get_holding();
-					if (holding == nullptr) {
-						throw std::runtime_error("Holding slot \"" + property.get_value() + "\" has no holding, but a holding list property is being modified using it as a holding's identifier.");
+			const QVariant::Type element_type = new_property_value.type();
+			QGenericArgument argument;
+
+			if (element_type == QVariant::Bool) {
+				argument = Q_ARG(bool, new_property_value.toBool());
+			} else if (element_type == QVariant::Int) {
+				argument = Q_ARG(bool, new_property_value.toInt());
+			} else if (element_type == QVariant::UserType) {
+				QObject *value_object = qvariant_cast<QObject *>(new_property_value);
+				if (property.get_key() == "holdings") {
+					if (class_name == "metternich::region") {
+						holding_slot *slot = static_cast<holding_slot *>(value_object);
+						argument = Q_ARG(holding_slot *, slot);
+					} else {
+						holding *holding_value = static_cast<holding *>(value_object);
+						argument = Q_ARG(holding *, holding_value);
 					}
-					success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(metternich::holding *, holding));
+				} else if (property.get_key() == "holding_types") {
+					holding_type *holding_type_value = static_cast<holding_type *>(value_object);
+					argument = Q_ARG(holding_type *, holding_type_value);
+				} else if (property.get_key() == "laws") {
+					law *law_value = static_cast<law *>(value_object);
+					argument = Q_ARG(metternich::law *, law_value);
+				} else if (property.get_key() == "discount_types") {
+					population_type *population_type_value = static_cast<population_type *>(value_object);
+					argument = Q_ARG(population_type *, population_type_value);
+				} else if (property.get_key() == "provinces") {
+					province *province_value = static_cast<province *>(value_object);
+					argument = Q_ARG(province *, province_value);
+				} else if (property.get_key() == "subregions") {
+					region *region_value = static_cast<region *>(value_object);
+					argument = Q_ARG(metternich::region *, region_value);
+				} else if (property.get_key() == "traits") {
+					trait *trait_value = static_cast<trait *>(value_object);
+					argument = Q_ARG(trait *, trait_value);
+				} else {
+					throw std::runtime_error("Unknown type for list property \"" + std::string(property_name) + "\" (in class \"" + class_name + "\").");
 				}
-			} else if (property.get_key() == "holding_types") {
-				holding_type *holding_type_value = holding_type::get(property.get_value());
-				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(holding_type *, holding_type_value));
-			} else if (property.get_key() == "provinces") {
-				province *province_value = province::get(property.get_value());
-				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(province *, province_value));
-			} else if (property.get_key() == "subregions") {
-				region *region = region::get(property.get_value());
-				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(metternich::region *, region));
-			} else if (property.get_key() == "discount_types") {
-				population_type *type = population_type::get(property.get_value());
-				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(population_type *, type));
-			} else if (property.get_key() == "laws") {
-				law *law = law::get(property.get_value());
-				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(metternich::law *, law));
 			} else {
-				throw std::runtime_error("Unknown type for list property \"" + std::string(property_name) + "\".");
+				throw std::runtime_error("Invalid type for list property \"" + std::string(property_name) + "\" (in class \"" + class_name + "\"): \"" + new_property_value.typeName() + "\".");
 			}
+
+			const bool success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, argument);
 
 			if (!success) {
 				throw std::runtime_error("Failed to add or remove value for list property \"" + std::string(property_name) + "\".");
@@ -215,18 +130,135 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 
 			return;
 		} else {
-			throw std::runtime_error("Invalid type for property \"" + std::string(property_name) + "\": \"" + std::string(meta_property.typeName()) + "\".");
+			bool success = object->setProperty(property_name, new_property_value);
+			if (!success) {
+				throw std::runtime_error("Failed to set value for property \"" + std::string(property_name) + "\".");
+			}
+			return;
 		}
-
-		bool success = object->setProperty(property_name, new_property_value);
-		if (!success) {
-			throw std::runtime_error("Failed to set value for property \"" + std::string(property_name) + "\".");
-		}
-
-		return;
 	}
 
 	throw std::runtime_error("Invalid " + std::string(meta_object->className()) + " property: \"" + property.get_key() + "\".");
+}
+
+QVariant database::process_gsml_property_value(const gsml_property &property, const QMetaProperty &meta_property, const QObject *object)
+{
+	const std::string class_name = meta_property.enclosingMetaObject()->className();
+	const char *property_name = meta_property.name();
+	const std::string property_class_name = meta_property.typeName();
+	const QVariant::Type property_type = meta_property.type();
+
+	QVariant new_property_value;
+	if (property_type == QVariant::Bool) {
+		if (property.get_operator() != gsml_operator::assignment) {
+			throw std::runtime_error("Only the assignment operator is available for boolean properties.");
+		}
+
+		new_property_value = util::string_to_bool(property.get_value());
+	} else if (property_type == QVariant::Int) {
+		int value = 0;
+
+		if (property.get_key() == "efficiency" || property.get_key() == "output_value" || property.get_key() == "output_modifier" || property.get_key() == "workforce_proportion" || property.get_key() == "proportion_to_workforce" || property.get_key() == "income_share" || property.get_key() == "base_price") {
+			value = util::centesimal_number_string_to_int(property.get_value());
+		} else if (property.get_key() == "base_population_growth") {
+			value = util::fractional_number_string_to_int<4>(property.get_value());
+		} else {
+			value = std::stoi(property.get_value());
+		}
+
+		if (property.get_operator() == gsml_operator::addition) {
+			value = object->property(property_name).toInt() + value;
+		} else if (property.get_operator() == gsml_operator::subtraction) {
+			value = object->property(property_name).toInt() - value;
+		}
+
+		new_property_value = value;
+	} else if (property_type == QVariant::String) {
+		if (property.get_operator() != gsml_operator::assignment) {
+			throw std::runtime_error("Only the assignment operator is available for string properties.");
+		}
+
+		new_property_value = QString::fromStdString(property.get_value());
+	} else if (property_type == QVariant::DateTime) {
+		if (property.get_operator() != gsml_operator::assignment) {
+			throw std::runtime_error("Only the assignment operator is available for date-time properties.");
+		}
+
+		new_property_value = history::string_to_date(property.get_value());
+	} else if (property_type == QVariant::Type::UserType || property_type == QVariant::Type::List) {
+		if (property_type == QVariant::Type::UserType && property.get_operator() != gsml_operator::assignment) {
+			throw std::runtime_error("Only the assignment operator is available for object reference properties.");
+		}
+
+		if (property.get_key() == "landed_title" || property.get_key() == "barony" || property.get_key() == "county" || property.get_key() == "duchy" || property.get_key() == "kingdom" || property.get_key() == "empire" || property.get_key() == "holder_title" || property.get_key() == "liege_title" || property.get_key() == "de_jure_liege_title") {
+			new_property_value = QVariant::fromValue(landed_title::get(property.get_value()));
+		} else if (property.get_key() == "terrain") {
+			new_property_value = QVariant::fromValue(terrain_type::get(property.get_value()));
+		} else if (property.get_key() == "culture") {
+			new_property_value = QVariant::fromValue(culture::get(property.get_value()));
+		} else if (property.get_key() == "culture_group") {
+			new_property_value = QVariant::fromValue(culture_group::get(property.get_value()));
+		} else if (property.get_key() == "religion") {
+			new_property_value = QVariant::fromValue(religion::get(property.get_value()));
+		} else if (property.get_key() == "dynasty") {
+			new_property_value = QVariant::fromValue(dynasty::get(property.get_value()));
+		} else if (property.get_key() == "character" || property.get_key() == "holder" || property.get_key() == "father" || property.get_key() == "mother" || property.get_key() == "spouse" || property.get_key() == "liege" || property.get_key() == "employer") {
+			new_property_value = QVariant::fromValue(character::get(std::stoi(property.get_value())));
+		} else if (property.get_key() == "commodity" || property.get_key() == "output_commodity") {
+			new_property_value = QVariant::fromValue(commodity::get(property.get_value()));
+		} else if (property.get_key() == "employment_type") {
+			new_property_value = QVariant::fromValue(employment_type::get(property.get_value()));
+		} else if (property.get_key() == "group") {
+			if (class_name == "metternich::law") {
+				new_property_value = QVariant::fromValue(law_group::get_or_add(property.get_value()));
+			} else {
+				throw std::runtime_error("Unknown type for object reference property \"" + std::string(property_name) + "\".");
+			}
+		} else if (property_class_name == "metternich::holding*" || (property.get_key() == "holdings" && class_name != "metternich::region")) {
+			const holding_slot *holding_slot = holding_slot::get(property.get_value());
+			holding *holding = holding_slot->get_holding();
+			if (holding == nullptr && class_name != "metternich::population_unit") {
+				throw std::runtime_error("Holding slot \"" + property.get_value() + "\" has no constructed holding, but a holding property is being set using it as the holding's identifier.");
+			}
+			new_property_value = QVariant::fromValue(holding);
+		} else if (property_class_name == "metternich::holding_slot*" || (property.get_key() == "holdings" && class_name == "metternich::region")) {
+			new_property_value = QVariant::fromValue(holding_slot::get(property.get_value()));
+		} else if (property_class_name == "metternich::holding_slot_type") {
+			new_property_value = QVariant::fromValue(string_to_holding_slot_type(property.get_value()));
+		} else if (property_class_name == "metternich::holding_type*" || property.get_key() == "holding_types") {
+			new_property_value = QVariant::fromValue(holding_type::get(property.get_value()));
+		} else if (property_class_name == "metternich::law*" || property.get_key() == "laws") {
+			new_property_value = QVariant::fromValue(law::get(property.get_value()));
+		} else if (property_class_name == "metternich::module*" || property.get_key() == "dependencies") {
+			new_property_value = QVariant::fromValue(database::get()->get_module(property.get_value()));
+		} else if (property_class_name == "metternich::phenotype*") {
+			new_property_value = QVariant::fromValue(phenotype::get(property.get_value()));
+		} else if (property_class_name == "metternich::population_type*" || property.get_key() == "discount_types") {
+			new_property_value = QVariant::fromValue(population_type::get(property.get_value()));
+		} else if (property_class_name == "metternich::province*" || property.get_key() == "provinces") {
+			new_property_value = QVariant::fromValue(province::get(property.get_value()));
+		} else if (property_class_name == "metternich::province_profile*") {
+			new_property_value = QVariant::fromValue(province_profile::get(property.get_value()));
+		} else if (property_class_name == "metternich::region*" || property.get_key() == "subregions") {
+			new_property_value = QVariant::fromValue(region::get(property.get_value()));
+		} else if (property_class_name == "metternich::religion_group*") {
+			new_property_value = QVariant::fromValue(religion_group::get(property.get_value()));
+		} else if (property_class_name == "metternich::species*") {
+			new_property_value = QVariant::fromValue(species::get(property.get_value()));
+		} else if (property_class_name == "metternich::timeline*") {
+			new_property_value = QVariant::fromValue(timeline::get(property.get_value()));
+		} else if (property_class_name == "metternich::trait*" || property.get_key() == "traits") {
+			new_property_value = QVariant::fromValue(trait::get(property.get_value()));
+		} else if (property_class_name == "metternich::world*") {
+			new_property_value = QVariant::fromValue(world::get(property.get_value()));
+		} else {
+			throw std::runtime_error("Unknown type for object reference property \"" + std::string(property_name) + "\" (\"" + property_class_name + "\").");
+		}
+	} else {
+		throw std::runtime_error("Invalid type for property \"" + std::string(property_name) + "\": \"" + std::string(meta_property.typeName()) + "\".");
+	}
+
+	return new_property_value;
 }
 
 std::filesystem::path database::get_tagged_image_path(const std::filesystem::path &base_path, const std::string &base_tag, const std::vector<std::vector<std::string>> &suffix_list_with_fallbacks, const std::string &final_suffix)
@@ -263,6 +295,8 @@ database::~database()
 void database::load()
 {
 	engine_interface::get()->set_loading_message("Loading Database...");
+
+	this->process_modules();
 
 	//sort the metadata instances so they are placed after their class' dependencies' metadata
 	std::sort(this->metadata.begin(), this->metadata.end(), [](const std::unique_ptr<data_type_metadata> &a, const std::unique_ptr<data_type_metadata> &b) {
@@ -325,6 +359,62 @@ void database::initialize_history()
 void database::register_metadata(std::unique_ptr<data_type_metadata> &&metadata)
 {
 	this->metadata.push_back(std::move(metadata));
+}
+
+void database::process_modules()
+{
+	this->process_modules_at_dir(database::get_modules_path());
+	this->process_modules_at_dir(database::get_documents_path());
+
+	std::sort(this->modules.begin(), this->modules.end(), [](const std::unique_ptr<module> &a, const std::unique_ptr<module> &b) {
+		if (a->depends_on(b.get())) {
+			return false;
+		} else if (b->depends_on(a.get())) {
+			return true;
+		}
+
+		return a.get() < b.get();
+	});
+}
+
+void database::process_modules_at_dir(const std::filesystem::path &path, module *parent_module)
+{
+	std::filesystem::directory_iterator dir_iterator(path);
+
+	for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
+		if (!dir_entry.is_directory()) {
+			continue;
+		}
+
+		const std::string module_identifier = dir_entry.path().stem().string();
+		auto module = std::make_unique<metternich::module>(module_identifier, dir_entry.path(), parent_module);
+
+		std::filesystem::path module_file = dir_entry.path() / "module.txt";
+
+		if (std::filesystem::exists(module_file)) {
+			gsml_parser parser(module_file);
+			database::process_gsml_data(module, parser.parse());
+		}
+
+		std::filesystem::path submodules_path = dir_entry.path() / "modules";
+		if (std::filesystem::exists(submodules_path)) {
+			this->process_modules_at_dir(submodules_path, module.get());
+		}
+
+		this->modules_by_identifier[module_identifier] = module.get();
+		this->modules.push_back(std::move(module));
+	}
+}
+
+std::vector<std::filesystem::path> database::get_module_paths() const
+{
+	std::vector<std::filesystem::path> module_paths;
+
+	for (const std::unique_ptr<module> &module : this->modules) {
+		module_paths.push_back(module->get_path());
+	}
+
+	return module_paths;
 }
 
 }

@@ -21,6 +21,7 @@ SOURCES += \
         database/data_entry.cpp \
         database/database.cpp \
         database/gsml_parser.cpp \
+        database/module.cpp \
         defines.cpp \
         economy/commodity.cpp \
         economy/employee.cpp \
@@ -93,6 +94,7 @@ HEADERS += \
     database/gsml_operator.h \
     database/gsml_parser.h \
     database/gsml_property.h \
+    database/module.h \
     database/simple_data_type.h \
     defines.h \
     economy/commodity.h \

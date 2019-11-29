@@ -36,7 +36,7 @@ void translator::load_locale(const std::string &language)
 {
 	this->translations.clear();
 
-	for (const std::filesystem::path &path : database::get_localization_paths()) {
+	for (const std::filesystem::path &path : database::get()->get_localization_paths()) {
 		std::filesystem::path localization_path(path / language);
 
 		if (!std::filesystem::exists(localization_path)) {

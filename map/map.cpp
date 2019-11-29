@@ -312,7 +312,7 @@ void map::save_geojson_data_to_gsml()
 bool map::check_cache()
 {
 	QCryptographicHash hash(QCryptographicHash::Md5);
-	for (const std::filesystem::path &map_path : database::get_map_paths()) {
+	for (const std::filesystem::path &map_path : database::get()->get_map_paths()) {
 		if (!std::filesystem::exists(map_path)) {
 			continue;
 		}
