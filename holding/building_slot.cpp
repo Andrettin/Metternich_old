@@ -21,6 +21,9 @@ building_slot::building_slot(metternich::building *building, metternich::holding
 */
 building_slot::~building_slot()
 {
+	this->precondition_check.reset();
+	this->condition_check.reset();
+
 	if (this->is_built()) {
 		this->set_built(false);
 	}
