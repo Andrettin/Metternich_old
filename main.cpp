@@ -58,10 +58,10 @@ int main(int argc, char *argv[])
 
 		QApplication app(argc, argv);
 
+		database::get()->process_modules();
+
 		translator *translator = translator::get();
-
 		translator->load_locale("english");
-
 		app.installTranslator(translator);
 
 		std::thread data_load_thread(load_data);

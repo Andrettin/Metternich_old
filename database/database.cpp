@@ -81,7 +81,10 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 
 			bool success = false;
 
-			if (property.get_key() == "holdings") {
+			if (property.get_key() == "dependencies") {
+				module *module_value = database::get()->get_module(property.get_value());
+				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(module *, module_value));
+			} else if (property.get_key() == "holdings") {
 				holding_slot *slot = holding_slot::get(property.get_value());
 				if (class_name == "metternich::region") {
 					success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(holding_slot *, slot));
@@ -289,8 +292,6 @@ void database::load()
 {
 	engine_interface::get()->set_loading_message("Loading Database...");
 
-	this->process_modules();
-
 	//sort the metadata instances so they are placed after their class' dependencies' metadata
 	std::sort(this->metadata.begin(), this->metadata.end(), [](const std::unique_ptr<data_type_metadata> &a, const std::unique_ptr<data_type_metadata> &b) {
 		if (a->has_database_dependency_on(b)) {
@@ -357,7 +358,7 @@ void database::register_metadata(std::unique_ptr<data_type_metadata> &&metadata)
 void database::process_modules()
 {
 	this->process_modules_at_dir(database::get_modules_path());
-	this->process_modules_at_dir(database::get_documents_path());
+	this->process_modules_at_dir(database::get_documents_modules_path());
 
 	std::sort(this->modules.begin(), this->modules.end(), [](const std::unique_ptr<module> &a, const std::unique_ptr<module> &b) {
 		if (a->depends_on(b.get())) {
@@ -377,6 +378,10 @@ void database::process_modules_at_dir(const std::filesystem::path &path, module 
 	for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
 		if (!dir_entry.is_directory()) {
 			continue;
+		}
+
+		if (dir_entry.path().stem().string().front() == '.') {
+			continue; //ignore hidden directories, e.g. ".git" dirs
 		}
 
 		const std::string module_identifier = dir_entry.path().stem().string();
