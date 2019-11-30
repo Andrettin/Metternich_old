@@ -220,8 +220,8 @@ public:
 
 	QVariantList get_laws_qvariant_list() const;
 	bool has_law(const law *law) const;
-	Q_INVOKABLE void add_law(metternich::law *law);
-	Q_INVOKABLE void remove_law(metternich::law *law);
+	Q_INVOKABLE void add_law(law *law);
+	Q_INVOKABLE void remove_law(law *law);
 
 signals:
 	void titled_name_changed();

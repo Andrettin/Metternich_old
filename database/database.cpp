@@ -62,8 +62,6 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 			continue;
 		}
 
-		QVariant new_property_value = database::process_gsml_property_value(property, meta_property, object);
-
 		QVariant::Type property_type = meta_property.type();
 
 		if (property_type == QVariant::Type::List) {
@@ -80,49 +78,40 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 
 			method_name += util::get_singular_form(property.get_key());
 
-			const QVariant::Type element_type = new_property_value.type();
-			QGenericArgument argument;
+			bool success = false;
 
-			if (element_type == QVariant::Bool) {
-				argument = Q_ARG(bool, new_property_value.toBool());
-			} else if (element_type == QVariant::Int) {
-				argument = Q_ARG(bool, new_property_value.toInt());
-			} else if (element_type == QVariant::UserType) {
-				QObject *value_object = qvariant_cast<QObject *>(new_property_value);
-				if (property.get_key() == "holdings") {
-					if (class_name == "metternich::region") {
-						holding_slot *slot = static_cast<holding_slot *>(value_object);
-						argument = Q_ARG(holding_slot *, slot);
-					} else {
-						holding *holding_value = static_cast<holding *>(value_object);
-						argument = Q_ARG(holding *, holding_value);
-					}
-				} else if (property.get_key() == "holding_types") {
-					holding_type *holding_type_value = static_cast<holding_type *>(value_object);
-					argument = Q_ARG(holding_type *, holding_type_value);
-				} else if (property.get_key() == "laws") {
-					law *law_value = static_cast<law *>(value_object);
-					argument = Q_ARG(metternich::law *, law_value);
-				} else if (property.get_key() == "discount_types") {
-					population_type *population_type_value = static_cast<population_type *>(value_object);
-					argument = Q_ARG(population_type *, population_type_value);
-				} else if (property.get_key() == "provinces") {
-					province *province_value = static_cast<province *>(value_object);
-					argument = Q_ARG(province *, province_value);
-				} else if (property.get_key() == "subregions") {
-					region *region_value = static_cast<region *>(value_object);
-					argument = Q_ARG(metternich::region *, region_value);
-				} else if (property.get_key() == "traits") {
-					trait *trait_value = static_cast<trait *>(value_object);
-					argument = Q_ARG(trait *, trait_value);
+			if (property.get_key() == "holdings") {
+				holding_slot *slot = holding_slot::get(property.get_value());
+				if (class_name == "metternich::region") {
+					success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(holding_slot *, slot));
 				} else {
-					throw std::runtime_error("Unknown type for list property \"" + std::string(property_name) + "\" (in class \"" + class_name + "\").");
+					holding *holding_value = slot->get_holding();
+					if (holding_value == nullptr) {
+						throw std::runtime_error("Holding slot \"" + property.get_value() + "\" has no constructed holding, but a holding property is being set using it as the holding's identifier.");
+					}
+					success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(holding *, holding_value));
 				}
+			} else if (property.get_key() == "holding_types") {
+				holding_type *holding_type_value = holding_type::get(property.get_value());
+				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(holding_type *, holding_type_value));
+			} else if (property.get_key() == "laws") {
+				law *law_value = law::get(property.get_value());
+				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(law *, law_value));
+			} else if (property.get_key() == "discount_types") {
+				population_type *population_type_value = population_type::get(property.get_value());
+				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(population_type *, population_type_value));
+			} else if (property.get_key() == "provinces") {
+				province *province_value = province::get(property.get_value());
+				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(province *, province_value));
+			} else if (property.get_key() == "subregions") {
+				region *region_value = region::get(property.get_value());
+				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(metternich::region *, region_value));
+			} else if (property.get_key() == "traits") {
+				trait *trait_value = trait::get(property.get_value());
+				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(trait *, trait_value));
 			} else {
-				throw std::runtime_error("Invalid type for list property \"" + std::string(property_name) + "\" (in class \"" + class_name + "\"): \"" + new_property_value.typeName() + "\".");
+				throw std::runtime_error("Unknown type for list property \"" + std::string(property_name) + "\" (in class \"" + class_name + "\").");
 			}
-
-			const bool success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, argument);
 
 			if (!success) {
 				throw std::runtime_error("Failed to add or remove value for list property \"" + std::string(property_name) + "\".");
@@ -130,6 +119,7 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 
 			return;
 		} else {
+			QVariant new_property_value = database::process_gsml_property_value(property, meta_property, object);
 			bool success = object->setProperty(property_name, new_property_value);
 			if (!success) {
 				throw std::runtime_error("Failed to set value for property \"" + std::string(property_name) + "\".");
@@ -185,8 +175,8 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 		}
 
 		new_property_value = history::string_to_date(property.get_value());
-	} else if (property_type == QVariant::Type::UserType || property_type == QVariant::Type::List) {
-		if (property_type == QVariant::Type::UserType && property.get_operator() != gsml_operator::assignment) {
+	} else if (property_type == QVariant::Type::UserType) {
+		if (property.get_operator() != gsml_operator::assignment) {
 			throw std::runtime_error("Only the assignment operator is available for object reference properties.");
 		}
 
@@ -214,32 +204,32 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 			} else {
 				throw std::runtime_error("Unknown type for object reference property \"" + std::string(property_name) + "\".");
 			}
-		} else if (property_class_name == "metternich::holding*" || (property.get_key() == "holdings" && class_name != "metternich::region")) {
+		} else if (property_class_name == "metternich::holding*") {
 			const holding_slot *holding_slot = holding_slot::get(property.get_value());
 			holding *holding = holding_slot->get_holding();
 			if (holding == nullptr && class_name != "metternich::population_unit") {
 				throw std::runtime_error("Holding slot \"" + property.get_value() + "\" has no constructed holding, but a holding property is being set using it as the holding's identifier.");
 			}
 			new_property_value = QVariant::fromValue(holding);
-		} else if (property_class_name == "metternich::holding_slot*" || (property.get_key() == "holdings" && class_name == "metternich::region")) {
+		} else if (property_class_name == "metternich::holding_slot*") {
 			new_property_value = QVariant::fromValue(holding_slot::get(property.get_value()));
 		} else if (property_class_name == "metternich::holding_slot_type") {
 			new_property_value = QVariant::fromValue(string_to_holding_slot_type(property.get_value()));
-		} else if (property_class_name == "metternich::holding_type*" || property.get_key() == "holding_types") {
+		} else if (property_class_name == "metternich::holding_type*") {
 			new_property_value = QVariant::fromValue(holding_type::get(property.get_value()));
-		} else if (property_class_name == "metternich::law*" || property.get_key() == "laws") {
+		} else if (property_class_name == "metternich::law*") {
 			new_property_value = QVariant::fromValue(law::get(property.get_value()));
-		} else if (property_class_name == "metternich::module*" || property.get_key() == "dependencies") {
+		} else if (property_class_name == "metternich::module*") {
 			new_property_value = QVariant::fromValue(database::get()->get_module(property.get_value()));
 		} else if (property_class_name == "metternich::phenotype*") {
 			new_property_value = QVariant::fromValue(phenotype::get(property.get_value()));
-		} else if (property_class_name == "metternich::population_type*" || property.get_key() == "discount_types") {
+		} else if (property_class_name == "metternich::population_type*") {
 			new_property_value = QVariant::fromValue(population_type::get(property.get_value()));
-		} else if (property_class_name == "metternich::province*" || property.get_key() == "provinces") {
+		} else if (property_class_name == "metternich::province*") {
 			new_property_value = QVariant::fromValue(province::get(property.get_value()));
 		} else if (property_class_name == "metternich::province_profile*") {
 			new_property_value = QVariant::fromValue(province_profile::get(property.get_value()));
-		} else if (property_class_name == "metternich::region*" || property.get_key() == "subregions") {
+		} else if (property_class_name == "metternich::region*") {
 			new_property_value = QVariant::fromValue(region::get(property.get_value()));
 		} else if (property_class_name == "metternich::religion_group*") {
 			new_property_value = QVariant::fromValue(religion_group::get(property.get_value()));
@@ -247,7 +237,7 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 			new_property_value = QVariant::fromValue(species::get(property.get_value()));
 		} else if (property_class_name == "metternich::timeline*") {
 			new_property_value = QVariant::fromValue(timeline::get(property.get_value()));
-		} else if (property_class_name == "metternich::trait*" || property.get_key() == "traits") {
+		} else if (property_class_name == "metternich::trait*") {
 			new_property_value = QVariant::fromValue(trait::get(property.get_value()));
 		} else if (property_class_name == "metternich::world*") {
 			new_property_value = QVariant::fromValue(world::get(property.get_value()));
