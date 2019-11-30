@@ -19,6 +19,8 @@ void culture::initialize()
 	if (this->get_default_phenotype() == nullptr) {
 		this->set_default_phenotype(this->get_culture_group()->get_default_phenotype());
 	}
+
+	data_entry_base::initialize();
 }
 
 /**

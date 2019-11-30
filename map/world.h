@@ -34,6 +34,8 @@ public:
 		//clear the terrain and province images, as there is no need to keep them in memory
 		this->terrain_image = QImage();
 		this->province_image = QImage();
+
+		data_entry_base::initialize();
 	}
 
 	const std::set<province *> &get_provinces() const

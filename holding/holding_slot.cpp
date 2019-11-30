@@ -47,6 +47,8 @@ void holding_slot::initialize()
 		//generate an available commodity for the holding if it has none
 		this->generate_available_commodity();
 	}
+
+	data_entry_base::initialize();
 }
 
 

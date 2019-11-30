@@ -180,6 +180,8 @@ void landed_title::initialize()
 	if (this->get_capital_province() == nullptr) {
 		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has no capital province.");
 	}
+
+	data_entry_base::initialize();
 }
 
 /**

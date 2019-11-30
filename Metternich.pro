@@ -106,6 +106,7 @@ HEADERS += \
     engine_interface.h \
     game/game.h \
     game/game_speed.h \
+    history/calendar.h \
     history/history.h \
     history/timeline.h \
     holding/building.h \

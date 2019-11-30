@@ -15,6 +15,7 @@
 #include "economy/employment_type.h"
 #include "engine_interface.h"
 #include "game/game.h"
+#include "history/calendar.h"
 #include "history/history.h"
 #include "history/timeline.h"
 #include "holding/holding.h"
@@ -204,6 +205,8 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 			} else {
 				throw std::runtime_error("Unknown type for object reference property \"" + std::string(property_name) + "\".");
 			}
+		} else if (property_class_name == "metternich::calendar*") {
+			new_property_value = QVariant::fromValue(calendar::get(property.get_value()));
 		} else if (property_class_name == "metternich::holding*") {
 			const holding_slot *holding_slot = holding_slot::get(property.get_value());
 			holding *holding = holding_slot->get_holding();

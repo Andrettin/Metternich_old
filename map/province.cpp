@@ -277,6 +277,8 @@ void province::initialize()
 		holding_slot->set_type(holding_slot_type::hospital);
 		holding_slot->set_province(this);
 	}
+
+	data_entry_base::initialize();
 }
 
 /**

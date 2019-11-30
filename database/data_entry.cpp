@@ -2,6 +2,7 @@
 
 #include "database/database.h"
 #include "game/game.h"
+#include "history/calendar.h"
 #include "history/history.h"
 #include "history/timeline.h"
 #include "translator.h"
@@ -38,9 +39,14 @@ void data_entry_base::load_history(gsml_data &data)
 
 	for (const gsml_data &history_entry : data.get_children()) {
 		const timeline *timeline = nullptr;
+		const calendar *calendar = nullptr;
 
 		if (!std::isdigit(history_entry.get_tag().front()) && history_entry.get_tag().front() != '-') {
 			timeline = timeline::try_get(history_entry.get_tag());
+
+			if (timeline == nullptr) {
+				calendar = calendar::try_get(history_entry.get_tag());
+			}
 		}
 
 		if (timeline != nullptr) {
@@ -48,11 +54,19 @@ void data_entry_base::load_history(gsml_data &data)
 				continue;
 			}
 
-			for (const gsml_data &history_entry : data.get_children()) {
-				QDateTime date = history::string_to_date(history_entry.get_tag());
-
+			for (const gsml_data &timeline_entry : history_entry.get_children()) {
+				QDateTime date = history::string_to_date(timeline_entry.get_tag());
 				if (history::get()->contains_timeline_date(timeline, date)) {
-					this->load_date_scope(history_entry, date);
+					this->load_date_scope(timeline_entry, date);
+				}
+			}
+		} else if (calendar != nullptr) {
+			for (const gsml_data &calendar_entry : history_entry.get_children()) {
+				QDateTime date = history::string_to_date(calendar_entry.get_tag());
+				date = date.addYears(calendar->get_year_offset());
+
+				if (history::get()->contains_timeline_date(nullptr, date)) {
+					this->load_date_scope(calendar_entry, date);
 				}
 			}
 		} else {
