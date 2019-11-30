@@ -2,7 +2,7 @@
 
 #include "util/container_util.h"
 
-namespace metternich::util {
+namespace metternich::image {
 
 /**
 **	@brief	Get the RGBs present in an image
@@ -11,10 +11,10 @@ namespace metternich::util {
 **
 **	@return	The set of RGB values
 */
-std::set<QRgb> get_image_rgbs(const QImage &image)
+std::set<QRgb> get_rgbs(const QImage &image)
 {
 	if (!image.colorTable().empty()) {
-		return util::container_to_set(image.colorTable());
+		return container::to_set(image.colorTable());
 	}
 
 	std::set<QRgb> rgb_set;

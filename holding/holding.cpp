@@ -558,7 +558,7 @@ std::vector<building_slot *> holding::get_building_slots() const
 */
 QVariantList holding::get_building_slots_qvariant_list() const
 {
-	return util::container_to_qvariant_list(this->get_building_slots());
+	return container::to_qvariant_list(this->get_building_slots());
 }
 
 /**
@@ -586,7 +586,7 @@ std::set<building *> holding::get_buildings() const
 */
 QVariantList holding::get_buildings_qvariant_list() const
 {
-	return util::container_to_qvariant_list(this->get_buildings());
+	return container::to_qvariant_list(this->get_buildings());
 }
 
 bool holding::has_building(building *building) const

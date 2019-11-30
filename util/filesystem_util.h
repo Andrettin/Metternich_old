@@ -5,7 +5,7 @@
 
 #include <filesystem>
 
-namespace metternich::util {
+namespace metternich::filesystem {
 
 /**
 **	@brief	Add the files in a directory to a checksum

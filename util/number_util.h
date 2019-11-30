@@ -1,6 +1,6 @@
 #pragma once
 
-namespace metternich::util {
+namespace metternich::number {
 
 /**
 **	@brief	Round a double to a certain number of decimal places

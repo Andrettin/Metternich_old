@@ -13,7 +13,7 @@
 #include "random.h"
 #include "translator.h"
 #include "util/container_util.h"
-#include "util/parse_util.h"
+#include "util/string_util.h"
 
 #include <QVariant>
 
@@ -57,7 +57,7 @@ void character::process_gsml_dated_property(const gsml_property &property, const
 			throw std::runtime_error("Only the assignment operator is available for the \"" + property.get_key() + "\" property.");
 		}
 
-		if (util::string_to_bool(property.get_value())) {
+		if (string::to_bool(property.get_value())) {
 			this->birth_date = date;
 			this->alive = true;
 		}
@@ -66,7 +66,7 @@ void character::process_gsml_dated_property(const gsml_property &property, const
 			throw std::runtime_error("Only the assignment operator is available for the \"" + property.get_key() + "\" property.");
 		}
 
-		if (util::string_to_bool(property.get_value())) {
+		if (string::to_bool(property.get_value())) {
 			this->death_date = date;
 			this->alive = false;
 		}
@@ -200,7 +200,7 @@ void character::remove_landed_title(landed_title *title)
 
 QVariantList character::get_traits_qvariant_list() const
 {
-	return util::container_to_qvariant_list(this->get_traits());
+	return container::to_qvariant_list(this->get_traits());
 }
 
 /**

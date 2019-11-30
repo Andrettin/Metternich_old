@@ -317,7 +317,7 @@ bool map::check_cache()
 			continue;
 		}
 
-		util::add_files_to_checksum(hash, map_path);
+		filesystem::add_files_to_checksum(hash, map_path);
 	}
 
 	this->checksum = hash.result().toHex().toStdString(); //save the checksum

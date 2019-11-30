@@ -47,7 +47,7 @@ void region::initialize_history()
 
 QVariantList region::get_provinces_qvariant_list() const
 {
-	return util::container_to_qvariant_list(this->get_provinces());
+	return container::to_qvariant_list(this->get_provinces());
 }
 
 void region::add_province(province *province)
@@ -82,7 +82,7 @@ void region::remove_province(province *province)
 
 QVariantList region::get_subregions_qvariant_list() const
 {
-	return util::container_to_qvariant_list(this->subregions);
+	return container::to_qvariant_list(this->subregions);
 }
 
 std::vector<holding *> region::get_holdings() const
@@ -100,7 +100,7 @@ std::vector<holding *> region::get_holdings() const
 
 QVariantList region::get_holdings_qvariant_list() const
 {
-	return util::container_to_qvariant_list(this->holding_slots);
+	return container::to_qvariant_list(this->holding_slots);
 }
 
 /**

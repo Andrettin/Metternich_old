@@ -3,8 +3,8 @@
 #include <QColor>
 #include <QImage>
 
-namespace metternich::util {
+namespace metternich::image {
 
-extern std::set<QRgb> get_image_rgbs(const QImage &image);
+extern std::set<QRgb> get_rgbs(const QImage &image);
 
 }

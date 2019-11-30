@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace metternich::util {
+namespace metternich::parse {
 
 /**
 **	@brief	Convert a fractional number string (i.e. a number with up to two decimal places) to an integer, multiplying it by 10 ^ the number of decimal places; the template argument is the number of decimal places
@@ -46,17 +46,6 @@ inline int fractional_number_string_to_int(const std::string &str)
 inline int centesimal_number_string_to_int(const std::string &str)
 {
 	return fractional_number_string_to_int<2>(str);
-}
-
-inline bool string_to_bool(const std::string &str)
-{
-	if (str == "true" || str == "yes" || str == "1") {
-		return true;
-	} else if (str == "false" || str == "no" || str == "0") {
-		return false;
-	}
-
-	throw std::runtime_error("Invalid string used for conversion to boolean: \"" + str + "\".");
 }
 
 }

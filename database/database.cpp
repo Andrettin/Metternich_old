@@ -77,7 +77,7 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 				method_name = "remove_";
 			}
 
-			method_name += util::get_singular_form(property.get_key());
+			method_name += string::get_singular_form(property.get_key());
 
 			bool success = false;
 
@@ -148,14 +148,14 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 			throw std::runtime_error("Only the assignment operator is available for boolean properties.");
 		}
 
-		new_property_value = util::string_to_bool(property.get_value());
+		new_property_value = string::to_bool(property.get_value());
 	} else if (property_type == QVariant::Int) {
 		int value = 0;
 
 		if (property.get_key() == "efficiency" || property.get_key() == "output_value" || property.get_key() == "output_modifier" || property.get_key() == "workforce_proportion" || property.get_key() == "proportion_to_workforce" || property.get_key() == "income_share" || property.get_key() == "base_price") {
-			value = util::centesimal_number_string_to_int(property.get_value());
+			value = parse::centesimal_number_string_to_int(property.get_value());
 		} else if (property.get_key() == "base_population_growth") {
-			value = util::fractional_number_string_to_int<4>(property.get_value());
+			value = parse::fractional_number_string_to_int<4>(property.get_value());
 		} else {
 			value = std::stoi(property.get_value());
 		}
@@ -259,7 +259,7 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 
 std::filesystem::path database::get_tagged_image_path(const std::filesystem::path &base_path, const std::string &base_tag, const std::vector<std::vector<std::string>> &suffix_list_with_fallbacks, const std::string &final_suffix)
 {
-	std::vector<std::string> suffix_combinations = util::get_suffix_combinations(suffix_list_with_fallbacks);
+	std::vector<std::string> suffix_combinations = string::get_suffix_combinations(suffix_list_with_fallbacks);
 
 	for (const std::string &suffix : suffix_combinations) {
 		std::filesystem::path image_path = base_path / (base_tag + suffix + final_suffix);

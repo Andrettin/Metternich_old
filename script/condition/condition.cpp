@@ -29,11 +29,11 @@ namespace metternich {
 template <typename T>
 std::unique_ptr<condition<T>> condition<T>::from_gsml_property(const gsml_property &property)
 {
-	std::string condition_identifier = util::to_lower(property.get_key());
+	std::string condition_identifier = string::to_lower(property.get_key());
 	std::unique_ptr<condition> condition;
 
 	if (condition_identifier == "borders_water") {
-		condition = std::make_unique<borders_water_condition<T>>(util::string_to_bool(property.get_value()));
+		condition = std::make_unique<borders_water_condition<T>>(string::to_bool(property.get_value()));
 	} else if (condition_identifier == "region") {
 		condition = std::make_unique<region_condition<T>>(property.get_value());
 	} else if (condition_identifier == "terrain") {
@@ -67,7 +67,7 @@ std::unique_ptr<condition<T>> condition<T>::from_gsml_property(const gsml_proper
 template <typename T>
 std::unique_ptr<condition<T>> condition<T>::from_gsml_scope(const gsml_data &scope)
 {
-	std::string condition_identifier = util::to_lower(scope.get_tag());
+	std::string condition_identifier = string::to_lower(scope.get_tag());
 	std::unique_ptr<condition> condition;
 
 	if (condition_identifier == "and") {

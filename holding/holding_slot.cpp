@@ -140,7 +140,7 @@ void holding_slot::set_province(metternich::province *province)
 */
 QVariantList holding_slot::get_available_commodities_qvariant_list() const
 {
-	return util::container_to_qvariant_list(this->get_available_commodities());
+	return container::to_qvariant_list(this->get_available_commodities());
 }
 
 /**

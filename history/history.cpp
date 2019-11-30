@@ -99,7 +99,7 @@ void history::generate_population_units()
 
 QDateTime history::string_to_date(const std::string &date_str)
 {
-	std::vector<std::string> date_string_list = util::split_string(date_str, '.');
+	std::vector<std::string> date_string_list = string::split(date_str, '.');
 
 	int years = 0;
 	int months = 0;

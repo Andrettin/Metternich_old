@@ -252,7 +252,7 @@ void population_unit::set_discount_any_type(const bool discount_any_type)
 */
 QVariantList population_unit::get_discount_types_qvariant_list() const
 {
-	return util::container_to_qvariant_list(this->get_discount_types());
+	return container::to_qvariant_list(this->get_discount_types());
 }
 
 /**

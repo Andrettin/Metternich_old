@@ -737,7 +737,7 @@ void province::write_geoshape_to_image(QImage &image, const QGeoShape &geoshape,
 
 	double lon = bottom_left.longitude();
 	lon = std::round(lon / lon_per_pixel) * lon_per_pixel;
-	const int start_x = util::longitude_to_x(lon, lon_per_pixel);
+	const int start_x = geocoordinate::longitude_to_x(lon, lon_per_pixel);
 
 	double start_lat = bottom_left.latitude();
 	start_lat = std::round(start_lat / lat_per_pixel) * lat_per_pixel;
@@ -746,13 +746,13 @@ void province::write_geoshape_to_image(QImage &image, const QGeoShape &geoshape,
 	const bool show_progress = pixel_width >= 512;
 
 	for (; lon <= top_right.longitude(); lon += lon_per_pixel) {
-		const int x = util::longitude_to_x(lon, lon_per_pixel);
+		const int x = geocoordinate::longitude_to_x(lon, lon_per_pixel);
 
 		for (double lat = start_lat; lat <= top_right.latitude(); lat += lat_per_pixel) {
 			QGeoCoordinate coordinate(lat, lon);
 
-			const int y = util::latitude_to_y(lat, lat_per_pixel);
-			const int pixel_index = util::point_to_index(x, y, image.size());
+			const int y = geocoordinate::latitude_to_y(lat, lat_per_pixel);
+			const int pixel_index = point::to_index(x, y, image.size());
 
 			//only write the province to the pixel if it is empty, or if this is a river province and the province to overwrite is not an ocean province
 			if (rgb_data[pixel_index] != province::empty_rgb && (!this->is_river() || province::get_by_rgb(rgb_data[pixel_index])->is_ocean())) {
@@ -1101,7 +1101,7 @@ void province::add_holding_slot(holding_slot *holding_slot)
 */
 QVariantList province::get_settlement_holding_slots_qvariant_list() const
 {
-	return util::container_to_qvariant_list(this->get_settlement_holding_slots());
+	return container::to_qvariant_list(this->get_settlement_holding_slots());
 }
 
 /**
@@ -1109,7 +1109,7 @@ QVariantList province::get_settlement_holding_slots_qvariant_list() const
 */
 QVariantList province::get_settlement_holdings_qvariant_list() const
 {
-	return util::container_to_qvariant_list(this->get_settlement_holdings());
+	return container::to_qvariant_list(this->get_settlement_holdings());
 }
 
 /**
@@ -1224,7 +1224,7 @@ void province::set_capital_holding(holding *holding)
 */
 QVariantList province::get_palace_holding_slots_qvariant_list() const
 {
-	return util::container_to_qvariant_list(this->get_palace_holding_slots());
+	return container::to_qvariant_list(this->get_palace_holding_slots());
 }
 
 /**
@@ -1407,12 +1407,12 @@ QVariantList province::get_population_per_religion_qvariant_list() const
 
 QVariantList province::get_geopolygons_qvariant_list() const
 {
-	return util::container_to_qvariant_list(this->get_geopolygons());
+	return container::to_qvariant_list(this->get_geopolygons());
 }
 
 QVariantList province::get_geopaths_qvariant_list() const
 {
-	return util::container_to_qvariant_list(this->geopaths);
+	return container::to_qvariant_list(this->geopaths);
 }
 
 QGeoCoordinate province::get_center_coordinate() const

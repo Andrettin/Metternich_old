@@ -4,7 +4,7 @@
 #include <QGeoPolygon>
 #include <QGeoRectangle>
 
-namespace metternich::util {
+namespace metternich::geocoordinate {
 
 /**
 **	@brief	Convert longitude to an x coordinate
@@ -41,26 +41,11 @@ inline int latitude_to_y(const double latitude, const double lat_per_pixel)
 **
 **	@return	The point
 */
-inline QPoint coordinate_to_point(const QGeoCoordinate &coordinate, const double lon_per_pixel, const double lat_per_pixel)
+inline QPoint to_point(const QGeoCoordinate &coordinate, const double lon_per_pixel, const double lat_per_pixel)
 {
 	const int x = longitude_to_x(coordinate.longitude(), lon_per_pixel);
 	const int y = latitude_to_y(coordinate.latitude(), lat_per_pixel);
 	return QPoint(x, y);
-}
-
-/**
-**	@brief	Convert a point to a geocoordinate
-**
-**	@param	point	The point
-**	@param	size	The size of the area where the point is located
-**
-**	@return	The coordinate
-*/
-inline QGeoCoordinate point_to_coordinate(const QPoint &point, const QSize &area_size)
-{
-	const double lon = (point.x() - (area_size.width() / 2)) * 180.0 / (area_size.width() / 2);
-	const double lat = (point.y() - (area_size.height() / 2)) * 90.0 / (area_size.height() / 2) * -1;
-	return QGeoCoordinate(lat, lon);
 }
 
 /**
@@ -71,7 +56,7 @@ inline QGeoCoordinate point_to_coordinate(const QPoint &point, const QSize &area
 **
 **	@return	True if the coordinate is in the georectangle, or false otherwise
 */
-inline bool is_coordinate_in_georectangle(const QGeoCoordinate &coordinate, const QGeoRectangle &georectangle)
+inline bool is_in_georectangle(const QGeoCoordinate &coordinate, const QGeoRectangle &georectangle)
 {
 	const double lat = coordinate.latitude();
 	const double lon = coordinate.longitude();

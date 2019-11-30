@@ -661,7 +661,7 @@ std::filesystem::path landed_title::get_flag_path() const
 
 QVariantList landed_title::get_laws_qvariant_list() const
 {
-	return util::container_to_qvariant_list(this->get_laws());
+	return container::to_qvariant_list(this->get_laws());
 }
 
 bool landed_title::has_law(const law *law) const

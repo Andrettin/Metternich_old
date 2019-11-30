@@ -4,9 +4,20 @@
 #include <string>
 #include <vector>
 
-namespace metternich::util {
+namespace metternich::string {
 
-inline std::vector<std::string> split_string(const std::string &str, const char delimiter)
+inline bool to_bool(const std::string &str)
+{
+	if (str == "true" || str == "yes" || str == "1") {
+		return true;
+	} else if (str == "false" || str == "no" || str == "0") {
+		return false;
+	}
+
+	throw std::runtime_error("Invalid string used for conversion to boolean: \"" + str + "\".");
+}
+
+inline std::vector<std::string> split(const std::string &str, const char delimiter)
 {
 	std::vector<std::string> string_list;
 

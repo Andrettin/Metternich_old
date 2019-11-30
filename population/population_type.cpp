@@ -41,7 +41,7 @@ void population_type::check() const
 
 QVariantList population_type::get_holding_types_qvariant_list() const
 {
-	return util::container_to_qvariant_list(this->get_holding_types());
+	return container::to_qvariant_list(this->get_holding_types());
 }
 
 }

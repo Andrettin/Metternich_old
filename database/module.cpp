@@ -12,7 +12,7 @@ void module::process_gsml_property(const gsml_property &property)
 
 QVariantList module::get_dependencies_qvariant_list() const
 {
-	return util::container_to_qvariant_list(this->dependencies);
+	return container::to_qvariant_list(this->dependencies);
 }
 
 }

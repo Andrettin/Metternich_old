@@ -5,10 +5,10 @@
 
 #include <vector>
 
-namespace metternich::util {
+namespace metternich::container {
 
 template <typename T>
-inline QVariantList container_to_qvariant_list(const T &container)
+inline QVariantList to_qvariant_list(const T &container)
 {
 	QVariantList list;
 
@@ -20,17 +20,17 @@ inline QVariantList container_to_qvariant_list(const T &container)
 }
 
 template <typename T>
-inline QObjectList vector_to_qobject_list(const std::vector<T *> &vector)
+inline QObjectList to_qobject_list(const T &container)
 {
 	QObjectList object_list;
-	for (T *element : vector) {
+	for (QObject *element : container) {
 		object_list.append(element);
 	}
 	return object_list;
 }
 
 template <typename T>
-inline std::set<typename T::value_type> container_to_set(const T &container)
+inline std::set<typename T::value_type> to_set(const T &container)
 {
 	std::set<typename T::value_type> set;
 
@@ -42,7 +42,7 @@ inline std::set<typename T::value_type> container_to_set(const T &container)
 }
 
 template <typename T>
-inline std::vector<typename T::value_type> container_to_vector(const T &container)
+inline std::vector<typename T::value_type> to_vector(const T &container)
 {
 	std::vector<typename T::value_type> vector;
 

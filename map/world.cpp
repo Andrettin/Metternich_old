@@ -13,7 +13,7 @@ namespace metternich {
 
 QVariantList world::get_provinces_qvariant_list() const
 {
-	return util::container_to_qvariant_list(this->get_provinces());
+	return container::to_qvariant_list(this->get_provinces());
 }
 
 /**
@@ -25,7 +25,7 @@ QVariantList world::get_provinces_qvariant_list() const
 */
 QPoint world::get_pixel_pos(const int index) const
 {
-	return util::index_to_point(index, this->pixel_size);
+	return point::from_index(index, this->pixel_size);
 }
 
 /**
@@ -39,7 +39,7 @@ QPoint world::get_coordinate_pos(const QGeoCoordinate &coordinate) const
 {
 	const double lon_per_pixel = 360.0 / static_cast<double>(this->pixel_size.width());
 	const double lat_per_pixel = 180.0 / static_cast<double>(this->pixel_size.height());
-	return util::coordinate_to_point(coordinate, lon_per_pixel, lat_per_pixel);
+	return geocoordinate::to_point(coordinate, lon_per_pixel, lat_per_pixel);
 }
 
 /**
@@ -51,7 +51,7 @@ QPoint world::get_coordinate_pos(const QGeoCoordinate &coordinate) const
 */
 QGeoCoordinate world::get_pixel_pos_coordinate(const QPoint &pixel_pos) const
 {
-	return util::point_to_coordinate(pixel_pos, this->pixel_size);
+	return point::to_geocoordinate(pixel_pos, this->pixel_size);
 }
 
 terrain_type *world::get_coordinate_terrain(const QGeoCoordinate &coordinate) const
@@ -436,7 +436,7 @@ void world::write_terrain_geoshape_to_image(const terrain_type *terrain, QImage 
 
 	double lon = bottom_left.longitude();
 	lon = std::round(lon / lon_per_pixel) * lon_per_pixel;
-	const int start_x = util::longitude_to_x(lon, lon_per_pixel);
+	const int start_x = geocoordinate::longitude_to_x(lon, lon_per_pixel);
 
 	double start_lat = bottom_left.latitude();
 	start_lat = std::round(start_lat / lat_per_pixel) * lat_per_pixel;
@@ -445,13 +445,13 @@ void world::write_terrain_geoshape_to_image(const terrain_type *terrain, QImage 
 	const bool show_progress = pixel_width >= 512;
 
 	for (; lon <= top_right.longitude(); lon += lon_per_pixel) {
-		const int x = util::longitude_to_x(lon, lon_per_pixel);
+		const int x = geocoordinate::longitude_to_x(lon, lon_per_pixel);
 
 		for (double lat = start_lat; lat <= top_right.latitude(); lat += lat_per_pixel) {
 			QGeoCoordinate coordinate(lat, lon);
 
-			const int y = util::latitude_to_y(lat, lat_per_pixel);
-			const int pixel_index = util::point_to_index(x, y, image.size());
+			const int y = geocoordinate::latitude_to_y(lat, lat_per_pixel);
+			const int pixel_index = point::to_index(x, y, image.size());
 
 			//only write the province to the pixel if it is empty, or if this is a river province and the province to overwrite is not an ocean province
 			if (rgb_data[pixel_index] != terrain_type::empty_rgb && (!terrain->is_river() || terrain_type::get_by_rgb(rgb_data[pixel_index])->is_ocean())) {
@@ -481,7 +481,7 @@ void world::write_terrain_geoshape_to_image(const terrain_type *terrain, QImage 
 */
 void world::write_province_geodata_to_image(QImage &province_image, QImage &terrain_image)
 {
-	std::vector<province *> provinces = util::container_to_vector(this->get_provinces());
+	std::vector<province *> provinces = container::to_vector(this->get_provinces());
 	std::sort(provinces.begin(), provinces.end(), [](const province *a, const province *b) {
 		if (a->is_ocean() != b->is_ocean()) {
 			return a->is_ocean();
@@ -492,7 +492,7 @@ void world::write_province_geodata_to_image(QImage &province_image, QImage &terr
 
 	int processed_provinces = 0;
 
-	std::set<QRgb> province_image_rgbs = util::get_image_rgbs(province_image);
+	std::set<QRgb> province_image_rgbs = image::get_rgbs(province_image);
 
 	for (province *province : provinces) {
 		const int progress_percent = processed_provinces * 100 / static_cast<int>(province::get_all().size());
