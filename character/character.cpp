@@ -28,6 +28,14 @@ namespace metternich {
 */
 character *character::generate(metternich::culture *culture, metternich::religion *religion, metternich::phenotype *phenotype)
 {
+	if (culture == nullptr) {
+		throw std::runtime_error("Tried to generate a character with no culture.");
+	}
+
+	if (religion == nullptr) {
+		throw std::runtime_error("Tried to generate a character with no religion.");
+	}
+
 	const int identifier = character::generate_numeric_identifier();
 	character *character = character::add(identifier);
 	character->culture = culture;
@@ -35,6 +43,7 @@ character *character::generate(metternich::culture *culture, metternich::religio
 	if (phenotype != nullptr) {
 		character->phenotype = phenotype;
 	}
+
 	//generate the character's birth date to be between 60 and 20 years before the current date
 	const QDateTime &current_date = game::get()->get_current_date();
 	character->birth_date = current_date.addDays(random::generate_in_range(-60 * 365, -20 * 365));
