@@ -9,18 +9,20 @@
 
 namespace metternich {
 
-std::string translator::translate(const std::string &base_tag, const std::vector<std::vector<std::string>> &suffix_list_with_fallbacks) const
+std::string translator::translate(const std::vector<std::string> &base_tags, const std::vector<std::vector<std::string>> &suffix_list_with_fallbacks) const
 {
 	std::vector<std::string> suffix_combinations = string::get_suffix_combinations(suffix_list_with_fallbacks);
 
-	for (const std::string &suffix : suffix_combinations) {
-		const auto &suffix_find_iterator = this->translations.find(base_tag + suffix);
-		if (suffix_find_iterator != this->translations.end())  {
-			return suffix_find_iterator->second;
+	for (const std::string &base_tag : base_tags) {
+		for (const std::string &suffix : suffix_combinations) {
+			const auto &suffix_find_iterator = this->translations.find(base_tag + suffix);
+			if (suffix_find_iterator != this->translations.end())  {
+				return suffix_find_iterator->second;
+			}
 		}
 	}
 
-	return base_tag;
+	return base_tags.front();
 }
 
 QString translator::translate(const char *context, const char *source_text, const char *disambiguation, int n) const

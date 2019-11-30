@@ -75,9 +75,13 @@ public:
 		}
 
 		auto find_iterator = data_type::instances_by_identifier.find(identifier);
-
 		if (find_iterator != data_type::instances_by_identifier.end()) {
 			return find_iterator->second.get();
+		}
+
+		auto alias_find_iterator = data_type::instances_by_alias.find(identifier);
+		if (alias_find_iterator != data_type::instances_by_alias.end()) {
+			return alias_find_iterator->second;
 		}
 
 		return nullptr;
@@ -90,20 +94,9 @@ public:
 	*/
 	static T *get_or_add(const KEY &identifier)
 	{
-		if constexpr (std::is_same_v<KEY, std::string>) {
-			if (identifier == "none") {
-				return nullptr;
-			}
-		} else if constexpr (std::is_arithmetic_v<KEY>) {
-			if (identifier == 0) {
-				return nullptr;
-			}
-		}
-
-		typename std::map<KEY, std::unique_ptr<T>>::const_iterator find_iterator = data_type::instances_by_identifier.find(identifier);
-
-		if (find_iterator != data_type::instances_by_identifier.end()) {
-			return find_iterator->second.get();
+		T *instance = data_type::try_get(identifier);
+		if (instance != nullptr) {
+			return instance;
 		}
 
 		return T::add(identifier);
@@ -134,7 +127,7 @@ public:
 			}
 		}
 
-		if (data_type::instances_by_identifier.contains(identifier)) {
+		if (data_type::instances_by_identifier.contains(identifier) || data_type::instances_by_alias.contains(identifier)) {
 			if constexpr (std::is_arithmetic_v<KEY>) {
 				throw std::runtime_error("Tried to add a \"" + std::string(T::class_identifier) + "\" instance with the already-used \"" + std::to_string(identifier) + "\" string identifier.");
 			} else {
@@ -156,6 +149,26 @@ public:
 		return instance;
 	}
 
+	static void add_instance_alias(T *instance, const KEY &alias)
+	{
+		if constexpr (std::is_same_v<KEY, std::string>) {
+			if (alias.empty()) {
+				throw std::runtime_error("Tried to add a \"" + std::string(T::class_identifier) + "\" instance empty alias.");
+			}
+		}
+
+		if (data_type::instances_by_identifier.contains(alias) || data_type::instances_by_alias.contains(alias)) {
+			if constexpr (std::is_arithmetic_v<KEY>) {
+				throw std::runtime_error("Tried to add a \"" + std::string(T::class_identifier) + "\" alias with the already-used \"" + std::to_string(alias) + "\" string identifier.");
+			} else {
+				throw std::runtime_error("Tried to add a \"" + std::string(T::class_identifier) + "\" alias with the already-used \"" + alias + "\" string identifier.");
+			}
+		}
+
+		data_type::instances_by_alias[alias] = instance;
+		instance->add_alias(alias);
+	}
+
 	/**
 	**	@brief	Remove an instance of the class
 	**
@@ -163,7 +176,12 @@ public:
 	*/
 	static void remove(T *instance)
 	{
+		for (const KEY &alias : instance->get_aliases()) {
+			data_type::instances_by_alias.erase(alias);
+		}
+
 		data_type::instances_by_identifier.erase(instance->get_identifier());
+
 		data_type::instances.erase(std::remove(data_type::instances.begin(), data_type::instances.end(), instance), data_type::instances.end());
 	}
 
@@ -174,34 +192,33 @@ public:
 	{
 		data_type::instances.clear();
 		data_type::instances_by_identifier.clear();
+		data_type::instances_by_alias.clear();
 	}
 
 	/**
 	**	@brief	Parse the database for the data type
 	*/
-	static void parse_database()
+	static void parse_database(const std::filesystem::path &base_path)
 	{
 		if (std::string(T::database_folder).empty()) {
 			return;
 		}
 
-		for (const std::filesystem::path &path : database::get()->get_common_paths()) {
-			std::filesystem::path database_path(path / T::database_folder);
+		std::filesystem::path database_path(base_path / T::database_folder);
 
-			if (!std::filesystem::exists(database_path)) {
+		if (!std::filesystem::exists(database_path)) {
+			return;
+		}
+
+		std::filesystem::recursive_directory_iterator dir_iterator(database_path);
+
+		for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
+			if (!dir_entry.is_regular_file()) {
 				continue;
 			}
 
-			std::filesystem::recursive_directory_iterator dir_iterator(database_path);
-
-			for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
-				if (!dir_entry.is_regular_file()) {
-					continue;
-				}
-
-				gsml_parser parser(dir_entry.path());
-				T::gsml_data_to_process.push_back(parser.parse());
-			}
+			gsml_parser parser(dir_entry.path());
+			T::gsml_data_to_process.push_back(parser.parse());
 		}
 	}
 
@@ -227,11 +244,24 @@ public:
 
 				T *instance = nullptr;
 				if (definition) {
-					if (data_entry.get_operator() == gsml_operator::addition) {
-						continue; //addition operators for data entry scopes mean modifying already-defined entries
+					if (data_entry.get_operator() != gsml_operator::addition) { //addition operators for data entry scopes mean modifying already-defined entries
+						instance = T::add(identifier);
+					} else {
+						instance = T::get(identifier);
 					}
 
-					instance = T::add(identifier);
+					for (const gsml_property *alias_property : data_entry.try_get_properties("aliases")) {
+						if (alias_property->get_operator() != gsml_operator::addition) {
+							throw std::runtime_error("Only the addition operator is supported for data entry aliases.");
+						}
+
+						const std::string &alias = alias_property->get_value();
+						if constexpr (std::is_same_v<KEY, int>) {
+							T::add_instance_alias(instance, std::stoi(alias));
+						} else {
+							T::add_instance_alias(instance, alias);
+						}
+					}
 				} else {
 					instance = T::get(identifier);
 					database::process_gsml_data<T>(instance, data_entry);
@@ -454,6 +484,7 @@ private:
 private:
 	static inline std::vector<T *> instances;
 	static inline std::map<KEY, std::unique_ptr<T>> instances_by_identifier;
+	static inline std::map<KEY, T *> instances_by_alias;
 	static inline int last_numeric_identifier = 1;
 	static inline std::vector<gsml_data> gsml_data_to_process;
 	static inline std::set<std::string> database_dependencies; //the other classes on which this one depends, i.e. after which this class' database can be processed

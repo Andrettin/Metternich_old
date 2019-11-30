@@ -303,21 +303,27 @@ void database::load()
 		return a->get_database_dependency_count() < b->get_database_dependency_count();
 	});
 
-	//parse the files for in each data type's folder
-	for (const std::unique_ptr<data_type_metadata> &metadata : this->metadata) {
-		metadata->get_parsing_function()();
-	}
+	bool defines_loaded = false;
+	for (const std::filesystem::path &path : database::get()->get_common_paths()) {
+		//parse the files in each data type's folder
+		for (const std::unique_ptr<data_type_metadata> &metadata : this->metadata) {
+			metadata->get_parsing_function()(path);
+		}
 
-	//create data entries for each data type
-	for (const std::unique_ptr<data_type_metadata> &metadata : this->metadata) {
-		metadata->get_processing_function()(true);
-	}
+		//create data entries for each data type
+		for (const std::unique_ptr<data_type_metadata> &metadata : this->metadata) {
+			metadata->get_processing_function()(true);
+		}
 
-	defines::get()->load(); //load the defines here so that they can refer to data entries
+		if (!defines_loaded) {
+			defines::get()->load(); //load the defines here so that they can refer to data entries
+			defines_loaded = true;
+		}
 
-	//actually define the data entries for each data type
-	for (const std::unique_ptr<data_type_metadata> &metadata : this->metadata) {
-		metadata->get_processing_function()(false);
+		//actually define the data entries for each data type
+		for (const std::unique_ptr<data_type_metadata> &metadata : this->metadata) {
+			metadata->get_processing_function()(false);
+		}
 	}
 }
 

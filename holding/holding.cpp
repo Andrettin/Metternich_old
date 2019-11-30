@@ -148,10 +148,10 @@ void holding::do_month()
 std::string holding::get_name() const
 {
 	if (this->get_barony() != nullptr) {
-		return translator::get()->translate(this->get_barony()->get_identifier(), this->get_tag_suffix_list_with_fallbacks());
+		return translator::get()->translate(this->get_barony()->get_identifier_with_aliases(), this->get_tag_suffix_list_with_fallbacks());
 	}
 
-	return translator::get()->translate(this->get_province()->get_name(), this->get_tag_suffix_list_with_fallbacks());
+	return translator::get()->translate(this->get_province()->get_identifier_with_aliases(), this->get_tag_suffix_list_with_fallbacks());
 }
 
 /**
@@ -161,7 +161,7 @@ std::string holding::get_name() const
 */
 std::string holding::get_type_name() const
 {
-	return translator::get()->translate(this->get_type()->get_identifier(), this->get_tag_suffix_list_with_fallbacks());
+	return translator::get()->translate(this->get_type()->get_identifier_with_aliases(), this->get_tag_suffix_list_with_fallbacks());
 }
 
 /**

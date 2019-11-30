@@ -17,6 +17,10 @@ namespace metternich {
 */
 void data_entry_base::process_gsml_property(const gsml_property &property)
 {
+	if (property.get_key() == "aliases") {
+		return; //alias addition is already handled in the data type class
+	}
+
 	database::process_gsml_property_for_object(this, property);
 }
 
@@ -103,7 +107,7 @@ gsml_data identifiable_data_entry_base::get_cache_data() const
 
 std::string data_entry::get_name() const
 {
-	return translator::get()->translate(this->identifier);
+	return translator::get()->translate(this->get_identifier_with_aliases());
 }
 
 }

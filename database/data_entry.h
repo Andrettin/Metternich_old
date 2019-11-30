@@ -111,10 +111,31 @@ public:
 		return this->get_identifier();
 	}
 
+	const std::set<std::string> &get_aliases() const
+	{
+		return this->aliases;
+	}
+
+	void add_alias(const std::string &alias)
+	{
+		this->aliases.insert(alias);
+	}
+
+	std::vector<std::string> get_identifier_with_aliases() const
+	{
+		std::vector<std::string> identifier_with_aliases;
+		identifier_with_aliases.push_back(this->get_identifier());
+		for (const std::string &alias : this->get_aliases()) {
+			identifier_with_aliases.push_back(alias);
+		}
+		return identifier_with_aliases;
+	}
+
 	virtual std::string get_name() const override;
 
 private:
 	std::string identifier;
+	std::set<std::string> aliases;
 };
 
 /**
@@ -138,8 +159,19 @@ public:
 		return std::to_string(this->get_identifier());
 	}
 
+	const std::set<int> &get_aliases() const
+	{
+		return this->aliases;
+	}
+
+	void add_alias(const int alias)
+	{
+		this->aliases.insert(alias);
+	}
+
 private:
 	int identifier;
+	std::set<int> aliases;
 };
 
 }

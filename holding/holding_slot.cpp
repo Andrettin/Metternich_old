@@ -80,7 +80,7 @@ void holding_slot::check() const
 std::string holding_slot::get_name() const
 {
 	if (this->get_barony() != nullptr) {
-		return translator::get()->translate(this->get_barony()->get_identifier(), this->get_tag_suffix_list_with_fallbacks());
+		return translator::get()->translate(this->get_barony()->get_identifier_with_aliases(), this->get_tag_suffix_list_with_fallbacks());
 	}
 
 	return translator::get()->translate(holding_slot_type_to_string(this->get_type()), this->get_tag_suffix_list_with_fallbacks()) + " Slot";

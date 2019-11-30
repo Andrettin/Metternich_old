@@ -259,7 +259,7 @@ void landed_title::check() const
 */
 std::string landed_title::get_name() const
 {
-	return translator::get()->translate(this->get_identifier(), this->get_tag_suffix_list_with_fallbacks());
+	return translator::get()->translate(this->get_identifier_with_aliases(), this->get_tag_suffix_list_with_fallbacks());
 }
 
 /**

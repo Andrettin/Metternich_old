@@ -78,6 +78,19 @@ public:
 		return this->properties;
 	}
 
+	std::vector<const gsml_property *> try_get_properties(const std::string &key) const
+	{
+		std::vector<const gsml_property *> properties;
+
+		for (const gsml_property &property : this->get_properties()) {
+			if (property.get_key() == key) {
+				properties.push_back(&property);
+			}
+		}
+
+		return properties;
+	}
+
 	const std::string &get_property_value(const std::string &key) const
 	{
 		for (const gsml_property &property : this->get_properties()) {

@@ -384,10 +384,10 @@ void province::do_month()
 std::string province::get_name() const
 {
 	if (this->get_county() != nullptr) {
-		return translator::get()->translate(this->get_county()->get_identifier(), this->get_tag_suffix_list_with_fallbacks());
+		return translator::get()->translate(this->get_county()->get_identifier_with_aliases(), this->get_tag_suffix_list_with_fallbacks());
 	}
 
-	return translator::get()->translate(this->get_identifier()); //province without a county; sea zone, river, lake or wasteland
+	return translator::get()->translate(this->get_identifier_with_aliases()); //province without a county; sea zone, river, lake or wasteland
 }
 
 std::vector<std::vector<std::string>> province::get_tag_suffix_list_with_fallbacks() const
