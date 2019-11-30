@@ -46,6 +46,12 @@ public:
 		}
 	}
 
+	template <typename T>
+	static void process_gsml_data(const std::unique_ptr<T> &instance, const gsml_data &data)
+	{
+		database::process_gsml_data(instance.get(), data);
+	}
+
 	static void process_gsml_property_for_object(QObject *object, const gsml_property &property);
 	static QVariant process_gsml_property_value(const gsml_property &property, const QMetaProperty &meta_property, const QObject *object);
 

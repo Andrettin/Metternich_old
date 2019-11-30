@@ -360,6 +360,15 @@ void database::process_modules()
 	this->process_modules_at_dir(database::get_modules_path());
 	this->process_modules_at_dir(database::get_documents_modules_path());
 
+	for (const std::unique_ptr<module> &module : this->modules) {
+		std::filesystem::path module_file = module->get_path() / "module.txt";
+
+		if (std::filesystem::exists(module_file)) {
+			gsml_parser parser(module_file);
+			database::process_gsml_data(module, parser.parse());
+		}
+	}
+
 	std::sort(this->modules.begin(), this->modules.end(), [](const std::unique_ptr<module> &a, const std::unique_ptr<module> &b) {
 		if (a->depends_on(b.get())) {
 			return false;
@@ -386,13 +395,6 @@ void database::process_modules_at_dir(const std::filesystem::path &path, module 
 
 		const std::string module_identifier = dir_entry.path().stem().string();
 		auto module = std::make_unique<metternich::module>(module_identifier, dir_entry.path(), parent_module);
-
-		std::filesystem::path module_file = dir_entry.path() / "module.txt";
-
-		if (std::filesystem::exists(module_file)) {
-			gsml_parser parser(module_file);
-			database::process_gsml_data(module, parser.parse());
-		}
 
 		std::filesystem::path submodules_path = dir_entry.path() / "modules";
 		if (std::filesystem::exists(submodules_path)) {
