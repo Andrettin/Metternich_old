@@ -45,11 +45,11 @@ void building::process_gsml_scope(const gsml_data &scope)
 **
 **	@return	The path to the icon
 */
-std::filesystem::path building::get_icon_path() const
+const std::filesystem::path &building::get_icon_path() const
 {
 	std::string base_tag = this->get_icon_tag();
 
-	std::filesystem::path icon_path = database::get_tagged_image_path(database::get_icons_path() / this->get_icon_folder(), base_tag, {}, ".png");
+	const std::filesystem::path &icon_path = database::get()->get_tagged_icon_path(base_tag);
 	return icon_path;
 }
 

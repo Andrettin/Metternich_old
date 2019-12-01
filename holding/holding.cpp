@@ -251,11 +251,11 @@ bool holding::is_settlement() const
 **
 **	@return	The path to the portrait
 */
-std::filesystem::path holding::get_portrait_path() const
+const std::filesystem::path &holding::get_portrait_path() const
 {
 	std::string base_tag = this->get_type()->get_portrait_tag();
 
-	std::filesystem::path portrait_path = database::get_tagged_image_path(database::get_holding_portraits_path(), base_tag, this->get_tag_suffix_list_with_fallbacks(), ".png");
+	const std::filesystem::path &portrait_path = database::get()->get_tagged_holding_portrait_path(base_tag, this->get_tag_suffix_list_with_fallbacks());
 	return portrait_path;
 }
 

@@ -200,7 +200,7 @@ public:
 		this->set_flag_tag(flag_tag.toStdString());
 	}
 
-	std::filesystem::path get_flag_path() const;
+	const std::filesystem::path &get_flag_path() const;
 
 	QString get_flag_path_qstring() const
 	{

@@ -651,11 +651,11 @@ religion *landed_title::get_religion() const
 **
 **	@return	The path to the flag
 */
-std::filesystem::path landed_title::get_flag_path() const
+const std::filesystem::path &landed_title::get_flag_path() const
 {
 	std::string base_tag = this->get_flag_tag();
 
-	std::filesystem::path flag_path = database::get_tagged_image_path(database::get_flags_path(), base_tag, this->get_tag_suffix_list_with_fallbacks(), ".svg");
+	const std::filesystem::path &flag_path = database::get()->get_tagged_flag_path(base_tag, this->get_tag_suffix_list_with_fallbacks());
 	return flag_path;
 }
 

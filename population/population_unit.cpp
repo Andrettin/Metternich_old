@@ -434,11 +434,11 @@ void population_unit::seek_employment()
 **
 **	@return	The path to the icon
 */
-std::filesystem::path population_unit::get_icon_path() const
+const std::filesystem::path &population_unit::get_icon_path() const
 {
 	std::string base_tag = this->get_type()->get_icon_tag();
 
-	std::filesystem::path icon_path = database::get_tagged_image_path(database::get_population_icons_path(), base_tag, this->get_tag_suffix_list_with_fallbacks(), "_small.png");
+	const std::filesystem::path &icon_path = database::get()->get_tagged_icon_path(base_tag, this->get_tag_suffix_list_with_fallbacks(), "_small");
 	return icon_path;
 }
 

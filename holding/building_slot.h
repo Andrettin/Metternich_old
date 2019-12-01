@@ -32,7 +32,7 @@ public:
 		return this->building;
 	}
 
-	std::filesystem::path get_icon_path() const;
+	const std::filesystem::path &get_icon_path() const;
 
 	QString get_icon_path_qstring() const
 	{

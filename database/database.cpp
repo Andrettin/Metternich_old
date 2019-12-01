@@ -257,20 +257,6 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 	return new_property_value;
 }
 
-std::filesystem::path database::get_tagged_image_path(const std::filesystem::path &base_path, const std::string &base_tag, const std::vector<std::vector<std::string>> &suffix_list_with_fallbacks, const std::string &final_suffix)
-{
-	std::vector<std::string> suffix_combinations = string::get_suffix_combinations(suffix_list_with_fallbacks);
-
-	for (const std::string &suffix : suffix_combinations) {
-		std::filesystem::path image_path = base_path / (base_tag + suffix + final_suffix);
-		if (std::filesystem::exists(image_path)) {
-			return image_path;
-		}
-	}
-
-	throw std::runtime_error("No image found for base tag \"" + base_tag + "\" in path \"" + base_path.string() + "\".");
-}
-
 /**
 **	@brief	Constructor
 */
@@ -291,6 +277,10 @@ database::~database()
 void database::load()
 {
 	engine_interface::get()->set_loading_message("Loading Database...");
+
+	this->process_icon_paths();
+	this->process_holding_portrait_paths();
+	this->process_flag_paths();
 
 	//sort the metadata instances so they are placed after their class' dependencies' metadata
 	std::sort(this->metadata.begin(), this->metadata.end(), [](const std::unique_ptr<data_type_metadata> &a, const std::unique_ptr<data_type_metadata> &b) {
@@ -417,6 +407,20 @@ std::vector<std::filesystem::path> database::get_module_paths() const
 	}
 
 	return module_paths;
+}
+
+const std::filesystem::path &database::get_tagged_image_path(const std::map<std::string, std::filesystem::path> &image_paths_by_tag, const std::string &base_tag, const std::vector<std::vector<std::string>> &suffix_list_with_fallbacks, const std::string &final_suffix) const
+{
+	std::vector<std::string> suffix_combinations = string::get_suffix_combinations(suffix_list_with_fallbacks);
+
+	for (const std::string &suffix : suffix_combinations) {
+		auto find_iterator = image_paths_by_tag.find(base_tag + suffix + final_suffix);
+		if (find_iterator != image_paths_by_tag.end()) {
+			return find_iterator->second;
+		}
+	}
+
+	throw std::runtime_error("No image found for base tag \"" + base_tag + "\".");
 }
 
 }

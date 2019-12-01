@@ -105,7 +105,7 @@ public:
 
 	bool is_settlement() const;
 
-	std::filesystem::path get_portrait_path() const;
+	const std::filesystem::path &get_portrait_path() const;
 
 	QString get_portrait_path_qstring() const
 	{

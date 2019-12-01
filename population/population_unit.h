@@ -262,7 +262,7 @@ public:
 		this->set_wealth(this->get_wealth() + change);
 	}
 
-	std::filesystem::path get_icon_path() const;
+	const std::filesystem::path &get_icon_path() const;
 
 	QString get_icon_path_qstring() const
 	{

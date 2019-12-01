@@ -75,49 +75,9 @@ public:
 		return database::get_root_path() / "data";
 	}
 
-	static std::filesystem::path get_common_path()
-	{
-		return database::get_data_path() / "common";
-	}
-
 	static std::filesystem::path get_map_path()
 	{
 		return database::get_root_path() / "map";
-	}
-
-	static std::filesystem::path get_graphics_path()
-	{
-		return database::get_root_path() / "graphics";
-	}
-
-	static std::filesystem::path get_icons_path()
-	{
-		return database::get_graphics_path() / "icons";
-	}
-
-	static std::filesystem::path get_building_icons_path()
-	{
-		return database::get_icons_path() / "buildings";
-	}
-
-	static std::filesystem::path get_commodity_icons_path()
-	{
-		return database::get_icons_path() / "commodities";
-	}
-
-	static std::filesystem::path get_population_icons_path()
-	{
-		return database::get_icons_path() / "population";
-	}
-
-	static std::filesystem::path get_holding_portraits_path()
-	{
-		return database::get_graphics_path() / "holdings";
-	}
-
-	static std::filesystem::path get_flags_path()
-	{
-		return database::get_graphics_path() / "flags";
 	}
 
 	static std::filesystem::path get_documents_path()
@@ -138,8 +98,6 @@ public:
 		return cache_path;
 	}
 
-	static std::filesystem::path get_tagged_image_path(const std::filesystem::path &base_path, const std::string &base_tag, const std::vector<std::vector<std::string>> &suffix_list_with_fallbacks, const std::string &final_suffix);
-
 public:
 	database();
 	~database();
@@ -148,6 +106,7 @@ public:
 	void initialize();
 	void initialize_history();
 	void register_metadata(std::unique_ptr<data_type_metadata> &&metadata);
+
 	void process_modules();
 	void process_modules_at_dir(const std::filesystem::path &path, module *parent_module = nullptr);
 	std::vector<std::filesystem::path> get_module_paths() const;
@@ -228,10 +187,127 @@ public:
 		return paths;
 	}
 
+	std::vector<std::filesystem::path> get_graphics_paths() const
+	{
+		std::vector<std::filesystem::path> paths = this->get_base_paths();
+
+		for (std::filesystem::path &path : paths) {
+			path /= "graphics";
+		}
+
+		return paths;
+	}
+
+	std::vector<std::filesystem::path> get_icons_paths() const
+	{
+		std::vector<std::filesystem::path> paths = this->get_graphics_paths();
+
+		for (std::filesystem::path &path : paths) {
+			path /= "icons";
+		}
+
+		return paths;
+	}
+
+	void process_icon_paths()
+	{
+		std::vector<std::filesystem::path> icons_paths = this->get_icons_paths();
+
+		for (const std::filesystem::path &path : icons_paths) {
+			if (!std::filesystem::exists(path)) {
+				continue;
+			}
+
+			this->process_image_paths_at_dir(path, this->icon_paths_by_tag);
+		}
+	}
+
+	std::vector<std::filesystem::path> get_holding_portraits_paths() const
+	{
+		std::vector<std::filesystem::path> paths = this->get_graphics_paths();
+
+		for (std::filesystem::path &path : paths) {
+			path /= "holdings";
+		}
+
+		return paths;
+	}
+
+	void process_holding_portrait_paths()
+	{
+		std::vector<std::filesystem::path> holding_portraits_paths = this->get_holding_portraits_paths();
+
+		for (const std::filesystem::path &path : holding_portraits_paths) {
+			if (!std::filesystem::exists(path)) {
+				continue;
+			}
+
+			this->process_image_paths_at_dir(path, this->holding_portrait_paths_by_tag);
+		}
+	}
+
+	std::vector<std::filesystem::path> get_flags_paths() const
+	{
+		std::vector<std::filesystem::path> paths = this->get_graphics_paths();
+
+		for (std::filesystem::path &path : paths) {
+			path /= "flags";
+		}
+
+		return paths;
+	}
+
+	void process_flag_paths()
+	{
+		std::vector<std::filesystem::path> flags_paths = this->get_flags_paths();
+
+		for (const std::filesystem::path &path : flags_paths) {
+			if (!std::filesystem::exists(path)) {
+				continue;
+			}
+
+			this->process_image_paths_at_dir(path, this->flag_paths_by_tag);
+		}
+	}
+
+	void process_image_paths_at_dir(const std::filesystem::path &path, std::map<std::string, std::filesystem::path> &image_paths_by_tag)
+	{
+		std::filesystem::recursive_directory_iterator dir_iterator(path);
+
+		for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
+			if (!dir_entry.is_regular_file()) {
+				continue;
+			}
+
+			//icon paths processed later (e.g. because they are in modules which depend on other ones) will overwrite those processed before, if they have the same tag/file name
+			image_paths_by_tag[dir_entry.path().stem().string()] = dir_entry.path();
+		}
+	}
+
+	const std::filesystem::path &get_tagged_image_path(const std::map<std::string, std::filesystem::path> &image_paths_by_tag, const std::string &base_tag, const std::vector<std::vector<std::string>> &suffix_list_with_fallbacks = {}, const std::string &final_suffix = std::string()) const;
+
+	const std::filesystem::path &get_tagged_icon_path(const std::string &base_tag, const std::vector<std::vector<std::string>> &suffix_list_with_fallbacks = {}, const std::string &final_suffix = std::string()) const
+	{
+		return this->get_tagged_image_path(this->icon_paths_by_tag, base_tag, suffix_list_with_fallbacks, final_suffix);
+	}
+
+	const std::filesystem::path &get_tagged_holding_portrait_path(const std::string &base_tag, const std::vector<std::vector<std::string>> &suffix_list_with_fallbacks = {}, const std::string &final_suffix = std::string()) const
+	{
+		return this->get_tagged_image_path(this->holding_portrait_paths_by_tag, base_tag, suffix_list_with_fallbacks, final_suffix);
+	}
+
+	const std::filesystem::path &get_tagged_flag_path(const std::string &base_tag, const std::vector<std::vector<std::string>> &suffix_list_with_fallbacks = {}, const std::string &final_suffix = std::string()) const
+	{
+		return this->get_tagged_image_path(this->flag_paths_by_tag, base_tag, suffix_list_with_fallbacks, final_suffix);
+	}
+
 private:
 	std::vector<std::unique_ptr<data_type_metadata>> metadata;
 	std::vector<std::unique_ptr<module>> modules;
 	std::map<std::string, module *> modules_by_identifier;
+	std::map<std::string, std::filesystem::path> icon_paths_by_tag;
+	std::map<std::string, std::filesystem::path> holding_portrait_paths_by_tag;
+	std::map<std::string, std::filesystem::path> flag_paths_by_tag;
 };
 
 }

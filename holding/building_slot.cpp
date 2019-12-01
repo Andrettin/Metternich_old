@@ -34,11 +34,11 @@ building_slot::~building_slot()
 **
 **	@return	The path to the icon
 */
-std::filesystem::path building_slot::get_icon_path() const
+const std::filesystem::path &building_slot::get_icon_path() const
 {
 	std::string base_tag = this->get_building()->get_icon_tag();
 
-	std::filesystem::path icon_path = database::get_tagged_image_path(database::get_icons_path() / this->get_building()->get_icon_folder(), base_tag, this->holding->get_tag_suffix_list_with_fallbacks(), ".png");
+	const std::filesystem::path &icon_path = database::get()->get_tagged_icon_path(base_tag, this->holding->get_tag_suffix_list_with_fallbacks());
 	return icon_path;
 }
 
