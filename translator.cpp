@@ -13,8 +13,8 @@ std::string translator::translate(const std::vector<std::string> &base_tags, con
 {
 	std::vector<std::string> suffix_combinations = string::get_suffix_combinations(suffix_list_with_fallbacks);
 
-	for (const std::string &base_tag : base_tags) {
-		for (const std::string &suffix : suffix_combinations) {
+	for (const std::string &suffix : suffix_combinations) {
+		for (const std::string &base_tag : base_tags) {
 			const auto &suffix_find_iterator = this->translations.find(base_tag + suffix);
 			if (suffix_find_iterator != this->translations.end())  {
 				return suffix_find_iterator->second;

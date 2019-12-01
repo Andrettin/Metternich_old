@@ -297,7 +297,7 @@ std::string landed_title::get_holder_title_name() const
 {
 	std::vector<std::vector<std::string>> tag_suffix_list_with_fallbacks = this->get_tag_suffix_list_with_fallbacks();
 
-	tag_suffix_list_with_fallbacks.push_back({this->get_identifier()});
+	tag_suffix_list_with_fallbacks.push_back(this->get_identifier_with_aliases());
 
 	if (this->get_holder() != nullptr && this->get_holder()->is_female()) {
 		tag_suffix_list_with_fallbacks.push_back({"female"});
