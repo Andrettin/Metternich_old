@@ -67,6 +67,10 @@ void holding_slot::initialize_history()
 */
 void holding_slot::check() const
 {
+	if (this->get_province()->get_county() == nullptr) {
+		throw std::runtime_error("The province of holding slot \"" + this->get_identifier() + "\" (\"" + this->get_province()->get_identifier() + "\") has no county.");
+	}
+
 	if (this->get_barony() != nullptr && this->get_barony()->get_de_jure_liege_title() != this->get_province()->get_county()) {
 		throw std::runtime_error("The barony of holding slot \"" + this->get_identifier() + "\" is in county \"" + this->get_barony()->get_de_jure_liege_title()->get_identifier() + "\", but its province belongs to county \"" + this->get_province()->get_county()->get_identifier() + "\".");
 	}

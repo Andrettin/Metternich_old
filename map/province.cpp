@@ -252,30 +252,30 @@ void province::initialize()
 {
 	if (this->get_county() != nullptr) {
 		connect(this->get_county(), &landed_title::holder_changed, this, &province::owner_changed);
-	}
 
-	//create a fort holding slot for this province if none exists
-	if (this->get_fort_holding_slot() == nullptr) {
-		std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier() + "_fort";
-		holding_slot *holding_slot = holding_slot::add(holding_slot_identifier);
-		holding_slot->set_type(holding_slot_type::fort);
-		holding_slot->set_province(this);
-	}
+		//create a fort holding slot for this province if none exists
+		if (this->get_fort_holding_slot() == nullptr) {
+			std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier() + "_fort";
+			holding_slot *holding_slot = holding_slot::add(holding_slot_identifier);
+			holding_slot->set_type(holding_slot_type::fort);
+			holding_slot->set_province(this);
+		}
 
-	//create a university holding slot for this province if none exists
-	if (this->get_university_holding_slot() == nullptr) {
-		std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier() + "_university";
-		holding_slot *holding_slot = holding_slot::add(holding_slot_identifier);
-		holding_slot->set_type(holding_slot_type::university);
-		holding_slot->set_province(this);
-	}
+		//create a university holding slot for this province if none exists
+		if (this->get_university_holding_slot() == nullptr) {
+			std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier() + "_university";
+			holding_slot *holding_slot = holding_slot::add(holding_slot_identifier);
+			holding_slot->set_type(holding_slot_type::university);
+			holding_slot->set_province(this);
+		}
 
-	//create a hospital holding slot for this province if none exists
-	if (this->get_hospital_holding_slot() == nullptr) {
-		std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier() + "_hospital";
-		holding_slot *holding_slot = holding_slot::add(holding_slot_identifier);
-		holding_slot->set_type(holding_slot_type::hospital);
-		holding_slot->set_province(this);
+		//create a hospital holding slot for this province if none exists
+		if (this->get_hospital_holding_slot() == nullptr) {
+			std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier() + "_hospital";
+			holding_slot *holding_slot = holding_slot::add(holding_slot_identifier);
+			holding_slot->set_type(holding_slot_type::hospital);
+			holding_slot->set_province(this);
+		}
 	}
 
 	data_entry_base::initialize();
@@ -315,6 +315,10 @@ void province::check() const
 
 	if (!this->get_color().isValid()) {
 		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no color.");
+	}
+
+	if (this->get_county() && this->get_settlement_holding_slots().empty()) {
+		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has a county (not being a wasteland or water zone), but has no settlement holding slots.");
 	}
 
 	if (history::get()->is_loading()) {
