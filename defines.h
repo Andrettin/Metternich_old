@@ -4,6 +4,7 @@
 
 #include <QDateTime>
 
+#include <filesystem>
 #include <string>
 
 namespace metternich {
@@ -26,7 +27,7 @@ class defines : public QObject, public singleton<defines>
 	Q_PROPERTY(int base_population_growth MEMBER base_population_growth READ get_base_population_growth)
 
 public:
-	void load();
+	void load(const std::filesystem::path &base_path);
 	void process_gsml_property(const gsml_property &property);
 
 	world *get_default_world() const

@@ -10,9 +10,9 @@ namespace metternich {
 /**
 **	@brief	Load the defines
 */
-void defines::load()
+void defines::load(const std::filesystem::path &base_path)
 {
-	std::filesystem::path defines_path(database::get_common_path() / "defines.txt");
+	std::filesystem::path defines_path(base_path / "defines.txt");
 
 	if (!std::filesystem::exists(defines_path)) {
 		return;
