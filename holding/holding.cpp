@@ -151,7 +151,7 @@ std::string holding::get_name() const
 		return translator::get()->translate(this->get_barony()->get_identifier_with_aliases(), this->get_tag_suffix_list_with_fallbacks());
 	}
 
-	return translator::get()->translate(this->get_province()->get_identifier_with_aliases(), this->get_tag_suffix_list_with_fallbacks());
+	return this->get_province()->get_name();
 }
 
 /**
