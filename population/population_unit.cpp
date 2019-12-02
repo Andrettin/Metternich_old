@@ -33,7 +33,8 @@ void population_unit::process_history_database()
 			population_type *type = population_type::get(type_identifier);
 			auto population_unit = std::make_unique<metternich::population_unit>(type);
 			population_unit->moveToThread(QApplication::instance()->thread());
-			population_unit->load_history(const_cast<gsml_data &>(data_entry));
+			population_unit->process_history(data_entry);
+			population_unit->load_history();
 
 			if (population_unit->get_size() <= 0) {
 				continue; //don't add empty population units

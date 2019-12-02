@@ -31,15 +31,13 @@ void data_entry_base::process_gsml_scope(const gsml_data &scope)
 }
 
 /**
-**	@brief	Load history for the data entry
+**	@brief	Process history for the data entry
 */
-void data_entry_base::load_history(gsml_data &data)
+void data_entry_base::process_history(const gsml_data &data)
 {
 	for (const gsml_property &property : data.get_properties()) {
 		this->process_gsml_property(property); //properties outside of a date scope, to be applied regardless of start date
 	}
-
-	data.sort_children(); //sort by date, so that they are applied chronologically
 
 	for (const gsml_data &history_entry : data.get_children()) {
 		const timeline *timeline = nullptr;
@@ -61,7 +59,7 @@ void data_entry_base::load_history(gsml_data &data)
 			for (const gsml_data &timeline_entry : history_entry.get_children()) {
 				QDateTime date = history::string_to_date(timeline_entry.get_tag());
 				if (history::get()->contains_timeline_date(timeline, date)) {
-					this->load_date_scope(timeline_entry, date);
+					this->history_entries[date].push_back(&timeline_entry);
 				}
 			}
 		} else if (calendar != nullptr) {
@@ -70,17 +68,34 @@ void data_entry_base::load_history(gsml_data &data)
 				date = date.addYears(calendar->get_year_offset());
 
 				if (history::get()->contains_timeline_date(nullptr, date)) {
-					this->load_date_scope(calendar_entry, date);
+					this->history_entries[date].push_back(&calendar_entry);
 				}
 			}
 		} else {
 			QDateTime date = history::string_to_date(history_entry.get_tag());
 
 			if (history::get()->contains_timeline_date(nullptr, date)) {
-				this->load_date_scope(history_entry, date);
+				this->history_entries[date].push_back(&history_entry);
 			}
 		}
 	}
+}
+
+/**
+**	@brief	Load history for the data entry
+*/
+void data_entry_base::load_history()
+{
+	for (const auto &kv_pair : this->history_entries) {
+		const QDateTime &date = kv_pair.first;
+		const std::vector<const gsml_data *> &date_history_entries = kv_pair.second;
+
+		for (const gsml_data *history_entry : date_history_entries) {
+			this->load_date_scope(*history_entry, date);
+		}
+	}
+
+	this->history_entries.clear();
 }
 
 /**

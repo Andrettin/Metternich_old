@@ -35,7 +35,8 @@ public:
 		this->process_gsml_scope(scope);
 	}
 
-	void load_history(gsml_data &data);
+	void process_history(const gsml_data &data);
+	void load_history();
 	void load_date_scope(const gsml_data &date_scope, const QDateTime &date);
 
 	virtual void initialize()
@@ -54,6 +55,7 @@ public:
 
 private:
 	bool initialized = false;
+	std::map<QDateTime, std::vector<const gsml_data *>> history_entries;
 };
 
 /**

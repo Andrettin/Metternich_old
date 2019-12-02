@@ -328,9 +328,9 @@ public:
 				return;
 			}
 
-			for (gsml_data &data : T::gsml_history_data_to_process) {
+			for (const gsml_data &data : T::gsml_history_data_to_process) {
 				T *instance = T::get(data.get_tag());
-				instance->load_history(data);
+				instance->process_history(data);
 			}
 		} else {
 			for (const gsml_data &data : T::gsml_history_data_to_process) {
@@ -352,13 +352,17 @@ public:
 						instance = T::add(identifier);
 					} else {
 						instance = T::get(identifier);
-						instance->load_history(const_cast<gsml_data &>(data_entry));
+						instance->process_history(data_entry);
 					}
 				}
 			}
 		}
 
 		if (!definition) {
+			for (T *instance : T::get_all()) {
+				instance->load_history();
+			}
+
 			T::gsml_history_data_to_process.clear();
 		}
 	}
