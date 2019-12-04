@@ -43,6 +43,8 @@ region::~region()
 void region::initialize_history()
 {
 	this->population_units.clear();
+
+	data_entry_base::initialize_history();
 }
 
 QVariantList region::get_provinces_qvariant_list() const

@@ -450,7 +450,9 @@ public:
 	static void initialize_all_history()
 	{
 		for (T *instance : T::get_all()) {
-			instance->initialize_history();
+			if (!instance->is_history_initialized()) {
+				instance->initialize_history();
+			}
 		}
 	}
 

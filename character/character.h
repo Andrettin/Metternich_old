@@ -47,6 +47,8 @@ public:
 	static constexpr const char *database_folder = "characters";
 	static constexpr bool history_only = true;
 
+	static std::set<std::string> get_database_dependencies();
+
 	static void remove(character *character)
 	{
 		if (character->is_alive()) {

@@ -57,9 +57,11 @@ void holding_slot::initialize()
 */
 void holding_slot::initialize_history()
 {
-	if (this->get_holding() != nullptr) {
+	if (this->get_holding() != nullptr && !this->get_holding()->is_history_initialized()) {
 		this->get_holding()->initialize_history();
 	}
+
+	data_entry_base::initialize_history();
 }
 
 /**

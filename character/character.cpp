@@ -19,6 +19,14 @@
 
 namespace metternich {
 
+std::set<std::string> character::get_database_dependencies()
+{
+	return {
+		//so that random holders will have been generated when all characters have their history initialized
+		landed_title::class_identifier
+	};
+}
+
 /**
 **	@brief	Generate a character
 **
@@ -115,6 +123,8 @@ void character::initialize_history()
 			}
 		}
 	}
+
+	data_entry_base::initialize_history();
 }
 
 void character::set_name(const std::string &name)

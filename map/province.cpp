@@ -302,6 +302,8 @@ void province::initialize_history()
 	if (this->is_coastal()) {
 		this->change_population_capacity_additive_modifier(10000); //increase population capacity if this province is coastal
 	}
+
+	data_entry_base::initialize_history();
 }
 
 /**

@@ -90,7 +90,9 @@ void holding::initialize_history()
 		}
 
 		for (const std::unique_ptr<population_unit> &population_unit : this->get_population_units()) {
-			population_unit->initialize_history();
+			if (!population_unit->is_history_initialized()) {
+				population_unit->initialize_history();
+			}
 		}
 
 		this->remove_empty_population_units();
@@ -99,6 +101,8 @@ void holding::initialize_history()
 		this->calculate_population_groups();
 		this->check_overpopulation();
 	}
+
+	data_entry_base::initialize_history();
 }
 
 /**

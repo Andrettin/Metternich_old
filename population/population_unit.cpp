@@ -68,6 +68,8 @@ void population_unit::initialize_history()
 	if (this->get_religion() == nullptr) {
 		this->set_religion(this->get_holding()->get_religion());
 	}
+
+	data_entry_base::initialize_history();
 }
 
 /**

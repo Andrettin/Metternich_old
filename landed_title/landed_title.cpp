@@ -108,9 +108,8 @@ void landed_title::process_gsml_dated_property(const gsml_property &property, co
 		}
 
 		if (property.get_value() == "random") {
-			//generate random holder
-			character *holder = character::generate(this->get_capital_province()->get_culture(), this->get_capital_province()->get_religion());
-			this->set_holder(holder);
+			this->set_holder(nullptr);
+			this->random_holder = true;
 			return;
 		} else if (property.get_value() == "none") {
 			this->set_holder(nullptr);
@@ -189,7 +188,30 @@ void landed_title::initialize()
 */
 void landed_title::initialize_history()
 {
+	if (this->random_holder) {
+		culture *culture = nullptr;
+		religion *religion = nullptr;
+
+		if (this->get_holding() != nullptr) {
+			if (!this->get_holding()->is_history_initialized()) {
+				this->get_holding()->initialize_history();
+			}
+
+			culture = this->get_holding()->get_culture();
+			religion = this->get_holding()->get_religion();
+		} else {
+			culture = this->get_capital_province()->get_culture();
+			religion = this->get_capital_province()->get_religion();
+		}
+
+		this->set_holder(character::generate(culture, religion));
+	}
+
 	if (this->holder_title != nullptr) {
+		if (!this->holder_title->is_history_initialized()) {
+			this->holder_title->initialize_history();
+		}
+
 		if (this->holder_title->get_holder() == nullptr) {
 			throw std::runtime_error("Tried to set the \"" + this->holder_title->get_identifier() + "\" holder title for \"" + this->get_identifier() + "\", but the former has no holder.");
 		}
@@ -199,6 +221,10 @@ void landed_title::initialize_history()
 	}
 
 	if (this->liege_title != nullptr) {
+		if (!this->liege_title->is_history_initialized()) {
+			this->liege_title->initialize_history();
+		}
+
 		if (this->liege_title->get_holder() == nullptr) {
 			throw std::runtime_error("Tried to set the \"" + this->liege_title->get_identifier() + "\" liege title for \"" + this->get_identifier() + "\", but the former has no holder.");
 		}
@@ -210,6 +236,8 @@ void landed_title::initialize_history()
 		this->get_holder()->set_liege(this->liege_title->get_holder());
 		this->liege_title = nullptr;
 	}
+
+	data_entry_base::initialize_history();
 }
 
 /**
@@ -349,6 +377,7 @@ void landed_title::set_holder(character *character)
 		character->add_landed_title(this);
 	}
 	this->holder_title = nullptr; //set the holder title to null, so that the new holder (null or otherwise) isn't overwritten by a previous holder title
+	this->random_holder = false;
 
 	if (this->get_province() != nullptr) {
 		//if this is a non-titular county, then the character holding it must also possess the county's capital holding

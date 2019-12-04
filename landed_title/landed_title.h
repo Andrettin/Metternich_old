@@ -239,6 +239,7 @@ private:
 	std::vector<landed_title *> de_jure_vassal_titles;
 	metternich::province *capital_province = nullptr;
 	landed_title *holder_title = nullptr; //title of this title's holder; used only for initialization, and set to null afterwards
+	bool random_holder = false; //whether a random holder should be generated for the title upon initialization
 	landed_title *liege_title = nullptr; //title of this title's holder's liege; used only for initialization, and set to null afterwards
 	std::string flag_tag;
 	std::map<law_group *, law *> laws; //the laws pertaining to the title, mapped to the respective law group

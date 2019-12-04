@@ -44,7 +44,10 @@ public:
 		this->initialized = true;
 	}
 
-	virtual void initialize_history() { }
+	virtual void initialize_history()
+	{
+		this->history_initialized = true;
+	}
 
 	virtual void check() const {}
 
@@ -53,8 +56,14 @@ public:
 		return this->initialized;
 	}
 
+	bool is_history_initialized() const
+	{
+		return this->history_initialized;
+	}
+
 private:
 	bool initialized = false;
+	bool history_initialized = false;
 	std::map<QDateTime, std::vector<const gsml_data *>> history_entries;
 };
 
