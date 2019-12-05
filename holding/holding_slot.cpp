@@ -17,6 +17,14 @@
 
 namespace metternich {
 
+std::set<std::string> holding_slot::get_database_dependencies()
+{
+	return {
+		//so that holding slots will be added to a province after the holding slots within the province's definition have been added to it
+		province::class_identifier
+	};
+}
+
 /**
 **	@brief	Constructor
 **

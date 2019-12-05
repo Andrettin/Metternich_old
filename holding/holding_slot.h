@@ -34,6 +34,8 @@ public:
 	static constexpr const char *database_folder = "holding_slots";
 	static constexpr const char *prefix = "h_";
 
+	static std::set<std::string> get_database_dependencies();
+
 	static holding_slot *add(const std::string &identifier)
 	{
 		if (identifier.substr(0, 2) != holding_slot::prefix) {
@@ -67,6 +69,14 @@ public:
 
 	void set_type(const holding_slot_type type)
 	{
+		if (type == this->get_type()) {
+			return;
+		}
+
+		if (this->get_province() != nullptr) {
+			throw std::runtime_error("Tried to change the type of holding slot \"" + this->get_identifier() + "\" after it had already been added to a province.");
+		}
+
 		this->type = type;
 	}
 

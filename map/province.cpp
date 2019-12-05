@@ -293,6 +293,13 @@ void province::initialize_history()
 		this->set_capital_holding_slot(this->get_settlement_holding_slots().front());
 	}
 
+	//ensure the province's settlement holding slots have been initialized, so that its culture and religion will be calculated correctly
+	for (holding_slot *settlement_holding_slot : this->get_settlement_holding_slots()) {
+		if (!settlement_holding_slot->is_history_initialized()) {
+			settlement_holding_slot->initialize_history();
+		}
+	}
+
 	this->calculate_population();
 	this->calculate_population_groups();
 
@@ -1098,7 +1105,7 @@ void province::add_holding_slot(holding_slot *holding_slot)
 			this->hospital_holding_slot = holding_slot;
 			break;
 		default:
-			break;
+			throw std::runtime_error("Holding slot \"" + holding_slot->get_identifier() + "\" has an invalid type (" + std::to_string(static_cast<int>(holding_slot->get_type())) + "), but is being added to province \"" + this->get_identifier() + "\".");
 	}
 }
 
