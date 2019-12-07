@@ -2,6 +2,7 @@
 
 #include "map/province.h"
 #include "script/condition/condition.h"
+#include "script/scope_util.h"
 
 #include <type_traits>
 
@@ -24,12 +25,7 @@ public:
 
 	virtual bool check(const T *scope) const override
 	{
-		const province *province = nullptr;
-		if constexpr (std::is_same_v<T, metternich::province>) {
-			province = scope;
-		} else {
-			province = scope->get_province();
-		}
+		const province *province = get_scope_province(scope);
 		return province->borders_water() == this->borders_water;
 	}
 

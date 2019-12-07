@@ -520,7 +520,7 @@ landed_title *landed_title::get_tier_title(const landed_title_tier tier) const
 		return const_cast<landed_title *>(this);
 	}
 
-	for (int i = static_cast<int>(tier) - 1; i >= static_cast<int>(landed_title_tier::county); --i) {
+	for (int i = static_cast<int>(tier) - 1; i >= static_cast<int>(landed_title_tier::barony); --i) {
 		landed_title *tier_title = this->get_tier_title(static_cast<landed_title_tier>(i));
 		if (tier_title != nullptr) {
 			landed_title *liege_title = tier_title->get_liege_title();
@@ -553,7 +553,7 @@ landed_title *landed_title::get_tier_de_jure_title(const landed_title_tier tier)
 		return const_cast<landed_title *>(this);
 	}
 
-	if (tier > landed_title_tier::county) {
+	if (tier > landed_title_tier::barony) {
 		landed_title *lower_tier_title = this->get_tier_de_jure_title(static_cast<landed_title_tier>(static_cast<int>(tier) - 1));
 		if (lower_tier_title != nullptr) {
 			return lower_tier_title->get_de_jure_liege_title();

@@ -147,6 +147,7 @@ HEADERS += \
     script/condition/or_condition.h \
     script/condition/region_condition.h \
     script/condition/terrain_condition.h \
+    script/condition/tier_de_jure_title_condition.h \
     script/condition/world_condition.h \
     script/factor_modifier.h \
     script/identifiable_modifier.h \
@@ -156,6 +157,7 @@ HEADERS += \
     script/modifier_effect/population_capacity_modifier_effect.h \
     script/modifier_effect/population_capacity_modifier_modifier_effect.h \
     script/modifier_effect/population_growth_modifier_effect.h \
+    script/scope_util.h \
     singleton.h \
     species.h \
     third_party/maskedmousearea/maskedmousearea.h \

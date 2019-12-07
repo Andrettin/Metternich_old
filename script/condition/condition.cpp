@@ -5,6 +5,7 @@
 #include "database/gsml_property.h"
 #include "holding/holding.h"
 #include "holding/holding_slot.h"
+#include "landed_title/landed_title_tier.h"
 #include "map/province.h"
 #include "population/population_unit.h"
 #include "script/condition/and_condition.h"
@@ -16,6 +17,7 @@
 #include "script/condition/or_condition.h"
 #include "script/condition/region_condition.h"
 #include "script/condition/terrain_condition.h"
+#include "script/condition/tier_de_jure_title_condition.h"
 #include "script/condition/world_condition.h"
 #include "util/parse_util.h"
 #include "util/string_util.h"
@@ -35,6 +37,12 @@ std::unique_ptr<condition<T>> condition<T>::from_gsml_property(const gsml_proper
 
 	if (condition_identifier == "borders_water") {
 		condition = std::make_unique<borders_water_condition<T>>(string::to_bool(property.get_value()));
+	} else if (condition_identifier == "de_jure_duchy") {
+		condition = std::make_unique<tier_de_jure_title_condition<T, landed_title_tier::duchy>>(property.get_value());
+	} else if (condition_identifier == "de_jure_kingdom") {
+		condition = std::make_unique<tier_de_jure_title_condition<T, landed_title_tier::kingdom>>(property.get_value());
+	} else if (condition_identifier == "de_jure_empire") {
+		condition = std::make_unique<tier_de_jure_title_condition<T, landed_title_tier::empire>>(property.get_value());
 	} else if (condition_identifier == "region") {
 		condition = std::make_unique<region_condition<T>>(property.get_value());
 	} else if (condition_identifier == "terrain") {
