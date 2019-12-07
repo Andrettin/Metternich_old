@@ -12,6 +12,7 @@ namespace metternich {
 class gsml_property;
 class timeline;
 class world;
+enum class game_speed : int;
 
 /**
 **	@brief	Defines for the engine which are loaded from the database
@@ -27,6 +28,8 @@ class defines : public QObject, public singleton<defines>
 	Q_PROPERTY(int base_population_growth MEMBER base_population_growth READ get_base_population_growth)
 
 public:
+	defines();
+
 	void load(const std::filesystem::path &base_path);
 	void process_gsml_property(const gsml_property &property);
 
@@ -55,12 +58,18 @@ public:
 		return this->base_population_growth;
 	}
 
+	game_speed get_default_game_speed() const
+	{
+		return this->default_game_speed;
+	}
+
 private:
 	world *default_world = nullptr;
 	timeline *default_timeline = nullptr;
 	QDateTime start_date;
 	int player_character_id = 0;
 	int base_population_growth = 0; //permyriad
+	game_speed default_game_speed;
 };
 
 }

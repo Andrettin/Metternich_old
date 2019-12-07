@@ -17,7 +17,7 @@ namespace metternich {
 /**
 **	@brief	Constructor
 */
-game::game() : speed(game_speed::fast)
+game::game() : speed(game_speed::normal)
 {
 }
 
@@ -29,6 +29,7 @@ game::game() : speed(game_speed::fast)
 void game::start(const timeline *timeline, const QDateTime &start_date)
 {
 	this->starting = true;
+	this->speed = defines::get()->get_default_game_speed();
 
 	history::get()->set_timeline(timeline);
 	history::get()->set_start_date(start_date);
