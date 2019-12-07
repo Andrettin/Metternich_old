@@ -1033,6 +1033,8 @@ void province::set_population_growth_modifier(const int population_growth_modifi
 */
 void province::calculate_population_groups()
 {
+	std::unique_lock<std::shared_mutex> lock(this->population_groups_mutex);
+
 	this->population_per_type.clear();
 	this->population_per_culture.clear();
 	this->population_per_religion.clear();
@@ -1378,6 +1380,8 @@ bool province::is_selectable() const
 
 QVariantList province::get_population_per_type_qvariant_list() const
 {
+	std::shared_lock<std::shared_mutex> lock(this->population_groups_mutex);
+
 	QVariantList population_per_type;
 
 	for (const auto &kv_pair : this->population_per_type) {
@@ -1392,6 +1396,8 @@ QVariantList province::get_population_per_type_qvariant_list() const
 
 QVariantList province::get_population_per_culture_qvariant_list() const
 {
+	std::shared_lock<std::shared_mutex> lock(this->population_groups_mutex);
+
 	QVariantList population_per_culture;
 
 	for (const auto &kv_pair : this->population_per_culture) {
@@ -1406,6 +1412,8 @@ QVariantList province::get_population_per_culture_qvariant_list() const
 
 QVariantList province::get_population_per_religion_qvariant_list() const
 {
+	std::shared_lock<std::shared_mutex> lock(this->population_groups_mutex);
+
 	QVariantList population_per_religion;
 
 	for (const auto &kv_pair : this->population_per_religion) {

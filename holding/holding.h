@@ -501,6 +501,7 @@ private:
 	std::map<population_type *, int> population_per_type; //the population for each population type
 	std::map<metternich::culture *, int> population_per_culture; //the population for each culture
 	std::map<metternich::religion *, int> population_per_religion; //the population for each religion
+	mutable std::shared_mutex population_groups_mutex;
 };
 
 }

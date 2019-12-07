@@ -15,6 +15,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <shared_mutex>
 #include <string>
 #include <vector>
 
@@ -439,6 +440,7 @@ private:
 	bool inner_river = false; //whether the province has a minor river flowing through it
 	bool always_write_geodata = false;
 	bool write_geojson_value = false;
+	mutable std::shared_mutex population_groups_mutex;
 };
 
 }
