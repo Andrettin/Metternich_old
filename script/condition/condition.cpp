@@ -6,6 +6,7 @@
 #include "holding/holding.h"
 #include "holding/holding_slot.h"
 #include "map/province.h"
+#include "population/population_unit.h"
 #include "script/condition/and_condition.h"
 #include "script/condition/borders_water_condition.h"
 #include "script/condition/commodity_condition.h"
@@ -114,6 +115,7 @@ void condition<T>::process_gsml_scope(const gsml_data &scope)
 
 template class condition<holding>;
 template class condition<holding_slot>;
+template class condition<population_unit>;
 template class condition<province>;
 
 }

@@ -15,6 +15,7 @@
 #include "random.h"
 #include "religion/religion.h"
 #include "religion/religion_group.h"
+#include "script/condition/condition.h"
 #include "util/container_util.h"
 
 #include <QApplication>
@@ -85,6 +86,7 @@ void population_unit::do_month()
 		this->seek_employment();
 	}
 
+	this->do_cultural_derivation();
 	this->do_mixing();
 }
 
@@ -107,6 +109,28 @@ void population_unit::do_mixing()
 		}
 
 		this->mix_with(other_population_unit.get());
+	}
+}
+
+void population_unit::do_cultural_derivation()
+{
+	for (metternich::culture *culture : this->get_culture()->get_derived_cultures()) {
+		if (!culture->get_derivation_conditions()->check(this)) {
+			continue;
+		}
+
+		const int base_size = this->get_size();
+		int size = base_size;
+		size *= population_unit::cultural_derivation_factor_permyriad + this->get_holding()->get_population_growth(); //the cultural derivation factor must be greater than the population growth, so that it has the potential to affect the demographic composition even for a growing population
+		size /= 10000;
+		if (size > 0) {
+			size = random::generate(size);
+		}
+		size = std::max(size, 2); //2 instead of 1 so that it is always greater than pop. growth
+		size = std::min(size, base_size);
+
+		this->get_holding()->change_population_size(this->get_type(), culture, this->get_religion(), this->get_phenotype(), size);
+		this->change_size(-size);
 	}
 }
 
@@ -216,6 +240,18 @@ void population_unit::set_size(const int size)
 		this->get_holding()->change_population(size_change);
 	}
 }
+
+void population_unit::set_holding(metternich::holding *holding)
+{
+	if (holding == this->get_holding()) {
+		return;
+	}
+
+	this->holding = holding;
+	emit holding_changed();
+	this->set_province(holding->get_province());
+}
+
 
 /**
 **	@brief	Get whether the population unit discounts any type

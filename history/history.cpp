@@ -83,10 +83,12 @@ void history::generate_population_units()
 		}
 
 		//distribute province and region population units to the settlement holdings located in them
-		if (population_unit->get_province() != nullptr) {
-			population_unit->distribute_to_holdings(population_unit->get_province()->get_settlement_holdings());
-		} else if (population_unit->get_region() != nullptr) {
-			population_unit->distribute_to_holdings(population_unit->get_region()->get_holdings());
+		if (population_unit->get_holding() == nullptr) {
+			if (population_unit->get_province() != nullptr) {
+				population_unit->distribute_to_holdings(population_unit->get_province()->get_settlement_holdings());
+			} else if (population_unit->get_region() != nullptr) {
+				population_unit->distribute_to_holdings(population_unit->get_region()->get_holdings());
+			}
 		}
 	}
 

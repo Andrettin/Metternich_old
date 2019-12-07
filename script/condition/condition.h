@@ -6,6 +6,7 @@ class gsml_data;
 class gsml_property;
 class holding;
 class holding_slot;
+class population_unit;
 class province;
 
 template <typename T>
@@ -39,6 +40,7 @@ public:
 
 extern template class condition<holding>;
 extern template class condition<holding_slot>;
+extern template class condition<population_unit>;
 extern template class condition<province>;
 
 }

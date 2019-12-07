@@ -3,9 +3,28 @@
 #include "character/dynasty.h"
 #include "culture/culture_group.h"
 #include "random.h"
+#include "script/condition/and_condition.h"
 #include "util/container_util.h"
 
 namespace metternich {
+
+culture::culture(const std::string &identifier) : culture_base(identifier)
+{
+}
+
+culture::~culture()
+{
+}
+
+void culture::process_gsml_scope(const gsml_data &scope)
+{
+	if (scope.get_tag() == "derivation_conditions") {
+		this->derivation_conditions = std::make_unique<and_condition<population_unit>>();
+		database::process_gsml_data(this->derivation_conditions.get(), scope);
+	} else {
+		culture_base::process_gsml_scope(scope);
+	}
+}
 
 /**
 **	@brief	Initialize the culture
@@ -53,6 +72,11 @@ void culture::check() const
 	}
 
 	culture_base::check();
+}
+
+QVariantList culture::get_derived_cultures_qvariant_list() const
+{
+	return container::to_qvariant_list(this->get_derived_cultures());
 }
 
 /**

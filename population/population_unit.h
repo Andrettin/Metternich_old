@@ -39,6 +39,7 @@ class population_unit : public data_entry_base, public simple_data_type<populati
 public:
 	static constexpr const char *database_folder = "population_units";
 	static constexpr int mixing_factor_permyriad = 1; //up to this fraction of people will "mix" per month per mixing check
+	static constexpr int cultural_derivation_factor_permyriad = 1; //up to this fraction of people will change cultures due to cultural derivation per month per derived culture
 
 	static void process_history_database();
 
@@ -58,6 +59,7 @@ public:
 
 	void do_month();
 	void do_mixing();
+	void do_cultural_derivation();
 
 	std::vector<std::vector<std::string>> get_tag_suffix_list_with_fallbacks() const;
 
@@ -122,15 +124,7 @@ public:
 		return this->holding;
 	}
 
-	void set_holding(holding *holding)
-	{
-		if (holding == this->get_holding()) {
-			return;
-		}
-
-		this->holding = holding;
-		emit holding_changed();
-	}
+	void set_holding(holding *holding);
 
 	metternich::province *get_province() const
 	{

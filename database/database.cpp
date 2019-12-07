@@ -84,6 +84,9 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 			if (property.get_key() == "dependencies") {
 				module *module_value = database::get()->get_module(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(module *, module_value));
+			} else if (property.get_key() == "derived_cultures") {
+				culture *culture_value = culture::get(property.get_value());
+				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(culture *, culture_value));
 			} else if (property.get_key() == "holdings") {
 				holding_slot *slot = holding_slot::get(property.get_value());
 				if (class_name == "metternich::region") {
