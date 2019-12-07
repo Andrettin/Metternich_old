@@ -132,7 +132,12 @@ void game::do_tick()
 */
 void game::do_day()
 {
-	for (holding_slot *holding_slot : holding_slot::get_all()) {
+	const QDate date = this->current_date.date();
+	const size_t days_in_month = static_cast<size_t>(date.daysInMonth());
+	const size_t current_day = static_cast<size_t>(date.day());
+
+	const std::vector<holding_slot *> &holding_slots = holding_slot::get_all();
+	for (holding_slot *holding_slot : holding_slots) {
 		if (holding_slot->get_holding() == nullptr) {
 			continue;
 		}
@@ -140,12 +145,40 @@ void game::do_day()
 		holding_slot->get_holding()->do_day();
 	}
 
-	for (province *province : province::get_all()) {
+	//process the monthly actions of different ones on each day of the month, for the sake of performance
+	for (size_t i = (current_day - 1); i < holding_slots.size(); i += days_in_month) {
+		holding_slot *holding_slot = holding_slots[i];
+
+		if (holding_slot->get_holding() == nullptr) {
+			continue;
+		}
+
+		holding_slot->get_holding()->do_month();
+	}
+
+	const std::vector<province *> &provinces = province::get_all();
+	for (province *province : provinces) {
 		if (province->get_county() == nullptr) {
 			continue;
 		}
 
 		province->do_day();
+	}
+
+	for (size_t i = (current_day - 1); i < provinces.size(); i += days_in_month) {
+		province *province = provinces[i];
+
+		if (province->get_county() == nullptr) {
+			continue;
+		}
+
+		province->do_month();
+	}
+
+	const std::vector<character *> &living_characters = character::get_all_living();
+	for (size_t i = (current_day - 1); i < living_characters.size(); i += days_in_month) {
+		character *character = living_characters[i];
+		character->do_month();
 	}
 }
 
@@ -154,25 +187,6 @@ void game::do_day()
 */
 void game::do_month()
 {
-	for (holding_slot *holding_slot : holding_slot::get_all()) {
-		if (holding_slot->get_holding() == nullptr) {
-			continue;
-		}
-
-		holding_slot->get_holding()->do_month();
-	}
-
-	for (province *province : province::get_all()) {
-		if (province->get_county() == nullptr) {
-			continue;
-		}
-
-		province->do_month();
-	}
-
-	for (character *character : character::get_all_living()) {
-		character->do_month();
-	}
 }
 
 /**
