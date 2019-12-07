@@ -157,7 +157,7 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 
 		if (property.get_key() == "efficiency" || property.get_key() == "output_value" || property.get_key() == "output_modifier" || property.get_key() == "workforce_proportion" || property.get_key() == "proportion_to_workforce" || property.get_key() == "income_share" || property.get_key() == "base_price") {
 			value = parse::centesimal_number_string_to_int(property.get_value());
-		} else if (property.get_key() == "base_population_growth") {
+		} else if (property.get_key() == "base_population_growth" || property.get_key() == "cultural_derivation_factor") {
 			value = parse::fractional_number_string_to_int<4>(property.get_value());
 		} else {
 			value = std::stoi(property.get_value());

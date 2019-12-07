@@ -3,6 +3,7 @@
 #include "culture/culture.h"
 #include "culture/culture_group.h"
 #include "database/gsml_data.h"
+#include "defines.h"
 #include "economy/employment.h"
 #include "economy/employment_type.h"
 #include "game/game.h"
@@ -121,7 +122,7 @@ void population_unit::do_cultural_derivation()
 
 		const int base_size = this->get_size();
 		int size = base_size;
-		size *= population_unit::cultural_derivation_factor_permyriad + this->get_holding()->get_population_growth(); //the cultural derivation factor must be greater than the population growth, so that it has the potential to affect the demographic composition even for a growing population
+		size *= defines::get()->get_cultural_derivation_factor() + this->get_holding()->get_population_growth(); //the cultural derivation factor must be greater than the population growth, so that it has the potential to affect the demographic composition even for a growing population
 		size /= 10000;
 		if (size > 0) {
 			size = random::generate(size);

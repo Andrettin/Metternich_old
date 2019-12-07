@@ -26,6 +26,7 @@ class defines : public QObject, public singleton<defines>
 	Q_PROPERTY(QDateTime start_date MEMBER start_date READ get_start_date)
 	Q_PROPERTY(int player_character MEMBER player_character_id READ get_player_character_id)
 	Q_PROPERTY(int base_population_growth MEMBER base_population_growth READ get_base_population_growth)
+	Q_PROPERTY(int cultural_derivation_factor MEMBER cultural_derivation_factor READ get_cultural_derivation_factor)
 
 public:
 	defines();
@@ -63,6 +64,11 @@ public:
 		return this->default_game_speed;
 	}
 
+	int get_cultural_derivation_factor() const
+	{
+		return this->cultural_derivation_factor;
+	}
+
 private:
 	world *default_world = nullptr;
 	timeline *default_timeline = nullptr;
@@ -70,6 +76,7 @@ private:
 	int player_character_id = 0;
 	int base_population_growth = 0; //permyriad
 	game_speed default_game_speed;
+	int cultural_derivation_factor = 1; //permyriad; up to this fraction of people in a population unit will change cultures due to cultural derivation per month per derived culture
 };
 
 }

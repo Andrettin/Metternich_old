@@ -39,7 +39,6 @@ class population_unit : public data_entry_base, public simple_data_type<populati
 public:
 	static constexpr const char *database_folder = "population_units";
 	static constexpr int mixing_factor_permyriad = 1; //up to this fraction of people will "mix" per month per mixing check
-	static constexpr int cultural_derivation_factor_permyriad = 1; //up to this fraction of people will change cultures due to cultural derivation per month per derived culture
 
 	static void process_history_database();
 
