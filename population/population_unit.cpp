@@ -122,10 +122,18 @@ void population_unit::do_cultural_derivation()
 
 		const int base_size = this->get_size();
 		int size = base_size;
-		size *= defines::get()->get_cultural_derivation_factor() + this->get_holding()->get_population_growth(); //the cultural derivation factor must be greater than the population growth, so that it has the potential to affect the demographic composition even for a growing population
+
+		int cultural_derivation_factor = defines::get()->get_cultural_derivation_factor();
+		if (this->get_holding()->get_population_growth() > 0) {
+			//the cultural derivation factor must be greater than the population growth, so that it has the potential to affect the demographic composition even for a growing population
+			cultural_derivation_factor += this->get_holding()->get_population_growth();
+		}
+
+		size *= cultural_derivation_factor;
 		size /= 10000;
+		size = std::max(size, 10); //so that for smaller sizes it won't change too slowly
 		if (size > 0) {
-			size = random::generate(size);
+			size = random::generate(size * 2); //multiply by two so that on average the given size will be chosen
 		}
 		size = std::max(size, 2); //2 instead of 1 so that it is always greater than pop. growth
 		size = std::min(size, base_size);
@@ -180,10 +188,17 @@ void population_unit::mix_with(population_unit *other_population_unit)
 {
 	const int base_size = std::min(this->get_size(), other_population_unit->get_size());
 	int size = base_size;
-	size *= population_unit::mixing_factor_permyriad + this->get_holding()->get_population_growth(); //the mixing factor must be greater than the population growth, so that it has the potential to affect the demographic composition even for a growing population
+
+	int mixing_factor = population_unit::mixing_factor_permyriad;
+	if (this->get_holding()->get_population_growth() > 0) {
+		//the mixing factor must be greater than the population growth, so that it has the potential to affect the demographic composition even for a growing population
+		mixing_factor += this->get_holding()->get_population_growth();
+	}
+
+	size *= mixing_factor;
 	size /= 10000;
 	if (size > 0) {
-		size = random::generate(size);
+		size = random::generate(size * 2);
 	}
 	size = std::max(size, 2); //2 instead of 1 so that it is always greater than pop. growth
 	size = std::min(size, base_size);
