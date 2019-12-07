@@ -381,13 +381,19 @@ void holding::sort_population_units()
 */
 void holding::remove_empty_population_units()
 {
+	bool removed_pop_unit = false;
 	for (size_t i = 0; i < this->population_units.size();) {
 		const std::unique_ptr<population_unit> &population_unit = this->population_units[i];
 		if (population_unit->get_size() == 0) {
 			this->population_units.erase(this->population_units.begin() + static_cast<int>(i));
+			removed_pop_unit = true;
 		} else {
 			++i;
 		}
+	}
+
+	if (removed_pop_unit) {
+		emit population_units_changed();
 	}
 }
 
