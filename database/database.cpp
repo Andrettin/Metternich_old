@@ -353,7 +353,10 @@ void database::register_metadata(std::unique_ptr<data_type_metadata> &&metadata)
 void database::process_modules()
 {
 	this->process_modules_at_dir(database::get_modules_path());
-	this->process_modules_at_dir(database::get_documents_modules_path());
+
+	if (std::filesystem::exists(database::get_documents_modules_path())) {
+		this->process_modules_at_dir(database::get_documents_modules_path());
+	}
 
 	for (const std::unique_ptr<module> &module : this->modules) {
 		std::filesystem::path module_file = module->get_path() / "module.txt";
