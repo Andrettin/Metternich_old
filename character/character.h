@@ -6,6 +6,7 @@
 #include <QDateTime>
 #include <QVariant>
 
+#include <set>
 #include <string>
 #include <vector>
 
@@ -39,7 +40,7 @@ class character : public numeric_data_entry, public data_type<character, int>
 	Q_PROPERTY(metternich::character* spouse READ get_spouse WRITE set_spouse)
 	Q_PROPERTY(metternich::character* liege READ get_liege WRITE set_liege NOTIFY liege_changed)
 	Q_PROPERTY(metternich::character* employer READ get_liege WRITE set_liege NOTIFY liege_changed)
-	Q_PROPERTY(QVariantList traits READ get_traits_qvariant_list)
+	Q_PROPERTY(QVariantList traits READ get_traits_qvariant_list NOTIFY traits_changed)
 	Q_PROPERTY(int wealth READ get_wealth WRITE set_wealth NOTIFY wealth_changed)
 
 public:
@@ -364,7 +365,7 @@ public:
 		return top_liege->get_primary_title();
 	}
 
-	const std::vector<trait *> &get_traits() const
+	const std::set<trait *> &get_traits() const
 	{
 		return this->traits;
 	}
@@ -373,12 +374,14 @@ public:
 
 	Q_INVOKABLE void add_trait(trait *trait)
 	{
-		this->traits.push_back(trait);
+		this->traits.insert(trait);
+		emit traits_changed();
 	}
 
 	Q_INVOKABLE void remove_trait(trait *trait)
 	{
-		this->traits.erase(std::remove(this->traits.begin(), this->traits.end(), trait), this->traits.end());
+		this->traits.erase(trait);
+		emit traits_changed();
 	}
 
 	int get_wealth() const
@@ -425,6 +428,7 @@ signals:
 	void primary_title_changed();
 	void liege_changed();
 	void wealth_changed();
+	void traits_changed();
 
 private:
 	std::string name;
@@ -444,7 +448,7 @@ private:
 	QDateTime death_date;
 	character *liege = nullptr;
 	std::vector<character *> vassals;
-	std::vector<trait *> traits;
+	std::set<trait *> traits;
 	int wealth = 0;
 	std::map<const commodity *, int> stored_commodities; //the amount of each commodity stored by the character
 };
