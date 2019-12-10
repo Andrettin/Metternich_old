@@ -116,11 +116,11 @@ std::string culture::generate_female_name() const
 */
 std::string culture::generate_dynasty_name() const
 {
-	if (this->dynasties.empty()) {
-		return std::string();
+	if (!this->dynasties.empty()) {
+		return this->dynasties[random::generate(this->dynasties.size())]->get_name();
 	}
 
-	return this->dynasties[random::generate(this->dynasties.size())]->get_name();
+	throw std::runtime_error("No dynasty name could be generated for culture \"" + this->get_identifier() + "\"");
 }
 
 }
