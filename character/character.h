@@ -6,7 +6,6 @@
 #include <QDateTime>
 #include <QVariant>
 
-#include <set>
 #include <string>
 #include <vector>
 
@@ -365,7 +364,7 @@ public:
 		return top_liege->get_primary_title();
 	}
 
-	const std::set<trait *> &get_traits() const
+	const std::vector<trait *> &get_traits() const
 	{
 		return this->traits;
 	}
@@ -374,13 +373,13 @@ public:
 
 	Q_INVOKABLE void add_trait(trait *trait)
 	{
-		this->traits.insert(trait);
+		this->traits.push_back(trait);
 		emit traits_changed();
 	}
 
 	Q_INVOKABLE void remove_trait(trait *trait)
 	{
-		this->traits.erase(trait);
+		this->traits.erase(std::remove(this->traits.begin(), this->traits.end(), trait), this->traits.end());
 		emit traits_changed();
 	}
 
@@ -448,7 +447,7 @@ private:
 	QDateTime death_date;
 	character *liege = nullptr;
 	std::vector<character *> vassals;
-	std::set<trait *> traits;
+	std::vector<trait *> traits;
 	int wealth = 0;
 	std::map<const commodity *, int> stored_commodities; //the amount of each commodity stored by the character
 };
