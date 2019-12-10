@@ -15,6 +15,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         character/character.cpp \
         character/dynasty.cpp \
+        character/trait.cpp \
         culture/culture.cpp \
         culture/culture_base.cpp \
         database/csv_data.cpp \
