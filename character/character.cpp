@@ -55,7 +55,7 @@ character *character::generate(metternich::culture *culture, metternich::religio
 	//generate the character's birth date to be between 60 and 20 years before the current date
 	const QDateTime &current_date = game::get()->get_current_date();
 	character->birth_date = current_date.addDays(random::generate_in_range(-60 * 365, -20 * 365));
-	if (!history::get()->is_loading()) { //if history is loading then this entry's history will already be initialized anyway
+	if (!history::get()->is_loading()) { //if history is loading then this entry's history will already be initialized later on anyway
 		character->initialize_history(); //generates a name and sets the phenotype if none was given
 	}
 	return character;
@@ -122,6 +122,10 @@ void character::initialize_history()
 				this->name = this->get_culture()->generate_male_name();
 			}
 		}
+	}
+
+	if (!this->has_personality_trait()) {
+		this->generate_personality_trait();
 	}
 
 	data_entry_base::initialize_history();
@@ -220,6 +224,33 @@ void character::remove_landed_title(landed_title *title)
 QVariantList character::get_traits_qvariant_list() const
 {
 	return container::to_qvariant_list(this->get_traits());
+}
+
+bool character::has_personality_trait() const
+{
+	for (const trait *trait : this->get_traits()) {
+		if (trait->is_personality()) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void character::generate_personality_trait()
+{
+	std::vector<trait *> potential_traits;
+
+	for (trait *trait : trait::get_personality_traits()) {
+		potential_traits.push_back(trait);
+	}
+
+	if (potential_traits.empty()) {
+		throw std::runtime_error("Could not generate personality trait for character \"" + this->get_identifier_string() + "\".");
+	}
+
+	trait *chosen_trait = potential_traits[random::generate(potential_traits.size())];
+	this->add_trait(chosen_trait);
 }
 
 /**

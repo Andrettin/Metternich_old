@@ -383,6 +383,9 @@ public:
 		emit traits_changed();
 	}
 
+	bool has_personality_trait() const;
+	void generate_personality_trait();
+
 	int get_wealth() const
 	{
 		return this->wealth;
