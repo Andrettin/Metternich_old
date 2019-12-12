@@ -1,9 +1,7 @@
 #pragma once
 
-#include "character/character.h"
 #include "culture/culture.h"
 #include "script/condition/condition.h"
-#include "script/scope_util.h"
 
 #include <type_traits>
 

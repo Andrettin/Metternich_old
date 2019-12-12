@@ -1,5 +1,6 @@
 #include "script/condition/condition.h"
 
+#include "character/character.h"
 #include "database/database.h"
 #include "database/gsml_data.h"
 #include "database/gsml_property.h"
@@ -19,6 +20,7 @@
 #include "script/condition/region_condition.h"
 #include "script/condition/terrain_condition.h"
 #include "script/condition/tier_de_jure_title_condition.h"
+#include "script/condition/trait_condition.h"
 #include "script/condition/world_condition.h"
 #include "util/parse_util.h"
 #include "util/string_util.h"
@@ -35,7 +37,11 @@ std::unique_ptr<condition<T>> condition<T>::from_gsml_property(const gsml_proper
 {
 	const std::string &condition_identifier = property.get_key();
 
-	if constexpr (!std::is_same_v<T, character>) {
+	if constexpr (std::is_same_v<T, character>) {
+		if (condition_identifier == "trait") {
+			return std::make_unique<trait_condition<T>>(property.get_value());
+		}
+	} else {
 		if (condition_identifier == "borders_water") {
 			return std::make_unique<borders_water_condition<T>>(string::to_bool(property.get_value()));
 		} else if (condition_identifier == "de_jure_duchy") {

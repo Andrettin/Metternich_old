@@ -150,6 +150,7 @@ HEADERS += \
     script/condition/region_condition.h \
     script/condition/terrain_condition.h \
     script/condition/tier_de_jure_title_condition.h \
+    script/condition/trait_condition.h \
     script/condition/world_condition.h \
     script/factor_modifier.h \
     script/identifiable_modifier.h \
