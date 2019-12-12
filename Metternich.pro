@@ -142,6 +142,7 @@ HEADERS += \
     script/condition/condition.h \
     script/condition/condition_check.h \
     script/condition/condition_check_base.h \
+    script/condition/culture_condition.h \
     script/condition/has_building_condition.h \
     script/condition/holding_type_condition.h \
     script/condition/not_condition.h \

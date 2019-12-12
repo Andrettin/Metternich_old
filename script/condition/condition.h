@@ -2,6 +2,7 @@
 
 namespace metternich {
 
+class character;
 class gsml_data;
 class gsml_property;
 class holding;
@@ -38,6 +39,7 @@ public:
 	}
 };
 
+extern template class condition<character>;
 extern template class condition<holding>;
 extern template class condition<holding_slot>;
 extern template class condition<population_unit>;
