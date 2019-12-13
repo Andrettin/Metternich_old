@@ -16,7 +16,7 @@ public:
 
 	virtual const std::string &get_identifier() const override
 	{
-		static std::string identifier = "population_growth";
+		static const std::string identifier = "population_growth";
 		return identifier;
 	}
 

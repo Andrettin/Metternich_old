@@ -28,7 +28,7 @@ public:
 
 	virtual const std::string &get_identifier() const override
 	{
-		static std::string identifier = "tier_de_jure_title";
+		static const std::string identifier = "tier_de_jure_title";
 		return identifier;
 	}
 

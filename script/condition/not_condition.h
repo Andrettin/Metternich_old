@@ -35,7 +35,7 @@ public:
 
 	virtual const std::string &get_identifier() const override
 	{
-		static std::string identifier = "not";
+		static const std::string identifier = "not";
 		return identifier;
 	}
 

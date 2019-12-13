@@ -21,7 +21,7 @@ public:
 
 	virtual const std::string &get_identifier() const override
 	{
-		static std::string identifier = "has_building";
+		static const std::string identifier = "has_building";
 		return identifier;
 	}
 

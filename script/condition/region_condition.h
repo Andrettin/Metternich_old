@@ -23,7 +23,7 @@ public:
 
 	virtual const std::string &get_identifier() const override
 	{
-		static std::string identifier = "region";
+		static const std::string identifier = "region";
 		return identifier;
 	}
 

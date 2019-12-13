@@ -21,7 +21,7 @@ public:
 
 	virtual const std::string &get_identifier() const override
 	{
-		static std::string identifier = "holding_type";
+		static const std::string identifier = "holding_type";
 		return identifier;
 	}
 

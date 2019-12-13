@@ -22,7 +22,7 @@ public:
 
 	virtual const std::string &get_identifier() const override
 	{
-		static std::string identifier = "commodity";
+		static const std::string identifier = "commodity";
 		return identifier;
 	}
 

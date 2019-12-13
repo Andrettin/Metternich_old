@@ -20,7 +20,7 @@ public:
 
 	virtual const std::string &get_identifier() const override
 	{
-		static std::string identifier = "trait";
+		static const std::string identifier = "trait";
 		return identifier;
 	}
 

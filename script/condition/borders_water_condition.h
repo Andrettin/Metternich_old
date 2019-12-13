@@ -19,7 +19,7 @@ public:
 
 	virtual const std::string &get_identifier() const override
 	{
-		static std::string identifier = "borders_water";
+		static const std::string identifier = "borders_water";
 		return identifier;
 	}
 
