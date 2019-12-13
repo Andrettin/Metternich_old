@@ -4,6 +4,7 @@
 #include "database/data_type_base.h"
 #include "database/data_type_metadata.h"
 #include "database/gsml_data.h"
+#include "database/gsml_operator.h"
 #include "database/gsml_parser.h"
 
 #include <QApplication>

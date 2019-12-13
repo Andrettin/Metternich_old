@@ -1,11 +1,11 @@
 #pragma once
 
-#include "database/gsml_operator.h"
-
 #include <string>
 #include <vector>
 
 namespace metternich {
+
+enum class gsml_operator : int;
 
 class gsml_property
 {
@@ -29,26 +29,7 @@ public:
 		return this->value;
 	}
 
-	void print(std::ofstream &ofstream, const size_t indentation) const
-	{
-		ofstream << std::string(indentation, '\t') << this->get_key() << " ";
-
-		switch (this->get_operator()) {
-			case gsml_operator::assignment:
-				ofstream << "=";
-				break;
-			case gsml_operator::addition:
-				ofstream << "+=";
-				break;
-			case gsml_operator::subtraction:
-				ofstream << "-=";
-				break;
-			case gsml_operator::none:
-				throw std::runtime_error("Cannot print the GSML \"none\" operator.");
-		}
-
-		ofstream << " " << this->get_value() << "\n";
-	}
+	void print(std::ofstream &ofstream, const size_t indentation) const;
 
 private:
 	std::string key;

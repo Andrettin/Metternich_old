@@ -23,7 +23,12 @@ class gsml_parser;
 class gsml_data
 {
 public:
-	gsml_data(const std::string tag = std::string(), gsml_operator scope_operator = gsml_operator::assignment) : tag(tag), scope_operator(scope_operator) {}
+	gsml_data(const std::string &tag = std::string());
+
+	gsml_data(const std::string &tag, gsml_operator scope_operator)
+		: tag(tag), scope_operator(scope_operator)
+	{
+	}
 
 public:
 	const std::string &get_tag() const
@@ -102,10 +107,7 @@ public:
 		throw std::runtime_error("No property with key \"" + key + "\" found for GSML data.");
 	}
 
-	void add_property(const std::string &key, const std::string &value)
-	{
-		this->properties.emplace_back(key, gsml_operator::assignment, value);
-	}
+	void add_property(const std::string &key, const std::string &value);
 
 	const std::vector<std::string> &get_values() const
 	{
@@ -179,44 +181,7 @@ public:
 		this->print_components(ofstream);
 	}
 
-	void print(std::ofstream &ofstream, const size_t indentation, const bool new_line) const
-	{
-		if (new_line) {
-			ofstream << std::string(indentation, '\t');
-		} else {
-			ofstream << " ";
-		}
-		if (!this->get_tag().empty()) {
-			ofstream << this->get_tag() << " ";
-			switch (this->get_operator()) {
-				case gsml_operator::assignment:
-					ofstream << "=";
-					break;
-				case gsml_operator::addition:
-					ofstream << "+=";
-					break;
-				case gsml_operator::subtraction:
-					ofstream << "-=";
-					break;
-				case gsml_operator::none:
-					throw std::runtime_error("Cannot print the GSML \"none\" operator.");
-			}
-		}
-		ofstream << "{";
-		if (!this->is_minor()) {
-			ofstream << "\n";
-		}
-
-		this->print_components(ofstream, indentation + 1);
-
-		if (!this->is_minor()) {
-			ofstream << std::string(indentation, '\t');
-		}
-		ofstream << "}";
-		if (!this->is_minor()) {
-			ofstream << "\n";
-		}
-	}
+	void print(std::ofstream &ofstream, const size_t indentation, const bool new_line) const;
 
 	void print_components(std::ofstream &ofstream, const size_t indentation = 0) const
 	{

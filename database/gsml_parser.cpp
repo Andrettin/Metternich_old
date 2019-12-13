@@ -8,6 +8,11 @@
 
 namespace metternich {
 
+gsml_parser::gsml_parser(const std::filesystem::path &filepath)
+	: filepath(filepath), property_operator(gsml_operator::none)
+{
+}
+
 /**
 **	@brief	Parse a GSML data file
 **
@@ -210,6 +215,15 @@ void gsml_parser::parse_tokens()
 	}
 
 	this->tokens.clear();
+}
+
+void gsml_parser::reset()
+{
+	this->tokens.clear();
+	this->current_gsml_data = nullptr;
+	this->key.clear();
+	this->property_operator = gsml_operator::none;
+	this->value.clear();
 }
 
 }

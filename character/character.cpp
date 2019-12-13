@@ -4,6 +4,7 @@
 #include "character/trait.h"
 #include "culture/culture.h"
 #include "culture/culture_group.h"
+#include "database/gsml_operator.h"
 #include "database/gsml_property.h"
 #include "game/game.h"
 #include "history/history.h"

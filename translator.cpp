@@ -2,6 +2,7 @@
 
 #include "database/database.h"
 #include "database/gsml_data.h"
+#include "database/gsml_operator.h"
 #include "database/gsml_parser.h"
 #include "util/string_util.h"
 
@@ -57,7 +58,7 @@ void translator::load_locale(const std::string &language)
 
 			for (const gsml_property &property : gsml_data.get_properties()) {
 				if (property.get_operator() != gsml_operator::assignment) {
-					throw std::runtime_error("Only assignment operators are allowed in translation files!");
+					throw std::runtime_error("Only the assignment operator is allowed for translation files.");
 				}
 
 				this->add_translation(property.get_key(), property.get_value());

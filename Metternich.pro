@@ -21,7 +21,9 @@ SOURCES += \
         database/csv_data.cpp \
         database/data_entry.cpp \
         database/database.cpp \
+        database/gsml_data.cpp \
         database/gsml_parser.cpp \
+        database/gsml_property.cpp \
         database/module.cpp \
         defines.cpp \
         economy/commodity.cpp \
