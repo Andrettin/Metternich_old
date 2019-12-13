@@ -54,6 +54,7 @@ SOURCES += \
         religion/religion_group.cpp \
         script/chance_factor.cpp \
         script/condition/condition.cpp \
+        script/effect/effect.cpp \
         script/factor_modifier.cpp \
         script/identifiable_modifier.cpp \
         script/modifier.cpp \
@@ -154,6 +155,8 @@ HEADERS += \
     script/condition/tier_de_jure_title_condition.h \
     script/condition/trait_condition.h \
     script/condition/world_condition.h \
+    script/effect/effect.h \
+    script/effect/traits_effect.h \
     script/factor_modifier.h \
     script/identifiable_modifier.h \
     script/modifier.h \
