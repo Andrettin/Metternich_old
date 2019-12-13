@@ -26,6 +26,7 @@ class data_type : public data_type_base<T>
 {
 public:
 	static constexpr bool history_only = false; //whether the data type is defined in history only
+	static constexpr const char *database_base_folder = "common";
 
 	/**
 	**	@brief	Get an instance of the class by its identifier
@@ -198,13 +199,13 @@ public:
 	/**
 	**	@brief	Parse the database for the data type
 	*/
-	static void parse_database(const std::filesystem::path &base_path)
+	static void parse_database(const std::filesystem::path &data_path)
 	{
 		if (std::string(T::database_folder).empty()) {
 			return;
 		}
 
-		std::filesystem::path database_path(base_path / T::database_folder);
+		std::filesystem::path database_path(data_path / T::database_base_folder / T::database_folder);
 
 		if (!std::filesystem::exists(database_path)) {
 			return;

@@ -15,9 +15,9 @@ defines::defines() : default_game_speed(game_speed::normal)
 /**
 **	@brief	Load the defines
 */
-void defines::load(const std::filesystem::path &base_path)
+void defines::load(const std::filesystem::path &data_path)
 {
-	std::filesystem::path defines_path(base_path / "defines.txt");
+	std::filesystem::path defines_path(data_path / "common" / "defines.txt");
 
 	if (!std::filesystem::exists(defines_path)) {
 		return;

@@ -296,7 +296,7 @@ void database::load()
 		return a->get_database_dependency_count() < b->get_database_dependency_count();
 	});
 
-	for (const std::filesystem::path &path : database::get()->get_common_paths()) {
+	for (const std::filesystem::path &path : database::get()->get_data_paths()) {
 		//parse the files in each data type's folder
 		for (const std::unique_ptr<data_type_metadata> &metadata : this->metadata) {
 			metadata->get_parsing_function()(path);
