@@ -56,6 +56,7 @@ SOURCES += \
         script/condition/condition.cpp \
         script/effect/effect.cpp \
         script/event/event_option.cpp \
+        script/event/scoped_event_base.cpp \
         script/factor_modifier.cpp \
         script/identifiable_modifier.cpp \
         script/modifier.cpp \
@@ -158,7 +159,10 @@ HEADERS += \
     script/condition/world_condition.h \
     script/effect/effect.h \
     script/effect/traits_effect.h \
+    script/event/character_event.h \
+    script/event/event.h \
     script/event/event_option.h \
+    script/event/scoped_event_base.h \
     script/factor_modifier.h \
     script/identifiable_modifier.h \
     script/modifier.h \

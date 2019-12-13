@@ -12,7 +12,6 @@
 #include "landed_title/landed_title.h"
 #include "landed_title/landed_title_tier.h"
 #include "random.h"
-#include "translator.h"
 #include "util/container_util.h"
 #include "util/string_util.h"
 
