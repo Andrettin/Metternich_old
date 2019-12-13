@@ -383,6 +383,11 @@ public:
 		emit traits_changed();
 	}
 
+	bool has_trait(const trait *trait) const
+	{
+		return std::find(this->traits.begin(), this->traits.end(), trait) != this->traits.end();
+	}
+
 	bool has_personality_trait() const;
 	void generate_personality_trait();
 
