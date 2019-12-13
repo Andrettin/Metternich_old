@@ -60,6 +60,7 @@ void factor_modifier<T>::process_gsml_scope(const gsml_data &scope)
 	this->conditions.push_back(std::move(condition));
 }
 
+template class factor_modifier<character>;
 template class factor_modifier<holding_slot>;
 
 }

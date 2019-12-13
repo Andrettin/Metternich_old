@@ -141,6 +141,7 @@ HEADERS += \
     religion/religion.h \
     religion/religion_group.h \
     script/chance_factor.h \
+    script/chance_util.h \
     script/condition/and_condition.h \
     script/condition/borders_water_condition.h \
     script/condition/commodity_condition.h \

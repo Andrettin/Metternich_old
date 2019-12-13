@@ -40,19 +40,4 @@ void commodity::process_gsml_scope(const gsml_data &scope)
 	}
 }
 
-/**
-**	@brief	Calculate the chance that this commodity will be produced by a given settlement holding
-**
-**	@param	holding_slot	The settlement holding slot
-*/
-int commodity::calculate_chance(holding_slot *holding_slot) const
-{
-	if (!this->chance) {
-		return 0;
-	}
-
-	//calculate the chance for the commodity to be generated as the produced one for a holding
-	return this->chance->calculate(holding_slot);
-}
-
 }

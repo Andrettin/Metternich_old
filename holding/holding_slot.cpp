@@ -12,6 +12,7 @@
 #include "random.h"
 #include "religion/religion.h"
 #include "religion/religion_group.h"
+#include "script/chance_util.h"
 #include "translator.h"
 #include "util/container_util.h"
 
@@ -173,32 +174,15 @@ void holding_slot::set_holding(std::unique_ptr<metternich::holding> &&holding)
 */
 void holding_slot::generate_available_commodity()
 {
-	std::map<metternich::commodity *, std::pair<int, int>> commodity_chance_ranges;
-	int total_chance_factor = 0;
+	std::map<metternich::commodity *, const chance_factor<holding_slot> *> commodity_chances;
 	for (metternich::commodity *commodity : commodity::get_all()) {
-		const int commodity_chance = commodity->calculate_chance(this);
-		if (commodity_chance > 0) {
-			commodity_chance_ranges[commodity] = std::pair<int, int>(total_chance_factor, total_chance_factor + commodity_chance);
-			total_chance_factor += commodity_chance;
+		if (commodity->get_chance_factor() != nullptr) {
+			commodity_chances[commodity] = commodity->get_chance_factor();
 		}
 	}
 
-	if (commodity_chance_ranges.empty()) {
-		return;
-	}
-
-	metternich::commodity *chosen_commodity = nullptr;
-
-	const int random_number = random::generate(total_chance_factor);
-	for (const auto &element : commodity_chance_ranges) {
-		metternich::commodity *commodity = element.first;
-		const std::pair<int, int> range = element.second;
-		if (random_number >= range.first && random_number < range.second) {
-			chosen_commodity = commodity;
-		}
-	}
-
-	this->add_available_commodity(chosen_commodity);
+	metternich::commodity *commodity = calculate_chance_list_result(commodity_chances, this);
+	this->add_available_commodity(commodity);
 }
 
 }

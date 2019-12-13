@@ -9,17 +9,16 @@
 
 namespace metternich {
 
-/**
-**	@brief	Constructor
-*/
 template <typename T>
 chance_factor<T>::chance_factor()
 {
 }
 
-/**
-**	@brief	Destructor
-*/
+template <typename T>
+chance_factor<T>::chance_factor(const int factor) : factor(factor)
+{
+}
+
 template <typename T>
 chance_factor<T>::~chance_factor()
 {
@@ -65,6 +64,23 @@ void chance_factor<T>::process_gsml_scope(const gsml_data &scope)
 	}
 }
 
+template <typename T>
+int chance_factor<T>::calculate(const T *scope) const
+{
+	//get the resulting chance factor after taking into account all modifiers
+	int result = this->factor;
+
+	for (const std::unique_ptr<factor_modifier<T>> &modifier : this->modifiers) {
+		if (modifier->check_conditions(scope)) {
+			result *= modifier->get_factor();
+			result /= 100;
+		}
+	}
+
+	return result;
+}
+
+template class chance_factor<character>;
 template class chance_factor<holding_slot>;
 
 }

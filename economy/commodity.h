@@ -70,7 +70,10 @@ public:
 		this->set_icon_path(icon_path.toStdString());
 	}
 
-	int calculate_chance(holding_slot *holding_slot) const;
+	const chance_factor<holding_slot> *get_chance_factor() const
+	{
+		return this->chance.get();
+	}
 
 signals:
 	void icon_path_changed();

@@ -1,14 +1,14 @@
 #pragma once
 
-#include "factor_modifier.h"
-
 #include <memory>
 #include <vector>
 
 namespace metternich {
 
+class character;
 class gsml_data;
 class gsml_property;
+class holding_slot;
 
 template <typename T>
 class factor_modifier;
@@ -21,32 +21,20 @@ class chance_factor
 {
 public:
 	chance_factor();
+	chance_factor(const int factor);
 	~chance_factor();
 
 	void process_gsml_property(const gsml_property &property);
 	void process_gsml_scope(const gsml_data &scope);
 
-	template <typename T>
-	int calculate(const T *scope) const
-	{
-		//get the resulting chance factor after taking into account all modifiers
-		int result = this->factor;
-
-		for (const std::unique_ptr<factor_modifier<T>> &modifier : this->modifiers) {
-			if (modifier->check_conditions(scope)) {
-				result *= modifier->get_factor();
-				result /= 100;
-			}
-		}
-
-		return result;
-	}
+	int calculate(const T *scope) const;
 
 private:
 	int factor = 0; //the base factor for the random chance
 	std::vector<std::unique_ptr<factor_modifier<T>>> modifiers; //modifiers for the chance factor
 };
 
+extern template class chance_factor<character>;
 extern template class chance_factor<holding_slot>;
 
 }

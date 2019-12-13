@@ -52,6 +52,7 @@ private:
 	std::vector<std::unique_ptr<condition<T>>> conditions; //conditions for whether the modifier is to be applied
 };
 
+extern template class factor_modifier<character>;
 extern template class factor_modifier<holding_slot>;
 
 }
