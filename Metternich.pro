@@ -55,6 +55,7 @@ SOURCES += \
         script/chance_factor.cpp \
         script/condition/condition.cpp \
         script/effect/effect.cpp \
+        script/event/event_option.cpp \
         script/factor_modifier.cpp \
         script/identifiable_modifier.cpp \
         script/modifier.cpp \
@@ -157,6 +158,7 @@ HEADERS += \
     script/condition/world_condition.h \
     script/effect/effect.h \
     script/effect/traits_effect.h \
+    script/event/event_option.h \
     script/factor_modifier.h \
     script/identifiable_modifier.h \
     script/modifier.h \
