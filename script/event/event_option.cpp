@@ -1,7 +1,9 @@
 #include "script/event/event_option.h"
 
+#include "database/database.h"
 #include "database/gsml_data.h"
 #include "database/gsml_property.h"
+#include "script/chance_factor.h"
 #include "script/effect/effect.h"
 #include "translator.h"
 
@@ -10,6 +12,8 @@ namespace metternich {
 template <typename T>
 event_option<T>::event_option()
 {
+	//the default AI chance for event options is a simple factor of 1
+	this->ai_chance = std::make_unique<chance_factor<T>>(1);
 }
 
 template <typename T>
@@ -36,7 +40,12 @@ void event_option<T>::process_gsml_property(const gsml_property &property)
 template <typename T>
 void event_option<T>::process_gsml_scope(const gsml_data &scope)
 {
-	if (scope.get_tag() == "effects") {
+	const std::string &tag = scope.get_tag();
+
+	if (tag == "ai_chance") {
+		this->ai_chance = std::make_unique<chance_factor<T>>();
+		database::process_gsml_data(this->ai_chance, scope);
+	} else if (tag == "effects") {
 		for (const gsml_property &property : scope.get_properties()) {
 			this->effects.push_back(effect<T>::from_gsml_property(property));
 		}
