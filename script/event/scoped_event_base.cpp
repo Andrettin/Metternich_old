@@ -1,11 +1,18 @@
 #include "script/event/scoped_event_base.h"
 
+#include "character/character.h"
 #include "database/database.h"
 #include "database/gsml_data.h"
+#include "engine_interface.h"
 #include "random.h"
 #include "script/chance_util.h"
 #include "script/condition/and_condition.h"
+#include "script/event/event_instance.h"
 #include "script/event/event_option.h"
+
+#include <QString>
+
+#include <functional>
 
 namespace metternich {
 
@@ -47,7 +54,24 @@ bool scoped_event_base<T>::check_conditions(const T *scope) const
 template <typename T>
 void scoped_event_base<T>::do_event(T *scope) const
 {
-	this->pick_option(scope);
+	if (scope->is_ai()) {
+		this->pick_option(scope);
+	} else {
+		//add event to the list of events to be shown to the player
+		std::vector<std::unique_ptr<event_option_instance>> option_instances;
+		for (const std::unique_ptr<event_option<T>> &option : this->options) {
+			const event_option<T> *option_ptr = option.get();
+			std::function<void()> option_effects = [option_ptr, scope]() {
+				option_ptr->do_effects(scope);
+			};
+
+			auto option_instance = std::make_unique<event_option_instance>(QString::fromStdString(option->get_name()), option_effects);
+			option_instances.push_back(std::move(option_instance));
+		}
+		
+		auto evt_instance = std::make_unique<event_instance>(std::move(option_instances));
+		engine_interface::get()->add_event_instance(std::move(evt_instance));
+	}
 }
 
 template <typename T>
