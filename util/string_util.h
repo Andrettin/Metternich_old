@@ -46,6 +46,19 @@ inline std::string to_lower(const std::string &str)
 	return result;
 }
 
+inline std::string replace(const std::string &str, const std::string &find, const std::string &replace)
+{
+	std::string result(str);
+
+	size_t pos = 0;
+	while ((pos = result.find(find, pos)) != std::string::npos) {
+		result.replace(pos, find.length(), replace);
+		pos += replace.length();
+	}
+
+	return result;
+}
+
 inline std::string pascal_case_to_snake_case(const std::string &str)
 {
 	if (str.empty()) {
