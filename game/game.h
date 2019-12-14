@@ -54,6 +54,16 @@ public:
 		return this->running;
 	}
 
+	bool is_paused() const
+	{
+		return this->paused;
+	}
+
+	void set_paused(const bool paused)
+	{
+		this->paused = paused;
+	}
+
 	const QDateTime &get_current_date() const
 	{
 		return this->current_date;
@@ -107,6 +117,7 @@ signals:
 private:
 	bool starting = false;
 	bool running = false;
+	bool paused = false;
 	std::atomic<bool> should_stop = false;
 	QDateTime current_date;
 	game_speed speed;

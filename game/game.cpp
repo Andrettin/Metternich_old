@@ -111,6 +111,10 @@ void game::do_tick()
 	//process the orders given by the player
 	this->do_orders();
 
+	if (this->is_paused()) {
+		return;
+	}
+
 	QDateTime old_date = current_date;
 	this->current_date = this->current_date.addDays(1);
 	emit current_date_changed();
