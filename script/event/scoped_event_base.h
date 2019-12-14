@@ -23,6 +23,11 @@ public:
 	virtual ~scoped_event_base();
 
 	void process_gsml_scope(const gsml_data &scope);
+
+	virtual const std::string &get_tag() const = 0;
+	std::string get_title() const;
+	std::string get_description() const;
+
 	bool check_conditions(const T *scope) const;
 	void do_event(T *scope) const;
 	void pick_option(T *scope) const;

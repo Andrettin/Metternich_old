@@ -5,7 +5,8 @@
 
 namespace metternich {
 
-event_instance::event_instance(std::vector<std::unique_ptr<event_option_instance>> &&options) : options(std::move(options))
+event_instance::event_instance(const QString &name, const QString &description, std::vector<std::unique_ptr<event_option_instance>> &&options)
+	: name(name), description(description), options(std::move(options))
 {
 }
 

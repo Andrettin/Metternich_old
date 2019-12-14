@@ -16,15 +16,19 @@ class event_instance : public QObject
 {
 	Q_OBJECT
 	
+	Q_PROPERTY(QString name MEMBER name CONSTANT)
+	Q_PROPERTY(QString description MEMBER description CONSTANT)
 	Q_PROPERTY(QVariantList options READ get_options CONSTANT)
 
 public:
-	event_instance(std::vector<std::unique_ptr<event_option_instance>> &&options);
+	event_instance(const QString &name, const QString &description, std::vector<std::unique_ptr<event_option_instance>> &&options);
 	~event_instance();
 	
 	QVariantList get_options() const;
 	
 private:
+	QString name;
+	QString description;
 	std::vector<std::unique_ptr<event_option_instance>> options;
 };
 

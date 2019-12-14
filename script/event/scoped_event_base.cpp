@@ -9,6 +9,7 @@
 #include "script/condition/and_condition.h"
 #include "script/event/event_instance.h"
 #include "script/event/event_option.h"
+#include "translator.h"
 
 #include <QString>
 
@@ -42,6 +43,18 @@ void scoped_event_base<T>::process_gsml_scope(const gsml_data &scope)
 }
 
 template <typename T>
+std::string scoped_event_base<T>::get_title() const
+{
+	return translator::get()->translate(this->get_tag());
+}
+
+template <typename T>
+std::string scoped_event_base<T>::get_description() const
+{
+	return translator::get()->translate(this->get_tag() + "_desc");
+}
+
+template <typename T>
 bool scoped_event_base<T>::check_conditions(const T *scope) const
 {
 	if (this->conditions == nullptr) {
@@ -69,7 +82,7 @@ void scoped_event_base<T>::do_event(T *scope) const
 			option_instances.push_back(std::move(option_instance));
 		}
 		
-		auto evt_instance = std::make_unique<event_instance>(std::move(option_instances));
+		auto evt_instance = std::make_unique<event_instance>(QString::fromStdString(this->get_title()), QString::fromStdString(this->get_description()), std::move(option_instances));
 		engine_interface::get()->add_event_instance(std::move(evt_instance));
 	}
 }

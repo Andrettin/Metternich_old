@@ -29,6 +29,11 @@ public:
 			data_entry_base::process_gsml_scope(scope);
 		}
 	}
+
+	virtual const std::string &get_tag() const override
+	{
+		return this->get_identifier();
+	}
 };
 
 }
