@@ -3,6 +3,8 @@
 #include "character/character.h"
 #include "database/gsml_operator.h"
 #include "database/gsml_property.h"
+#include "holding/holding.h"
+#include "map/province.h"
 #include "script/effect/traits_effect.h"
 
 namespace metternich {
@@ -45,23 +47,36 @@ void effect<T>::do_effect(T *scope) const
 }
 
 template <typename T>
-std::string effect<T>::get_string() const
+std::string effect<T>::get_string(const T *scope) const
 {
+	std::string scope_name;
+	if constexpr (std::is_same_v<T, character> || std::is_same_v<T, holding>) {
+		scope_name = scope->get_titled_name();
+	} else {
+		scope_name = scope->get_name();
+	}
+
+	std::string str = string::highlight(scope_name) + ": ";
+
 	switch (this->get_operator()) {
 		case gsml_operator::assignment:
-			return this->get_assignment_string();
+			str += this->get_assignment_string();
+			break;
 		case gsml_operator::addition:
-			return this->get_addition_string();
+			str += this->get_addition_string();
+			break;
 		case gsml_operator::subtraction:
-			return this->get_subtraction_string();
+			str += this->get_subtraction_string();
+			break;
 		default:
 			throw std::runtime_error("Invalid operator (\"" + std::to_string(static_cast<int>(this->get_operator())) + "\") for effect.");
 	}
+
+	return str;
 }
 
 template class effect<character>;
 template class effect<holding>;
-template class effect<population_unit>;
 template class effect<province>;
 
 }

@@ -2,6 +2,7 @@
 
 #include "character/trait.h"
 #include "script/effect/effect.h"
+#include "util/string_util.h"
 
 #include <type_traits>
 
@@ -37,12 +38,12 @@ public:
 
 	virtual std::string get_addition_string() const override
 	{
-		return "Add " + this->trait->get_name() + " Trait";
+		return "Add " + string::highlight(this->trait->get_name()) + " Trait";
 	}
 
 	virtual std::string get_subtraction_string() const override
 	{
-		return "Remove " + this->trait->get_name() + " Trait";
+		return "Remove " + string::highlight(this->trait->get_name()) + " Trait";
 	}
 
 private:

@@ -28,14 +28,14 @@ std::string event_option<T>::get_name() const
 }
 
 template <typename T>
-std::string event_option<T>::get_effects_string() const
+std::string event_option<T>::get_effects_string(const T *scope) const
 {
 	std::string effects_string;
 	for (size_t i = 0; i < this->effects.size(); ++i) {
 		if (i > 0) {
 			effects_string += "\n";
 		}
-		effects_string += this->effects[i]->get_string();
+		effects_string += this->effects[i]->get_string(scope);
 	}
 	return effects_string;
 }

@@ -51,7 +51,7 @@ public:
 		return this->effect_operator;
 	}
 
-	std::string get_string() const;
+	std::string get_string(const T *scope) const;
 
 	virtual std::string get_assignment_string() const
 	{
@@ -74,7 +74,6 @@ private:
 
 extern template class effect<character>;
 extern template class effect<holding>;
-extern template class effect<population_unit>;
 extern template class effect<province>;
 
 }
