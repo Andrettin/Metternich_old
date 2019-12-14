@@ -12,6 +12,7 @@
 #include "landed_title/landed_title.h"
 #include "landed_title/landed_title_tier.h"
 #include "random.h"
+#include "script/event/character_event.h"
 #include "util/container_util.h"
 #include "util/string_util.h"
 
@@ -129,6 +130,16 @@ void character::initialize_history()
 	}
 
 	data_entry_base::initialize_history();
+}
+
+void character::do_month()
+{
+	//do character events
+	for (character_event *event : character_event::get_all()) {
+		if (event->check_conditions(this)) {
+			event->do_event(this);
+		}
+	}
 }
 
 void character::set_name(const std::string &name)

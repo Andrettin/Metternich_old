@@ -133,9 +133,7 @@ public:
 		}
 	}
 
-	void do_month()
-	{
-	}
+	void do_month();
 
 	virtual std::string get_name() const override
 	{
