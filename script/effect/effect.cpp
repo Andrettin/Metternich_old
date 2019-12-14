@@ -44,6 +44,21 @@ void effect<T>::do_effect(T *scope) const
 	}
 }
 
+template <typename T>
+std::string effect<T>::get_string() const
+{
+	switch (this->get_operator()) {
+		case gsml_operator::assignment:
+			return this->get_assignment_string();
+		case gsml_operator::addition:
+			return this->get_addition_string();
+		case gsml_operator::subtraction:
+			return this->get_subtraction_string();
+		default:
+			throw std::runtime_error("Invalid operator (\"" + std::to_string(static_cast<int>(this->get_operator())) + "\") for effect.");
+	}
+}
+
 template class effect<character>;
 template class effect<holding>;
 template class effect<population_unit>;

@@ -51,6 +51,23 @@ public:
 		return this->effect_operator;
 	}
 
+	std::string get_string() const;
+
+	virtual std::string get_assignment_string() const
+	{
+		throw std::runtime_error("The assignment operator is not supported for \"" + this->get_identifier() + "\" effects.");
+	}
+
+	virtual std::string get_addition_string() const
+	{
+		throw std::runtime_error("The addition operator is not supported for \"" + this->get_identifier() + "\" effects.");
+	}
+
+	virtual std::string get_subtraction_string() const
+	{
+		throw std::runtime_error("The subtraction operator is not supported for \"" + this->get_identifier() + "\" effects.");
+	}
+
 private:
 	gsml_operator effect_operator;
 };

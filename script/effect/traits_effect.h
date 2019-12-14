@@ -35,6 +35,16 @@ public:
 		scope->remove_trait(this->trait);
 	}
 
+	virtual std::string get_addition_string() const override
+	{
+		return "Add " + this->trait->get_name() + " Trait";
+	}
+
+	virtual std::string get_subtraction_string() const override
+	{
+		return "Remove " + this->trait->get_name() + " Trait";
+	}
+
 private:
 	trait *trait = nullptr;
 };
