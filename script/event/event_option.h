@@ -26,6 +26,7 @@ public:
 	void process_gsml_scope(const gsml_data &scope);
 
 	std::string get_name() const;
+	std::string get_effects_string() const;
 
 	const chance_factor<T> *get_ai_chance_factor() const
 	{

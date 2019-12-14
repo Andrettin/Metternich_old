@@ -28,6 +28,19 @@ std::string event_option<T>::get_name() const
 }
 
 template <typename T>
+std::string event_option<T>::get_effects_string() const
+{
+	std::string effects_string;
+	for (size_t i = 0; i < this->effects.size(); ++i) {
+		if (i > 0) {
+			effects_string += "\n";
+		}
+		effects_string += this->effects[i]->get_string();
+	}
+	return effects_string;
+}
+
+template <typename T>
 void event_option<T>::process_gsml_property(const gsml_property &property)
 {
 	if (property.get_key() == "name") {

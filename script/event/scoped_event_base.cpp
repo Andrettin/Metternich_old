@@ -10,6 +10,7 @@
 #include "script/event/event_instance.h"
 #include "script/event/event_option.h"
 #include "translator.h"
+#include "util/string_util.h"
 
 #include <QString>
 
@@ -78,7 +79,8 @@ void scoped_event_base<T>::do_event(T *scope) const
 				option_ptr->do_effects(scope);
 			};
 
-			auto option_instance = std::make_unique<event_option_instance>(QString::fromStdString(option->get_name()), option_effects);
+			std::string effects_string = string::replace(option->get_effects_string(), "\n", "<br>");
+			auto option_instance = std::make_unique<event_option_instance>(QString::fromStdString(option->get_name()), QString::fromStdString(effects_string), option_effects);
 			option_instances.push_back(std::move(option_instance));
 		}
 		
