@@ -253,6 +253,11 @@ void character::generate_personality_trait()
 	this->add_trait(chosen_trait);
 }
 
+bool character::is_ai() const
+{
+	return game::get()->get_player_character() != this;
+}
+
 /**
 **	@brief	Get whether the character can build in a holding
 **

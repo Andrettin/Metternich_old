@@ -421,6 +421,8 @@ public:
 		return find_iterator->second;
 	}
 
+	bool is_ai() const;
+
 	bool can_build_in_holding(const holding *holding);
 	Q_INVOKABLE bool can_build_in_holding(const QVariant &holding_variant);
 
