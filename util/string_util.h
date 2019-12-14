@@ -144,4 +144,9 @@ inline std::vector<std::string> get_suffix_combinations(const std::vector<std::v
 	return suffix_combinations;
 }
 
+inline std::string highlight(const std::string &str)
+{
+	return "<font color=\"gold\">" + str + "</font>";
+}
+
 }
