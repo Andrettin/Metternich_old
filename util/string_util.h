@@ -59,6 +59,19 @@ inline std::string replace(const std::string &str, const std::string &find, cons
 	return result;
 }
 
+inline int get_substring_count(const std::string &str, const std::string &find)
+{
+	int count = 0;
+
+	size_t pos = 0;
+	while ((pos = str.find(find, pos)) != std::string::npos) {
+		count++;
+		pos += find.size();
+	}
+
+	return count;
+}
+
 inline std::string pascal_case_to_snake_case(const std::string &str)
 {
 	if (str.empty()) {
