@@ -104,8 +104,8 @@ QDateTime history::string_to_date(const std::string &date_str)
 	std::vector<std::string> date_string_list = string::split(date_str, '.');
 
 	int years = 0;
-	int months = 0;
-	int days = 0;
+	int months = 1;
+	int days = 1;
 	int hours = 12;
 
 	if (date_string_list.size() >= 1) {
@@ -127,7 +127,7 @@ QDateTime history::string_to_date(const std::string &date_str)
 	QDateTime date(QDate(years, months, days), QTime(hours, 0), Qt::UTC);
 
 	if (!date.isValid()) {
-		throw std::runtime_error("Date \"" + date_str + "\" is not a valid date!");
+		throw std::runtime_error("Date \"" + date_str + "\" is not a valid date.");
 	}
 
 	return date;
