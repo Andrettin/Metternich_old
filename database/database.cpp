@@ -187,25 +187,7 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 			throw std::runtime_error("Only the assignment operator is available for object reference properties.");
 		}
 
-		if (property.get_key() == "landed_title" || property.get_key() == "barony" || property.get_key() == "county" || property.get_key() == "duchy" || property.get_key() == "kingdom" || property.get_key() == "empire" || property.get_key() == "holder_title" || property.get_key() == "liege_title" || property.get_key() == "de_jure_liege_title") {
-			new_property_value = QVariant::fromValue(landed_title::get(property.get_value()));
-		} else if (property.get_key() == "terrain") {
-			new_property_value = QVariant::fromValue(terrain_type::get(property.get_value()));
-		} else if (property.get_key() == "culture") {
-			new_property_value = QVariant::fromValue(culture::get(property.get_value()));
-		} else if (property.get_key() == "culture_group") {
-			new_property_value = QVariant::fromValue(culture_group::get(property.get_value()));
-		} else if (property.get_key() == "religion") {
-			new_property_value = QVariant::fromValue(religion::get(property.get_value()));
-		} else if (property.get_key() == "dynasty") {
-			new_property_value = QVariant::fromValue(dynasty::get(property.get_value()));
-		} else if (property.get_key() == "character" || property.get_key() == "holder" || property.get_key() == "father" || property.get_key() == "mother" || property.get_key() == "spouse" || property.get_key() == "liege" || property.get_key() == "employer") {
-			new_property_value = QVariant::fromValue(character::get(std::stoi(property.get_value())));
-		} else if (property.get_key() == "commodity" || property.get_key() == "output_commodity") {
-			new_property_value = QVariant::fromValue(commodity::get(property.get_value()));
-		} else if (property.get_key() == "employment_type") {
-			new_property_value = QVariant::fromValue(employment_type::get(property.get_value()));
-		} else if (property.get_key() == "group") {
+		if (property.get_key() == "group") {
 			if (class_name == "metternich::law") {
 				new_property_value = QVariant::fromValue(law_group::get_or_add(property.get_value()));
 			} else {
@@ -213,6 +195,18 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 			}
 		} else if (property_class_name == "metternich::calendar*") {
 			new_property_value = QVariant::fromValue(calendar::get(property.get_value()));
+		} else if (property_class_name == "metternich::character*") {
+			new_property_value = QVariant::fromValue(character::get(std::stoi(property.get_value())));
+		} else if (property_class_name == "metternich::commodity*") {
+			new_property_value = QVariant::fromValue(commodity::get(property.get_value()));
+		} else if (property_class_name == "metternich::culture*") {
+			new_property_value = QVariant::fromValue(culture::get(property.get_value()));
+		} else if (property_class_name == "metternich::culture_group*") {
+			new_property_value = QVariant::fromValue(culture_group::get(property.get_value()));
+		} else if (property_class_name == "metternich::dynasty*") {
+			new_property_value = QVariant::fromValue(dynasty::get(property.get_value()));
+		} else if (property_class_name == "metternich::employment_type*") {
+			new_property_value = QVariant::fromValue(employment_type::get(property.get_value()));
 		} else if (property_class_name == "metternich::holding*") {
 			const holding_slot *holding_slot = holding_slot::get(property.get_value());
 			holding *holding = holding_slot->get_holding();
@@ -226,6 +220,8 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 			new_property_value = QVariant::fromValue(string_to_holding_slot_type(property.get_value()));
 		} else if (property_class_name == "metternich::holding_type*") {
 			new_property_value = QVariant::fromValue(holding_type::get(property.get_value()));
+		} else if (property_class_name == "metternich::landed_title*") {
+			new_property_value = QVariant::fromValue(landed_title::get(property.get_value()));
 		} else if (property_class_name == "metternich::law*") {
 			new_property_value = QVariant::fromValue(law::get(property.get_value()));
 		} else if (property_class_name == "metternich::module*") {
@@ -240,10 +236,14 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 			new_property_value = QVariant::fromValue(province_profile::get(property.get_value()));
 		} else if (property_class_name == "metternich::region*") {
 			new_property_value = QVariant::fromValue(region::get(property.get_value()));
+		} else if (property_class_name == "metternich::religion*") {
+			new_property_value = QVariant::fromValue(religion::get(property.get_value()));
 		} else if (property_class_name == "metternich::religion_group*") {
 			new_property_value = QVariant::fromValue(religion_group::get(property.get_value()));
 		} else if (property_class_name == "metternich::species*") {
 			new_property_value = QVariant::fromValue(species::get(property.get_value()));
+		} else if (property_class_name == "metternich::terrain_type*") {
+			new_property_value = QVariant::fromValue(terrain_type::get(property.get_value()));
 		} else if (property_class_name == "metternich::timeline*") {
 			new_property_value = QVariant::fromValue(timeline::get(property.get_value()));
 		} else if (property_class_name == "metternich::trait*") {

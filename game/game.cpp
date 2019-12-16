@@ -41,7 +41,7 @@ void game::start(const timeline *timeline, const QDateTime &start_date)
 	this->generate_missing_title_holders();
 	this->purge_superfluous_characters();
 
-	this->set_player_character(character::get(defines::get()->get_player_character_id()));
+	this->set_player_character(defines::get()->get_player_character_title()->get_holder());
 
 	this->starting = false;
 	this->running = true;
