@@ -9,23 +9,16 @@
 #include "landed_title/landed_title.h"
 #include "map/province.h"
 #include "script/condition/condition_check_base.h"
+#include "species/clade.h"
 
 #include <chrono>
 
 namespace metternich {
 
-/**
-**	@brief	Constructor
-*/
 game::game() : speed(game_speed::normal)
 {
 }
 
-/**
-**	@brief	Start the game
-**
-**	@param	start_date	The game's start date
-*/
 void game::start(const timeline *timeline, const QDateTime &start_date)
 {
 	this->starting = true;
@@ -41,7 +34,13 @@ void game::start(const timeline *timeline, const QDateTime &start_date)
 	this->generate_missing_title_holders();
 	this->purge_superfluous_characters();
 
-	this->set_player_character(defines::get()->get_player_character_title()->get_holder());
+	if (defines::get()->get_player_character_title()->get_holder() != nullptr) {
+		this->set_player_character(defines::get()->get_player_character_title()->get_holder());
+	} else if (defines::get()->get_player_clade()->is_alive()) {
+		this->set_player_clade(defines::get()->get_player_clade());
+	} else {
+		throw std::runtime_error("No valid player character or clade.");
+	}
 
 	this->starting = false;
 	this->running = true;

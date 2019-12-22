@@ -7,6 +7,7 @@
 
 namespace metternich {
 
+class province;
 class species;
 
 class clade : public data_entry, public data_type<clade>
@@ -34,8 +35,21 @@ public:
 		this->species.erase(species);
 	}
 
+	const std::set<province *> &get_provinces() const
+	{
+		return this->provinces;
+	}
+
+	bool is_alive() const
+	{
+		return !this->get_provinces().empty();
+	}
+
+	bool is_ai() const;
+
 private:
 	std::set<species *> species;
+	std::set<province *> provinces; //provinces owned by the clade
 };
 
 }

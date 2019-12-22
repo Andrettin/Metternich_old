@@ -63,6 +63,7 @@ SOURCES += \
         script/modifier.cpp \
         script/modifier_base.cpp \
         script/modifier_effect/modifier_effect.cpp \
+        species/clade.cpp \
         species/species.cpp \
         species/wildlife_unit.cpp \
         third_party/maskedmousearea/maskedmousearea.cpp \

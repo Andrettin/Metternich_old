@@ -14,6 +14,7 @@
 namespace metternich {
 
 class character;
+class clade;
 class timeline;
 enum class game_speed : int;
 
@@ -28,6 +29,7 @@ class game : public QObject, public singleton<game>
 	Q_PROPERTY(QDateTime current_date READ get_current_date NOTIFY current_date_changed)
 	Q_PROPERTY(QString current_date_string READ get_current_date_string NOTIFY current_date_changed)
 	Q_PROPERTY(metternich::character* player_character READ get_player_character NOTIFY player_character_changed)
+	Q_PROPERTY(metternich::clade* player_clade READ get_player_clade NOTIFY player_clade_changed)
 
 public:
 	game();
@@ -90,6 +92,21 @@ public:
 		emit player_character_changed();
 	}
 
+	clade *get_player_clade() const
+	{
+		return this->player_clade;
+	}
+
+	void set_player_clade(clade *clade)
+	{
+		if (this->player_clade == clade) {
+			return;
+		}
+
+		this->player_clade = clade;
+		emit player_clade_changed();
+	}
+
 	void post_order(const std::function<void()> &function)
 	{
 		std::unique_lock<std::shared_mutex> lock(this->mutex);
@@ -113,6 +130,7 @@ signals:
 	void running_changed();
 	void current_date_changed();
 	void player_character_changed();
+	void player_clade_changed();
 
 private:
 	bool starting = false;
@@ -122,6 +140,7 @@ private:
 	QDateTime current_date;
 	game_speed speed;
 	character *player_character = nullptr;
+	clade *player_clade = nullptr;
 	std::queue<std::function<void()>> orders; //orders given by the player, received from the UI thread
 	mutable std::shared_mutex mutex;
 };
