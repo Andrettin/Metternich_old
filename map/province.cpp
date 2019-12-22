@@ -24,6 +24,7 @@
 #include "religion/religion.h"
 #include "religion/religion_group.h"
 #include "script/modifier.h"
+#include "species/wildlife_unit.h"
 #include "translator.h"
 #include "util/container_util.h"
 #include "util/location_util.h"
@@ -1248,6 +1249,51 @@ QVariantList province::get_palace_holding_slots_qvariant_list() const
 void province::add_population_unit(std::unique_ptr<population_unit> &&population_unit)
 {
 	this->population_units.push_back(std::move(population_unit));
+}
+
+void province::add_wildlife_unit(std::unique_ptr<wildlife_unit> &&wildlife_unit)
+{
+	this->wildlife_units.push_back(std::move(wildlife_unit));
+	emit wildlife_units_changed();
+}
+
+QVariantList province::get_wildlife_units_qvariant_list() const
+{
+	QVariantList list;
+
+	for (const std::unique_ptr<wildlife_unit> &wildlife_unit : this->get_wildlife_units()) {
+		list.append(QVariant::fromValue(wildlife_unit.get()));
+	}
+
+	return list;
+}
+
+void province::sort_wildlife_units()
+{
+	std::sort(this->wildlife_units.begin(), this->wildlife_units.end(), [](const std::unique_ptr<wildlife_unit> &a, const std::unique_ptr<wildlife_unit> &b) {
+		//give priority to population units with greater size, so that they will be displayed first
+		return a->get_size() > b->get_size();
+	});
+
+	emit wildlife_units_changed();
+}
+
+void province::remove_empty_wildlife_units()
+{
+	bool removed_pop_unit = false;
+	for (size_t i = 0; i < this->wildlife_units.size();) {
+		const std::unique_ptr<wildlife_unit> &wildlife_unit = this->wildlife_units[i];
+		if (wildlife_unit->get_size() == 0) {
+			this->wildlife_units.erase(this->wildlife_units.begin() + static_cast<int>(i));
+			removed_pop_unit = true;
+		} else {
+			++i;
+		}
+	}
+
+	if (removed_pop_unit) {
+		emit wildlife_units_changed();
+	}
 }
 
 /**

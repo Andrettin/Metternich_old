@@ -64,6 +64,7 @@ SOURCES += \
         script/modifier_base.cpp \
         script/modifier_effect/modifier_effect.cpp \
         species/species.cpp \
+        species/wildlife_unit.cpp \
         third_party/maskedmousearea/maskedmousearea.cpp \
         translator.cpp \
         util/image_util.cpp
@@ -139,6 +140,7 @@ HEADERS += \
     politics/law_group.h \
     population/population_type.h \
     population/population_unit.h \
+    population/population_unit_base.h \
     random.h \
     religion/religion.h \
     religion/religion_group.h \
@@ -179,6 +181,7 @@ HEADERS += \
     singleton.h \
     species/clade.h \
     species/species.h \
+    species/wildlife_unit.h \
     third_party/maskedmousearea/maskedmousearea.h \
     translator.h \
     type_traits.h \

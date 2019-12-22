@@ -32,6 +32,7 @@ class population_unit;
 class region;
 class religion;
 class terrain_type;
+class wildlife_unit;
 class world;
 enum class map_mode : int;
 
@@ -55,6 +56,7 @@ class province : public data_entry, public data_type<province>
 	Q_PROPERTY(metternich::culture* culture READ get_culture WRITE set_culture NOTIFY culture_changed)
 	Q_PROPERTY(metternich::religion* religion READ get_religion WRITE set_religion NOTIFY religion_changed)
 	Q_PROPERTY(int population READ get_population WRITE set_population NOTIFY population_changed)
+	Q_PROPERTY(QVariantList wildlife_units READ get_wildlife_units_qvariant_list NOTIFY wildlife_units_changed)
 	Q_PROPERTY(QVariantList settlement_holding_slots READ get_settlement_holding_slots_qvariant_list NOTIFY settlement_holding_slots_changed)
 	Q_PROPERTY(QVariantList settlement_holdings READ get_settlement_holdings_qvariant_list NOTIFY settlement_holdings_changed)
 	Q_PROPERTY(metternich::holding_slot* capital_holding_slot READ get_capital_holding_slot WRITE set_capital_holding_slot NOTIFY capital_holding_slot_changed)
@@ -350,6 +352,16 @@ public:
 	Q_INVOKABLE QVariantList get_population_per_culture_qvariant_list() const;
 	Q_INVOKABLE QVariantList get_population_per_religion_qvariant_list() const;
 
+	const std::vector<std::unique_ptr<wildlife_unit>> &get_wildlife_units() const
+	{
+		return this->wildlife_units;
+	}
+
+	void add_wildlife_unit(std::unique_ptr<wildlife_unit> &&wildlife_unit);
+	QVariantList get_wildlife_units_qvariant_list() const;
+	void sort_wildlife_units();
+	void remove_empty_wildlife_units();
+
 	const std::vector<QGeoPolygon> &get_geopolygons() const
 	{
 		return this->geopolygons;
@@ -403,6 +415,7 @@ signals:
 	void religion_changed();
 	void population_changed();
 	void population_groups_changed();
+	void wildlife_units_changed();
 	void settlement_holding_slots_changed();
 	void settlement_holdings_changed();
 	void capital_holding_slot_changed();
@@ -435,6 +448,7 @@ private:
 	std::map<population_type *, int> population_per_type; //the population for each population type
 	std::map<metternich::culture *, int> population_per_culture; //the population for each culture
 	std::map<metternich::religion *, int> population_per_religion; //the population for each religion
+	std::vector<std::unique_ptr<wildlife_unit>> wildlife_units; //wildlife units set for this province in history
 	std::vector<QGeoPolygon> geopolygons;
 	std::vector<QGeoPath> geopaths;
 	bool inner_river = false; //whether the province has a minor river flowing through it

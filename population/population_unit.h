@@ -1,9 +1,7 @@
 #pragma once
 
-#include "database/data_entry.h"
+#include "population/population_unit_base.h"
 #include "database/simple_data_type.h"
-
-#include <QObject>
 
 #include <set>
 
@@ -18,7 +16,7 @@ class province;
 class region;
 class religion;
 
-class population_unit : public data_entry_base, public simple_data_type<population_unit>
+class population_unit : public population_unit_base, public simple_data_type<population_unit>
 {
 	Q_OBJECT
 
@@ -26,13 +24,8 @@ class population_unit : public data_entry_base, public simple_data_type<populati
 	Q_PROPERTY(metternich::culture* culture READ get_culture WRITE set_culture NOTIFY culture_changed)
 	Q_PROPERTY(metternich::religion* religion READ get_religion WRITE set_religion NOTIFY religion_changed)
 	Q_PROPERTY(metternich::phenotype* phenotype READ get_phenotype WRITE set_phenotype NOTIFY phenotype_changed)
-	Q_PROPERTY(int size READ get_size WRITE set_size NOTIFY size_changed)
 	Q_PROPERTY(metternich::holding* holding READ get_holding WRITE set_holding NOTIFY holding_changed)
-	Q_PROPERTY(metternich::province* province READ get_province WRITE set_province NOTIFY province_changed)
-	Q_PROPERTY(metternich::region* region READ get_region WRITE set_region NOTIFY region_changed)
 	Q_PROPERTY(int wealth READ get_wealth NOTIFY wealth_changed)
-	Q_PROPERTY(QString icon_path READ get_icon_path_qstring NOTIFY icon_path_changed)
-	Q_PROPERTY(bool discount_existing READ discounts_existing WRITE set_discount_existing NOTIFY discount_existing_changed)
 	Q_PROPERTY(bool discount_any_type READ discounts_any_type WRITE set_discount_any_type NOTIFY discount_types_changed)
 	Q_PROPERTY(QVariantList discount_types READ get_discount_types_qvariant_list NOTIFY discount_types_changed)
 
@@ -106,17 +99,7 @@ public:
 
 	void mix_with(population_unit *other_population_unit);
 
-	int get_size() const
-	{
-		return this->size;
-	}
-
-	void set_size(const int size);
-
-	void change_size(const int change)
-	{
-		this->set_size(this->get_size() + change);
-	}
+	virtual void set_size(const int size) override;
 
 	metternich::holding *get_holding() const
 	{
@@ -125,55 +108,20 @@ public:
 
 	void set_holding(holding *holding);
 
-	metternich::province *get_province() const
-	{
-		return this->province;
-	}
-
-	void set_province(province *province)
-	{
-		if (province == this->get_province()) {
-			return;
-		}
-
-		this->province = province;
-		emit province_changed();
-	}
-
-	metternich::region *get_region() const
-	{
-		return this->region;
-	}
-
-	void set_region(region *region)
-	{
-		if (region == this->get_region()) {
-			return;
-		}
-
-		this->region = region;
-		emit region_changed();
-	}
-
-	bool discounts_existing() const
-	{
-		return this->discount_existing;
-	}
-
-	void set_discount_existing(const bool discount_existing)
+	virtual void set_discount_existing(const bool discount_existing) override
 	{
 		if (discount_existing == this->discounts_existing()) {
 			return;
 		}
 
-		this->discount_existing = discount_existing;
 		if (discount_existing) {
 			this->discount_types.insert(this->get_type()); //this population unit's type is implicitly added to the discount types if discount_existing is set to true
 		} else {
 			//if is being set to false, set the discount_any_type to false as well, and clear the discount types, as both are no longer applicable
 			this->discount_types.clear();
 		}
-		emit discount_existing_changed();
+
+		population_unit_base::set_discount_existing(discount_existing);
 	}
 
 	bool discounts_any_type() const;
@@ -255,37 +203,23 @@ public:
 		this->set_wealth(this->get_wealth() + change);
 	}
 
-	const std::filesystem::path &get_icon_path() const;
-
-	QString get_icon_path_qstring() const
-	{
-		return "file:///" + QString::fromStdString(this->get_icon_path().string());
-	}
+	virtual const std::filesystem::path &get_icon_path() const override;
 
 signals:
 	void type_changed();
 	void culture_changed();
 	void religion_changed();
 	void phenotype_changed();
-	void size_changed();
 	void holding_changed();
-	void province_changed();
-	void region_changed();
-	void discount_existing_changed();
 	void discount_types_changed();
 	void wealth_changed();
-	void icon_path_changed();
 
 private:
 	population_type *type = nullptr;
 	metternich::culture *culture = nullptr;
 	metternich::religion *religion = nullptr;
 	metternich::phenotype *phenotype = nullptr;
-	int size = 0; //the size of the population unit, in number of individuals
 	metternich::holding *holding = nullptr; //the settlement holding where this population unit lives
-	metternich::province *province = nullptr; //the province where this population unit lives; used only during initialization to generate population units in settlements in the province
-	metternich::region *region = nullptr; //the region where this population unit lives; used only during initialization to generate population units in settlements in the region
-	bool discount_existing = false; //whether to discount the size of existing population units (in this population unit's holding, province or region) of the types given in DiscountTypes from that of this one
 	bool discount_any_type = false; //whether to discount the size of any existing population units from that of this one
 	std::set<population_type *> discount_types; //the sizes of population units belonging to these types will be discounted from that of this population unit
 	std::set<employment *> employments;

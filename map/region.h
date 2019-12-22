@@ -15,6 +15,7 @@ class holding_slot;
 class landed_title;
 class population_unit;
 class province;
+class wildlife_unit;
 
 class region : public data_entry, public data_type<region>
 {
@@ -114,6 +115,13 @@ public:
 
 	void add_population_unit(std::unique_ptr<population_unit> &&population_unit);
 
+	const std::vector<std::unique_ptr<wildlife_unit>> &get_wildlife_units() const
+	{
+		return this->wildlife_units;
+	}
+
+	void add_wildlife_unit(std::unique_ptr<wildlife_unit> &&wildlife_unit);
+
 signals:
 	void provinces_changed();
 
@@ -123,6 +131,7 @@ private:
 	std::set<region *> subregions; //subregions of this region
 	std::set<region *> superregions; //regions for which this region is a subregion
 	std::vector<std::unique_ptr<population_unit>> population_units; //population units set for this region in history, used during initialization to generate population units in the region's settlements
+	std::vector<std::unique_ptr<wildlife_unit>> wildlife_units; //wildlife units set for this region in history, used during initialization to generate wildlife units in the region's provinces
 };
 
 }

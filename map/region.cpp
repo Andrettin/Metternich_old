@@ -5,6 +5,7 @@
 #include "landed_title/landed_title.h"
 #include "map/province.h"
 #include "population/population_unit.h"
+#include "species/wildlife_unit.h"
 #include "util/container_util.h"
 
 namespace metternich {
@@ -43,6 +44,7 @@ region::~region()
 void region::initialize_history()
 {
 	this->population_units.clear();
+	this->wildlife_units.clear();
 
 	data_entry_base::initialize_history();
 }
@@ -111,6 +113,11 @@ QVariantList region::get_holdings_qvariant_list() const
 void region::add_population_unit(std::unique_ptr<population_unit> &&population_unit)
 {
 	this->population_units.push_back(std::move(population_unit));
+}
+
+void region::add_wildlife_unit(std::unique_ptr<wildlife_unit> &&wildlife_unit)
+{
+	this->wildlife_units.push_back(std::move(wildlife_unit));
 }
 
 }

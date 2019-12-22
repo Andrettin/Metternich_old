@@ -10,6 +10,7 @@
 #include "map/province_profile.h"
 #include "map/region.h"
 #include "population/population_unit.h"
+#include "species/wildlife_unit.h"
 #include "util/string_util.h"
 
 namespace metternich {
@@ -77,7 +78,7 @@ void history::generate_population_units()
 	});
 
 	for (population_unit *population_unit : base_population_units) {
-		//subtract the size of other population units for population units that have DiscountExisting enabled
+		//subtract the size of other population units for population units that have discount_existing enabled
 		if (population_unit->discounts_existing()) {
 			population_unit->subtract_existing_sizes();
 		}
@@ -95,6 +96,58 @@ void history::generate_population_units()
 	for (population_unit *population_unit : base_population_units) {
 		if (population_unit->discounts_existing()) {
 			population_unit->set_discount_existing(false);
+		}
+	}
+}
+
+void history::generate_wildlife_units()
+{
+	std::vector<wildlife_unit *> base_wildlife_units;
+
+	//add wildlife units with discount existing enabled to the vector of wildlife units used for generation (province-level population units with that enabled are not used for generation per se, but generated wildlife units may still be discounted from their size), as well as any wildlife units in regions
+	for (province *province : province::get_all()) {
+		for (const std::unique_ptr<wildlife_unit> &wildlife_unit : province->get_wildlife_units()) {
+			if (wildlife_unit->discounts_existing()) {
+				base_wildlife_units.push_back(wildlife_unit.get());
+			}
+		}
+	}
+
+	for (region *region : region::get_all()) {
+		for (const std::unique_ptr<wildlife_unit> &wildlife_unit : region->get_wildlife_units()) {
+			base_wildlife_units.push_back(wildlife_unit.get());
+		}
+	}
+
+	//sort regions so that ones with less provinces are applied first
+	std::sort(base_wildlife_units.begin(), base_wildlife_units.end(), [](wildlife_unit *a, wildlife_unit *b) {
+		//give priority to population units located in provinces, then to smaller regions
+		if ((a->get_province() != nullptr) != (b->get_province() != nullptr)) {
+			return a->get_province() != nullptr;
+		} else if (a->get_region() != b->get_region()) {
+			return a->get_region()->get_provinces().size() < b->get_region()->get_provinces().size();
+		}
+
+		return a->get_size() < b->get_size();
+	});
+
+	for (wildlife_unit *wildlife_unit : base_wildlife_units) {
+		//subtract the size of other wildlife units for wildlife units that have discount_existing enabled
+		if (wildlife_unit->discounts_existing()) {
+			wildlife_unit->subtract_existing_sizes();
+		}
+
+		//distribute region wildlife units to the provinces located in them
+		if (wildlife_unit->get_province() == nullptr) {
+			if (wildlife_unit->get_region() != nullptr) {
+				wildlife_unit->distribute_to_provinces(wildlife_unit->get_region()->get_provinces());
+			}
+		}
+	}
+
+	for (wildlife_unit *wildlife_unit : base_wildlife_units) {
+		if (wildlife_unit->discounts_existing()) {
+			wildlife_unit->set_discount_existing(false);
 		}
 	}
 }
@@ -148,6 +201,7 @@ void history::load()
 	character::parse_history_database();
 	landed_title::parse_history_database();
 	population_unit::parse_history_database();
+	wildlife_unit::parse_history_database();
 
 	character::process_history_database(true);
 
@@ -157,10 +211,12 @@ void history::load()
 	character::process_history_database(false);
 	landed_title::process_history_database(false);
 
-	//process after the province history, so that holdings will have been created
+	//process population units after the province history, so that holdings will have been created
 	population_unit::process_history_database();
+	wildlife_unit::process_history_database();
 
 	history::generate_population_units();
+	history::generate_wildlife_units();
 
 	database::get()->initialize_history();
 

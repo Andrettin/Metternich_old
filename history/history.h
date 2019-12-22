@@ -16,6 +16,7 @@ class history : public singleton<history>
 {
 public:
 	static void generate_population_units();
+	static void generate_wildlife_units();
 
 	static QDateTime string_to_date(const std::string &date_str);
 

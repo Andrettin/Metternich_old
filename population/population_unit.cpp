@@ -31,7 +31,7 @@ void population_unit::process_history_database()
 	//simple data types are only loaded in history, instanced directly based on their GSML data
 	for (const gsml_data &data : population_unit::gsml_history_data_to_process) {
 		for (const gsml_data &data_entry : data.get_children()) {
-			const std::string type_identifier = data_entry.get_tag();
+			const std::string &type_identifier = data_entry.get_tag();
 			population_type *type = population_type::get(type_identifier);
 			auto population_unit = std::make_unique<metternich::population_unit>(type);
 			population_unit->moveToThread(QApplication::instance()->thread());
@@ -210,11 +210,6 @@ void population_unit::mix_with(population_unit *other_population_unit)
 	other_population_unit->change_size(-size);
 }
 
-/**
-**	@brief	Set the population unit's size
-**
-**	@param	size	The size
-*/
 void population_unit::set_size(const int size)
 {
 	if (size == this->get_size()) {
@@ -222,8 +217,7 @@ void population_unit::set_size(const int size)
 	}
 
 	const int old_size = this->get_size();
-	this->size = std::max(size, 0);
-	emit size_changed();
+	population_unit_base::set_size(size);
 
 	const int size_change = this->get_size() - old_size;
 
@@ -332,7 +326,7 @@ void population_unit::subtract_existing_sizes()
 void population_unit::subtract_existing_sizes_in_holding(const metternich::holding *holding)
 {
 	for (const std::unique_ptr<population_unit> &population_unit : holding->get_population_units()) {
-		if (&*population_unit == &*this) {
+		if (population_unit.get() == this) {
 			continue;
 		}
 
@@ -491,7 +485,7 @@ void population_unit::seek_employment()
 */
 const std::filesystem::path &population_unit::get_icon_path() const
 {
-	std::string base_tag = this->get_type()->get_icon_tag();
+	const std::string &base_tag = this->get_type()->get_icon_tag();
 
 	const std::filesystem::path &icon_path = database::get()->get_tagged_icon_path(base_tag, this->get_tag_suffix_list_with_fallbacks(), "_small");
 	return icon_path;
