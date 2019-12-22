@@ -263,16 +263,56 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 	return new_property_value;
 }
 
-/**
-**	@brief	Constructor
-*/
+void database::process_gsml_scope_for_object(QObject *object, const gsml_data &scope)
+{
+	const QMetaObject *meta_object = object->metaObject();
+	const std::string class_name = meta_object->className();
+	const int property_count = meta_object->propertyCount();
+	for (int i = 0; i < property_count; ++i) {
+		QMetaProperty meta_property = meta_object->property(i);
+		const char *property_name = meta_property.name();
+
+		if (property_name != scope.get_tag()) {
+			continue;
+		}
+
+		QVariant new_property_value = database::process_gsml_scope_value(scope, meta_property);
+		const bool success = object->setProperty(property_name, new_property_value);
+		if (!success) {
+			throw std::runtime_error("Failed to set value for scope property \"" + std::string(property_name) + "\".");
+		}
+
+		return;
+	}
+
+	throw std::runtime_error("Invalid " + std::string(meta_object->className()) + " scope property: \"" + scope.get_tag() + "\".");
+}
+
+QVariant database::process_gsml_scope_value(const gsml_data &scope, const QMetaProperty &meta_property)
+{
+	const std::string class_name = meta_property.enclosingMetaObject()->className();
+	const char *property_name = meta_property.name();
+	const std::string property_class_name = meta_property.typeName();
+	const QVariant::Type property_type = meta_property.type();
+
+	QVariant new_property_value;
+	if (property_type == QVariant::Color) {
+		if (scope.get_operator() != gsml_operator::assignment) {
+			throw std::runtime_error("Only the assignment operator is available for color properties.");
+		}
+
+		new_property_value = scope.to_color();
+	} else {
+		throw std::runtime_error("Invalid type for scope property \"" + std::string(property_name) + "\": \"" + std::string(meta_property.typeName()) + "\".");
+	}
+
+	return new_property_value;
+}
+
 database::database()
 {
 }
 
-/**
-**	@brief	Destructor
-*/
 database::~database()
 {
 }

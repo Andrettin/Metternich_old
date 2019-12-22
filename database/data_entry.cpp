@@ -26,13 +26,9 @@ void data_entry_base::process_gsml_property(const gsml_property &property)
 
 void data_entry_base::process_gsml_scope(const gsml_data &scope)
 {
-	const QMetaObject *meta_object = this->metaObject();
-	throw std::runtime_error("Invalid \"" + string::pascal_case_to_snake_case(meta_object->className()) + "\" field: \"" + scope.get_tag() + "\".");
+	database::process_gsml_scope_for_object(this, scope);
 }
 
-/**
-**	@brief	Process history for the data entry
-*/
 void data_entry_base::process_history(const gsml_data &data)
 {
 	for (const gsml_property &property : data.get_properties()) {

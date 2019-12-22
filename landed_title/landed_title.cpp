@@ -133,18 +133,8 @@ void landed_title::process_gsml_dated_property(const gsml_property &property, co
 void landed_title::process_gsml_scope(const gsml_data &scope)
 {
 	const std::string &tag = scope.get_tag();
-	const std::vector<std::string> &values = scope.get_values();
 
-	if (tag == "color") {
-		if (values.size() != 3) {
-			throw std::runtime_error("The \"color\" scope for landed titles needs to contain exactly three values!");
-		}
-
-		const int red = std::stoi(values.at(0));
-		const int green = std::stoi(values.at(1));
-		const int blue = std::stoi(values.at(2));
-		this->color.setRgb(red, green, blue);
-	} else if (tag.substr(0, 2) == landed_title::barony_prefix) {
+	if (tag.substr(0, 2) == landed_title::barony_prefix) {
 		landed_title *barony = landed_title::add(tag);
 		barony->set_de_jure_liege_title(this);
 		database::process_gsml_data(barony, scope);

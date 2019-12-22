@@ -24,6 +24,7 @@
 #include "religion/religion.h"
 #include "religion/religion_group.h"
 #include "script/modifier.h"
+#include "species/clade.h"
 #include "species/wildlife_unit.h"
 #include "translator.h"
 #include "util/container_util.h"
@@ -176,17 +177,9 @@ void province::process_gsml_property(const gsml_property &property)
 void province::process_gsml_scope(const gsml_data &scope)
 {
 	const std::string &tag = scope.get_tag();
-	const std::vector<std::string> &values = scope.get_values();
 
 	if (tag == "color") {
-		if (values.size() != 3) {
-			throw std::runtime_error("The \"color\" scope for provinces needs to contain exactly three values!");
-		}
-
-		const int red = std::stoi(values.at(0));
-		const int green = std::stoi(values.at(1));
-		const int blue = std::stoi(values.at(2));
-		this->color.setRgb(red, green, blue);
+		this->color = scope.to_color();
 
 		if (province::instances_by_rgb.find(this->color.rgb()) != province::instances_by_rgb.end()) {
 			throw std::runtime_error("The color set for province \"" + this->get_identifier() + "\" is already used by province \"" + province::instances_by_rgb.find(this->color.rgb())->second->get_identifier() + "\"");
@@ -591,6 +584,14 @@ const QColor &province::get_map_mode_color(const map_mode mode) const
 				}
 				break;
 			}
+			default:
+				break;
+		}
+	}
+
+	if (mode == map_mode::clade) {
+		if (this->get_clade() != nullptr) {
+			return this->get_clade()->get_color();
 		}
 	}
 
@@ -884,18 +885,35 @@ character *province::get_owner() const
 	return nullptr;
 }
 
-/**
-**	@brief	Set the province's culture
-**
-**	@param	culture	The new culture
-*/
+void province::set_clade(metternich::clade *clade)
+{
+	if (clade == this->get_clade()) {
+		return;
+	}
+
+	if (this->get_clade() != nullptr) {
+		this->get_clade()->remove_province(this);
+	}
+
+	this->clade = clade;
+	emit clade_changed();
+
+	if (clade != nullptr) {
+		clade->add_province(this);
+	}
+
+	if (map::get()->get_mode() == map_mode::clade) {
+		this->update_image();
+	}
+}
+
 void province::set_culture(metternich::culture *culture)
 {
 	if (culture == this->get_culture()) {
 		return;
 	}
 
-	metternich::culture *old_culture = this->get_culture();
+	const metternich::culture *old_culture = this->get_culture();
 	metternich::culture_group *old_culture_group = old_culture ? old_culture->get_culture_group() : nullptr;
 
 	this->culture = culture;
@@ -903,18 +921,13 @@ void province::set_culture(metternich::culture *culture)
 	metternich::culture_group *culture_group = culture ? culture->get_culture_group() : nullptr;
 
 	if (
-		map::get()->get_mode() == map_mode::culture
-		|| (map::get()->get_mode() == map_mode::culture_group && old_culture_group != culture_group)
-	) {
+			map::get()->get_mode() == map_mode::culture
+			|| (map::get()->get_mode() == map_mode::culture_group && old_culture_group != culture_group)
+			) {
 		this->update_image();
 	}
 }
 
-/**
-**	@brief	Set the province's religion
-**
-**	@param	religion	The new religion
-*/
 void province::set_religion(metternich::religion *religion)
 {
 	if (religion == this->get_religion()) {
@@ -1421,7 +1434,7 @@ void province::set_selected(const bool selected, const bool notify_engine_interf
 */
 bool province::is_selectable() const
 {
-	return this->get_county() != nullptr;
+	return this->get_county() != nullptr || (game::get()->get_player_clade() != nullptr && !this->is_water());
 }
 
 QVariantList province::get_population_per_type_qvariant_list() const

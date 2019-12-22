@@ -54,6 +54,8 @@ public:
 
 	static void process_gsml_property_for_object(QObject *object, const gsml_property &property);
 	static QVariant process_gsml_property_value(const gsml_property &property, const QMetaProperty &meta_property, const QObject *object);
+	static void process_gsml_scope_for_object(QObject *object, const gsml_data &scope);
+	static QVariant process_gsml_scope_value(const gsml_data &scope, const QMetaProperty &meta_property);
 
 	static std::filesystem::path get_root_path()
 	{

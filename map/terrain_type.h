@@ -15,7 +15,7 @@ class terrain_type : public data_entry, public data_type<terrain_type>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(QColor color READ get_color CONSTANT)
+	Q_PROPERTY(QColor color MEMBER color READ get_color)
 	Q_PROPERTY(bool water MEMBER water READ is_water NOTIFY water_changed)
 	Q_PROPERTY(bool navigable MEMBER navigable READ is_navigable)
 	Q_PROPERTY(bool ocean MEMBER ocean READ is_ocean)

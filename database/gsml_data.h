@@ -131,6 +131,19 @@ public:
 		});
 	}
 
+	QColor to_color() const
+	{
+		if (this->get_values().size() != 3) {
+			throw std::runtime_error("Color scopes need to contain exactly three values.");
+		}
+
+		const int red = std::stoi(this->values.at(0));
+		const int green = std::stoi(this->values.at(1));
+		const int blue = std::stoi(this->values.at(2));
+
+		return QColor(red, green, blue);
+	}
+
 	QGeoCoordinate to_geocoordinate() const
 	{
 		const double longitude = std::stod(this->get_values()[0]);

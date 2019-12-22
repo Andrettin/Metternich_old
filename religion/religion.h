@@ -24,7 +24,6 @@ public:
 	static constexpr const char *class_identifier = "religion";
 	static constexpr const char *database_folder = "religions";
 
-	virtual void process_gsml_scope(const gsml_data &scope) override;
 	virtual void check() const override;
 
 	metternich::religion_group *get_religion_group() const
