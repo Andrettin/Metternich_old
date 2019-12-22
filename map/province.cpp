@@ -314,9 +314,6 @@ void province::initialize_history()
 	data_entry_base::initialize_history();
 }
 
-/**
-**	@brief	Check whether the province is in a valid state
-*/
 void province::check() const
 {
 	if (this->get_terrain() == nullptr) {
@@ -330,28 +327,31 @@ void province::check() const
 	if (this->get_county() && this->get_settlement_holding_slots().empty()) {
 		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has a county (not being a wasteland or water zone), but has no settlement holding slots.");
 	}
+}
 
-	if (history::get()->is_loading()) {
-		/*
-		if (this->border_provinces.empty()) {
-			throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no border provinces.");
-		}
-		*/
+void province::check_history() const
+{
+	/*
+	if (this->border_provinces.empty()) {
+		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no border provinces.");
+	}
+	*/
 
-		if (this->get_county() != nullptr && !this->get_settlement_holdings().empty()) {
-			if (this->get_culture() == nullptr) {
-				throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no culture.");
-			}
-
-			if (this->get_religion() == nullptr) {
-				throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no religion.");
-			}
+	if (this->get_county() != nullptr && !this->get_settlement_holdings().empty()) {
+		if (this->get_culture() == nullptr) {
+			throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no culture.");
 		}
 
-		if (this->get_capital_holding_slot() != nullptr && this->get_capital_holding_slot()->get_province() != this) {
-			throw std::runtime_error("Province \"" + this->get_identifier() + "\"'s capital holding slot (\"" + this->get_capital_holding_slot()->get_barony()->get_identifier() + "\") belongs to another province (\"" + this->get_capital_holding_slot()->get_province()->get_identifier() + "\").");
+		if (this->get_religion() == nullptr) {
+			throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no religion.");
 		}
 	}
+
+	if (this->get_capital_holding_slot() != nullptr && this->get_capital_holding_slot()->get_province() != this) {
+		throw std::runtime_error("Province \"" + this->get_identifier() + "\"'s capital holding slot (\"" + this->get_capital_holding_slot()->get_barony()->get_identifier() + "\") belongs to another province (\"" + this->get_capital_holding_slot()->get_province()->get_identifier() + "\").");
+	}
+
+	province::check();
 }
 
 /**

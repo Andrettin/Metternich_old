@@ -18,6 +18,11 @@ class population_unit_base : public data_entry_base
 	Q_PROPERTY(QString icon_path READ get_icon_path_qstring NOTIFY icon_path_changed)
 
 public:
+	virtual void check_history() const override
+	{
+		this->get_icon_path(); //throws an exception if the icon isn't found
+	}
+
 	int get_size() const
 	{
 		return this->size;

@@ -13,6 +13,7 @@ class species : public data_entry, public data_type<species>
 {
 	Q_OBJECT
 
+	Q_PROPERTY(QString name_plural READ get_name_plural_qstring CONSTANT)
 	Q_PROPERTY(QString icon_tag READ get_icon_tag_qstring WRITE set_icon_tag_qstring)
 	Q_PROPERTY(bool sapient MEMBER sapient READ is_sapient)
 	Q_PROPERTY(QVariantList evolutions READ get_evolutions_qvariant_list)
@@ -23,6 +24,13 @@ public:
 	static constexpr const char *database_folder = "species";
 
 	species(const std::string &identifier) : data_entry(identifier) {}
+
+	std::string get_name_plural() const;
+
+	QString get_name_plural_qstring() const
+	{
+		return QString::fromStdString(this->get_name_plural());
+	}
 
 	const std::string &get_icon_tag() const
 	{

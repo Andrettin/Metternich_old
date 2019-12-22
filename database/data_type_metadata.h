@@ -10,8 +10,8 @@ namespace metternich {
 class data_type_metadata
 {
 public:
-	data_type_metadata(const std::string &class_identifier, const std::set<std::string> &database_dependencies, const std::function<void(const std::filesystem::path &)> &parsing_function, const std::function<void(bool)> &processing_function, const std::function<void()> &checking_function, const std::function<void()> &initialization_function, const std::function<void()> &history_initialization_function)
-		: class_identifier(class_identifier), database_dependencies(database_dependencies), parsing_function(parsing_function), processing_function(processing_function), checking_function(checking_function), initialization_function(initialization_function), history_initialization_function(history_initialization_function)
+	data_type_metadata(const std::string &class_identifier, const std::set<std::string> &database_dependencies, const std::function<void(const std::filesystem::path &)> &parsing_function, const std::function<void(bool)> &processing_function, const std::function<void()> &checking_function, const std::function<void()> &history_checking_function, const std::function<void()> &initialization_function, const std::function<void()> &history_initialization_function)
+		: class_identifier(class_identifier), database_dependencies(database_dependencies), parsing_function(parsing_function), processing_function(processing_function), checking_function(checking_function), history_checking_function(history_checking_function), initialization_function(initialization_function), history_initialization_function(history_initialization_function)
 	{
 	}
 
@@ -50,6 +50,11 @@ public:
 		return this->checking_function;
 	}
 
+	const std::function<void()> &get_history_checking_function() const
+	{
+		return this->history_checking_function;
+	}
+
 	const std::function<void()> &get_initialization_function() const
 	{
 		return this->initialization_function;
@@ -66,6 +71,7 @@ private:
 	std::function<void(const std::filesystem::path &)> parsing_function; //parsing functions for each data type
 	std::function<void(bool)> processing_function; //processing functions for each data type
 	std::function<void()> checking_function; //functions for each data type, to check if data entries are valid
+	std::function<void()> history_checking_function; //functions for each data type, to check if data entries' history is valid
 	std::function<void()> initialization_function; //functions for each data type, to initialize their entries
 	std::function<void()> history_initialization_function; //functions for each data type, to initialize their entries' history
 };

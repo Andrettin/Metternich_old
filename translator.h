@@ -21,7 +21,7 @@ class translator : public QTranslator, public singleton<translator>
 
 public:
 	void load_locale(const std::string &language);
-	std::string translate(const std::vector<std::string> &base_tags, const std::vector<std::vector<std::string>> &suffix_list_with_fallbacks = std::vector<std::vector<std::string>>()) const;
+	std::string translate(const std::vector<std::string> &base_tags, const std::vector<std::vector<std::string>> &suffix_list_with_fallbacks = std::vector<std::vector<std::string>>(), const std::string &final_suffix = std::string()) const;
 
 	std::string translate(const std::string &base_tag, const std::vector<std::vector<std::string>> &suffix_list_with_fallbacks = std::vector<std::vector<std::string>>()) const
 	{

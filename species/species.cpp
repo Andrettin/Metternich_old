@@ -1,9 +1,15 @@
 #include "species/species.h"
 
 #include "species/clade.h"
+#include "translator.h"
 #include "util/container_util.h"
 
 namespace metternich {
+
+std::string species::get_name_plural() const
+{
+	return translator::get()->translate(this->get_identifier_with_aliases(), {{"_plural"}});
+}
 
 QVariantList species::get_evolutions_qvariant_list() const
 {

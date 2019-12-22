@@ -10,13 +10,13 @@
 
 namespace metternich {
 
-std::string translator::translate(const std::vector<std::string> &base_tags, const std::vector<std::vector<std::string>> &suffix_list_with_fallbacks) const
+std::string translator::translate(const std::vector<std::string> &base_tags, const std::vector<std::vector<std::string>> &suffix_list_with_fallbacks, const std::string &final_suffix) const
 {
 	std::vector<std::string> suffix_combinations = string::get_suffix_combinations(suffix_list_with_fallbacks);
 
 	for (const std::string &suffix : suffix_combinations) {
 		for (const std::string &base_tag : base_tags) {
-			const auto &suffix_find_iterator = this->translations.find(base_tag + suffix);
+			const auto &suffix_find_iterator = this->translations.find(base_tag + suffix + final_suffix);
 			if (suffix_find_iterator != this->translations.end())  {
 				return suffix_find_iterator->second;
 			}

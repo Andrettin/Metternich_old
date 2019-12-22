@@ -114,7 +114,7 @@ public:
 	virtual void process_gsml_dated_property(const gsml_property &property, const QDateTime &date) override;
 	virtual void initialize_history() override;
 
-	virtual void check() const override
+	virtual void check_history() const override
 	{
 		if (this->get_name().empty()) {
 			throw std::runtime_error("Character \"" + std::to_string(this->get_identifier()) + "\" has no name.");

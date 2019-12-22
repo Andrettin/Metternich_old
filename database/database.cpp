@@ -344,7 +344,7 @@ void database::initialize_history()
 
 	//check if data entries are valid for each data type
 	for (const std::unique_ptr<data_type_metadata> &metadata : this->metadata) {
-		metadata->get_checking_function()();
+		metadata->get_history_checking_function()();
 	}
 }
 

@@ -240,9 +240,6 @@ void landed_title::initialize_history()
 	data_entry_base::initialize_history();
 }
 
-/**
-**	@brief	Check whether the landed title is in a valid state
-*/
 void landed_title::check() const
 {
 	if (this->get_tier() != landed_title_tier::barony && !this->get_color().isValid()) {
@@ -256,35 +253,33 @@ void landed_title::check() const
 	if (this->get_tier() >= landed_title_tier::duchy) {
 		this->get_flag_path(); //throws an exception if the flag isn't found
 	}
-
-	if (history::get()->is_loading()) {
-		if (this->get_capital_province() == nullptr) {
-			throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has no capital province.");
-		}
-
-		if (this->get_holding_slot() != nullptr && this->get_holding_slot()->get_province() != this->get_capital_province()) {
-			throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has its holding slot in a different province than its capital province.");
-		}
-
-		if (this->get_province() != nullptr) {
-			if (this->get_tier() != landed_title_tier::county) {
-				throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has been assigned to a province, but is not a county.");
-			}
-		}
-
-		if (this->get_holding_slot() != nullptr) {
-			if (this->get_tier() != landed_title_tier::barony) {
-				throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has been assigned to a holding slot, but is not a barony.");
-			}
-		}
-	}
 }
 
-/**
-**	@brief	Get the landed title's name
-**
-**	@return	The landed title's name
-*/
+void landed_title::check_history() const
+{
+	if (this->get_capital_province() == nullptr) {
+		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has no capital province.");
+	}
+
+	if (this->get_holding_slot() != nullptr && this->get_holding_slot()->get_province() != this->get_capital_province()) {
+		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has its holding slot in a different province than its capital province.");
+	}
+
+	if (this->get_province() != nullptr) {
+		if (this->get_tier() != landed_title_tier::county) {
+			throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has been assigned to a province, but is not a county.");
+		}
+	}
+
+	if (this->get_holding_slot() != nullptr) {
+		if (this->get_tier() != landed_title_tier::barony) {
+			throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has been assigned to a holding slot, but is not a barony.");
+		}
+	}
+
+	landed_title::check();
+}
+
 std::string landed_title::get_name() const
 {
 	return translator::get()->translate(this->get_identifier_with_aliases(), this->get_tag_suffix_list_with_fallbacks());

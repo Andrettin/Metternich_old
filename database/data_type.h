@@ -458,13 +458,17 @@ public:
 		}
 	}
 
-	/**
-	**	@brief	Check whether all instances are valid
-	*/
 	static void check_all()
 	{
 		for (const T *instance : T::get_all()) {
 			instance->check();
+		}
+	}
+
+	static void check_all_history()
+	{
+		for (const T *instance : T::get_all()) {
+			instance->check_history();
 		}
 	}
 
@@ -483,7 +487,7 @@ private:
 	static inline bool initialize_class()
 	{
 		//initialize the metadata (including database parsing/processing functions) for this data type
-		auto metadata = std::make_unique<data_type_metadata>(T::class_identifier, T::get_database_dependencies(), T::parse_database, T::process_database, T::check_all, T::initialize_all, T::initialize_all_history);
+		auto metadata = std::make_unique<data_type_metadata>(T::class_identifier, T::get_database_dependencies(), T::parse_database, T::process_database, T::check_all, T::check_all_history, T::initialize_all, T::initialize_all_history);
 		database::get()->register_metadata(std::move(metadata));
 
 		return true;
