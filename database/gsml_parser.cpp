@@ -9,7 +9,7 @@
 namespace metternich {
 
 gsml_parser::gsml_parser(const std::filesystem::path &filepath)
-	: filepath(filepath), property_operator(gsml_operator::none)
+	: filepath(filepath), current_property_operator(gsml_operator::none)
 {
 }
 
@@ -91,12 +91,12 @@ void gsml_parser::parse_line(const std::string &line)
 						}
 					}
 					operator_token += std::string(1, c);
-					this->tokens.push_back(operator_token);
+					this->tokens.push_back(std::move(operator_token));
 				}
 
 				if (!current_string.empty()) {
-					this->tokens.push_back(current_string);
-					current_string.clear();
+					this->tokens.push_back(std::move(current_string));
+					current_string = std::string();
 				}
 
 				continue;
@@ -115,7 +115,7 @@ void gsml_parser::parse_line(const std::string &line)
 	}
 
 	if (!current_string.empty()) {
-		this->tokens.push_back(current_string);
+		this->tokens.push_back(std::move(current_string));
 	}
 }
 
@@ -151,14 +151,14 @@ bool gsml_parser::parse_escaped_character(std::string &current_string, const cha
 */
 void gsml_parser::parse_tokens()
 {
-	for (const std::string &token : this->tokens) {
-		if (!this->key.empty() && this->property_operator == gsml_operator::none && token != "=" && token != "+=" && token != "-=" && token != "{") {
+	for (std::string &token : this->tokens) {
+		if (!this->current_key.empty() && this->current_property_operator == gsml_operator::none && token != "=" && token != "+=" && token != "-=" && token != "{") {
 			//if the previously-given key isn't empty and no operator has been provided before or now, then the key was actually a value, part of a simple collection of values
-			this->current_gsml_data->values.push_back(this->key);
-			this->key.clear();
+			this->current_gsml_data->values.push_back(std::move(this->current_key));
+			this->current_key = std::string();
 		}
 
-		if (this->key.empty()) {
+		if (this->current_key.empty()) {
 			if (token == "{") { //opens a new, untagged scope
 				this->current_gsml_data->children.emplace_back();
 				gsml_data &new_gsml_data = this->current_gsml_data->children.back();
@@ -175,21 +175,21 @@ void gsml_parser::parse_tokens()
 
 				this->current_gsml_data = this->current_gsml_data->parent;
 			} else { //key
-				this->key = token;
+				this->current_key = std::move(token);
 			}
 
 			continue;
 		}
 
-		if (this->property_operator == gsml_operator::none) { //operator
+		if (this->current_property_operator == gsml_operator::none) { //operator
 			if (token == "=") {
-				this->property_operator = gsml_operator::assignment;
+				this->current_property_operator = gsml_operator::assignment;
 			} else if (token == "+=") {
-				this->property_operator = gsml_operator::addition;
+				this->current_property_operator = gsml_operator::addition;
 			} else if (token == "-=") {
-				this->property_operator = gsml_operator::subtraction;
+				this->current_property_operator = gsml_operator::subtraction;
 			} else {
-				throw std::runtime_error("Tried using operator \"" + token + "\" for key \"" + this->key + "\", but it is not a valid operator.");
+				throw std::runtime_error("Tried using operator \"" + token + "\" for key \"" + this->current_key + "\", but it is not a valid operator.");
 			}
 
 			continue;
@@ -197,21 +197,21 @@ void gsml_parser::parse_tokens()
 
 		//value
 		if (token == "{") { //opens tag
-			if (this->property_operator != gsml_operator::assignment && this->property_operator != gsml_operator::addition) {
+			if (this->current_property_operator != gsml_operator::assignment && this->current_property_operator != gsml_operator::addition) {
 				throw std::runtime_error("Only the assignment and addition operators are valid after a tag.");
 			}
 
-			const std::string &tag_name = this->key;
-			this->current_gsml_data->children.emplace_back(tag_name, this->property_operator);
+			std::string &tag_name = this->current_key;
+			this->current_gsml_data->children.emplace_back(std::move(tag_name), this->current_property_operator);
 			gsml_data &new_gsml_data = this->current_gsml_data->children.back();
 			new_gsml_data.parent = this->current_gsml_data;
 			this->current_gsml_data = &new_gsml_data;
 		} else {
-			this->current_gsml_data->properties.push_back(gsml_property(this->key, this->property_operator, token));
+			this->current_gsml_data->properties.emplace_back(std::move(this->current_key), this->current_property_operator, std::move(token));
 		}
 
-		this->key.clear();
-		this->property_operator = gsml_operator::none;
+		this->current_key = std::string();
+		this->current_property_operator = gsml_operator::none;
 	}
 
 	this->tokens.clear();
@@ -221,9 +221,8 @@ void gsml_parser::reset()
 {
 	this->tokens.clear();
 	this->current_gsml_data = nullptr;
-	this->key.clear();
-	this->property_operator = gsml_operator::none;
-	this->value.clear();
+	this->current_key = std::string();
+	this->current_property_operator = gsml_operator::none;
 }
 
 }

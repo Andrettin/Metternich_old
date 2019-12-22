@@ -25,9 +25,8 @@ private:
 	std::filesystem::path filepath;
 	std::vector<std::string> tokens;
 	gsml_data *current_gsml_data = nullptr;
-	std::string key;
-	gsml_operator property_operator;
-	std::string value;
+	std::string current_key;
+	gsml_operator current_property_operator;
 };
 
 }

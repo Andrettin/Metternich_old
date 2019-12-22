@@ -23,10 +23,14 @@ class gsml_parser;
 class gsml_data
 {
 public:
-	gsml_data(const std::string &tag = std::string());
+	gsml_data(std::string &&tag = std::string());
 
-	gsml_data(const std::string &tag, gsml_operator scope_operator)
-		: tag(tag), scope_operator(scope_operator)
+	gsml_data(std::string &&tag, const gsml_operator scope_operator)
+		: tag(std::move(tag)), scope_operator(scope_operator)
+	{
+	}
+
+	gsml_data(const std::string &tag) : gsml_data(std::string(tag))
 	{
 	}
 

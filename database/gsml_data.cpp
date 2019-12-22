@@ -4,8 +4,8 @@
 
 namespace metternich {
 
-gsml_data::gsml_data(const std::string &tag)
-	: tag(tag), scope_operator(gsml_operator::assignment)
+gsml_data::gsml_data(std::string &&tag)
+	: tag(std::move(tag)), scope_operator(gsml_operator::assignment)
 {
 }
 

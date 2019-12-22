@@ -10,7 +10,13 @@ enum class gsml_operator : int;
 class gsml_property
 {
 public:
-	gsml_property(const std::string &key, gsml_operator property_operator, const std::string &value) : key(key), property_operator(property_operator), value(value)
+	gsml_property(std::string &&key, const gsml_operator property_operator, std::string &&value)
+		: key(std::move(key)), property_operator(property_operator), value(std::move(value))
+	{
+	}
+
+	gsml_property(const std::string &key, const gsml_operator property_operator, const std::string &value)
+		: key(key), property_operator(property_operator), value(value)
 	{
 	}
 
