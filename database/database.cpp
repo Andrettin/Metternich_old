@@ -34,7 +34,8 @@
 #include "population/population_type.h"
 #include "religion/religion.h"
 #include "religion/religion_group.h"
-#include "species.h"
+#include "species/clade.h"
+#include "species/species.h"
 #include "translator.h"
 #include "util/parse_util.h"
 #include "util/string_util.h"
@@ -197,6 +198,8 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 			new_property_value = QVariant::fromValue(calendar::get(property.get_value()));
 		} else if (property_class_name == "metternich::character*") {
 			new_property_value = QVariant::fromValue(character::get(std::stoi(property.get_value())));
+		} else if (property_class_name == "metternich::clade*") {
+			new_property_value = QVariant::fromValue(clade::get(property.get_value()));
 		} else if (property_class_name == "metternich::commodity*") {
 			new_property_value = QVariant::fromValue(commodity::get(property.get_value()));
 		} else if (property_class_name == "metternich::culture*") {

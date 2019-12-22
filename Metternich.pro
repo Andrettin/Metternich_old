@@ -63,6 +63,7 @@ SOURCES += \
         script/modifier.cpp \
         script/modifier_base.cpp \
         script/modifier_effect/modifier_effect.cpp \
+        species/species.cpp \
         third_party/maskedmousearea/maskedmousearea.cpp \
         translator.cpp \
         util/image_util.cpp
@@ -176,7 +177,8 @@ HEADERS += \
     script/modifier_effect/population_growth_modifier_effect.h \
     script/scope_util.h \
     singleton.h \
-    species.h \
+    species/clade.h \
+    species/species.h \
     third_party/maskedmousearea/maskedmousearea.h \
     translator.h \
     type_traits.h \
