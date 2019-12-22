@@ -17,6 +17,7 @@ class character;
 class clade;
 class timeline;
 enum class game_speed : int;
+enum class tick_period : int;
 
 /**
 **	@brief	The game instance
@@ -66,16 +67,17 @@ public:
 		this->paused = paused;
 	}
 
+	void set_tick_period(const tick_period tick_period)
+	{
+		this->tick_period = tick_period;
+	}
+
 	const QDateTime &get_current_date() const
 	{
 		return this->current_date;
 	}
 
-	QString get_current_date_string() const
-	{
-		QLocale english_locale(QLocale::English);
-		return english_locale.toString(this->current_date, "d MMMM, yyyy");
-	}
+	QString get_current_date_string() const;
 
 	character *get_player_character() const
 	{
@@ -131,6 +133,7 @@ signals:
 	void current_date_changed();
 	void player_character_changed();
 	void player_clade_changed();
+	void tick_period_changed();
 
 private:
 	bool starting = false;
@@ -141,6 +144,7 @@ private:
 	game_speed speed;
 	character *player_character = nullptr;
 	clade *player_clade = nullptr;
+	tick_period tick_period;
 	std::queue<std::function<void()>> orders; //orders given by the player, received from the UI thread
 	mutable std::shared_mutex mutex;
 };

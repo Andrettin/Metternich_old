@@ -116,6 +116,7 @@ HEADERS += \
     engine_interface.h \
     game/game.h \
     game/game_speed.h \
+    game/tick_period.h \
     history/calendar.h \
     history/history.h \
     history/timeline.h \

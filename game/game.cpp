@@ -3,6 +3,7 @@
 #include "character/character.h"
 #include "defines.h"
 #include "game/game_speed.h"
+#include "game/tick_period.h"
 #include "history/history.h"
 #include "holding/holding.h"
 #include "holding/holding_slot.h"
@@ -17,7 +18,7 @@
 
 namespace metternich {
 
-game::game() : speed(game_speed::normal)
+game::game() : speed(game_speed::normal), tick_period(tick_period::day)
 {
 }
 
@@ -39,9 +40,11 @@ void game::start(const timeline *timeline, const QDateTime &start_date)
 	if (defines::get()->get_player_character_title()->get_holder() != nullptr) {
 		this->set_player_character(defines::get()->get_player_character_title()->get_holder());
 		map::get()->set_mode(map_mode::country);
+		this->set_tick_period(tick_period::day);
 	} else if (defines::get()->get_player_clade()->is_alive()) {
 		this->set_player_clade(defines::get()->get_player_clade());
 		map::get()->set_mode(map_mode::clade);
+		this->set_tick_period(tick_period::millenium);
 	} else {
 		throw std::runtime_error("No valid player character or clade.");
 	}
@@ -119,7 +122,16 @@ void game::do_tick()
 	}
 
 	QDateTime old_date = current_date;
-	this->current_date = this->current_date.addDays(1);
+
+	switch (this->tick_period) {
+		case tick_period::day:
+			this->current_date = this->current_date.addDays(1);
+			break;
+		case tick_period::millenium:
+			this->current_date = this->current_date.addYears(1000);
+			break;
+	}
+
 	emit current_date_changed();
 
 	if (old_date.date().day() != this->current_date.date().day()) {
@@ -190,23 +202,35 @@ void game::do_day()
 	}
 }
 
-/**
-**	@brief	Do the game's monthly actions
-*/
 void game::do_month()
 {
 }
 
-/**
-**	@brief	Do the game's yearly actions
-*/
 void game::do_year()
 {
 }
 
-/**
-**	@brief	Generate holders for (non-titular) counties which lack them
-*/
+QString game::get_current_date_string() const
+{
+	QLocale english_locale(QLocale::English);
+	QString current_date_string;
+
+	if (this->tick_period == tick_period::day) {
+		current_date_string += english_locale.toString(this->current_date, "d MMMM, ");
+	}
+
+	const int year = this->current_date.date().year();
+	current_date_string += english_locale.toString(std::abs(year));
+
+	if (year < 0) {
+		current_date_string += " BC";
+	} else {
+		current_date_string += " AD";
+	}
+
+	return current_date_string;
+}
+
 void game::generate_missing_title_holders()
 {
 	std::vector<landed_title *> landed_titles = landed_title::get_all();
