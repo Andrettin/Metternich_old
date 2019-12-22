@@ -22,13 +22,13 @@ void species::set_clade(metternich::clade *clade)
 		return;
 	}
 
-	if (this->get_clade() != nullptr) {
+	if (this->get_clade() != nullptr && this->get_clade()->has_species(this)) {
 		this->get_clade()->remove_species(this);
 	}
 
 	this->clade = clade;
 
-	if (clade != nullptr) {
+	if (clade != nullptr && !clade->has_species(this)) {
 		clade->add_species(this);
 	}
 }

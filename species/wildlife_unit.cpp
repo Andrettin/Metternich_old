@@ -56,6 +56,11 @@ clade *wildlife_unit::get_clade() const
 	return this->get_species()->get_clade();
 }
 
+int wildlife_unit::get_biomass() const
+{
+	return this->get_size() * this->get_species()->get_average_weight();
+}
+
 void wildlife_unit::subtract_existing_sizes()
 {
 	if (this->get_province() != nullptr) {

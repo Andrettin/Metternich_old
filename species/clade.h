@@ -17,6 +17,7 @@ class clade : public data_entry, public data_type<clade>
 	Q_OBJECT
 
 	Q_PROPERTY(QColor color MEMBER color READ get_color)
+	Q_PROPERTY(QVariantList species READ get_species_qvariant_list)
 	Q_PROPERTY(QVariantList provinces READ get_provinces_qvariant_list NOTIFY provinces_changed)
 
 public:
@@ -42,15 +43,15 @@ public:
 		return this->species;
 	}
 
-	void add_species(species *species)
+	QVariantList get_species_qvariant_list() const;
+
+	bool has_species(species *species) const
 	{
-		this->species.insert(species);
+		return this->species.contains(species);
 	}
 
-	void remove_species(species *species)
-	{
-		this->species.erase(species);
-	}
+	Q_INVOKABLE void add_species(metternich::species *species);
+	Q_INVOKABLE void remove_species(metternich::species *species);
 
 	const std::set<province *> &get_provinces() const
 	{

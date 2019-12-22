@@ -914,8 +914,7 @@ void province::calculate_clade()
 	this->biomass_per_clade.clear();
 
 	for (const std::unique_ptr<wildlife_unit> &wildlife_unit : this->get_wildlife_units()) {
-		//should multiply the size by the average weight for the species
-		this->biomass_per_clade[wildlife_unit->get_clade()] += wildlife_unit->get_size();
+		this->biomass_per_clade[wildlife_unit->get_clade()] += wildlife_unit->get_biomass();
 	}
 
 	//update the province's main clade

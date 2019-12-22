@@ -16,6 +16,7 @@ class species : public data_entry, public data_type<species>
 	Q_PROPERTY(QString name_plural READ get_name_plural_qstring CONSTANT)
 	Q_PROPERTY(QString icon_tag READ get_icon_tag_qstring WRITE set_icon_tag_qstring)
 	Q_PROPERTY(bool sapient MEMBER sapient READ is_sapient)
+	Q_PROPERTY(int average_weight MEMBER average_weight READ get_average_weight)
 	Q_PROPERTY(QVariantList evolutions READ get_evolutions_qvariant_list)
 	Q_PROPERTY(metternich::clade* clade READ get_clade WRITE set_clade)
 
@@ -24,6 +25,13 @@ public:
 	static constexpr const char *database_folder = "species";
 
 	species(const std::string &identifier) : data_entry(identifier) {}
+
+	virtual void check() const override
+	{
+		if (this->get_average_weight() == 0 && !this->is_sapient()) {
+			throw std::runtime_error("Wildlife species \"" + this->get_identifier() + "\" has no average weight.");
+		}
+	}
 
 	std::string get_name_plural() const;
 
@@ -65,6 +73,11 @@ public:
 		return this->sapient;
 	}
 
+	int get_average_weight() const
+	{
+		return this->average_weight;
+	}
+
 	const std::set<species *> &get_evolutions() const
 	{
 		return this->evolutions;
@@ -92,6 +105,7 @@ public:
 private:
 	std::string icon_tag;
 	bool sapient = false; //whether the species is sapient
+	int average_weight = 0; //the average weight for individuals of this species, in kg
 	std::set<species *> evolutions;
 	clade *clade = nullptr;
 };

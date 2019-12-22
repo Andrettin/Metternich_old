@@ -17,6 +17,7 @@ class wildlife_unit : public population_unit_base, public simple_data_type<wildl
 	Q_OBJECT
 
 	Q_PROPERTY(metternich::species* species MEMBER species READ get_species NOTIFY species_changed)
+	Q_PROPERTY(int biomass READ get_biomass NOTIFY biomass_changed)
 
 public:
 	static constexpr const char *database_folder = "wildlife_units";
@@ -26,6 +27,7 @@ public:
 	wildlife_unit(species *species) : species(species)
 	{
 		connect(this, &wildlife_unit::species_changed, this, &wildlife_unit::icon_path_changed);
+		connect(this, &wildlife_unit::size_changed, this, &wildlife_unit::biomass_changed);
 	}
 
 	virtual void check_history() const override;
@@ -37,7 +39,8 @@ public:
 		return this->species;
 	}
 
-	clade *get_clade() const;
+	clade *get_clade() const;	
+	int get_biomass() const;
 
 	void subtract_existing_sizes();
 	void subtract_existing_sizes_in_province(const metternich::province *province);
@@ -49,6 +52,7 @@ public:
 
 signals:
 	void species_changed();
+	void biomass_changed();
 
 private:
 	species *species = nullptr;

@@ -121,16 +121,16 @@ inline std::string get_singular_form(const std::string &str)
 	std::string singular_form;
 
 	if (str.substr(str.size() - 2, 2) == "ys") {
-		singular_form = str.substr(0, str.size() - 2);
+		return str.substr(0, str.size() - 2);
 	} else if (str.substr(str.size() - 3, 3) == "ies") {
-		singular_form = str.substr(0, str.size() - 3) + "y";
+		if (str != "species") {
+			return str.substr(0, str.size() - 3) + "y";
+		}
 	} else if (str.substr(str.size() - 1, 1) == "s") {
-		singular_form = str.substr(0, str.size() - 1);
-	} else {
-		return str;
+		return str.substr(0, str.size() - 1);
 	}
 
-	return singular_form;
+	return str;
 }
 
 inline std::vector<std::string> get_suffix_combinations(const std::vector<std::vector<std::string>> &suffix_list_with_fallbacks)
