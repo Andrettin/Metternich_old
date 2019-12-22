@@ -239,9 +239,6 @@ void province::process_gsml_dated_scope(const gsml_data &scope, const QDateTime 
 	}
 }
 
-/**
-**	@brief	Initialize the province
-*/
 void province::initialize()
 {
 	if (this->get_county() != nullptr) {
@@ -275,9 +272,6 @@ void province::initialize()
 	data_entry_base::initialize();
 }
 
-/**
-**	@brief	Initialize the province's history
-*/
 void province::initialize_history()
 {
 	this->population_units.clear();
@@ -302,6 +296,10 @@ void province::initialize_history()
 	}
 	if (this->is_coastal()) {
 		this->change_population_capacity_additive_modifier(10000); //increase population capacity if this province is coastal
+	}
+
+	if (this->get_owner() == nullptr && !this->get_wildlife_units().empty()) {
+		this->calculate_clade();
 	}
 
 	data_entry_base::initialize_history();
@@ -342,6 +340,10 @@ void province::check_history() const
 
 	if (this->get_capital_holding_slot() != nullptr && this->get_capital_holding_slot()->get_province() != this) {
 		throw std::runtime_error("Province \"" + this->get_identifier() + "\"'s capital holding slot (\"" + this->get_capital_holding_slot()->get_barony()->get_identifier() + "\") belongs to another province (\"" + this->get_capital_holding_slot()->get_province()->get_identifier() + "\").");
+	}
+
+	for (const std::unique_ptr<wildlife_unit> &wildlife_unit : this->get_wildlife_units()) {
+		wildlife_unit->check_history();
 	}
 
 	province::check();
@@ -905,6 +907,32 @@ void province::set_clade(metternich::clade *clade)
 	if (map::get()->get_mode() == map_mode::clade) {
 		this->update_image();
 	}
+}
+
+void province::calculate_clade()
+{
+	this->biomass_per_clade.clear();
+
+	for (const std::unique_ptr<wildlife_unit> &wildlife_unit : this->get_wildlife_units()) {
+		//should multiply the size by the average weight for the species
+		this->biomass_per_clade[wildlife_unit->get_clade()] += wildlife_unit->get_size();
+	}
+
+	//update the province's main clade
+
+	metternich::clade *plurality_clade = nullptr;
+	int plurality_clade_size = 0;
+
+	for (const auto &kv_pair : this->biomass_per_clade) {
+		metternich::clade *clade = kv_pair.first;
+		const int clade_size = kv_pair.second;
+		if (plurality_clade == nullptr || clade_size > plurality_clade_size) {
+			plurality_clade = clade;
+			plurality_clade_size = clade_size;
+		}
+	}
+
+	this->set_clade(plurality_clade);
 }
 
 void province::set_culture(metternich::culture *culture)

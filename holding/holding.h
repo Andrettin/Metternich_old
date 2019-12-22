@@ -68,6 +68,7 @@ public:
 	virtual ~holding() override;
 
 	virtual void initialize_history() override;
+	virtual void check_history() const override;
 
 	void do_day();
 	void do_month();

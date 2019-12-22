@@ -105,9 +105,13 @@ void holding::initialize_history()
 	data_entry_base::initialize_history();
 }
 
-/**
-**	@brief	Do the holding's daily actions
-*/
+void holding::check_history() const
+{
+	for (const std::unique_ptr<population_unit> &population_unit : this->get_population_units()) {
+		population_unit->check_history();
+	}
+}
+
 void holding::do_day()
 {
 	//handle construction

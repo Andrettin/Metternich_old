@@ -177,6 +177,7 @@ public:
 	}
 
 	void set_clade(clade *clade);
+	void calculate_clade();
 
 	metternich::culture *get_culture() const
 	{
@@ -460,13 +461,14 @@ private:
 	std::map<population_type *, int> population_per_type; //the population for each population type
 	std::map<metternich::culture *, int> population_per_culture; //the population for each culture
 	std::map<metternich::religion *, int> population_per_religion; //the population for each religion
+	mutable std::shared_mutex population_groups_mutex;
 	std::vector<std::unique_ptr<wildlife_unit>> wildlife_units; //wildlife units set for this province in history
+	std::map<metternich::clade *, int> biomass_per_clade; //the amount of biomass for each clade in the province
 	std::vector<QGeoPolygon> geopolygons;
 	std::vector<QGeoPath> geopaths;
 	bool inner_river = false; //whether the province has a minor river flowing through it
 	bool always_write_geodata = false;
 	bool write_geojson_value = false;
-	mutable std::shared_mutex population_groups_mutex;
 };
 
 }

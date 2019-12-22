@@ -17,6 +17,7 @@ class clade : public data_entry, public data_type<clade>
 	Q_OBJECT
 
 	Q_PROPERTY(QColor color MEMBER color READ get_color)
+	Q_PROPERTY(QVariantList provinces READ get_provinces_qvariant_list NOTIFY provinces_changed)
 
 public:
 	static constexpr const char *class_identifier = "clade";
@@ -56,14 +57,18 @@ public:
 		return this->provinces;
 	}
 
+	QVariantList get_provinces_qvariant_list() const;
+
 	void add_province(province *province)
 	{
 		this->provinces.insert(province);
+		emit provinces_changed();
 	}
 
 	void remove_province(province *province)
 	{
 		this->provinces.erase(province);
+		emit provinces_changed();
 	}
 
 	bool is_alive() const
@@ -72,6 +77,9 @@ public:
 	}
 
 	bool is_ai() const;
+
+signals:
+	void provinces_changed();
 
 private:
 	QColor color;
