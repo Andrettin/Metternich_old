@@ -220,7 +220,12 @@ QString game::get_current_date_string() const
 	}
 
 	const int year = this->current_date.date().year();
-	current_date_string += english_locale.toString(std::abs(year));
+	const int abs_year = std::abs(year);
+	if (abs_year >= 10000) {
+		current_date_string += english_locale.toString(std::abs(year));
+	} else {
+		current_date_string += QString::number(abs_year);
+	}
 
 	if (year < 0) {
 		current_date_string += " BC";
