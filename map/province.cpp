@@ -589,11 +589,17 @@ const QColor &province::get_map_mode_color(const map_mode mode) const
 			default:
 				break;
 		}
+
+		if (mode != map_mode::clade) {
+			return province::empty_province_color;
+		}
 	}
 
 	if (mode == map_mode::clade) {
 		if (this->get_clade() != nullptr) {
 			return this->get_clade()->get_color();
+		} else if (!this->is_water()) {
+			return province::empty_province_color;
 		}
 	}
 

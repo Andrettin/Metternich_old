@@ -82,6 +82,7 @@ public:
 	static constexpr QRgb empty_rgb = qRgb(0, 0, 0);
 	static const inline QColor water_province_color = QColor("#0080ff");
 	static const inline QColor wasteland_province_color = QColor(Qt::darkGray);
+	static const inline QColor empty_province_color = QColor("#f5f5dc");
 
 	static std::set<std::string> get_database_dependencies();
 	static province *add(const std::string &identifier);
