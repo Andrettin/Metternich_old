@@ -49,11 +49,7 @@ public:
 		T *instance = data_type::try_get(identifier);
 
 		if (instance == nullptr) {
-			if constexpr (std::is_arithmetic_v<KEY>) {
-				throw std::runtime_error("Invalid \"" + std::string(T::class_identifier) + "\" instance: \"" + std::to_string(identifier) + "\".");
-			} else {
-				throw std::runtime_error("Invalid \"" + std::string(T::class_identifier) + "\" instance: \"" + identifier + "\".");
-			}
+			throw std::runtime_error("Invalid \"" + std::string(T::class_identifier) + "\" instance: \"" + data_type::get_instance_identifier_string(identifier) + "\".");
 		}
 
 		return instance;
@@ -130,11 +126,7 @@ public:
 		}
 
 		if (data_type::instances_by_identifier.contains(identifier) || data_type::instances_by_alias.contains(identifier)) {
-			if constexpr (std::is_arithmetic_v<KEY>) {
-				throw std::runtime_error("Tried to add a \"" + std::string(T::class_identifier) + "\" instance with the already-used \"" + std::to_string(identifier) + "\" string identifier.");
-			} else {
-				throw std::runtime_error("Tried to add a \"" + std::string(T::class_identifier) + "\" instance with the already-used \"" + identifier + "\" string identifier.");
-			}
+			throw std::runtime_error("Tried to add a \"" + std::string(T::class_identifier) + "\" instance with the already-used \"" + data_type::get_instance_identifier_string(identifier) + "\" string identifier.");
 		}
 
 		data_type::instances_by_identifier[identifier] = std::make_unique<T>(identifier);
@@ -160,11 +152,7 @@ public:
 		}
 
 		if (data_type::instances_by_identifier.contains(alias) || data_type::instances_by_alias.contains(alias)) {
-			if constexpr (std::is_arithmetic_v<KEY>) {
-				throw std::runtime_error("Tried to add a \"" + std::string(T::class_identifier) + "\" alias with the already-used \"" + std::to_string(alias) + "\" string identifier.");
-			} else {
-				throw std::runtime_error("Tried to add a \"" + std::string(T::class_identifier) + "\" alias with the already-used \"" + alias + "\" string identifier.");
-			}
+			throw std::runtime_error("Tried to add a \"" + std::string(T::class_identifier) + "\" alias with the already-used \"" + data_type::get_instance_identifier_string(alias) + "\" string identifier.");
 		}
 
 		data_type::instances_by_alias[alias] = instance;
@@ -197,9 +185,6 @@ public:
 		data_type::instances_by_alias.clear();
 	}
 
-	/**
-	**	@brief	Parse the database for the data type
-	*/
 	static void parse_database(const std::filesystem::path &data_path)
 	{
 		if (std::string(T::database_folder).empty()) {
@@ -265,8 +250,12 @@ public:
 						}
 					}
 				} else {
-					instance = T::get(identifier);
-					database::process_gsml_data<T>(instance, data_entry);
+					try {
+						instance = T::get(identifier);
+						database::process_gsml_data<T>(instance, data_entry);
+					} catch (...) {
+						std::throw_with_nested(std::runtime_error("Error processing or loading data for \"" + std::string(T::class_identifier) + "\" instance \"" + data_type::get_instance_identifier_string(identifier) + "\"."));
+					}
 				}
 			}
 		}
@@ -281,9 +270,6 @@ public:
 		return ++data_type::last_numeric_identifier;
 	}
 
-	/**
-	**	@brief	Parse the history database for the class
-	*/
 	static void parse_history_database()
 	{
 		if (std::string(T::database_folder).empty()) {
@@ -307,7 +293,7 @@ public:
 				if constexpr (T::history_only == false) {
 					//non-history only data types have files with the same name as their identifiers, while for history only data types the file name is not relevant, with the identifier being scoped to within a file
 					if (T::try_get(dir_entry.path().stem().string()) == nullptr) {
-						throw std::runtime_error(dir_entry.path().stem().string() + " is not a valid \"" + T::class_identifier + "\" instance identifier.");
+						throw std::runtime_error("Could not parse history for \"" + dir_entry.path().stem().string() + "\", as it is not a valid \"" + T::class_identifier + "\" instance identifier.");
 					}
 				}
 
@@ -317,11 +303,6 @@ public:
 		}
 	}
 
-	/**
-	**	@brief	Process the history database for the class
-	**
-	**	@param	definition	Whether data entries are only being defined, or if their properties are actually being processed.
-	*/
 	static void process_history_database(const bool definition)
 	{
 		//non-history only data types have files with the same name as their identifiers, while for history only data types the file name is not relevant, with the identifier being scoped to within a file
@@ -331,8 +312,12 @@ public:
 			}
 
 			for (const gsml_data &data : T::gsml_history_data_to_process) {
-				T *instance = T::get(data.get_tag());
-				instance->process_history(data);
+				try {
+					T *instance = T::get(data.get_tag());
+					instance->process_history(data);
+				} catch (...) {
+					std::throw_with_nested(std::runtime_error("Error processing history data for \"" + std::string(T::class_identifier) + "\" instance \"" + data.get_tag() + "\"."));
+				}
 			}
 		} else {
 			for (const gsml_data &data : T::gsml_history_data_to_process) {
@@ -346,15 +331,20 @@ public:
 					}
 
 					T *instance = nullptr;
-					if (definition) {
-						if (data_entry.get_operator() == gsml_operator::addition) {
-							continue; //addition operators for data entry scopes mean modifying already-defined entries
-						}
 
-						instance = T::add(identifier);
-					} else {
-						instance = T::get(identifier);
-						instance->process_history(data_entry);
+					try {
+						if (definition) {
+							if (data_entry.get_operator() == gsml_operator::addition) {
+								continue; //addition operators for data entry scopes mean modifying already-defined entries
+							}
+
+							instance = T::add(identifier);
+						} else {
+							instance = T::get(identifier);
+							instance->process_history(data_entry);
+						}
+					} catch (...) {
+						std::throw_with_nested(std::runtime_error("Error processing history data for \"" + std::string(T::class_identifier) + "\" instance \"" + data_type::get_instance_identifier_string(identifier) + "\"."));
 					}
 				}
 			}
@@ -362,7 +352,11 @@ public:
 
 		if (!definition) {
 			for (T *instance : T::get_all()) {
-				instance->load_history();
+				try {
+					instance->load_history();
+				} catch (...) {
+					std::throw_with_nested(std::runtime_error("Error loading history data for \"" + std::string(T::class_identifier) + "\" instance \"" + instance->get_identifier_string() + "\"."));
+				}
 			}
 
 			T::gsml_history_data_to_process.clear();
@@ -394,7 +388,7 @@ public:
 			}
 
 			if (T::try_get(dir_entry.path().stem().string()) == nullptr) {
-				throw std::runtime_error(dir_entry.path().stem().string() + " is not a valid \"" + T::class_identifier + "\" instance identifier.");
+				throw std::runtime_error("Could not process the cache for \"" + dir_entry.path().stem().string() + "\", as it is not a valid \"" + T::class_identifier + "\" instance identifier.");
 			}
 
 			gsml_parser parser(dir_entry.path());
@@ -491,6 +485,15 @@ private:
 		database::get()->register_metadata(std::move(metadata));
 
 		return true;
+	}
+
+	static std::string get_instance_identifier_string(const KEY &identifier)
+	{
+		if constexpr (std::is_arithmetic_v<KEY>) {
+			return std::to_string(identifier);
+		} else {
+			return identifier;
+		}
 	}
 
 private:

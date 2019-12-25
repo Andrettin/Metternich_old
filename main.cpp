@@ -34,6 +34,17 @@
 #include <stdexcept>
 
 namespace metternich {
+	static void report_error(const std::exception &exception)
+	{
+		try {
+			std::rethrow_if_nested(exception);
+		} catch (const std::exception &nested_exception) {
+			report_error(nested_exception);
+		}
+
+		qCritical() << exception.what();
+	}
+
 	static void load_data()
 	{
 		try {
@@ -43,7 +54,7 @@ namespace metternich {
 			map::get()->set_current_world(defines::get()->get_default_world());
 			game::get()->start(defines::get()->get_default_timeline(), defines::get()->get_start_date());
 		} catch (const std::exception &exception) {
-			qCritical() << exception.what() << '\n';
+			report_error(exception);
 			QMetaObject::invokeMethod(QApplication::instance(), []{ QApplication::exit(EXIT_FAILURE); }, Qt::QueuedConnection);
 		}
 	}
@@ -106,7 +117,7 @@ int main(int argc, char *argv[])
 
 		return result;
 	} catch (const std::exception &exception) {
-		qCritical() << exception.what() << '\n';
+		report_error(exception);
 		return -1;
 	}
 }

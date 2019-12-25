@@ -77,9 +77,6 @@ void data_entry_base::process_history(const gsml_data &data)
 	}
 }
 
-/**
-**	@brief	Load history for the data entry
-*/
 void data_entry_base::load_history()
 {
 	for (const auto &kv_pair : this->history_entries) {
