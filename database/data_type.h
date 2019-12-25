@@ -49,7 +49,7 @@ public:
 		T *instance = data_type::try_get(identifier);
 
 		if (instance == nullptr) {
-			throw std::runtime_error("Invalid \"" + std::string(T::class_identifier) + "\" instance: \"" + data_type::get_instance_identifier_string(identifier) + "\".");
+			throw std::runtime_error("Invalid " + std::string(T::class_identifier) + " instance: \"" + data_type::get_instance_identifier_string(identifier) + "\".");
 		}
 
 		return instance;

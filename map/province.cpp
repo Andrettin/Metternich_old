@@ -570,8 +570,15 @@ const QColor &province::get_map_mode_color(const map_mode mode) const
 				break;
 		}
 
-		if (mode != map_mode::clade) {
-			return province::empty_province_color;
+		switch (mode) {
+			case map_mode::country:
+			case map_mode::culture:
+			case map_mode::culture_group:
+			case map_mode::religion:
+			case map_mode::religion_group:
+				return province::empty_province_color; //colonizable province
+			default:
+				break;
 		}
 	}
 
@@ -775,7 +782,7 @@ void province::write_geoshape_to_image(QImage &image, const QGeoShape &geoshape,
 
 		if (show_progress) {
 			const int progress_percent = (x - start_x) * 100 / pixel_width;
-			engine_interface::get()->set_loading_message(province_loading_message + "\nWriting Geoshape to Image... (" + QString::number(progress_percent) + "%)");
+			engine_interface::get()->set_loading_message(province_loading_message + "\nWriting Geoshape for the " + QString::fromStdString(this->get_name()) + " Province to Image... (" + QString::number(progress_percent) + "%)");
 		}
 	}
 

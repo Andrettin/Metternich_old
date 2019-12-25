@@ -117,7 +117,7 @@ std::unique_ptr<condition<T>> condition<T>::from_gsml_scope(const gsml_data &sco
 template <typename T>
 void condition<T>::process_gsml_property(const gsml_property &property)
 {
-	throw std::runtime_error("Invalid \"" + this->get_identifier() + "\" condition property: " + property.get_key() + ".");
+	throw std::runtime_error("Invalid " + this->get_identifier() + " condition property: " + property.get_key() + ".");
 }
 
 /**
@@ -128,7 +128,7 @@ void condition<T>::process_gsml_property(const gsml_property &property)
 template <typename T>
 void condition<T>::process_gsml_scope(const gsml_data &scope)
 {
-	throw std::runtime_error("Invalid \"" + this->get_identifier() + "\" condition scope: " + scope.get_tag() + ".");
+	throw std::runtime_error("Invalid " + this->get_identifier() + " condition scope: " + scope.get_tag() + ".");
 }
 
 template class condition<character>;
