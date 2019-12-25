@@ -30,6 +30,8 @@ class defines : public QObject, public singleton<defines>
 	Q_PROPERTY(metternich::clade* player_clade MEMBER player_clade READ get_player_clade)
 	Q_PROPERTY(int base_population_growth MEMBER base_population_growth READ get_base_population_growth)
 	Q_PROPERTY(int cultural_derivation_factor MEMBER cultural_derivation_factor READ get_cultural_derivation_factor)
+	Q_PROPERTY(int max_settlement_slots_per_province MEMBER max_settlement_slots_per_province READ get_max_settlement_slots_per_province)
+	Q_PROPERTY(int max_palace_slots_per_province MEMBER max_palace_slots_per_province READ get_max_palace_slots_per_province)
 
 public:
 	defines();
@@ -77,6 +79,16 @@ public:
 		return this->cultural_derivation_factor;
 	}
 
+	int get_max_settlement_slots_per_province() const
+	{
+		return this->max_settlement_slots_per_province;
+	}
+
+	int get_max_palace_slots_per_province() const
+	{
+		return this->max_palace_slots_per_province;
+	}
+
 private:
 	world *default_world = nullptr;
 	timeline *default_timeline = nullptr;
@@ -86,6 +98,8 @@ private:
 	int base_population_growth = 0; //permyriad
 	game_speed default_game_speed;
 	int cultural_derivation_factor = 1; //permyriad; up to this fraction of people in a population unit will change cultures due to cultural derivation per month per derived culture
+	int max_settlement_slots_per_province = 0;
+	int max_palace_slots_per_province = 0;
 };
 
 }

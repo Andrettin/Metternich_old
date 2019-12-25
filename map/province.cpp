@@ -4,6 +4,7 @@
 #include "culture/culture_group.h"
 #include "database/gsml_data.h"
 #include "database/gsml_property.h"
+#include "defines.h"
 #include "engine_interface.h"
 #include "game/game.h"
 #include "history/history.h"
@@ -79,13 +80,6 @@ province *province::get_by_rgb(const QRgb &rgb, const bool should_find)
 	return nullptr;
 }
 
-/**
-**	@brief	Add a new instance of the class
-**
-**	@param	identifier	The instance's identifier
-**
-**	@return	The new instance
-*/
 province *province::add(const std::string &identifier)
 {
 	if (identifier.substr(0, 2) != province::prefix) {
@@ -95,9 +89,6 @@ province *province::add(const std::string &identifier)
 	return data_type<province>::add(identifier);
 }
 
-/**
-**	@brief	Constructor
-*/
 province::province(const std::string &identifier) : data_entry(identifier)
 {
 	connect(this, &province::culture_changed, this, &identifiable_data_entry_base::name_changed);
@@ -106,18 +97,10 @@ province::province(const std::string &identifier) : data_entry(identifier)
 	connect(this, &province::selected_changed, this, &province::update_image);
 }
 
-/**
-**	@brief	Destructor
-*/
 province::~province()
 {
 }
 
-/**
-**	@brief	Process a GSML property
-**
-**	@param	property	The property
-*/
 void province::process_gsml_property(const gsml_property &property)
 {
 	if (property.get_key().substr(0, 2) == holding_slot::prefix || is_holding_slot_type_string(property.get_key())) {
@@ -169,11 +152,6 @@ void province::process_gsml_property(const gsml_property &property)
 	}
 }
 
-/**
-**	@brief	Process a GSML scope
-**
-**	@param	scope	The scope
-*/
 void province::process_gsml_scope(const gsml_data &scope)
 {
 	const std::string &tag = scope.get_tag();
@@ -212,12 +190,6 @@ void province::process_gsml_scope(const gsml_data &scope)
 	}
 }
 
-/**
-**	@brief	Process a GSML history scope
-**
-**	@param	scope	The scope
-**	@param	date	The date of the scope change
-*/
 void province::process_gsml_dated_scope(const gsml_data &scope, const QDateTime &date)
 {
 	const std::string &tag = scope.get_tag();
@@ -317,6 +289,14 @@ void province::check() const
 
 	if (this->get_county() && this->get_settlement_holding_slots().empty()) {
 		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has a county (not being a wasteland or water zone), but has no settlement holding slots.");
+	}
+
+	if (static_cast<int>(this->get_settlement_holding_slots().size()) > defines::get()->get_max_settlement_slots_per_province()) {
+		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has " + std::to_string(this->get_settlement_holding_slots().size()) + " settlement slots, but the maximum settlement slots per province is set to " + std::to_string(defines::get()->get_max_settlement_slots_per_province()) + ".");
+	}
+
+	if (static_cast<int>(this->get_palace_holding_slots().size()) > defines::get()->get_max_palace_slots_per_province()) {
+		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has " + std::to_string(this->get_palace_holding_slots().size()) + " palace slots, but the maximum palace slots per province is set to " + std::to_string(defines::get()->get_max_palace_slots_per_province()) + ".");
 	}
 }
 
