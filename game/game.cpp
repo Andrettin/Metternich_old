@@ -27,6 +27,7 @@ void game::start(const timeline *timeline, const QDateTime &start_date)
 	this->starting = true;
 	this->speed = defines::get()->get_default_game_speed();
 
+	this->total_ticks = 0;
 	history::get()->set_timeline(timeline);
 	history::get()->set_start_date(start_date);
 	this->current_date = start_date;
@@ -121,29 +122,41 @@ void game::do_tick()
 		return;
 	}
 
-	QDateTime old_date = current_date;
+	this->total_ticks++;
+
+	const QDateTime old_date = current_date;
 
 	switch (this->tick_period) {
-		case tick_period::day:
-			this->current_date = this->current_date.addDays(1);
-			break;
 		case tick_period::millenium:
 			this->current_date = this->current_date.addYears(1000);
+			break;
+		case tick_period::day:
+			this->current_date = this->current_date.addDays(1);
 			break;
 	}
 
 	emit current_date_changed();
 
-	if (old_date.date().day() != this->current_date.date().day()) {
-		this->do_day();
-	}
+	switch (this->tick_period) {
+		case tick_period::millenium:
+			//if the tick period is less than a day, do yearly actions (e.g. character aging) once every 365 ticks nevertheless
+			if (this->total_ticks % 365 == 0) {
+				this->do_year();
+			}
+			break;
+		case tick_period::day:
+			if (old_date.date().day() != this->current_date.date().day()) {
+				this->do_day();
+			}
 
-	if (old_date.date().month() != this->current_date.date().month()) {
-		this->do_month();
-	}
+			if (old_date.date().month() != this->current_date.date().month()) {
+				this->do_month();
+			}
 
-	if (old_date.date().year() != this->current_date.date().year()) {
-		this->do_year();
+			if (old_date.date().year() != this->current_date.date().year()) {
+				this->do_year();
+			}
+			break;
 	}
 }
 

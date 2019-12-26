@@ -144,6 +144,7 @@ private:
 	game_speed speed;
 	character *player_character = nullptr;
 	clade *player_clade = nullptr;
+	unsigned long long total_ticks = 0; //the total amount of ticks which have passed in the game
 	tick_period tick_period;
 	std::queue<std::function<void()>> orders; //orders given by the player, received from the UI thread
 	mutable std::shared_mutex mutex;
