@@ -36,6 +36,7 @@ void gsml_data::print(std::ofstream &ofstream, const size_t indentation, const b
 			case gsml_operator::none:
 				throw std::runtime_error("Cannot print the GSML \"none\" operator.");
 		}
+		ofstream << " ";
 	}
 	ofstream << "{";
 	if (!this->is_minor()) {
