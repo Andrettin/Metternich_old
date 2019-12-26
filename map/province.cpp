@@ -745,20 +745,24 @@ void province::write_geoshape_to_image(QImage &image, const QGeoShape &geoshape,
 		top_right.setLongitude(top_right.longitude() + 0.1);
 	}
 
-	double lon = bottom_left.longitude();
+	const double start_lon = bottom_left.longitude();
+	const double end_lon = top_right.longitude();
+
+	double lon = start_lon;
 	lon = std::round(lon / lon_per_pixel) * lon_per_pixel;
 	const int start_x = geocoordinate::longitude_to_x(lon, lon_per_pixel);
 
-	double start_lat = bottom_left.latitude();
-	start_lat = std::round(start_lat / lat_per_pixel) * lat_per_pixel;
+	const double start_lat = bottom_left.latitude();
+	const double end_lat = top_right.latitude();
+	const double normalized_start_lat = std::round(start_lat / lat_per_pixel) * lat_per_pixel;
 
-	const int pixel_width = static_cast<int>(std::round((std::abs(top_right.longitude() - bottom_left.longitude())) / lon_per_pixel));
+	const int pixel_width = static_cast<int>(std::round((std::abs(end_lon - start_lon)) / lon_per_pixel));
 	const bool show_progress = pixel_width >= 512;
 
-	for (; lon <= top_right.longitude(); lon += lon_per_pixel) {
+	for (; lon <= end_lon; lon += lon_per_pixel) {
 		const int x = geocoordinate::longitude_to_x(lon, lon_per_pixel);
 
-		for (double lat = start_lat; lat <= top_right.latitude(); lat += lat_per_pixel) {
+		for (double lat = normalized_start_lat; lat <= end_lat; lat += lat_per_pixel) {
 			QGeoCoordinate coordinate(lat, lon);
 
 			const int y = geocoordinate::latitude_to_y(lat, lat_per_pixel);
@@ -1248,11 +1252,6 @@ holding *province::get_capital_holding() const
 	return nullptr;
 }
 
-/**
-**	@brief	Set a holding as the province's capital holding
-**
-**	@param	holding	The holding
-*/
 void province::set_capital_holding(holding *holding)
 {
 	if (holding == this->get_capital_holding()) {
@@ -1268,17 +1267,11 @@ void province::set_capital_holding(holding *holding)
 	}
 }
 
-/**
-**	@brief	Get the province's palace holding slots
-*/
 QVariantList province::get_palace_holding_slots_qvariant_list() const
 {
 	return container::to_qvariant_list(this->get_palace_holding_slots());
 }
 
-/**
-**	@brief	Add a population unit to the province
-*/
 void province::add_population_unit(std::unique_ptr<population_unit> &&population_unit)
 {
 	this->population_units.push_back(std::move(population_unit));
@@ -1371,11 +1364,6 @@ bool province::has_river() const
 	return this->has_inner_river() || this->borders_river();
 }
 
-/**
-**	@brief	Get whether this province is coastal
-**
-**	@return	True if the province is coastal, or false otherwise
-*/
 bool province::is_coastal() const
 {
 	for (const province *border_province : this->border_provinces) {
@@ -1397,21 +1385,11 @@ bool province::is_water() const
 	return this->get_terrain() != nullptr && this->get_terrain()->is_water();
 }
 
-/**
-**	@brief	Get whether this province is an ocean province
-**
-**	@return	True if the province is an ocean province, or false otherwise
-*/
 bool province::is_ocean() const
 {
 	return this->get_terrain() != nullptr && this->get_terrain()->is_ocean();
 }
 
-/**
-**	@brief	Get whether this province is a river province
-**
-**	@return	True if the province is a river province, or false otherwise
-*/
 bool province::is_river() const
 {
 	return this->get_terrain() != nullptr && this->get_terrain()->is_river();
