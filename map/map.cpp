@@ -313,16 +313,6 @@ bool map::check_cache()
 {
 	QCryptographicHash hash(QCryptographicHash::Md5);
 
-	//invalidate the cache if the province database has been changed, as e.g. the color or terrain or a province may have changed
-	for (const std::filesystem::path &common_path : database::get()->get_common_paths()) {
-		const std::filesystem::path provinces_path = common_path / province::database_folder;
-		if (!std::filesystem::exists(provinces_path)) {
-			continue;
-		}
-
-		filesystem::add_files_to_checksum(hash, provinces_path);
-	}
-
 	for (const std::filesystem::path &map_path : database::get()->get_map_paths()) {
 		if (!std::filesystem::exists(map_path)) {
 			continue;
