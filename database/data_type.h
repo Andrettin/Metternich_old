@@ -355,7 +355,7 @@ public:
 				try {
 					instance->load_history();
 				} catch (...) {
-					std::throw_with_nested(std::runtime_error("Error loading history data for \"" + std::string(T::class_identifier) + "\" instance \"" + instance->get_identifier_string() + "\"."));
+					std::throw_with_nested(std::runtime_error("Error loading history data for " + std::string(T::class_identifier) + " instance \"" + instance->get_identifier_string() + "\"."));
 				}
 			}
 

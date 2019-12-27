@@ -17,8 +17,13 @@ void wildlife_unit::process_history_database()
 			metternich::species *species = species::get(species_identifier);
 			auto wildlife_unit = std::make_unique<metternich::wildlife_unit>(species);
 			wildlife_unit->moveToThread(QApplication::instance()->thread());
-			wildlife_unit->process_history(data_entry);
-			wildlife_unit->load_history();
+
+			try {
+				wildlife_unit->process_history(data_entry);
+				wildlife_unit->load_history();
+			} catch (...) {
+				std::throw_with_nested(std::runtime_error("Error loading history data for wildlife unit."));
+			}
 
 			if (wildlife_unit->get_size() <= 0) {
 				continue; //don't add empty wildlife units
