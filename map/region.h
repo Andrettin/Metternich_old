@@ -15,6 +15,7 @@ class holding_slot;
 class landed_title;
 class population_unit;
 class province;
+class technology;
 class wildlife_unit;
 
 class region : public data_entry, public data_type<region>
@@ -24,6 +25,7 @@ class region : public data_entry, public data_type<region>
 	Q_PROPERTY(QVariantList holdings READ get_holdings_qvariant_list)
 	Q_PROPERTY(QVariantList provinces READ get_provinces_qvariant_list)
 	Q_PROPERTY(QVariantList subregions READ get_subregions_qvariant_list)
+	Q_PROPERTY(QVariantList technologies READ get_technologies_qvariant_list)
 
 public:
 	static constexpr const char *class_identifier = "region";
@@ -108,6 +110,18 @@ public:
 		}
 	}
 
+	QVariantList get_technologies_qvariant_list() const;
+
+	Q_INVOKABLE void add_technology(technology *technology)
+	{
+		this->technologies.insert(technology);
+	}
+
+	Q_INVOKABLE void remove_technology(technology *technology)
+	{
+		this->technologies.erase(technology);
+	}
+
 	const std::vector<std::unique_ptr<population_unit>> &get_population_units() const
 	{
 		return this->population_units;
@@ -130,6 +144,7 @@ private:
 	std::set<holding_slot *> holding_slots; //the slots for the holdings contained by this region
 	std::set<region *> subregions; //subregions of this region
 	std::set<region *> superregions; //regions for which this region is a subregion
+	std::set<technology *> technologies; //technologies to be applied to this region's provinces
 	std::vector<std::unique_ptr<population_unit>> population_units; //population units set for this region in history, used during initialization to generate population units in the region's settlements
 	std::vector<std::unique_ptr<wildlife_unit>> wildlife_units; //wildlife units set for this region in history, used during initialization to generate wildlife units in the region's provinces
 };

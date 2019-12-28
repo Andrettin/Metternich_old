@@ -27,6 +27,7 @@
 #include "script/modifier.h"
 #include "species/clade.h"
 #include "species/wildlife_unit.h"
+#include "technology/technology.h"
 #include "translator.h"
 #include "util/container_util.h"
 #include "util/location_util.h"
@@ -480,11 +481,6 @@ landed_title *province::get_empire() const
 	return nullptr;
 }
 
-/**
-**	@brief	Get the province's de jure empire
-**
-**	@return	The province's de jure empire
-*/
 landed_title *province::get_de_jure_empire() const
 {
 	if (this->get_county() != nullptr) {
@@ -503,13 +499,6 @@ void province::set_world(metternich::world *world)
 	this->world = world;
 }
 
-/**
-**	@brief	Get the province's color for a given map mode
-**
-**	@param	mode	The map mode
-**
-**	@return	The color for the given map mode
-*/
 const QColor &province::get_map_mode_color(const map_mode mode) const
 {
 	if (this->get_county() != nullptr) {
@@ -845,11 +834,6 @@ void province::write_geojson() const
 	ofstream << geojson.toJson().constData();
 }
 
-/**
-**	@brief	Set the province's terrain
-**
-**	@param	terrain	The new terrain
-*/
 void province::set_terrain(metternich::terrain_type *terrain)
 {
 	if (terrain == this->get_terrain()) {
@@ -973,11 +957,6 @@ void province::set_religion(metternich::religion *religion)
 	}
 }
 
-/**
-**	@brief	Set the province's population
-**
-**	@param	population	The new population size for the province
-*/
 void province::set_population(const int population)
 {
 	if (population == this->get_population()) {
@@ -988,9 +967,6 @@ void province::set_population(const int population)
 	emit population_changed();
 }
 
-/**
-**	@brief	Calculate the population size for the province
-*/
 void province::calculate_population()
 {
 	int population = 0;
@@ -1000,11 +976,6 @@ void province::calculate_population()
 	this->set_population(population);
 }
 
-/**
-**	@brief	Set the province's population capacity additive modifier
-**
-**	@param	population	The new population capacity additive modifier for the province
-*/
 void province::set_population_capacity_additive_modifier(const int population_capacity_modifier)
 {
 	if (population_capacity_modifier == this->get_population_capacity_additive_modifier()) {
@@ -1022,11 +993,6 @@ void province::set_population_capacity_additive_modifier(const int population_ca
 	}
 }
 
-/**
-**	@brief	Set the province's population capacity modifier
-**
-**	@param	population	The new population capacity modifier for the province
-*/
 void province::set_population_capacity_modifier(const int population_capacity_modifier)
 {
 	if (population_capacity_modifier == this->get_population_capacity_modifier()) {
@@ -1044,11 +1010,6 @@ void province::set_population_capacity_modifier(const int population_capacity_mo
 	}
 }
 
-/**
-**	@brief	Set the province's population growth modifier
-**
-**	@param	population	The new population growth modifier for the province
-*/
 void province::set_population_growth_modifier(const int population_growth_modifier)
 {
 	if (population_growth_modifier == this->get_population_growth_modifier()) {
@@ -1395,6 +1356,11 @@ bool province::is_river() const
 	return this->get_terrain() != nullptr && this->get_terrain()->is_river();
 }
 
+QVariantList province::get_technologies_qvariant_list() const
+{
+	return container::to_qvariant_list(this->get_technologies());
+}
+
 /**
 **	@brief	Set whether the province is selected
 **
@@ -1425,11 +1391,6 @@ void province::set_selected(const bool selected, const bool notify_engine_interf
 	}
 }
 
-/**
-**	@brief	Get whether the province is selectable
-**
-**	@return	True if the province is selectable, or false otherwise
-*/
 bool province::is_selectable() const
 {
 	return this->get_county() != nullptr || (game::get()->get_player_clade() != nullptr && !this->is_water());

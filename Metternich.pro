@@ -184,6 +184,8 @@ HEADERS += \
     species/clade.h \
     species/species.h \
     species/wildlife_unit.h \
+    technology/technology.h \
+    technology/technology_category.h \
     third_party/maskedmousearea/maskedmousearea.h \
     translator.h \
     type_traits.h \

@@ -32,6 +32,7 @@ class population_type;
 class population_unit;
 class region;
 class religion;
+class technology;
 class terrain_type;
 class wildlife_unit;
 class world;
@@ -67,6 +68,7 @@ class province : public data_entry, public data_type<province>
 	Q_PROPERTY(metternich::holding_slot* fort_holding_slot READ get_fort_holding_slot CONSTANT)
 	Q_PROPERTY(metternich::holding_slot* university_holding_slot READ get_university_holding_slot CONSTANT)
 	Q_PROPERTY(metternich::holding_slot* hospital_holding_slot READ get_hospital_holding_slot CONSTANT)
+	Q_PROPERTY(QVariantList technologies READ get_technologies_qvariant_list NOTIFY technologies_changed)
 	Q_PROPERTY(bool selected READ is_selected WRITE set_selected NOTIFY selected_changed)
 	Q_PROPERTY(bool selectable READ is_selectable CONSTANT)
 	Q_PROPERTY(QGeoCoordinate center_coordinate READ get_center_coordinate CONSTANT)
@@ -345,6 +347,25 @@ public:
 	bool is_ocean() const;
 	bool is_river() const;
 
+	const std::set<technology *> &get_technologies() const
+	{
+		return this->technologies;
+	}
+
+	QVariantList get_technologies_qvariant_list() const;
+
+	Q_INVOKABLE void add_technology(technology *technology)
+	{
+		this->technologies.insert(technology);
+		emit technologies_changed();
+	}
+
+	Q_INVOKABLE void remove_technology(technology *technology)
+	{
+		this->technologies.erase(technology);
+		emit technologies_changed();
+	}
+
 	bool is_selected() const
 	{
 		return this->selected;
@@ -432,6 +453,7 @@ signals:
 	void settlement_holding_slots_changed();
 	void settlement_holdings_changed();
 	void capital_holding_slot_changed();
+	void technologies_changed();
 	void selected_changed();
 
 private:
@@ -457,7 +479,7 @@ private:
 	holding_slot *hospital_holding_slot = nullptr;
 	std::set<region *> regions; //the regions to which this province belongs
 	std::set<province *> border_provinces; //provinces bordering this one
-	bool selected = false;
+	std::set<technology *> technologies; //the technologies acquired for the province
 	std::vector<std::unique_ptr<population_unit>> population_units; //population units set for this province in history, used during initialization to generate population units in the province's settlements
 	std::map<population_type *, int> population_per_type; //the population for each population type
 	std::map<metternich::culture *, int> population_per_culture; //the population for each culture
@@ -468,6 +490,7 @@ private:
 	std::vector<QGeoPolygon> geopolygons;
 	std::vector<QGeoPath> geopaths;
 	bool inner_river = false; //whether the province has a minor river flowing through it
+	bool selected = false;
 	bool always_write_geodata = false;
 	bool write_geojson_value = false;
 };

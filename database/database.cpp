@@ -36,6 +36,8 @@
 #include "religion/religion_group.h"
 #include "species/clade.h"
 #include "species/species.h"
+#include "technology/technology.h"
+#include "technology/technology_category.h"
 #include "translator.h"
 #include "util/parse_util.h"
 #include "util/string_util.h"
@@ -117,6 +119,9 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 			} else if (property.get_key() == "subregions") {
 				region *region_value = region::get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(metternich::region *, region_value));
+			} else if (property.get_key() == "technologies") {
+				technology *technology_value = technology::get(property.get_value());
+				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(technology *, technology_value));
 			} else if (property.get_key() == "traits") {
 				trait *trait_value = trait::get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(trait *, trait_value));
@@ -191,7 +196,13 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 			throw std::runtime_error("Only the assignment operator is available for object reference properties.");
 		}
 
-		if (property.get_key() == "group") {
+		if (property.get_key() == "category") {
+			if (class_name == "metternich::technology") {
+				new_property_value = QVariant::fromValue(technology_category::get_or_add(property.get_value()));
+			} else {
+				throw std::runtime_error("Unknown type for object reference property \"" + std::string(property_name) + "\".");
+			}
+		} else if (property.get_key() == "group") {
 			if (class_name == "metternich::law") {
 				new_property_value = QVariant::fromValue(law_group::get_or_add(property.get_value()));
 			} else {
@@ -248,6 +259,8 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 			new_property_value = QVariant::fromValue(religion_group::get(property.get_value()));
 		} else if (property_class_name == "metternich::species*") {
 			new_property_value = QVariant::fromValue(species::get(property.get_value()));
+		} else if (property_class_name == "metternich::technology*") {
+			new_property_value = QVariant::fromValue(technology::get(property.get_value()));
 		} else if (property_class_name == "metternich::terrain_type*") {
 			new_property_value = QVariant::fromValue(terrain_type::get(property.get_value()));
 		} else if (property_class_name == "metternich::timeline*") {

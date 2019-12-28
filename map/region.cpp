@@ -6,15 +6,11 @@
 #include "map/province.h"
 #include "population/population_unit.h"
 #include "species/wildlife_unit.h"
+#include "technology/technology.h"
 #include "util/container_util.h"
 
 namespace metternich {
 
-/**
-**	@brief	Get the string identifiers of the classes on which this one depends for loading its database
-**
-**	@return	The class identifier string list
-*/
 std::set<std::string> region::get_database_dependencies()
 {
 	return {
@@ -24,27 +20,25 @@ std::set<std::string> region::get_database_dependencies()
 	};
 }
 
-/**
-**	@brief	Constructor
-*/
 region::region(const std::string &identifier) : data_entry(identifier)
 {
 }
 
-/**
-**	@brief	Destructor
-*/
 region::~region()
 {
 }
 
-/**
-**	@brief	Initialize the region's history
-*/
 void region::initialize_history()
 {
 	this->population_units.clear();
 	this->wildlife_units.clear();
+
+	for (technology *technology : this->technologies) {
+		for (province *province : this->provinces) {
+			province->add_technology(technology);
+		}
+	}
+	this->technologies.clear();
 
 	data_entry_base::initialize_history();
 }
@@ -107,9 +101,11 @@ QVariantList region::get_holdings_qvariant_list() const
 	return container::to_qvariant_list(this->holding_slots);
 }
 
-/**
-**	@brief	Add a population unit to the region
-*/
+QVariantList region::get_technologies_qvariant_list() const
+{
+	return container::to_qvariant_list(this->technologies);
+}
+
 void region::add_population_unit(std::unique_ptr<population_unit> &&population_unit)
 {
 	this->population_units.push_back(std::move(population_unit));
