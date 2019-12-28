@@ -523,9 +523,6 @@ bool holding::has_building(building *building) const
 
 void holding::add_building(building *building)
 {
-	building_slot *building_slot = this->get_building_slot(building);
-	building_slot->set_built(true);
-
 	if (history::get()->is_loading()) {
 		//if is loading history, automatically add all required technologies to the province when adding a building
 		for (technology *required_technology : building->get_required_technologies()) {
@@ -534,6 +531,9 @@ void holding::add_building(building *building)
 			}
 		}
 	}
+
+	building_slot *building_slot = this->get_building_slot(building);
+	building_slot->set_built(true);
 }
 
 void holding::remove_building(building *building)

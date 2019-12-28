@@ -1363,9 +1363,6 @@ QVariantList province::get_technologies_qvariant_list() const
 
 void province::add_technology(technology *technology)
 {
-	this->technologies.insert(technology);
-	emit technologies_changed();
-
 	if (history::get()->is_loading()) {
 		//if is loading history, automatically add all prerequisites when adding a technology
 		for (metternich::technology *required_technology : technology->get_required_technologies()) {
@@ -1374,6 +1371,9 @@ void province::add_technology(technology *technology)
 			}
 		}
 	}
+
+	this->technologies.insert(technology);
+	emit technologies_changed();
 }
 
 void province::remove_technology(technology *technology)
