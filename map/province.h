@@ -354,17 +354,13 @@ public:
 
 	QVariantList get_technologies_qvariant_list() const;
 
-	Q_INVOKABLE void add_technology(technology *technology)
+	bool has_technology(technology *technology) const
 	{
-		this->technologies.insert(technology);
-		emit technologies_changed();
+		return this->technologies.contains(technology);
 	}
 
-	Q_INVOKABLE void remove_technology(technology *technology)
-	{
-		this->technologies.erase(technology);
-		emit technologies_changed();
-	}
+	Q_INVOKABLE void add_technology(technology *technology);
+	Q_INVOKABLE void remove_technology(technology *technology);
 
 	bool is_selected() const
 	{

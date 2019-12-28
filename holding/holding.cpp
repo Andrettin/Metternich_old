@@ -8,6 +8,7 @@
 #include "economy/employment_type.h"
 #include "engine_interface.h"
 #include "game/game.h"
+#include "history/history.h"
 #include "holding/building.h"
 #include "holding/building_slot.h"
 #include "holding/holding_slot.h"
@@ -29,12 +30,6 @@
 
 namespace metternich {
 
-/**
-**	@brief	Constructor
-**
-**	@param	slot	The holding's holding slot
-**	@param	type	The holding's type (e.g. city)
-*/
 holding::holding(metternich::holding_slot *slot, holding_type *type) : data_entry(slot->get_identifier()), slot(slot)
 {
 	this->change_base_population_growth(defines::get()->get_base_population_growth());
@@ -63,17 +58,11 @@ holding::holding(metternich::holding_slot *slot, holding_type *type) : data_entr
 	connect(this, &holding::religion_changed, this, &holding::portrait_path_changed);
 }
 
-/**
-**	@brief	Destructor
-*/
 holding::~holding()
 {
 	this->building_slots.clear();
 }
 
-/**
-**	@brief	Initialize the holding's history
-*/
 void holding::initialize_history()
 {
 	if (this->get_owner() == nullptr && this->get_barony() == nullptr) {
@@ -129,9 +118,6 @@ void holding::do_day()
 	}
 }
 
-/**
-**	@brief	Do the holding's monthly actions
-*/
 void holding::do_month()
 {
 	if (this->is_settlement()) {
@@ -148,11 +134,6 @@ void holding::do_month()
 	}
 }
 
-/**
-**	@brief	Get the holding's name
-**
-**	@return	The holding's name
-*/
 std::string holding::get_name() const
 {
 	if (this->get_barony() != nullptr) {
@@ -162,21 +143,11 @@ std::string holding::get_name() const
 	return this->get_province()->get_name();
 }
 
-/**
-**	@brief	Get the holding's type name
-**
-**	@return	The holding's type name
-*/
 std::string holding::get_type_name() const
 {
 	return translator::get()->translate(this->get_type()->get_identifier_with_aliases(), this->get_tag_suffix_list_with_fallbacks());
 }
 
-/**
-**	@brief	Get the holding's titled name
-**
-**	@return	The holding's titled name
-*/
 std::string holding::get_titled_name() const
 {
 	std::string titled_name = this->get_type_name() + " of ";
@@ -209,21 +180,11 @@ std::vector<std::vector<std::string>> holding::get_tag_suffix_list_with_fallback
 	return tag_list_with_fallbacks;
 }
 
-/**
-**	@brief	Get the holding's barony
-**
-**	@return	The holding's barony
-*/
 landed_title *holding::get_barony() const
 {
 	return this->slot->get_barony();
 }
 
-/**
-**	@brief	Set the holding's type
-**
-**	@param	type	The holding type
-*/
 void holding::set_type(holding_type *type)
 {
 	if (type == this->get_type()) {
@@ -244,21 +205,11 @@ void holding::set_type(holding_type *type)
 	this->calculate_building_slots();
 }
 
-/**
-**	@brief	Get whether the holding is a settlement one
-**
-**	@return	True if the holding is a settlement one, or false otherwise
-*/
 bool holding::is_settlement() const
 {
 	return this->get_slot()->is_settlement();
 }
 
-/**
-**	@brief	Get the path to the holding's portrait
-**
-**	@return	The path to the portrait
-*/
 const std::filesystem::path &holding::get_portrait_path() const
 {
 	std::string base_tag = this->get_type()->get_portrait_tag();
@@ -267,21 +218,11 @@ const std::filesystem::path &holding::get_portrait_path() const
 	return portrait_path;
 }
 
-/**
-**	@brief	Get the holding's province
-**
-**	@return	The holding's province
-*/
 province *holding::get_province() const
 {
 	return this->slot->get_province();
 }
 
-/**
-**	@brief	Add a population unit to the holding
-**
-**	@param	population_unit	The population unit
-*/
 void holding::add_population_unit(std::unique_ptr<population_unit> &&population_unit)
 {
 	this->change_population(population_unit->get_size());
@@ -351,11 +292,6 @@ void holding::change_population_size(population_type *type, metternich::culture 
 	}
 }
 
-/**
-**	@brief	Get the holding's population units as a QVariantList
-**
-**	@return	The population units as a QVariantList
-*/
 QVariantList holding::get_population_units_qvariant_list() const
 {
 	QVariantList list;
@@ -367,9 +303,6 @@ QVariantList holding::get_population_units_qvariant_list() const
 	return list;
 }
 
-/**
-**	@brief	Sort the holding's population units
-*/
 void holding::sort_population_units()
 {
 	std::sort(this->population_units.begin(), this->population_units.end(), [](const std::unique_ptr<population_unit> &a, const std::unique_ptr<population_unit> &b) {
@@ -435,9 +368,6 @@ void holding::calculate_population()
 	this->set_population(population);
 }
 
-/**
-**	@brief	Do the holding's population growth
-*/
 void holding::do_population_growth()
 {
 	const int population_growth = this->get_population_growth();
@@ -538,11 +468,6 @@ void holding::calculate_population_groups()
 	this->set_religion(plurality_religion);
 }
 
-/**
-**	@brief	Get the holding's building slots
-**
-**	@return	The building slots
-*/
 std::vector<building_slot *> holding::get_building_slots() const
 {
 	std::vector<building_slot *> building_slots;
@@ -567,21 +492,11 @@ std::vector<building_slot *> holding::get_building_slots() const
 	return building_slots;
 }
 
-/**
-**	@brief	Get the holding's building slots as a QVariantList
-**
-**	@return	The building slots as a QVariantList
-*/
 QVariantList holding::get_building_slots_qvariant_list() const
 {
 	return container::to_qvariant_list(this->get_building_slots());
 }
 
-/**
-**	@brief	Get the holding's buildings
-**
-**	@return	The buildings
-*/
 std::set<building *> holding::get_buildings() const
 {
 	std::set<building *> buildings;
@@ -595,11 +510,6 @@ std::set<building *> holding::get_buildings() const
 	return buildings;
 }
 
-/**
-**	@brief	Get the holding's buildings as a QVariantList
-**
-**	@return	The buildings as a QVariantList
-*/
 QVariantList holding::get_buildings_qvariant_list() const
 {
 	return container::to_qvariant_list(this->get_buildings());
@@ -615,6 +525,15 @@ void holding::add_building(building *building)
 {
 	building_slot *building_slot = this->get_building_slot(building);
 	building_slot->set_built(true);
+
+	if (history::get()->is_loading()) {
+		//if is loading history, automatically add all required technologies to the province when adding a building
+		for (technology *required_technology : building->get_required_technologies()) {
+			if (!this->get_province()->has_technology(required_technology)) {
+				this->get_province()->add_technology(required_technology);
+			}
+		}
+	}
 }
 
 void holding::remove_building(building *building)

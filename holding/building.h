@@ -10,6 +10,7 @@ namespace metternich {
 class employment_type;
 class holding;
 class holding_type;
+class technology;
 
 template <typename T>
 class condition;
@@ -24,6 +25,7 @@ class building : public data_entry, public data_type<building>
 	Q_PROPERTY(int construction_days MEMBER construction_days READ get_construction_days)
 	Q_PROPERTY(metternich::employment_type* employment_type MEMBER employment_type READ get_employment_type)
 	Q_PROPERTY(int workforce MEMBER workforce READ get_workforce)
+	Q_PROPERTY(QVariantList required_technologies READ get_required_technologies_qvariant_list)
 
 public:
 	static constexpr const char *class_identifier = "building";
@@ -98,6 +100,23 @@ public:
 		return this->workforce;
 	}
 
+	const std::set<technology *> &get_required_technologies() const
+	{
+		return this->required_technologies;
+	}
+
+	QVariantList get_required_technologies_qvariant_list() const;
+
+	Q_INVOKABLE void add_required_technology(technology *technology)
+	{
+		this->required_technologies.insert(technology);
+	}
+
+	Q_INVOKABLE void remove_technology(technology *technology)
+	{
+		this->required_technologies.erase(technology);
+	}
+
 	const condition<holding> *get_preconditions() const
 	{
 		return this->preconditions.get();
@@ -112,10 +131,11 @@ private:
 	std::string icon_tag;
 	std::set<holding_type *> holding_types;
 	int construction_days = 0; //how many days does it take to construct this building
-	std::unique_ptr<condition<holding>> preconditions;
-	std::unique_ptr<condition<holding>> conditions;
 	metternich::employment_type *employment_type = nullptr;
 	int workforce = 0; //how many workers does this building allow for its employment type
+	std::set<technology *> required_technologies;
+	std::unique_ptr<condition<holding>> preconditions;
+	std::unique_ptr<condition<holding>> conditions;
 };
 
 }

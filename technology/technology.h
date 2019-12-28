@@ -12,6 +12,7 @@ class technology : public data_entry, public data_type<technology>
 	Q_OBJECT
 
 	Q_PROPERTY(metternich::technology_category* category MEMBER category READ get_category)
+	Q_PROPERTY(QVariantList required_technologies READ get_required_technologies_qvariant_list)
 
 public:
 	technology(const std::string &identifier) : data_entry(identifier) {}
@@ -24,8 +25,26 @@ public:
 		return this->category;
 	}
 
+	const std::set<technology *> &get_required_technologies() const
+	{
+		return this->required_technologies;
+	}
+
+	QVariantList get_required_technologies_qvariant_list() const;
+
+	Q_INVOKABLE void add_required_technology(technology *technology)
+	{
+		this->required_technologies.insert(technology);
+	}
+
+	Q_INVOKABLE void remove_technology(technology *technology)
+	{
+		this->required_technologies.erase(technology);
+	}
+
 private:
 	technology_category *category = nullptr;
+	std::set<technology *> required_technologies;
 };
 
 }

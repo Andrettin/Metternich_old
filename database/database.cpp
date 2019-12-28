@@ -119,7 +119,7 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 			} else if (property.get_key() == "subregions") {
 				region *region_value = region::get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(metternich::region *, region_value));
-			} else if (property.get_key() == "technologies") {
+			} else if (property.get_key() == "technologies" || property.get_key() == "required_technologies") {
 				technology *technology_value = technology::get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(technology *, technology_value));
 			} else if (property.get_key() == "traits") {

@@ -1361,6 +1361,27 @@ QVariantList province::get_technologies_qvariant_list() const
 	return container::to_qvariant_list(this->get_technologies());
 }
 
+void province::add_technology(technology *technology)
+{
+	this->technologies.insert(technology);
+	emit technologies_changed();
+
+	if (history::get()->is_loading()) {
+		//if is loading history, automatically add all prerequisites when adding a technology
+		for (metternich::technology *required_technology : technology->get_required_technologies()) {
+			if (!this->has_technology(required_technology)) {
+				this->add_technology(required_technology);
+			}
+		}
+	}
+}
+
+void province::remove_technology(technology *technology)
+{
+	this->technologies.erase(technology);
+	emit technologies_changed();
+}
+
 /**
 **	@brief	Set whether the province is selected
 **

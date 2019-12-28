@@ -66,6 +66,7 @@ SOURCES += \
         species/clade.cpp \
         species/species.cpp \
         species/wildlife_unit.cpp \
+        technology/technology.cpp \
         third_party/maskedmousearea/maskedmousearea.cpp \
         translator.cpp \
         util/image_util.cpp
