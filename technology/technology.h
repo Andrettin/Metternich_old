@@ -67,7 +67,7 @@ public:
 		return "file:///" + QString::fromStdString(this->get_icon_path().string());
 	}
 
-	const technology_set &get_required_technologies() const
+	const std::set<technology *> &get_required_technologies() const
 	{
 		return this->required_technologies;
 	}
@@ -104,21 +104,5 @@ private:
 	std::string icon_tag;
 	std::set<technology *> required_technologies;
 };
-
-struct technology_compare
-{
-	bool operator()(technology *a, technology *b)
-	{
-		if (a->requires_technology(b)) {
-			return false;
-		} else if (b->requires_technology(a)) {
-			return true;
-		}
-
-		return a < b;
-	}
-};
-
-using technology_set = std::set<technology *, technology_compare>;
 
 }

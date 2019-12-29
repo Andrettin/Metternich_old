@@ -67,6 +67,7 @@ SOURCES += \
         species/species.cpp \
         species/wildlife_unit.cpp \
         technology/technology.cpp \
+        technology/technology_set.cpp \
         third_party/maskedmousearea/maskedmousearea.cpp \
         translator.cpp \
         util/image_util.cpp
@@ -187,6 +188,7 @@ HEADERS += \
     species/wildlife_unit.h \
     technology/technology.h \
     technology/technology_category.h \
+    technology/technology_set.h \
     third_party/maskedmousearea/maskedmousearea.h \
     translator.h \
     type_traits.h \

@@ -2,6 +2,7 @@
 
 #include "database/data_entry.h"
 #include "database/data_type.h"
+#include "technology/technology_set.h"
 
 #include <QColor>
 #include <QGeoCoordinate>
@@ -347,7 +348,7 @@ public:
 	bool is_ocean() const;
 	bool is_river() const;
 
-	const std::set<technology *> &get_technologies() const
+	const technology_set &get_technologies() const
 	{
 		return this->technologies;
 	}
@@ -475,7 +476,7 @@ private:
 	holding_slot *hospital_holding_slot = nullptr;
 	std::set<region *> regions; //the regions to which this province belongs
 	std::set<province *> border_provinces; //provinces bordering this one
-	std::set<technology *> technologies; //the technologies acquired for the province
+	technology_set technologies; //the technologies acquired for the province
 	std::vector<std::unique_ptr<population_unit>> population_units; //population units set for this province in history, used during initialization to generate population units in the province's settlements
 	std::map<population_type *, int> population_per_type; //the population for each population type
 	std::map<metternich::culture *, int> population_per_culture; //the population for each culture
