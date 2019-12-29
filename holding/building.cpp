@@ -2,6 +2,7 @@
 
 #include "holding/holding_type.h"
 #include "script/condition/and_condition.h"
+#include "script/condition/has_technology_condition.h"
 #include "technology/technology.h"
 #include "util/container_util.h"
 
@@ -25,6 +26,20 @@ void building::process_gsml_scope(const gsml_data &scope)
 		database::process_gsml_data(this->conditions.get(), scope);
 	} else {
 		data_entry_base::process_gsml_scope(scope);
+	}
+}
+
+void building::initialize()
+{
+	if (!this->get_required_technologies().empty()) {
+		if (this->conditions == nullptr) {
+			this->conditions = std::make_unique<and_condition<holding>>();
+		}
+
+		for (technology *required_technology : this->get_required_technologies()) {
+			auto condition = std::make_unique<has_technology_condition<holding>>(required_technology);
+			this->conditions->add_condition(std::move(condition));
+		}
 	}
 }
 
@@ -56,6 +71,11 @@ void building::remove_holding_type(holding_type *holding_type)
 QVariantList building::get_required_technologies_qvariant_list() const
 {
 	return container::to_qvariant_list(this->get_required_technologies());
+}
+
+const condition<holding> *building::get_conditions() const
+{
+	return this->conditions.get();
 }
 
 }

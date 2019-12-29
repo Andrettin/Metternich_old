@@ -13,6 +13,9 @@ class holding_type;
 class technology;
 
 template <typename T>
+class and_condition;
+
+template <typename T>
 class condition;
 
 class building : public data_entry, public data_type<building>
@@ -35,6 +38,7 @@ public:
 	virtual ~building() override;
 
 	virtual void process_gsml_scope(const gsml_data &scope) override;
+	virtual void initialize() override;
 
 	virtual void check() const override
 	{
@@ -122,10 +126,7 @@ public:
 		return this->preconditions.get();
 	}
 
-	const condition<holding> *get_conditions() const
-	{
-		return this->conditions.get();
-	}
+	const condition<holding> *get_conditions() const;
 
 private:
 	std::string icon_tag;
@@ -135,7 +136,7 @@ private:
 	int workforce = 0; //how many workers does this building allow for its employment type
 	std::set<technology *> required_technologies;
 	std::unique_ptr<condition<holding>> preconditions;
-	std::unique_ptr<condition<holding>> conditions;
+	std::unique_ptr<and_condition<holding>> conditions;
 };
 
 }

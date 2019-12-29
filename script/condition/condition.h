@@ -13,9 +13,6 @@ class province;
 template <typename T>
 class condition_check;
 
-/**
-**	@brief	A scripted condition
-*/
 template <typename T>
 class condition
 {

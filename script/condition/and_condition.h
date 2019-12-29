@@ -29,6 +29,11 @@ public:
 		return identifier;
 	}
 
+	void add_condition(std::unique_ptr<condition<T>> &&condition)
+	{
+		this->conditions.push_back(std::move(condition));
+	}
+
 	virtual bool check(const T *scope) const override
 	{
 		for (const std::unique_ptr<condition<T>> &condition : this->conditions) {

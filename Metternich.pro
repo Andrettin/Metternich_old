@@ -54,6 +54,7 @@ SOURCES += \
         religion/religion_group.cpp \
         script/chance_factor.cpp \
         script/condition/condition.cpp \
+        script/condition/has_technology_condition.cpp \
         script/effect/effect.cpp \
         script/event/event_instance.cpp \
         script/event/event_option.cpp \
