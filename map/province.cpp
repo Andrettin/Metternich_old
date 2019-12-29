@@ -229,8 +229,8 @@ void province::initialize()
 			holding_slot->set_province(this);
 		}
 
-		//create a trading post holding slot for this province if none exists
-		if (this->get_trading_post_holding_slot() == nullptr) {
+		//create a trading post holding slot for this province if none exists, and if it is coastal or on a trade route
+		if (this->get_trading_post_holding_slot() == nullptr && this->can_have_trading_post()) {
 			std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier_without_prefix() + "_trading_post";
 			holding_slot *holding_slot = holding_slot::add(holding_slot_identifier);
 			holding_slot->set_type(holding_slot_type::trading_post);
@@ -530,8 +530,6 @@ const QColor &province::get_map_mode_color(const map_mode mode) const
 				}
 				break;
 			}
-			default:
-				break;
 		}
 
 		switch (mode) {
@@ -984,6 +982,10 @@ holding_slot *province::get_holding_slot(const std::string &holding_slot_str) co
 			case holding_slot_type::hospital:
 				return this->get_hospital_holding_slot();
 			case holding_slot_type::trading_post:
+				if (this->get_trading_post_holding_slot() == nullptr) {
+					throw std::runtime_error("Tried to get the trading post holding slot of province \"" + this->get_identifier() + "\", which has no such slot.");
+				}
+
 				return this->get_trading_post_holding_slot();
 			case holding_slot_type::factory:
 				return this->get_factory_holding_slot();

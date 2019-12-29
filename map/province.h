@@ -357,6 +357,11 @@ public:
 	bool is_ocean() const;
 	bool is_river() const;
 
+	bool can_have_trading_post() const
+	{
+		return this->is_coastal();
+	}
+
 	const technology_set &get_technologies() const
 	{
 		return this->technologies;
