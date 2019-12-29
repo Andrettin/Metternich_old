@@ -62,4 +62,15 @@ QVariantList trade_route::get_path_qvariant_list() const
 	return container::to_qvariant_list(this->path);
 }
 
+QVariantList trade_route::get_path_points_qvariant_list() const
+{
+	QVariantList path_points;
+
+	for (province *path_province : this->path) {
+		path_points.append(path_province->get_center_pixel());
+	}
+
+	return path_points;
+}
+
 }
