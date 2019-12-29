@@ -28,13 +28,6 @@ std::set<std::string> character::get_database_dependencies()
 	};
 }
 
-/**
-**	@brief	Generate a character
-**
-**	@param	culture		The culture for the generated character
-**	@param	religion	The religion for the generated character
-**	@param	phenotype	The phenotype for the generated character; if none is given then the default phenotype for the culture is used instead
-*/
 character *character::generate(metternich::culture *culture, metternich::religion *religion, metternich::phenotype *phenotype)
 {
 	if (culture == nullptr) {
@@ -62,12 +55,6 @@ character *character::generate(metternich::culture *culture, metternich::religio
 	return character;
 }
 
-/**
-**	@brief	Process a GSML history property
-**
-**	@param	property	The property
-**	@param	date		The date of the property change
-*/
 void character::process_gsml_dated_property(const gsml_property &property, const QDateTime &date)
 {
 	if (property.get_key() == "birth") {
@@ -93,9 +80,6 @@ void character::process_gsml_dated_property(const gsml_property &property, const
 	}
 }
 
-/**
-**	@brief	Initialize the character's history
-*/
 void character::initialize_history()
 {
 	if (history::get()->is_loading()) {
@@ -152,11 +136,6 @@ void character::set_name(const std::string &name)
 	emit name_changed();
 }
 
-/**
-**	@brief	Get the character's full name
-**
-**	@return	The character's full name
-*/
 std::string character::get_full_name() const
 {
 	std::string full_name = this->name;
@@ -166,11 +145,6 @@ std::string character::get_full_name() const
 	return full_name;
 }
 
-/**
-**	@brief	Get the character's titled name
-**
-**	@return	The character's titled name
-*/
 std::string character::get_titled_name() const
 {
 	std::string titled_name;
@@ -280,11 +254,6 @@ bool character::is_ai() const
 	return game::get()->get_player_character() != this;
 }
 
-/**
-**	@brief	Get whether the character can build in a holding
-**
-**	@param	holding	The holding
-*/
 bool character::can_build_in_holding(const holding *holding)
 {
 	return holding->get_owner() == this || this->is_any_liege_of(holding->get_owner());
