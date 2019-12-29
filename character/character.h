@@ -21,7 +21,7 @@ class phenotype;
 class religion;
 class trait;
 
-class character : public numeric_data_entry, public data_type<character, int>
+class character : public data_entry, public data_type<character>
 {
 	Q_OBJECT
 
@@ -55,7 +55,7 @@ public:
 			character::living_characters.erase(std::remove(character::living_characters.begin(), character::living_characters.end(), character), character::living_characters.end());
 		}
 
-		data_type<metternich::character, int>::remove(character);
+		data_type<metternich::character>::remove(character);
 	}
 
 	static const std::vector<character *> &get_all_living()
@@ -69,7 +69,7 @@ private:
 	static inline std::vector<character *> living_characters;
 
 public:
-	character(const int identifier) : numeric_data_entry(identifier)
+	character(const std::string &identifier) : data_entry(identifier)
 	{
 		connect(this, &character::name_changed, this, &character::full_name_changed);
 		connect(this, &character::name_changed, this, &character::titled_name_changed);
@@ -117,19 +117,19 @@ public:
 	virtual void check_history() const override
 	{
 		if (this->get_name().empty()) {
-			throw std::runtime_error("Character \"" + std::to_string(this->get_identifier()) + "\" has no name.");
+			throw std::runtime_error("Character \"" + this->get_identifier() + "\" has no name.");
 		}
 
 		if (this->get_culture() == nullptr) {
-			throw std::runtime_error("Character \"" + std::to_string(this->get_identifier()) + "\" has no culture.");
+			throw std::runtime_error("Character \"" + this->get_identifier() + "\" has no culture.");
 		}
 
 		if (this->get_religion() == nullptr) {
-			throw std::runtime_error("Character \"" + std::to_string(this->get_identifier()) + "\" has no religion.");
+			throw std::runtime_error("Character \"" + this->get_identifier() + "\" has no religion.");
 		}
 
 		if (this->get_phenotype() == nullptr) {
-			throw std::runtime_error("Character \"" + std::to_string(this->get_identifier()) + "\" has no phenotype.");
+			throw std::runtime_error("Character \"" + this->get_identifier() + "\" has no phenotype.");
 		}
 	}
 

@@ -45,7 +45,7 @@ character *character::generate(metternich::culture *culture, metternich::religio
 		throw std::runtime_error("Tried to generate a character with no religion.");
 	}
 
-	const int identifier = character::generate_numeric_identifier();
+	const std::string identifier = character::generate_identifier();
 	character *character = character::add(identifier);
 	character->culture = culture;
 	character->religion = religion;
@@ -257,7 +257,7 @@ void character::generate_personality_trait()
 	}
 
 	if (potential_traits.empty()) {
-		throw std::runtime_error("Could not generate personality trait for character \"" + this->get_identifier_string() + "\".");
+		throw std::runtime_error("Could not generate personality trait for character \"" + this->get_identifier() + "\".");
 	}
 
 	trait *chosen_trait = potential_traits[random::generate(potential_traits.size())];

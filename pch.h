@@ -30,6 +30,7 @@
 #include <QTimer>
 #include <QTimeZone>
 #include <QTranslator>
+#include <QUuid>
 #include <QVariant>
 #include <QVariantList>
 #include <QVector>

@@ -84,8 +84,6 @@ class identifiable_data_entry_base : public data_entry_base
 public:
 	virtual ~identifiable_data_entry_base() override {}
 
-	virtual std::string get_identifier_string() const = 0;
-
 	virtual std::string get_name() const = 0;
 
 	QString get_name_qstring() const
@@ -122,11 +120,6 @@ public:
 		return QString::fromStdString(this->get_identifier());
 	}
 
-	virtual std::string get_identifier_string() const override
-	{
-		return this->get_identifier();
-	}
-
 	const std::set<std::string> &get_aliases() const
 	{
 		return this->aliases;
@@ -152,42 +145,6 @@ public:
 private:
 	std::string identifier;
 	std::set<std::string> aliases;
-};
-
-/**
-**	@brief	A de(serializable) and identifiable entry to the database, using a number as its identifier
-*/
-class numeric_data_entry : public identifiable_data_entry_base
-{
-	Q_OBJECT
-
-public:
-	numeric_data_entry(const int identifier) : identifier(identifier) {}
-	virtual ~numeric_data_entry() override {}
-
-	int get_identifier() const
-	{
-		return this->identifier;
-	}
-
-	virtual std::string get_identifier_string() const override
-	{
-		return std::to_string(this->get_identifier());
-	}
-
-	const std::set<int> &get_aliases() const
-	{
-		return this->aliases;
-	}
-
-	void add_alias(const int alias)
-	{
-		this->aliases.insert(alias);
-	}
-
-private:
-	int identifier;
-	std::set<int> aliases;
 };
 
 }

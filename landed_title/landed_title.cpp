@@ -115,7 +115,7 @@ void landed_title::process_gsml_dated_property(const gsml_property &property, co
 			this->set_holder(nullptr);
 			return;
 		} else {
-			const character *holder = character::get(std::stoi(property.get_value()));
+			const character *holder = character::get(property.get_value());
 			if (holder != nullptr && !holder->is_alive()) {
 				return;
 			}

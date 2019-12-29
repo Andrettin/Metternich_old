@@ -211,7 +211,7 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 		} else if (property_class_name == "metternich::calendar*") {
 			new_property_value = QVariant::fromValue(calendar::get(property.get_value()));
 		} else if (property_class_name == "metternich::character*") {
-			new_property_value = QVariant::fromValue(character::get(std::stoi(property.get_value())));
+			new_property_value = QVariant::fromValue(character::get(property.get_value()));
 		} else if (property_class_name == "metternich::clade*") {
 			new_property_value = QVariant::fromValue(clade::get(property.get_value()));
 		} else if (property_class_name == "metternich::commodity*") {
