@@ -91,70 +91,6 @@ province::~province()
 {
 }
 
-void province::process_gsml_property(const gsml_property &property)
-{
-	if (property.get_key().substr(0, 2) == holding_slot::prefix || is_holding_slot_type_string(property.get_key())) {
-		//a property related to one of the province's holdings
-		holding_slot *holding_slot = nullptr;
-		if (property.get_key().substr(0, 2) == holding_slot::prefix) {
-			holding_slot = holding_slot::get(property.get_key());
-		} else {
-			holding_slot_type slot_type = string_to_holding_slot_type(property.get_key());
-			switch (slot_type) {
-				case holding_slot_type::fort:
-					holding_slot = this->get_fort_holding_slot();
-					break;
-				case holding_slot_type::university:
-					holding_slot = this->get_university_holding_slot();
-					break;
-				case holding_slot_type::hospital:
-					holding_slot = this->get_hospital_holding_slot();
-					break;
-				case holding_slot_type::factory:
-					holding_slot = this->get_factory_holding_slot();
-					break;
-				default:
-					break;
-			}
-		}
-
-		if (holding_slot->get_province() != this) {
-			throw std::runtime_error("Tried to set history for holding slot \"" + holding_slot->get_identifier() + "\" in the history file of province \"" + this->get_identifier() + "\", but the holding slot belongs to another province.");
-		}
-
-		holding *holding = holding_slot->get_holding();
-		if (property.get_operator() == gsml_operator::assignment) {
-			//the assignment operator sets the holding's type (creating the holding if it doesn't exist)
-			holding_type *holding_type = holding_type::get(property.get_value());
-			if (holding != nullptr) {
-				if (holding_type != nullptr) {
-					holding->set_type(holding_type);
-				} else {
-					this->destroy_holding(holding_slot);
-				}
-			} else {
-				if (holding_type != nullptr) {
-					this->create_holding(holding_slot, holding_type);
-				}
-			}
-		} else if (property.get_operator() == gsml_operator::addition || property.get_operator() == gsml_operator::subtraction) {
-			if (holding == nullptr) {
-				throw std::runtime_error("Tried to add or remove a building for an unbuilt holding (holding slot \"" + holding_slot->get_identifier() + "\").");
-			}
-
-			//the addition/subtraction operators add/remove buildings to/from the holding
-			building *building = building::get(property.get_value());
-			if (property.get_operator() == gsml_operator::addition) {
-				holding->add_building(building);
-			} else if (property.get_operator() == gsml_operator::subtraction) {
-				holding->remove_building(building);
-			}
-		}
-	} else {
-		data_entry_base::process_gsml_property(property);
-	}
-}
-
 void province::process_gsml_scope(const gsml_data &scope)
 {
 	const std::string &tag = scope.get_tag();
@@ -193,21 +129,72 @@ void province::process_gsml_scope(const gsml_data &scope)
 	}
 }
 
+void province::process_gsml_dated_property(const gsml_property &property, const QDateTime &date)
+{
+	Q_UNUSED(date)
+
+	if (property.get_key().substr(0, 2) == holding_slot::prefix || is_holding_slot_type_string(property.get_key())) {
+		//a property related to one of the province's holdings
+		holding_slot *holding_slot = this->get_holding_slot(property.get_key());
+		holding *holding = holding_slot->get_holding();
+
+		if (property.get_operator() == gsml_operator::assignment) {
+			//the assignment operator sets the holding's type (creating the holding if it doesn't exist)
+			landed_title *title = landed_title::try_get(property.get_value());
+			if (title != nullptr) {
+				if (title->get_holder() == nullptr) {
+					throw std::runtime_error("Tried to set the owner for holding of slot \"" + holding_slot->get_identifier() + "\" to the holder of landed title \"" + title->get_identifier() + "\", but the latter has no holder.");
+				}
+
+				holding->set_owner(title->get_holder());
+				return;
+			}
+
+			holding_type *holding_type = holding_type::get(property.get_value());
+			if (holding != nullptr) {
+				if (holding_type != nullptr) {
+					holding->set_type(holding_type);
+				} else {
+					this->destroy_holding(holding_slot);
+				}
+			} else {
+				if (holding_type != nullptr) {
+					this->create_holding(holding_slot, holding_type);
+				}
+			}
+		} else if (property.get_operator() == gsml_operator::addition || property.get_operator() == gsml_operator::subtraction) {
+			if (holding == nullptr) {
+				throw std::runtime_error("Tried to add or remove a building for an unbuilt holding (holding slot \"" + holding_slot->get_identifier() + "\").");
+			}
+
+			//the addition/subtraction operators add/remove buildings to/from the holding
+			building *building = building::get(property.get_value());
+			if (property.get_operator() == gsml_operator::addition) {
+				holding->add_building(building);
+			} else if (property.get_operator() == gsml_operator::subtraction) {
+				holding->remove_building(building);
+			}
+		}
+	} else {
+		data_entry_base::process_gsml_property(property);
+	}
+}
+
 void province::process_gsml_dated_scope(const gsml_data &scope, const QDateTime &date)
 {
 	const std::string &tag = scope.get_tag();
 
-	if (tag.substr(0, 2) == holding_slot::prefix) {
+	if (tag.substr(0, 2) == holding_slot::prefix || is_holding_slot_type_string(tag)) {
 		//a change to the data of one of the province's holdings
 
-		holding_slot *holding_slot = holding_slot::get(tag);
+		holding_slot *holding_slot = this->get_holding_slot(tag);
 		holding *holding = holding_slot->get_holding();
 		if (holding != nullptr) {
 			for (const gsml_property &property : scope.get_properties()) {
 				holding->process_gsml_dated_property(property, date);
 			}
 		} else {
-			throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no constructed holding for barony \"" + tag + "\", while having history to change the holding's data.");
+			throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no constructed holding for holding slot \"" + holding_slot->get_identifier() + "\", while having history to change the holding's data.");
 		}
 	} else {
 		data_entry_base::process_gsml_scope(scope);
@@ -1027,6 +1014,35 @@ void province::calculate_population_groups()
 
 	this->set_culture(plurality_culture);
 	this->set_religion(plurality_religion);
+}
+
+holding_slot *province::get_holding_slot(const std::string &holding_slot_str) const
+{
+	if (holding_slot_str.substr(0, 2) == holding_slot::prefix) {
+		holding_slot *holding_slot = holding_slot::get(holding_slot_str);
+
+		if (holding_slot->get_province() != this) {
+			throw std::runtime_error("Tried to get holding slot \"" + holding_slot->get_identifier() + "\" for province \"" + this->get_identifier() + "\", but the holding slot belongs to another province.");
+		}
+
+		return holding_slot;
+	} else {
+		holding_slot_type slot_type = string_to_holding_slot_type(holding_slot_str);
+		switch (slot_type) {
+			case holding_slot_type::fort:
+				return this->get_fort_holding_slot();
+			case holding_slot_type::university:
+				return this->get_university_holding_slot();
+			case holding_slot_type::hospital:
+				return this->get_hospital_holding_slot();
+			case holding_slot_type::factory:
+				return this->get_factory_holding_slot();
+			default:
+				break;
+		}
+	}
+
+	throw std::runtime_error("\"" + holding_slot_str + "\" is not a valid holding slot string for province history.");
 }
 
 void province::add_holding_slot(holding_slot *holding_slot)

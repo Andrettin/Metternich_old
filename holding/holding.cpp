@@ -228,6 +228,22 @@ const std::filesystem::path &holding::get_portrait_path() const
 	}
 }
 
+void holding::set_owner(character *character)
+{
+	if (character == this->get_owner()) {
+		return;
+	}
+
+	if (this->get_barony() != nullptr && this->get_barony()->get_holder() != character) {
+		throw std::runtime_error("Tried to set the owner of a holding which has a barony to a different character than its barony's holder.");
+	} else if (is_extra_holding_slot_type(this->get_slot()->get_type()) && !is_separately_ownable_extra_holding_slot_type(this->get_slot()->get_type()) && this->get_province()->get_owner() != character) {
+		throw std::runtime_error("Tried to set the owner of an extra holding which is not separately ownable to a different character than its province's owner.");
+	}
+
+	this->owner = character;
+	emit owner_changed();
+}
+
 province *holding::get_province() const
 {
 	return this->slot->get_province();

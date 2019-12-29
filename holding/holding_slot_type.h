@@ -85,6 +85,18 @@ inline bool is_extra_holding_slot_type(const holding_slot_type type)
 	}
 }
 
+//whether the holding slot type is ownable on its, separate from its barony or province
+inline bool is_separately_ownable_extra_holding_slot_type(const holding_slot_type type)
+{
+	switch (type) {
+		case holding_slot_type::trading_post:
+		case holding_slot_type::factory:
+			return true;
+		default:
+			return false;
+	}
+}
+
 }
 
 Q_DECLARE_METATYPE(metternich::holding_slot_type)
