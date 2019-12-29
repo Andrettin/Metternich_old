@@ -34,6 +34,7 @@ class region;
 class religion;
 class technology;
 class terrain_type;
+class trade_node;
 class wildlife_unit;
 class world;
 enum class map_mode : int;
@@ -50,6 +51,7 @@ class province : public data_entry, public data_type<province>
 	Q_PROPERTY(metternich::landed_title* empire READ get_empire NOTIFY empire_changed)
 	Q_PROPERTY(metternich::landed_title* de_jure_empire READ get_de_jure_empire NOTIFY de_jure_empire_changed)
 	Q_PROPERTY(metternich::world* world READ get_world CONSTANT)
+	Q_PROPERTY(metternich::trade_node* trade_node READ get_trade_node WRITE set_trade_node NOTIFY trade_node_changed)
 	Q_PROPERTY(QColor color MEMBER color READ get_color)
 	Q_PROPERTY(QRect rect READ get_rect CONSTANT)
 	Q_PROPERTY(QImage image READ get_image NOTIFY image_changed)
@@ -146,6 +148,13 @@ public:
 	}
 
 	void set_world(world *world);
+
+	trade_node *get_trade_node() const
+	{
+		return this->trade_node;
+	}
+
+	void set_trade_node(trade_node *trade_node);
 
 	const QColor &get_color() const
 	{
@@ -452,6 +461,7 @@ signals:
 	void de_jure_kingdom_changed();
 	void empire_changed();
 	void de_jure_empire_changed();
+	void trade_node_changed();
 	void image_changed();
 	void terrain_changed();
 	void owner_changed();
@@ -469,6 +479,7 @@ signals:
 private:
 	landed_title *county = nullptr;
 	world *world = nullptr;
+	trade_node *trade_node = nullptr;
 	QColor color; //the color used to identify the province in the province map
 	QRect rect; //the rectangle that the province occupies
 	QImage image; //the province's image to be drawn on-screen

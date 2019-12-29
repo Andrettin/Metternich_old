@@ -11,7 +11,8 @@ enum class map_mode : int
 	culture,
 	culture_group,
 	religion,
-	religion_group
+	religion_group,
+	trade_node
 };
 
 }

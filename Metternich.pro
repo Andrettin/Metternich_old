@@ -31,6 +31,7 @@ SOURCES += \
         economy/employment.cpp \
         economy/employment_owner.cpp \
         economy/employment_type.cpp \
+        economy/trade_node.cpp \
         engine_interface.cpp \
         game/game.cpp \
         history/history.cpp \
@@ -114,6 +115,7 @@ HEADERS += \
     economy/employment.h \
     economy/employment_owner.h \
     economy/employment_type.h \
+    economy/trade_node.h \
     empty_image_provider.h \
     engine_interface.h \
     game/game.h \

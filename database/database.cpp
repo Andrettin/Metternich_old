@@ -13,6 +13,7 @@
 #include "defines.h"
 #include "economy/commodity.h"
 #include "economy/employment_type.h"
+#include "economy/trade_node.h"
 #include "engine_interface.h"
 #include "game/game.h"
 #include "history/calendar.h"
@@ -262,6 +263,8 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 			new_property_value = QVariant::fromValue(terrain_type::get(property.get_value()));
 		} else if (property_class_name == "metternich::timeline*") {
 			new_property_value = QVariant::fromValue(timeline::get(property.get_value()));
+		} else if (property_class_name == "metternich::trade_node*") {
+			new_property_value = QVariant::fromValue(trade_node::get(property.get_value()));
 		} else if (property_class_name == "metternich::trait*") {
 			new_property_value = QVariant::fromValue(trait::get(property.get_value()));
 		} else if (property_class_name == "metternich::world*") {

@@ -5,6 +5,7 @@
 #include "database/gsml_data.h"
 #include "database/gsml_property.h"
 #include "defines.h"
+#include "economy/trade_node.h"
 #include "engine_interface.h"
 #include "game/game.h"
 #include "history/history.h"
@@ -285,11 +286,17 @@ void province::check() const
 	}
 
 	if (!this->get_color().isValid()) {
-		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no color.");
+		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no valid color.");
 	}
 
-	if (this->get_county() && this->get_settlement_holding_slots().empty()) {
-		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has a county (not being a wasteland or water zone), but has no settlement holding slots.");
+	if (this->get_county()) {
+		if (this->get_settlement_holding_slots().empty()) {
+			throw std::runtime_error("Province \"" + this->get_identifier() + "\" has a county (not being a wasteland or water zone), but has no settlement holding slots.");
+		}
+
+		if (this->get_trade_node() == nullptr) {
+			throw std::runtime_error("Province \"" + this->get_identifier() + "\" has a county (not being a wasteland or water zone), but is not assigned to any trade node.");
+		}
 	}
 
 	if (static_cast<int>(this->get_settlement_holding_slots().size()) > defines::get()->get_max_settlement_slots_per_province()) {
@@ -474,6 +481,24 @@ void province::set_world(metternich::world *world)
 	this->world = world;
 }
 
+void province::set_trade_node(metternich::trade_node *trade_node)
+{
+	if (trade_node == this->get_trade_node()) {
+		return;
+	}
+
+	if (this->get_trade_node() != nullptr) {
+		this->get_trade_node()->remove_province(this);
+	}
+
+	this->trade_node = trade_node;
+	emit trade_node_changed();
+
+	if (trade_node != nullptr) {
+		trade_node->add_province(this);
+	}
+}
+
 const QColor &province::get_map_mode_color(const map_mode mode) const
 {
 	if (this->get_county() != nullptr) {
@@ -527,6 +552,12 @@ const QColor &province::get_map_mode_color(const map_mode mode) const
 			case map_mode::religion_group: {
 				if (this->get_religion() != nullptr) {
 					return this->get_religion()->get_religion_group()->get_color();
+				}
+				break;
+			}
+			case map_mode::trade_node: {
+				if (this->get_trade_node() != nullptr && this->get_owner() != nullptr) {
+					return this->get_trade_node()->get_color();
 				}
 				break;
 			}
@@ -812,9 +843,9 @@ void province::set_culture(metternich::culture *culture)
 	metternich::culture_group *culture_group = culture ? culture->get_culture_group() : nullptr;
 
 	if (
-			map::get()->get_mode() == map_mode::culture
-			|| (map::get()->get_mode() == map_mode::culture_group && old_culture_group != culture_group)
-			) {
+		map::get()->get_mode() == map_mode::culture
+		|| (map::get()->get_mode() == map_mode::culture_group && old_culture_group != culture_group)
+	) {
 		this->update_image();
 	}
 }
