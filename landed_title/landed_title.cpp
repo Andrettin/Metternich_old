@@ -385,11 +385,6 @@ void landed_title::set_holder(character *character)
 		if (hospital_holding != nullptr) {
 			hospital_holding->set_owner(character);
 		}
-
-		holding *factory_holding = this->get_province()->get_factory_holding_slot()->get_holding();
-		if (factory_holding != nullptr) {
-			factory_holding->set_owner(character);
-		}
 	}
 
 	//if this title is associated with a holding (i.e. it is a non-titular barony), then its holder must also be the owner of the holding

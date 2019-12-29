@@ -40,11 +40,6 @@
 
 namespace metternich {
 
-/**
-**	@brief	Get the string identifiers of the classes on which this one depends for loading its database
-**
-**	@return	The class identifier string list
-*/
 std::set<std::string> province::get_database_dependencies()
 {
 	return {
@@ -55,12 +50,6 @@ std::set<std::string> province::get_database_dependencies()
 	};
 }
 
-/**
-**	@brief	Get an instance of the class by the RGB value associated with it
-**	@param	rgb	The instance's RGB
-**	@param	should_find	Whether it is expected that an instance should be found (i.e. if none is, then it is an error)
-**	@return	The instance if found, or null otherwise
-*/
 province *province::get_by_rgb(const QRgb &rgb, const bool should_find)
 {
 	if (rgb == province::empty_rgb) {
@@ -406,11 +395,6 @@ std::vector<std::vector<std::string>> province::get_tag_suffix_list_with_fallbac
 	return tag_list_with_fallbacks;
 }
 
-/**
-**	@brief	Set the province's county
-**
-**	@param	county	The new county for the province
-*/
 void province::set_county(landed_title *county)
 {
 	if (county == this->get_county()) {
@@ -436,11 +420,6 @@ landed_title *province::get_duchy() const
 	return nullptr;
 }
 
-/**
-**	@brief	Get the province's de jure duchy
-**
-**	@return	The province's de jure duchy
-*/
 landed_title *province::get_de_jure_duchy() const
 {
 	if (this->get_county() != nullptr) {
@@ -464,11 +443,6 @@ landed_title *province::get_kingdom() const
 	return nullptr;
 }
 
-/**
-**	@brief	Get the province's de jure kingdom
-**
-**	@return	The province's de jure kingdom
-*/
 landed_title *province::get_de_jure_kingdom() const
 {
 	if (this->get_county() != nullptr) {
@@ -597,11 +571,6 @@ const QColor &province::get_map_mode_color(const map_mode mode) const
 	}
 }
 
-/**
-**	@brief	Create the province's image
-**
-**	@param	pixel_indexes	The indexes of the province's pixels
-*/
 void province::create_image(const std::vector<int> &pixel_indexes)
 {
 	QPoint start_pos(-1, -1);
@@ -637,11 +606,6 @@ void province::create_image(const std::vector<int> &pixel_indexes)
 	}
 }
 
-/**
-**	@brief	Set the border pixels for the province's image
-**
-**	@param	pixel_indexes	The indexes of the province's border pixels
-*/
 void province::set_border_pixels(const std::vector<int> &pixel_indexes)
 {
 	for (const int index : pixel_indexes) {
@@ -650,9 +614,6 @@ void province::set_border_pixels(const std::vector<int> &pixel_indexes)
 	}
 }
 
-/**
-**	@brief	Update the province's image
-*/
 void province::update_image()
 {
 	const QColor &province_color = this->get_map_mode_color(map::get()->get_mode());
@@ -671,12 +632,6 @@ void province::update_image()
 	emit image_changed();
 }
 
-/**
-**	@brief	Write the province's geodata to a province image
-**
-**	@param	image			The image to which the province's geodata will be written to
-**	@param	terrain_image	The terrain image to be updated from the province's geodata, if the province has preset terrain
-*/
 void province::write_geodata_to_image(QImage &image, QImage &terrain_image) const
 {
 	for (const QGeoPolygon &geopolygon : this->geopolygons) {
@@ -688,12 +643,6 @@ void province::write_geodata_to_image(QImage &image, QImage &terrain_image) cons
 	}
 }
 
-/**
-**	@brief	Write the province's geopath endpoints to a province image
-**
-**	@param	image			The image to which the province's geodata will be written to
-**	@param	terrain_image	The terrain image to be updated from the province's geodata, if the province has preset terrain
-*/
 void province::write_geopath_endpoints_to_image(QImage &image, QImage &terrain_image) const
 {
 	const int circle_radius = this->get_terrain()->get_path_width() / 2;
@@ -707,13 +656,6 @@ void province::write_geopath_endpoints_to_image(QImage &image, QImage &terrain_i
 	}
 }
 
-/**
-**	@brief	Write a geoshape belonging to the province to an image
-**
-**	@param	image			The image to which the geoshape is to be written
-**	@param	geoshape		The geoshape
-**	@param	terrain_image	The terrain image to which the geoshape is to be written, if the province has preset terrain
-*/
 void province::write_geoshape_to_image(QImage &image, const QGeoShape &geoshape, QImage &terrain_image) const
 {
 	const QString province_loading_message = engine_interface::get()->get_loading_message();
@@ -793,9 +735,6 @@ void province::write_geoshape_to_image(QImage &image, const QGeoShape &geoshape,
 	engine_interface::get()->set_loading_message(province_loading_message);
 }
 
-/**
-**	@brief	Write the province's geodata to a GeoJSON file
-*/
 void province::write_geojson() const
 {
 	QVariantList top_list;
@@ -1038,9 +977,6 @@ void province::set_population_growth_modifier(const int population_growth_modifi
 	}
 }
 
-/**
-**	@brief	Calculate the population for each culture, religion and etc.
-*/
 void province::calculate_population_groups()
 {
 	std::unique_lock<std::shared_mutex> lock(this->population_groups_mutex);
@@ -1124,29 +1060,16 @@ void province::add_holding_slot(holding_slot *holding_slot)
 	}
 }
 
-/**
-**	@brief	Get the province's settlement holding slots
-*/
 QVariantList province::get_settlement_holding_slots_qvariant_list() const
 {
 	return container::to_qvariant_list(this->get_settlement_holding_slots());
 }
 
-/**
-**	@brief	Get the province's settlement holdings
-*/
 QVariantList province::get_settlement_holdings_qvariant_list() const
 {
 	return container::to_qvariant_list(this->get_settlement_holdings());
 }
 
-/**
-**	@brief	Create a holding in the province
-**
-**	@param	holding_slot	The holding's slot
-**
-**	@param	type			The holding's type
-*/
 void province::create_holding(holding_slot *holding_slot, holding_type *type)
 {
 	auto new_holding = std::make_unique<holding>(holding_slot, type);
@@ -1173,11 +1096,6 @@ void province::create_holding(holding_slot *holding_slot, holding_type *type)
 	}
 }
 
-/**
-**	@brief	Destroy a holding in the province
-**
-**	@param	holding_slot	The holding's slot
-*/
 void province::destroy_holding(holding_slot *holding_slot)
 {
 	holding *holding = holding_slot->get_holding();
@@ -1298,11 +1216,6 @@ void province::remove_empty_wildlife_units()
 	}
 }
 
-/**
-**	@brief	Get whether this province borders a water province
-**
-**	@return	True if the province borders a water province, or false otherwise
-*/
 bool province::borders_water() const
 {
 	for (const province *border_province : this->border_provinces) {
@@ -1314,11 +1227,6 @@ bool province::borders_water() const
 	return false;
 }
 
-/**
-**	@brief	Get whether this province borders a river province
-**
-**	@return	True if the province borders a river province, or false otherwise
-*/
 bool province::borders_river() const
 {
 	for (const province *border_province : this->border_provinces) {
@@ -1330,11 +1238,6 @@ bool province::borders_river() const
 	return false;
 }
 
-/**
-**	@brief	Get whether the province has a river, that is, whether it either borders a major river, or contains a minor river within itself
-**
-**	@return	True if the province has a river, or false otherwise
-*/
 bool province::has_river() const
 {
 	return this->has_inner_river() || this->borders_river();
@@ -1351,11 +1254,6 @@ bool province::is_coastal() const
 	return false;
 }
 
-/**
-**	@brief	Get whether this province is a water province
-**
-**	@return	True if the province is a water province, or false otherwise
-*/
 bool province::is_water() const
 {
 	return this->get_terrain() != nullptr && this->get_terrain()->is_water();
@@ -1397,13 +1295,6 @@ void province::remove_technology(technology *technology)
 	emit technologies_changed();
 }
 
-/**
-**	@brief	Set whether the province is selected
-**
-**	@param	selected				Whether the province is being selected
-**
-**	@param	notify_engine_interface	Whether to emit a signal notifying the engine interface of the change
-*/
 void province::set_selected(const bool selected, const bool notify_engine_interface)
 {
 	if (selected == this->is_selected()) {
