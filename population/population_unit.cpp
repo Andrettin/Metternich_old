@@ -93,9 +93,6 @@ void population_unit::do_month()
 	this->do_mixing();
 }
 
-/**
-**	@brief	Do mixing for the population unit
-*/
 void population_unit::do_mixing()
 {
 	for (const std::unique_ptr<population_unit> &other_population_unit : this->get_holding()->get_population_units()) {
@@ -183,9 +180,6 @@ void population_unit::set_culture(metternich::culture *culture)
 }
 
 
-/**
-**	@brief	Mixing with another population unit
-*/
 void population_unit::mix_with(population_unit *other_population_unit)
 {
 	const int base_size = std::min(this->get_size(), other_population_unit->get_size());

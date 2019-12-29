@@ -7,9 +7,6 @@
 
 namespace metternich {
 
-/**
-**	@brief	A scripted "not" condition
-*/
 template <typename T>
 class not_condition : public condition<T>
 {

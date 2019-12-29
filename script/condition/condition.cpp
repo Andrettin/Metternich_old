@@ -14,6 +14,7 @@
 #include "script/condition/commodity_condition.h"
 #include "script/condition/culture_condition.h"
 #include "script/condition/has_building_condition.h"
+#include "script/condition/has_technology_condition.h"
 #include "script/condition/holding_type_condition.h"
 #include "script/condition/not_condition.h"
 #include "script/condition/or_condition.h"
@@ -27,11 +28,6 @@
 
 namespace metternich {
 
-/**
-**	@brief	Create a condition from a GSML property
-**
-**	@param	gsml_property	The GSML property
-*/
 template <typename T>
 std::unique_ptr<condition<T>> condition<T>::from_gsml_property(const gsml_property &property)
 {
@@ -50,6 +46,8 @@ std::unique_ptr<condition<T>> condition<T>::from_gsml_property(const gsml_proper
 			return std::make_unique<tier_de_jure_title_condition<T, landed_title_tier::kingdom>>(property.get_value());
 		} else if (condition_identifier == "de_jure_empire") {
 			return std::make_unique<tier_de_jure_title_condition<T, landed_title_tier::empire>>(property.get_value());
+		} else if (condition_identifier == "has_technology") {
+			return std::make_unique<has_technology_condition<T>>(property.get_value());
 		} else if (condition_identifier == "region") {
 			return std::make_unique<region_condition<T>>(property.get_value());
 		} else if (condition_identifier == "terrain") {
@@ -78,11 +76,6 @@ std::unique_ptr<condition<T>> condition<T>::from_gsml_property(const gsml_proper
 	throw std::runtime_error("Invalid property condition: \"" + condition_identifier + "\".");
 }
 
-/**
-**	@brief	Create a condition from a GSML scope
-**
-**	@param	scope	The GSML scope
-*/
 template <typename T>
 std::unique_ptr<condition<T>> condition<T>::from_gsml_scope(const gsml_data &scope)
 {
@@ -109,22 +102,12 @@ std::unique_ptr<condition<T>> condition<T>::from_gsml_scope(const gsml_data &sco
 	return condition;
 }
 
-/**
-**	@brief	Process a GSML property
-**
-**	@param	property	The property
-*/
 template <typename T>
 void condition<T>::process_gsml_property(const gsml_property &property)
 {
 	throw std::runtime_error("Invalid " + this->get_identifier() + " condition property: " + property.get_key() + ".");
 }
 
-/**
-**	@brief	Process a GSML scope
-**
-**	@param	scope	The scope
-*/
 template <typename T>
 void condition<T>::process_gsml_scope(const gsml_data &scope)
 {

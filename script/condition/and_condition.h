@@ -7,9 +7,6 @@
 
 namespace metternich {
 
-/**
-**	@brief	A scripted "and" condition
-*/
 template <typename T>
 class and_condition : public condition<T>
 {

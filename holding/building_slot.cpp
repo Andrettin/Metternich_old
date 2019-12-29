@@ -6,9 +6,6 @@
 
 namespace metternich {
 
-/**
-**	@brief	Constructor
-*/
 building_slot::building_slot(metternich::building *building, metternich::holding *holding)
 	: building(building), holding(holding)
 {
@@ -16,9 +13,6 @@ building_slot::building_slot(metternich::building *building, metternich::holding
 	this->condition_check = std::make_unique<metternich::condition_check<metternich::holding>>(building->get_conditions(), holding, [this](bool result){ this->set_buildable(result); });
 }
 
-/**
-**	@brief	Destructor
-*/
 building_slot::~building_slot()
 {
 	this->precondition_check.reset();
@@ -29,11 +23,6 @@ building_slot::~building_slot()
 	}
 }
 
-/**
-**	@brief	Get the path to the building slot's icon
-**
-**	@return	The path to the icon
-*/
 const std::filesystem::path &building_slot::get_icon_path() const
 {
 	std::string base_tag = this->get_building()->get_icon_tag();
@@ -42,9 +31,6 @@ const std::filesystem::path &building_slot::get_icon_path() const
 	return icon_path;
 }
 
-/**
-**	@brief	Set whether the building is available
-*/
 void building_slot::set_available(const bool available)
 {
 	if (available == this->is_available()) {
@@ -65,9 +51,6 @@ void building_slot::set_available(const bool available)
 	}
 }
 
-/**
-**	@brief	Set whether the building is constructed
-*/
 void building_slot::set_built(const bool built)
 {
 	if (built == this->is_built()) {

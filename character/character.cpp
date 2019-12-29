@@ -232,6 +232,17 @@ void character::remove_landed_title(landed_title *title)
 	}
 }
 
+province *character::get_capital_province() const
+{
+	if (this->get_primary_title() != nullptr) {
+		return this->get_primary_title()->get_capital_province();
+	} else if (this->get_liege() != nullptr) {
+		return this->get_liege()->get_capital_province();
+	}
+
+	throw std::runtime_error("Character \"" + this->get_identifier() + "\" has no capital province.");
+}
+
 QVariantList character::get_traits_qvariant_list() const
 {
 	return container::to_qvariant_list(this->get_traits());

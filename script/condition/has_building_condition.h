@@ -7,9 +7,6 @@
 
 namespace metternich {
 
-/**
-**	@brief	A scripted has-building condition
-*/
 template <typename T>
 class has_building_condition : public condition<T>
 {

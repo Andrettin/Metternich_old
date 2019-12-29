@@ -18,6 +18,7 @@ class gsml_property;
 class holding;
 class landed_title;
 class phenotype;
+class province;
 class religion;
 class trait;
 
@@ -336,6 +337,7 @@ public:
 		liege->vassals.push_back(this);
 		emit liege_changed();
 	}
+
 	character *get_top_liege() const
 	{
 		if (this->get_liege() != nullptr) {
@@ -361,6 +363,8 @@ public:
 		character *top_liege = this->get_top_liege();
 		return top_liege->get_primary_title();
 	}
+
+	province *get_capital_province() const;
 
 	const std::vector<trait *> &get_traits() const
 	{
