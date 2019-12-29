@@ -1298,6 +1298,11 @@ void province::remove_technology(technology *technology)
 	emit technologies_changed();
 }
 
+bool province::is_center_of_trade() const
+{
+	return this->get_trade_node() != nullptr && this->get_trade_node()->get_center_of_trade() == this;
+}
+
 void province::set_selected(const bool selected, const bool notify_engine_interface)
 {
 	if (selected == this->is_selected()) {
@@ -1386,7 +1391,7 @@ QVariantList province::get_geopaths_qvariant_list() const
 
 QGeoCoordinate province::get_center_coordinate() const
 {
-	return this->get_world()->get_pixel_pos_coordinate(this->rect.center());
+	return this->get_world()->get_pixel_pos_coordinate(this->get_center_pixel());
 }
 
 }

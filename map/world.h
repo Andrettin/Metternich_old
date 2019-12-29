@@ -10,12 +10,14 @@ namespace metternich {
 
 class province;
 class terrain_type;
+class trade_route;
 
 class world : public data_entry, public data_type<world>
 {
 	Q_OBJECT
 
 	Q_PROPERTY(QVariantList provinces READ get_provinces_qvariant_list CONSTANT)
+	Q_PROPERTY(QVariantList trade_routes READ get_trade_routes_qvariant_list CONSTANT)
 	Q_PROPERTY(QString cache_path READ get_cache_path_qstring CONSTANT)
 
 public:
@@ -43,12 +45,18 @@ public:
 		return this->provinces;
 	}
 
+	void add_trade_route(trade_route *route)
+	{
+		this->trade_routes.insert(route);
+	}
+
 	const std::set<province *> &get_geopath_provinces()
 	{
 		return this->geopath_provinces;
 	}
 
 	QVariantList get_provinces_qvariant_list() const;
+	QVariantList get_trade_routes_qvariant_list() const;
 
 	std::filesystem::path get_cache_path() const
 	{
@@ -100,6 +108,7 @@ private:
 
 private:
 	std::set<province *> provinces;
+	std::set<trade_route *> trade_routes; //the trade routes which exist in the world
 	std::set<province *> geopath_provinces;
 	QSize pixel_size = QSize(0, 0); //the size of the world, in pixels
 	QImage terrain_image;

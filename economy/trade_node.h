@@ -8,6 +8,7 @@
 namespace metternich {
 
 class province;
+class trade_route;
 
 class trade_node : public data_entry, public data_type<trade_node>
 {
@@ -44,6 +45,11 @@ public:
 		this->provinces.erase(province);
 	}
 
+	void add_trade_route(trade_route *route)
+	{
+		this->trade_routes.insert(route);
+	}
+
 signals:
 	void center_of_trade_changed();
 
@@ -51,6 +57,7 @@ private:
 	QColor color;
 	province *center_of_trade = nullptr;
 	std::set<province *> provinces;
+	std::set<trade_route *> trade_routes; //the trade routes going through the trade node
 };
 
 }

@@ -1,6 +1,7 @@
 #include "map/world.h"
 
 #include "database/gsml_data.h"
+#include "economy/trade_route.h"
 #include "engine_interface.h"
 #include "map/province.h"
 #include "map/terrain_type.h"
@@ -14,6 +15,11 @@ namespace metternich {
 QVariantList world::get_provinces_qvariant_list() const
 {
 	return container::to_qvariant_list(this->get_provinces());
+}
+
+QVariantList world::get_trade_routes_qvariant_list() const
+{
+	return container::to_qvariant_list(this->trade_routes);
 }
 
 /**

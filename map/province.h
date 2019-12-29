@@ -35,6 +35,7 @@ class religion;
 class technology;
 class terrain_type;
 class trade_node;
+class trade_route;
 class wildlife_unit;
 class world;
 enum class map_mode : int;
@@ -75,6 +76,7 @@ class province : public data_entry, public data_type<province>
 	Q_PROPERTY(bool selected READ is_selected WRITE set_selected NOTIFY selected_changed)
 	Q_PROPERTY(bool selectable READ is_selectable CONSTANT)
 	Q_PROPERTY(QGeoCoordinate center_coordinate READ get_center_coordinate CONSTANT)
+	Q_PROPERTY(QPoint center_pixel READ get_center_pixel CONSTANT)
 	Q_PROPERTY(QVariantList geopolygons READ get_geopolygons_qvariant_list CONSTANT)
 	Q_PROPERTY(QVariantList geopaths READ get_geopaths_qvariant_list CONSTANT)
 	Q_PROPERTY(bool always_write_geodata MEMBER always_write_geodata READ always_writes_geodata)
@@ -368,7 +370,7 @@ public:
 
 	bool can_have_trading_post() const
 	{
-		return this->is_coastal();
+		return this->is_coastal() || this->has_any_trade_route();
 	}
 
 	const technology_set &get_technologies() const
@@ -385,6 +387,23 @@ public:
 
 	Q_INVOKABLE void add_technology(technology *technology);
 	Q_INVOKABLE void remove_technology(technology *technology);
+
+	bool is_center_of_trade() const;
+
+	bool has_any_trade_route() const
+	{
+		return !this->trade_routes.empty();
+	}
+
+	bool has_trade_route(trade_route *route) const
+	{
+		return this->trade_routes.contains(route);
+	}
+
+	void add_trade_route(trade_route *route)
+	{
+		this->trade_routes.insert(route);
+	}
 
 	bool is_selected() const
 	{
@@ -442,6 +461,11 @@ public:
 	}
 
 	QGeoCoordinate get_center_coordinate() const;
+
+	QPoint get_center_pixel() const
+	{
+		return this->rect.center();
+	}
 
 	bool always_writes_geodata() const
 	{
@@ -502,6 +526,7 @@ private:
 	std::set<region *> regions; //the regions to which this province belongs
 	std::set<province *> border_provinces; //provinces bordering this one
 	technology_set technologies; //the technologies acquired for the province
+	std::set<trade_route *> trade_routes; //the trade routes going through the province
 	std::vector<std::unique_ptr<population_unit>> population_units; //population units set for this province in history, used during initialization to generate population units in the province's settlements
 	std::map<population_type *, int> population_per_type; //the population for each population type
 	std::map<metternich::culture *, int> population_per_culture; //the population for each culture
