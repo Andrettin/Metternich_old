@@ -7,8 +7,6 @@
 
 namespace metternich {
 
-class clade;
-
 class species : public data_entry, public data_type<species>
 {
 	Q_OBJECT
@@ -18,7 +16,6 @@ class species : public data_entry, public data_type<species>
 	Q_PROPERTY(bool sapient MEMBER sapient READ is_sapient)
 	Q_PROPERTY(int average_weight MEMBER average_weight READ get_average_weight)
 	Q_PROPERTY(QVariantList evolutions READ get_evolutions_qvariant_list)
-	Q_PROPERTY(metternich::clade* clade READ get_clade WRITE set_clade)
 
 public:
 	static constexpr const char *class_identifier = "species";
@@ -95,19 +92,11 @@ public:
 		this->evolutions.erase(evolution);
 	}
 
-	clade *get_clade() const
-	{
-		return this->clade;
-	}
-
-	void set_clade(clade *clade);
-
 private:
 	std::string icon_tag;
 	bool sapient = false; //whether the species is sapient
 	int average_weight = 0; //the average weight for individuals of this species, in kg
 	std::set<species *> evolutions;
-	clade *clade = nullptr;
 };
 
 }

@@ -42,23 +42,11 @@ void wildlife_unit::process_history_database()
 	wildlife_unit::gsml_history_data_to_process.clear();
 }
 
-void wildlife_unit::check_history() const
-{
-	if (this->get_province()->get_owner() == nullptr && this->get_clade() == nullptr) {
-		throw std::runtime_error("Wildlife unit of species \"" + this->get_species()->get_identifier() + "\" has no clade, but lives in a province without a sapient owner.");
-	}
-}
-
 void wildlife_unit::do_month()
 {
 	if (this->get_size() == 0) {
 		return;
 	}
-}
-
-clade *wildlife_unit::get_clade() const
-{
-	return this->get_species()->get_clade();
 }
 
 int wildlife_unit::get_biomass() const

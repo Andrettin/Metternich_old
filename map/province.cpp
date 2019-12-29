@@ -25,7 +25,6 @@
 #include "religion/religion.h"
 #include "religion/religion_group.h"
 #include "script/modifier.h"
-#include "species/clade.h"
 #include "species/wildlife_unit.h"
 #include "technology/technology.h"
 #include "translator.h"
@@ -266,10 +265,6 @@ void province::initialize_history()
 	}
 	if (this->is_coastal()) {
 		this->change_population_capacity_additive_modifier(10000); //increase population capacity if this province is coastal
-	}
-
-	if (this->get_owner() == nullptr && !this->get_wildlife_units().empty()) {
-		this->calculate_clade();
 	}
 
 	data_entry_base::initialize_history();
@@ -543,14 +538,6 @@ const QColor &province::get_map_mode_color(const map_mode mode) const
 		}
 	}
 
-	if (mode == map_mode::clade) {
-		if (this->get_clade() != nullptr) {
-			return this->get_clade()->get_color();
-		} else if (!this->is_water()) {
-			return province::empty_province_color;
-		}
-	}
-
 	if (this->is_water()) {
 		return province::water_province_color;
 	} else {
@@ -803,53 +790,6 @@ character *province::get_owner() const
 	}
 
 	return nullptr;
-}
-
-void province::set_clade(metternich::clade *clade)
-{
-	if (clade == this->get_clade()) {
-		return;
-	}
-
-	if (this->get_clade() != nullptr) {
-		this->get_clade()->remove_province(this);
-	}
-
-	this->clade = clade;
-	emit clade_changed();
-
-	if (clade != nullptr) {
-		clade->add_province(this);
-	}
-
-	if (map::get()->get_mode() == map_mode::clade) {
-		this->update_image();
-	}
-}
-
-void province::calculate_clade()
-{
-	this->biomass_per_clade.clear();
-
-	for (const std::unique_ptr<wildlife_unit> &wildlife_unit : this->get_wildlife_units()) {
-		this->biomass_per_clade[wildlife_unit->get_clade()] += wildlife_unit->get_biomass();
-	}
-
-	//update the province's main clade
-
-	metternich::clade *plurality_clade = nullptr;
-	int plurality_clade_size = 0;
-
-	for (const auto &kv_pair : this->biomass_per_clade) {
-		metternich::clade *clade = kv_pair.first;
-		const int clade_size = kv_pair.second;
-		if (plurality_clade == nullptr || clade_size > plurality_clade_size) {
-			plurality_clade = clade;
-			plurality_clade_size = clade_size;
-		}
-	}
-
-	this->set_clade(plurality_clade);
 }
 
 void province::set_culture(metternich::culture *culture)
@@ -1336,7 +1276,7 @@ void province::set_selected(const bool selected, const bool notify_engine_interf
 
 bool province::is_selectable() const
 {
-	return this->get_county() != nullptr || (game::get()->get_player_clade() != nullptr && !this->is_water());
+	return this->get_county() != nullptr;
 }
 
 QVariantList province::get_population_per_type_qvariant_list() const

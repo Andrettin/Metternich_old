@@ -12,7 +12,6 @@
 #include "map/map_mode.h"
 #include "map/province.h"
 #include "script/condition/condition_check_base.h"
-#include "species/clade.h"
 
 #include <chrono>
 
@@ -40,15 +39,12 @@ void game::start(const timeline *timeline, const QDateTime &start_date)
 
 	if (defines::get()->get_player_character_title()->get_holder() != nullptr) {
 		this->set_player_character(defines::get()->get_player_character_title()->get_holder());
-		map::get()->set_mode(map_mode::country);
-		this->set_tick_period(tick_period::day);
-	} else if (defines::get()->get_player_clade()->is_alive()) {
-		this->set_player_clade(defines::get()->get_player_clade());
-		map::get()->set_mode(map_mode::clade);
-		this->set_tick_period(tick_period::millenium);
 	} else {
-		throw std::runtime_error("No valid player character or clade.");
+		throw std::runtime_error("No valid player character.");
 	}
+
+	map::get()->set_mode(map_mode::country);
+	this->set_tick_period(tick_period::day);
 
 	this->starting = false;
 	this->running = true;

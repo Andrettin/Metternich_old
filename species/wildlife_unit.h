@@ -9,7 +9,6 @@
 
 namespace metternich {
 
-class clade;
 class species;
 
 class wildlife_unit : public population_unit_base, public simple_data_type<wildlife_unit>
@@ -30,8 +29,6 @@ public:
 		connect(this, &wildlife_unit::size_changed, this, &wildlife_unit::biomass_changed);
 	}
 
-	virtual void check_history() const override;
-
 	void do_month();
 
 	species *get_species() const
@@ -39,7 +36,6 @@ public:
 		return this->species;
 	}
 
-	clade *get_clade() const;	
 	int get_biomass() const;
 
 	void subtract_existing_sizes();

@@ -63,7 +63,6 @@ SOURCES += \
         script/modifier.cpp \
         script/modifier_base.cpp \
         script/modifier_effect/modifier_effect.cpp \
-        species/clade.cpp \
         species/species.cpp \
         species/wildlife_unit.cpp \
         technology/technology.cpp \
@@ -183,7 +182,6 @@ HEADERS += \
     script/modifier_effect/population_growth_modifier_effect.h \
     script/scope_util.h \
     singleton.h \
-    species/clade.h \
     species/species.h \
     species/wildlife_unit.h \
     technology/technology.h \

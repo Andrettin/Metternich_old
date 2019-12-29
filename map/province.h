@@ -23,7 +23,6 @@
 namespace metternich {
 
 class character;
-class clade;
 class culture;
 class holding;
 class holding_slot;
@@ -56,7 +55,6 @@ class province : public data_entry, public data_type<province>
 	Q_PROPERTY(QImage image READ get_image NOTIFY image_changed)
 	Q_PROPERTY(metternich::terrain_type* terrain READ get_terrain WRITE set_terrain NOTIFY terrain_changed)
 	Q_PROPERTY(metternich::character* owner READ get_owner NOTIFY owner_changed)
-	Q_PROPERTY(metternich::clade* clade READ get_clade WRITE set_clade NOTIFY clade_changed)
 	Q_PROPERTY(metternich::culture* culture READ get_culture WRITE set_culture NOTIFY culture_changed)
 	Q_PROPERTY(metternich::religion* religion READ get_religion WRITE set_religion NOTIFY religion_changed)
 	Q_PROPERTY(int population READ get_population WRITE set_population NOTIFY population_changed)
@@ -181,14 +179,6 @@ public:
 	void set_terrain(terrain_type *terrain);
 
 	character *get_owner() const;
-
-	metternich::clade *get_clade() const
-	{
-		return this->clade;
-	}
-
-	void set_clade(clade *clade);
-	void calculate_clade();
 
 	metternich::culture *get_culture() const
 	{
@@ -454,7 +444,6 @@ signals:
 	void image_changed();
 	void terrain_changed();
 	void owner_changed();
-	void clade_changed();
 	void culture_changed();
 	void religion_changed();
 	void population_changed();
@@ -473,7 +462,6 @@ private:
 	QRect rect; //the rectangle that the province occupies
 	QImage image; //the province's image to be drawn on-screen
 	terrain_type *terrain = nullptr;
-	metternich::clade *clade = nullptr; //the dominant clade in the province
 	metternich::culture *culture = nullptr;
 	metternich::religion *religion = nullptr;
 	int population = 0; //the sum of the population of all of the province's settlement holdings
@@ -497,7 +485,6 @@ private:
 	std::map<metternich::religion *, int> population_per_religion; //the population for each religion
 	mutable std::shared_mutex population_groups_mutex;
 	std::vector<std::unique_ptr<wildlife_unit>> wildlife_units; //wildlife units set for this province in history
-	std::map<metternich::clade *, int> biomass_per_clade; //the amount of biomass for each clade in the province
 	std::vector<QGeoPolygon> geopolygons;
 	std::vector<QGeoPath> geopaths;
 	bool inner_river = false; //whether the province has a minor river flowing through it

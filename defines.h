@@ -9,7 +9,6 @@
 
 namespace metternich {
 
-class clade;
 class gsml_property;
 class landed_title;
 class timeline;
@@ -27,7 +26,6 @@ class defines : public QObject, public singleton<defines>
 	Q_PROPERTY(metternich::timeline* default_timeline MEMBER default_timeline READ get_default_timeline)
 	Q_PROPERTY(QDateTime start_date MEMBER start_date READ get_start_date)
 	Q_PROPERTY(metternich::landed_title* player_character_title MEMBER player_character_title READ get_player_character_title)
-	Q_PROPERTY(metternich::clade* player_clade MEMBER player_clade READ get_player_clade)
 	Q_PROPERTY(int base_population_growth MEMBER base_population_growth READ get_base_population_growth)
 	Q_PROPERTY(int cultural_derivation_factor MEMBER cultural_derivation_factor READ get_cultural_derivation_factor)
 	Q_PROPERTY(int max_settlement_slots_per_province MEMBER max_settlement_slots_per_province READ get_max_settlement_slots_per_province)
@@ -57,11 +55,6 @@ public:
 	landed_title *get_player_character_title() const
 	{
 		return this->player_character_title;
-	}
-
-	clade *get_player_clade() const
-	{
-		return this->player_clade;
 	}
 
 	int get_base_population_growth() const
@@ -94,7 +87,6 @@ private:
 	timeline *default_timeline = nullptr;
 	QDateTime start_date;
 	landed_title *player_character_title = nullptr;
-	clade *player_clade = nullptr;
 	int base_population_growth = 0; //permyriad
 	game_speed default_game_speed;
 	int cultural_derivation_factor = 1; //permyriad; up to this fraction of people in a population unit will change cultures due to cultural derivation per month per derived culture

@@ -10,7 +10,6 @@
 #include "map/province_profile.h"
 #include "map/region.h"
 #include "population/population_unit.h"
-#include "species/clade.h"
 #include "species/wildlife_unit.h"
 #include "util/string_util.h"
 
@@ -201,7 +200,6 @@ void history::load()
 	province_profile::parse_history_database();
 	character::parse_history_database();
 	landed_title::parse_history_database();
-	clade::parse_history_database();
 	population_unit::parse_history_database();
 	wildlife_unit::parse_history_database();
 
@@ -212,7 +210,6 @@ void history::load()
 	province_profile::process_history_database(false);
 	character::process_history_database(false);
 	landed_title::process_history_database(false);
-	clade::process_history_database(false);
 
 	//process population units after the province history, so that holdings will have been created
 	population_unit::process_history_database();

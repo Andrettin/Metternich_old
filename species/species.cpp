@@ -1,6 +1,5 @@
 #include "species/species.h"
 
-#include "species/clade.h"
 #include "translator.h"
 #include "util/container_util.h"
 
@@ -14,23 +13,6 @@ std::string species::get_name_plural() const
 QVariantList species::get_evolutions_qvariant_list() const
 {
 	return container::to_qvariant_list(this->get_evolutions());
-}
-
-void species::set_clade(metternich::clade *clade)
-{
-	if (clade == this->get_clade()) {
-		return;
-	}
-
-	if (this->get_clade() != nullptr && this->get_clade()->has_species(this)) {
-		this->get_clade()->remove_species(this);
-	}
-
-	this->clade = clade;
-
-	if (clade != nullptr && !clade->has_species(this)) {
-		clade->add_species(this);
-	}
 }
 
 }
