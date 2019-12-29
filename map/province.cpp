@@ -229,6 +229,14 @@ void province::initialize()
 			holding_slot->set_province(this);
 		}
 
+		//create a trading post holding slot for this province if none exists
+		if (this->get_trading_post_holding_slot() == nullptr) {
+			std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier_without_prefix() + "_trading_post";
+			holding_slot *holding_slot = holding_slot::add(holding_slot_identifier);
+			holding_slot->set_type(holding_slot_type::trading_post);
+			holding_slot->set_province(this);
+		}
+
 		//create a factory holding slot for this province if none exists
 		if (this->get_factory_holding_slot() == nullptr) {
 			std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier_without_prefix() + "_factory";
@@ -975,6 +983,8 @@ holding_slot *province::get_holding_slot(const std::string &holding_slot_str) co
 				return this->get_university_holding_slot();
 			case holding_slot_type::hospital:
 				return this->get_hospital_holding_slot();
+			case holding_slot_type::trading_post:
+				return this->get_trading_post_holding_slot();
 			case holding_slot_type::factory:
 				return this->get_factory_holding_slot();
 			default:
@@ -1007,6 +1017,9 @@ void province::add_holding_slot(holding_slot *holding_slot)
 			break;
 		case holding_slot_type::hospital:
 			this->hospital_holding_slot = holding_slot;
+			break;
+		case holding_slot_type::trading_post:
+			this->trading_post_holding_slot = holding_slot;
 			break;
 		case holding_slot_type::factory:
 			this->factory_holding_slot = holding_slot;
@@ -1044,6 +1057,7 @@ void province::create_holding(holding_slot *holding_slot, holding_type *type)
 		case holding_slot_type::fort:
 		case holding_slot_type::hospital:
 		case holding_slot_type::university:
+		case holding_slot_type::trading_post:
 		case holding_slot_type::factory:
 			holding_slot->get_holding()->set_owner(this->get_owner());
 			break;
