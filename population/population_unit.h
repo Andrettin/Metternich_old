@@ -49,6 +49,21 @@ public:
 
 	virtual void initialize_history() override;
 
+	virtual void check_history() const override
+	{
+		if (this->get_culture() == nullptr) {
+			throw std::runtime_error("Population unit has no culture.");
+		}
+
+		if (this->get_religion() == nullptr) {
+			throw std::runtime_error("Population unit has no religion.");
+		}
+
+		if (this->get_phenotype() == nullptr) {
+			throw std::runtime_error("Population unit has no phenotype.");
+		}
+	}
+
 	void do_month();
 	void do_mixing();
 	void do_cultural_derivation();

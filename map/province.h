@@ -69,6 +69,7 @@ class province : public data_entry, public data_type<province>
 	Q_PROPERTY(metternich::holding_slot* fort_holding_slot READ get_fort_holding_slot CONSTANT)
 	Q_PROPERTY(metternich::holding_slot* university_holding_slot READ get_university_holding_slot CONSTANT)
 	Q_PROPERTY(metternich::holding_slot* hospital_holding_slot READ get_hospital_holding_slot CONSTANT)
+	Q_PROPERTY(metternich::holding_slot* factory_holding_slot READ get_factory_holding_slot CONSTANT)
 	Q_PROPERTY(QVariantList technologies READ get_technologies_qvariant_list NOTIFY technologies_changed)
 	Q_PROPERTY(bool selected READ is_selected WRITE set_selected NOTIFY selected_changed)
 	Q_PROPERTY(bool selectable READ is_selectable CONSTANT)
@@ -115,6 +116,12 @@ public:
 
 	void do_day();
 	void do_month();
+
+	std::string get_identifier_without_prefix() const
+	{
+		const size_t prefix_size = std::string(province::prefix).size();
+		return this->get_identifier().substr(prefix_size, this->get_identifier().size() - prefix_size);
+	}
 
 	virtual std::string get_name() const override;
 
@@ -300,6 +307,11 @@ public:
 		return this->hospital_holding_slot;
 	}
 
+	holding_slot *get_factory_holding_slot() const
+	{
+		return this->factory_holding_slot;
+	}
+
 	const std::set<region *> &get_regions() const
 	{
 		return this->regions;
@@ -474,6 +486,7 @@ private:
 	holding_slot *fort_holding_slot = nullptr;
 	holding_slot *university_holding_slot = nullptr;
 	holding_slot *hospital_holding_slot = nullptr;
+	holding_slot *factory_holding_slot = nullptr;
 	std::set<region *> regions; //the regions to which this province belongs
 	std::set<province *> border_provinces; //provinces bordering this one
 	technology_set technologies; //the technologies acquired for the province

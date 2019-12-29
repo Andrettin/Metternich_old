@@ -10,7 +10,8 @@ enum class holding_slot_type : int
 	fort,
 	trading_post,
 	hospital,
-	university
+	university,
+	factory
 };
 
 inline holding_slot_type string_to_holding_slot_type(const std::string &str)
@@ -29,6 +30,8 @@ inline holding_slot_type string_to_holding_slot_type(const std::string &str)
 		return holding_slot_type::hospital;
 	} else if (str == "university") {
 		return holding_slot_type::university;
+	} else if (str == "factory") {
+		return holding_slot_type::factory;
 	}
 
 	throw std::runtime_error("Invalid holding slot type: \"" + str + "\".");
@@ -51,6 +54,8 @@ inline std::string holding_slot_type_to_string(const holding_slot_type type)
 			return "hospital";
 		case holding_slot_type::university:
 			return "university";
+		case holding_slot_type::factory:
+			return "factory";
 	}
 
 	throw std::runtime_error("Invalid holding slot type: \"" + std::to_string(static_cast<int>(type)) + "\".");
@@ -58,7 +63,7 @@ inline std::string holding_slot_type_to_string(const holding_slot_type type)
 
 inline bool is_holding_slot_type_string(const std::string &str)
 {
-	if (str == "settlement" || str == "palace" || str == "temple" || str == "fort" || str == "trading_post" || str == "hospital" || str == "university") {
+	if (str == "settlement" || str == "palace" || str == "temple" || str == "fort" || str == "trading_post" || str == "hospital" || str == "university" || str == "factory") {
 		return true;
 	}
 
@@ -73,6 +78,7 @@ inline bool is_extra_holding_slot_type(const holding_slot_type type)
 		case holding_slot_type::trading_post:
 		case holding_slot_type::hospital:
 		case holding_slot_type::university:
+		case holding_slot_type::factory:
 			return true;
 		default:
 			return false;

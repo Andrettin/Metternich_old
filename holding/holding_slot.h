@@ -52,6 +52,7 @@ public:
 	virtual void initialize() override;
 	virtual void initialize_history() override;
 	virtual void check() const override;
+	virtual void check_history() const override;
 
 	virtual std::string get_name() const override;
 

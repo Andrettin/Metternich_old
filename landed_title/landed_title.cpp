@@ -267,7 +267,7 @@ void landed_title::check_history() const
 		}
 	}
 
-	landed_title::check();
+	this->check();
 }
 
 std::string landed_title::get_name() const
@@ -384,6 +384,11 @@ void landed_title::set_holder(character *character)
 		holding *hospital_holding = this->get_province()->get_hospital_holding_slot()->get_holding();
 		if (hospital_holding != nullptr) {
 			hospital_holding->set_owner(character);
+		}
+
+		holding *factory_holding = this->get_province()->get_factory_holding_slot()->get_holding();
+		if (factory_holding != nullptr) {
+			factory_holding->set_owner(character);
 		}
 	}
 

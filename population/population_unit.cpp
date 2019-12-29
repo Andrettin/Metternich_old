@@ -62,9 +62,6 @@ void population_unit::process_history_database()
 	population_unit::gsml_history_data_to_process.clear();
 }
 
-/**
-**	@brief	Initialize the population unit's history
-*/
 void population_unit::initialize_history()
 {
 	//set the culture and religion of population units without any set to those of their holding
@@ -371,13 +368,6 @@ void population_unit::subtract_existing_sizes_in_holdings(const std::vector<mett
 	}
 }
 
-/**
-**	@brief	Whether this population unit can be distributed to the given holding
-**
-**	@param	holding	The holding
-**
-**	@return	True if the population unit can be distributed to the holding, or false otherwise
-*/
 bool population_unit::can_distribute_to_holding(const metternich::holding *holding) const
 {
 	if (!holding->get_slot()->is_population_distribution_allowed()) {

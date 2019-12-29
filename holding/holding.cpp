@@ -96,8 +96,14 @@ void holding::initialize_history()
 
 void holding::check_history() const
 {
-	for (const std::unique_ptr<population_unit> &population_unit : this->get_population_units()) {
-		population_unit->check_history();
+	this->get_portrait_path(); //throws an exception if the portrait is not found
+
+	try {
+		for (const std::unique_ptr<population_unit> &population_unit : this->get_population_units()) {
+			population_unit->check_history();
+		}
+	} catch (...) {
+		std::throw_with_nested(std::runtime_error("A population unit in the holding of slot \"" + this->get_slot()->get_identifier() + "\" is in an invalid state."));
 	}
 }
 
@@ -212,10 +218,14 @@ bool holding::is_settlement() const
 
 const std::filesystem::path &holding::get_portrait_path() const
 {
-	std::string base_tag = this->get_type()->get_portrait_tag();
+	const std::string &base_tag = this->get_type()->get_portrait_tag();
 
-	const std::filesystem::path &portrait_path = database::get()->get_tagged_holding_portrait_path(base_tag, this->get_tag_suffix_list_with_fallbacks());
-	return portrait_path;
+	try {
+		const std::filesystem::path &portrait_path = database::get()->get_tagged_holding_portrait_path(base_tag, this->get_tag_suffix_list_with_fallbacks());
+		return portrait_path;
+	} catch (...) {
+		std::throw_with_nested(std::runtime_error("Could not find a valid portrait for holding of slot \"" + this->get_slot()->get_identifier() + "\"."));
+	}
 }
 
 province *holding::get_province() const

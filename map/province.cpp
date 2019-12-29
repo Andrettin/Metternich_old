@@ -121,6 +121,9 @@ void province::process_gsml_property(const gsml_property &property)
 				case holding_slot_type::hospital:
 					holding_slot = this->get_hospital_holding_slot();
 					break;
+				case holding_slot_type::factory:
+					holding_slot = this->get_factory_holding_slot();
+					break;
 				default:
 					break;
 			}
@@ -135,11 +138,21 @@ void province::process_gsml_property(const gsml_property &property)
 			//the assignment operator sets the holding's type (creating the holding if it doesn't exist)
 			holding_type *holding_type = holding_type::get(property.get_value());
 			if (holding != nullptr) {
-				holding->set_type(holding_type);
+				if (holding_type != nullptr) {
+					holding->set_type(holding_type);
+				} else {
+					this->destroy_holding(holding_slot);
+				}
 			} else {
-				this->create_holding(holding_slot, holding_type);
+				if (holding_type != nullptr) {
+					this->create_holding(holding_slot, holding_type);
+				}
 			}
 		} else if (property.get_operator() == gsml_operator::addition || property.get_operator() == gsml_operator::subtraction) {
+			if (holding == nullptr) {
+				throw std::runtime_error("Tried to add or remove a building for an unbuilt holding (holding slot \"" + holding_slot->get_identifier() + "\").");
+			}
+
 			//the addition/subtraction operators add/remove buildings to/from the holding
 			building *building = building::get(property.get_value());
 			if (property.get_operator() == gsml_operator::addition) {
@@ -219,7 +232,7 @@ void province::initialize()
 
 		//create a fort holding slot for this province if none exists
 		if (this->get_fort_holding_slot() == nullptr) {
-			std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier() + "_fort";
+			std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier_without_prefix() + "_fort";
 			holding_slot *holding_slot = holding_slot::add(holding_slot_identifier);
 			holding_slot->set_type(holding_slot_type::fort);
 			holding_slot->set_province(this);
@@ -227,7 +240,7 @@ void province::initialize()
 
 		//create a university holding slot for this province if none exists
 		if (this->get_university_holding_slot() == nullptr) {
-			std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier() + "_university";
+			std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier_without_prefix() + "_university";
 			holding_slot *holding_slot = holding_slot::add(holding_slot_identifier);
 			holding_slot->set_type(holding_slot_type::university);
 			holding_slot->set_province(this);
@@ -235,9 +248,17 @@ void province::initialize()
 
 		//create a hospital holding slot for this province if none exists
 		if (this->get_hospital_holding_slot() == nullptr) {
-			std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier() + "_hospital";
+			std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier_without_prefix() + "_hospital";
 			holding_slot *holding_slot = holding_slot::add(holding_slot_identifier);
 			holding_slot->set_type(holding_slot_type::hospital);
+			holding_slot->set_province(this);
+		}
+
+		//create a factory holding slot for this province if none exists
+		if (this->get_factory_holding_slot() == nullptr) {
+			std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier_without_prefix() + "_factory";
+			holding_slot *holding_slot = holding_slot::add(holding_slot_identifier);
+			holding_slot->set_type(holding_slot_type::factory);
 			holding_slot->set_province(this);
 		}
 	}
@@ -323,16 +344,17 @@ void province::check_history() const
 		throw std::runtime_error("Province \"" + this->get_identifier() + "\"'s capital holding slot (\"" + this->get_capital_holding_slot()->get_barony()->get_identifier() + "\") belongs to another province (\"" + this->get_capital_holding_slot()->get_province()->get_identifier() + "\").");
 	}
 
-	for (const std::unique_ptr<wildlife_unit> &wildlife_unit : this->get_wildlife_units()) {
-		wildlife_unit->check_history();
+	try {
+		for (const std::unique_ptr<wildlife_unit> &wildlife_unit : this->get_wildlife_units()) {
+			wildlife_unit->check_history();
+		}
+	} catch (...) {
+		std::throw_with_nested(std::runtime_error("A wildlife unit in province \"" + this->get_identifier() + "\" is in an invalid state."));
 	}
 
-	province::check();
+	this->check();
 }
 
-/**
-**	@brief	Get cache data for the province
-*/
 gsml_data province::get_cache_data() const
 {
 	gsml_data cache_data(this->get_identifier());
@@ -351,26 +373,15 @@ gsml_data province::get_cache_data() const
 	return cache_data;
 }
 
-/**
-**	@brief	Do the province's daily actions
-*/
 void province::do_day()
 {
 }
 
-/**
-**	@brief	Do the province's monthly actions
-*/
 void province::do_month()
 {
 	this->calculate_population_groups();
 }
 
-/**
-**	@brief	Get the province's name
-**
-**	@return	The province's name
-*/
 std::string province::get_name() const
 {
 	if (this->get_county() != nullptr) {
@@ -1105,6 +1116,9 @@ void province::add_holding_slot(holding_slot *holding_slot)
 		case holding_slot_type::hospital:
 			this->hospital_holding_slot = holding_slot;
 			break;
+		case holding_slot_type::factory:
+			this->factory_holding_slot = holding_slot;
+			break;
 		default:
 			throw std::runtime_error("Holding slot \"" + holding_slot->get_identifier() + "\" has an invalid type (" + std::to_string(static_cast<int>(holding_slot->get_type())) + "), but is being added to province \"" + this->get_identifier() + "\".");
 	}
@@ -1151,6 +1165,7 @@ void province::create_holding(holding_slot *holding_slot, holding_type *type)
 		case holding_slot_type::fort:
 		case holding_slot_type::hospital:
 		case holding_slot_type::university:
+		case holding_slot_type::factory:
 			holding_slot->get_holding()->set_owner(this->get_owner());
 			break;
 		default:

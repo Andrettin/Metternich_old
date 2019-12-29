@@ -26,25 +26,14 @@ std::set<std::string> holding_slot::get_database_dependencies()
 	};
 }
 
-/**
-**	@brief	Constructor
-**
-**	@param	identifier	The holding slot's identifier
-*/
 holding_slot::holding_slot(const std::string &identifier) : data_entry(identifier)
 {
 }
 
-/**
-**	@brief	Destructor
-*/
 holding_slot::~holding_slot()
 {
 }
 
-/**
-**	@brief	Initialize the holding slot
-*/
 void holding_slot::initialize()
 {
 	if (this->province_profile != nullptr) {
@@ -60,10 +49,6 @@ void holding_slot::initialize()
 	data_entry_base::initialize();
 }
 
-
-/**
-**	@brief	Initialize the holding slot's history
-*/
 void holding_slot::initialize_history()
 {
 	if (this->get_holding() != nullptr && !this->get_holding()->is_history_initialized()) {
@@ -73,9 +58,6 @@ void holding_slot::initialize_history()
 	data_entry_base::initialize_history();
 }
 
-/**
-**	@brief	Check whether the holding slot is in a valid state
-*/
 void holding_slot::check() const
 {
 	if (this->get_province()->get_county() == nullptr) {
@@ -87,11 +69,19 @@ void holding_slot::check() const
 	}
 }
 
-/**
-**	@brief	Get the holding slot's name
-**
-**	@return	The holding slot's name
-*/
+void holding_slot::check_history() const
+{
+	if (this->get_holding() != nullptr) {
+		try {
+			this->get_holding()->check_history();
+		} catch (...) {
+			std::throw_with_nested(std::runtime_error("The holding of slot \"" + this->get_identifier() + "\" is in an invalid state."));
+		}
+	}
+
+	this->check();
+}
+
 std::string holding_slot::get_name() const
 {
 	if (this->get_barony() != nullptr) {

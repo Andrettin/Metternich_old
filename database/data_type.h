@@ -455,14 +455,22 @@ public:
 	static void check_all()
 	{
 		for (const T *instance : T::get_all()) {
-			instance->check();
+			try {
+				instance->check();
+			} catch (...) {
+				std::throw_with_nested(std::runtime_error("The " + std::string(std::string(T::class_identifier)) + " instance \"" + instance->get_identifier_string() + "\" is in an invalid state."));
+			}
 		}
 	}
 
 	static void check_all_history()
 	{
 		for (const T *instance : T::get_all()) {
-			instance->check_history();
+			try {
+				instance->check_history();
+			} catch (...) {
+				std::throw_with_nested(std::runtime_error("The " + std::string(std::string(T::class_identifier)) + " instance \"" + instance->get_identifier_string() + "\" is in an invalid state."));
+			}
 		}
 	}
 
