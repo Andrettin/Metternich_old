@@ -24,6 +24,8 @@ public:
 	static constexpr const char *database_folder = "trade_nodes";
 
 	virtual void check() const override;
+	
+	virtual std::string get_name() const override;
 
 	const QColor &get_color() const
 	{
