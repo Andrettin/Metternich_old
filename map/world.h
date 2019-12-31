@@ -103,6 +103,8 @@ public:
 		}
 
 		return gsml_map_data_to_process;
+	}
+
 	void process_province_map_database();
 	void process_terrain_map_database();
 	void process_terrain_gsml_data(const terrain_type *terrain, const gsml_data &data);

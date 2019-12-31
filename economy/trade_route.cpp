@@ -40,6 +40,33 @@ void trade_route::initialize()
 	this->add_trade_node(start_province->get_trade_node());
 	this->add_trade_node(end_province->get_trade_node());
 	start_province->get_world()->add_trade_route(this);
+
+	if (!this->get_rect().isValid()) {
+		QPoint top_left(-1, -1);
+		QPoint bottom_right(-1, -1);
+
+		for (province *path_province : this->path) {
+			const QPoint province_pos = path_province->get_center_pos();
+
+			if (top_left.x() == -1 || province_pos.x() < top_left.x()) {
+				top_left.setX(province_pos.x());
+			}
+
+			if (top_left.y() == -1 || province_pos.y() < top_left.y()) {
+				top_left.setY(province_pos.y());
+			}
+
+			if (bottom_right.x() == -1 || province_pos.x() > bottom_right.x()) {
+				bottom_right.setX(province_pos.x());
+			}
+
+			if (bottom_right.y() == -1 || province_pos.y() > bottom_right.y()) {
+				bottom_right.setY(province_pos.y());
+			}
+		}
+
+		this->rect = QRect(top_left, bottom_right);
+	}
 }
 
 void trade_route::check() const
