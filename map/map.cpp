@@ -59,6 +59,7 @@ void map::load()
 	for (world *world : world::get_all()) {
 		world->load_terrain_map();
 		world->load_province_map();
+		world->process_trade_route_map_database();
 	}
 
 	if (!cache_valid) {
@@ -340,9 +341,6 @@ bool map::check_cache()
 	return true;
 }
 
-/**
-**	@brief	Save the map cache
-*/
 void map::save_cache()
 {
 	const std::filesystem::path cache_path = database::get_cache_path();

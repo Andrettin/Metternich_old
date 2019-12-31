@@ -118,6 +118,7 @@ public:
 	void process_terrain_map_database();
 	void process_terrain_gsml_data(const terrain_type *terrain, const gsml_data &data);
 	void process_terrain_gsml_scope(const terrain_type *terrain, const gsml_data &scope);
+	void process_trade_route_map_database();
 
 	void load_province_map();
 	void load_terrain_map();

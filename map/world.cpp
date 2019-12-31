@@ -158,6 +158,17 @@ void world::process_terrain_gsml_scope(const terrain_type *terrain, const gsml_d
 	}
 }
 
+void world::process_trade_route_map_database()
+{
+	std::vector<gsml_data> gsml_map_data_to_process = this->parse_data_type_map_database<trade_route>();
+
+	for (gsml_data &data : gsml_map_data_to_process) {
+		trade_route *route = trade_route::get(data.get_tag());
+		route->set_world(this);
+		database::process_gsml_data<metternich::trade_route>(route, data);
+	}
+}
+
 void world::load_province_map()
 {
 	engine_interface::get()->set_loading_message("Loading " + this->get_loading_message_name() + " Provinces... (0%)");
@@ -411,11 +422,11 @@ void world::write_terrain_geoshape_to_image(const terrain_type *terrain, QImage 
 	}
 
 	double lon = bottom_left.longitude();
-	lon = std::round(lon / lon_per_pixel) * lon_per_pixel;
+	lon = geocoordinate::longitude_to_pixel_longitude(lon, lon_per_pixel);
 	const int start_x = geocoordinate::longitude_to_x(lon, lon_per_pixel);
 
 	double start_lat = bottom_left.latitude();
-	start_lat = std::round(start_lat / lat_per_pixel) * lat_per_pixel;
+	start_lat = geocoordinate::latitude_to_pixel_latitude(start_lat, lat_per_pixel);
 
 	const int pixel_width = static_cast<int>(std::round((std::abs(top_right.longitude() - bottom_left.longitude())) / lon_per_pixel));
 	const bool show_progress = pixel_width >= 512;

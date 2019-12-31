@@ -3,6 +3,7 @@
 #include "database/data_entry.h"
 #include "database/data_type.h"
 
+#include <QGeoPath>
 #include <QRect>
 
 namespace metternich {
@@ -29,6 +30,13 @@ public:
 	virtual void initialize() override;
 	virtual void check() const override;
 	
+	const QGeoPath &get_geopath() const
+	{
+		return this->geopath;
+	}
+
+	void set_geopath(const QGeoPath &geopath);
+
 	world *get_world() const
 	{
 		return this->world;
@@ -51,6 +59,7 @@ private:
 	std::vector<province *> path;
 	std::set<trade_node *> trade_nodes;
 	QRect rect;
+	QGeoPath geopath;
 };
 
 }

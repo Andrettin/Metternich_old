@@ -702,12 +702,12 @@ void province::write_geoshape_to_image(QImage &image, const QGeoShape &geoshape,
 	const double end_lon = top_right.longitude();
 
 	double lon = start_lon;
-	lon = std::round(lon / lon_per_pixel) * lon_per_pixel;
+	lon = geocoordinate::longitude_to_pixel_longitude(lon, lon_per_pixel);
 	const int start_x = geocoordinate::longitude_to_x(lon, lon_per_pixel);
 
 	const double start_lat = bottom_left.latitude();
 	const double end_lat = top_right.latitude();
-	const double normalized_start_lat = std::round(start_lat / lat_per_pixel) * lat_per_pixel;
+	const double normalized_start_lat = geocoordinate::latitude_to_pixel_latitude(start_lat, lat_per_pixel);
 
 	const int pixel_width = static_cast<int>(std::round((std::abs(end_lon - start_lon)) / lon_per_pixel));
 	const bool show_progress = pixel_width >= 512;
