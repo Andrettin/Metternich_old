@@ -197,6 +197,7 @@ HEADERS += \
     translator.h \
     type_traits.h \
     util/container_util.h \
+    util/exception_util.h \
     util/filesystem_util.h \
     util/image_util.h \
     util/location_util.h \
