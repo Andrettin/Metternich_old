@@ -82,53 +82,23 @@ province *world::get_coordinate_province(const QGeoCoordinate &coordinate) const
 	return province::get_by_rgb(rgb);
 }
 
-/**
-**	@brief	Process the world's province map database
-*/
 void world::process_province_map_database()
 {
 	if (std::string(province::database_folder).empty()) {
 		return;
 	}
 
-	for (const std::filesystem::path &path : database::get()->get_map_paths()) {
-		std::filesystem::path map_path = path / this->get_identifier() / province::database_folder;
+	std::vector<gsml_data> gsml_map_data_to_process = this->parse_data_type_map_database<province>();
 
-		if (!std::filesystem::exists(map_path)) {
-			continue;
-		}
+	for (gsml_data &data : gsml_map_data_to_process) {
+		province *province = province::get(data.get_tag());
 
-		std::vector<gsml_data> gsml_map_data_to_process;
+		this->add_province(province);
 
-		std::filesystem::recursive_directory_iterator dir_iterator(map_path);
-
-		for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
-			if (!dir_entry.is_regular_file() || dir_entry.path().extension() != ".txt") {
-				continue;
-			}
-
-			if (province::try_get(dir_entry.path().stem().string()) == nullptr) {
-				throw std::runtime_error(dir_entry.path().stem().string() + " is not a valid \"" + province::class_identifier + "\" instance identifier.");
-			}
-
-			gsml_parser parser(dir_entry.path());
-			gsml_map_data_to_process.push_back(parser.parse());
-		}
-
-		for (gsml_data &data : gsml_map_data_to_process) {
-			province *province = province::get(data.get_tag());
-
-			this->add_province(province);
-
-			database::process_gsml_data<metternich::province>(province, data);
-		}
+		database::process_gsml_data<metternich::province>(province, data);
 	}
 }
 
-
-/**
-**	@brief	Process the world's terrain map database
-*/
 void world::process_terrain_map_database()
 {
 	for (const std::filesystem::path &path : database::get()->get_map_paths()) {

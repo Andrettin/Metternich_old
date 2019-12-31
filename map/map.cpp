@@ -20,16 +20,10 @@
 
 namespace metternich {
 
-/**
-**	@brief	Constructor
-*/
 map::map() : mode(map_mode::country)
 {
 }
 
-/**
-**	@brief	Load the map
-*/
 void map::load()
 {
 	const bool cache_valid = this->check_cache();

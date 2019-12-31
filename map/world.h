@@ -74,6 +74,35 @@ public:
 	terrain_type *get_coordinate_terrain(const QGeoCoordinate &coordinate) const;
 	province *get_coordinate_province(const QGeoCoordinate &coordinate) const;
 
+	template <typename T>
+	inline std::vector<gsml_data> parse_data_type_map_database() const
+	{
+		std::vector<gsml_data> gsml_map_data_to_process;
+
+		for (const std::filesystem::path &path : database::get()->get_map_paths()) {
+			std::filesystem::path map_path = path / this->get_identifier() / T::database_folder;
+
+			if (!std::filesystem::exists(map_path)) {
+				continue;
+			}
+
+			std::filesystem::recursive_directory_iterator dir_iterator(map_path);
+
+			for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
+				if (!dir_entry.is_regular_file() || dir_entry.path().extension() != ".txt") {
+					continue;
+				}
+
+				if (T::try_get(dir_entry.path().stem().string()) == nullptr) {
+					throw std::runtime_error(dir_entry.path().stem().string() + " is not a valid " + T::class_identifier + " instance identifier.");
+				}
+
+				gsml_parser parser(dir_entry.path());
+				gsml_map_data_to_process.push_back(parser.parse());
+			}
+		}
+
+		return gsml_map_data_to_process;
 	void process_province_map_database();
 	void process_terrain_map_database();
 	void process_terrain_gsml_data(const terrain_type *terrain, const gsml_data &data);
