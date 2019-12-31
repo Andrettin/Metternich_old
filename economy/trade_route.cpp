@@ -37,9 +37,9 @@ void trade_route::initialize()
 
 	province *start_province = this->path.front();
 	province *end_province = this->path.back();
-	start_province->get_trade_node()->add_trade_route(this);
+	this->add_trade_node(start_province->get_trade_node());
+	this->add_trade_node(end_province->get_trade_node());
 	start_province->get_world()->add_trade_route(this);
-	end_province->get_trade_node()->add_trade_route(this);
 }
 
 void trade_route::check() const
@@ -55,6 +55,12 @@ void trade_route::check() const
 	if (!end_province->is_center_of_trade()) {
 		throw std::runtime_error("The path of trade route \"" + this->get_identifier() + "\" does not end with a center of trade.");
 	}
+}
+
+void trade_route::add_trade_node(trade_node *node)
+{
+	this->trade_nodes.insert(node);
+	node->add_trade_route(this);
 }
 
 QVariantList trade_route::get_path_qvariant_list() const

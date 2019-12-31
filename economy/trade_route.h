@@ -6,6 +6,7 @@
 namespace metternich {
 
 class province;
+class trade_node;
 
 class trade_route : public data_entry, public data_type<trade_route>
 {
@@ -23,12 +24,15 @@ public:
 	virtual void process_gsml_scope(const gsml_data &scope) override;
 	virtual void initialize() override;
 	virtual void check() const override;
+	
+	void add_trade_node(trade_node *node);
 
 	QVariantList get_path_qvariant_list() const;
 	QVariantList get_path_points_qvariant_list() const;
 
 private:
 	std::vector<province *> path;
+	std::set<trade_node *> trade_nodes;
 };
 
 }
