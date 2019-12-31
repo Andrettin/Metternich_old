@@ -84,7 +84,6 @@ province::province(const std::string &identifier) : data_entry(identifier)
 	connect(this, &province::culture_changed, this, &identifiable_data_entry_base::name_changed);
 	connect(this, &province::religion_changed, this, &identifiable_data_entry_base::name_changed);
 	connect(game::get(), &game::running_changed, this, &province::update_image);
-	connect(this, &province::selected_changed, this, &province::update_image);
 }
 
 province::~province()
@@ -1320,6 +1319,8 @@ void province::set_selected(const bool selected, const bool notify_engine_interf
 
 	this->selected = selected;
 	emit selected_changed();
+
+	this->update_image();
 
 	if (notify_engine_interface) {
 		engine_interface::get()->emit selected_province_changed();

@@ -77,11 +77,6 @@ void map::set_current_world(world *world)
 	emit engine_interface::get()->current_world_changed();
 }
 
-/**
-**	@brief	Set the map mode
-**
-**	@param	mode	The map mode
-*/
 void map::set_mode(const map_mode mode)
 {
 	if (mode == this->get_mode()) {
