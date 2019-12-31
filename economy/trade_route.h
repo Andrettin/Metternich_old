@@ -18,7 +18,7 @@ class trade_route : public data_entry, public data_type<trade_route>
 
 	Q_PROPERTY(QVariantList path READ get_path_qvariant_list CONSTANT)
 	Q_PROPERTY(QVariantList path_points READ get_path_points_qvariant_list CONSTANT)
-	Q_PROPERTY(QRect rect MEMBER rect READ get_rect)
+	Q_PROPERTY(QRect rect MEMBER rect READ get_rect CONSTANT)
 
 public:
 	trade_route(const std::string &identifier) : data_entry(identifier) {}

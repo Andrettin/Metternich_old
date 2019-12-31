@@ -167,11 +167,11 @@ QVariantList trade_route::get_path_points_qvariant_list() const
 
 	if (this->get_geopath().isValid()) {
 		for (const QGeoCoordinate &coordinate : this->geopath.path()) {
-			path_points.append(this->get_world()->get_coordinate_pos(coordinate));
+			path_points.append(this->get_world()->get_coordinate_pos(coordinate) - this->get_rect().topLeft());
 		}
 	} else {
 		for (province *path_province : this->path) {
-			path_points.append(path_province->get_center_pos());
+			path_points.append(path_province->get_center_pos() - this->get_rect().topLeft());
 		}
 	}
 
