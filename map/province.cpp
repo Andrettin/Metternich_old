@@ -1391,7 +1391,7 @@ QVariantList province::get_geopaths_qvariant_list() const
 
 QGeoCoordinate province::get_center_coordinate() const
 {
-	return this->get_world()->get_pixel_pos_coordinate(this->get_center_pixel());
+	return this->get_world()->get_pixel_pos_coordinate(this->get_center_pos());
 }
 
 }
