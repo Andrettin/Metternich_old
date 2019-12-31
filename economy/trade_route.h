@@ -9,6 +9,7 @@ namespace metternich {
 
 class province;
 class trade_node;
+class world;
 
 class trade_route : public data_entry, public data_type<trade_route>
 {
@@ -28,6 +29,13 @@ public:
 	virtual void initialize() override;
 	virtual void check() const override;
 	
+	world *get_world() const
+	{
+		return this->world;
+	}
+
+	void set_world(world *world);
+
 	void add_trade_node(trade_node *node);
 
 	QVariantList get_path_qvariant_list() const;
@@ -39,6 +47,7 @@ public:
 	}
 
 private:
+	world *world = nullptr;
 	std::vector<province *> path;
 	std::set<trade_node *> trade_nodes;
 	QRect rect;
