@@ -70,6 +70,15 @@ public:
 
 	QPoint get_pixel_pos(const int index) const;
 	QPoint get_coordinate_pos(const QGeoCoordinate &coordinate) const;
+
+	QRect get_georectangle_rect(const QGeoRectangle &georectangle) const
+	{
+		const QPoint top_left = this->get_coordinate_pos(georectangle.topLeft());
+		const QPoint bottom_right = this->get_coordinate_pos(georectangle.bottomRight());
+
+		return QRect(top_left, bottom_right);
+	}
+
 	QGeoCoordinate get_pixel_pos_coordinate(const QPoint &pos) const;
 	terrain_type *get_coordinate_terrain(const QGeoCoordinate &coordinate) const;
 	province *get_coordinate_province(const QGeoCoordinate &coordinate) const;
