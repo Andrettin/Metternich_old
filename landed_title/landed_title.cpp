@@ -654,13 +654,25 @@ bool landed_title::has_law(const law *law) const
 
 Q_INVOKABLE void landed_title::add_law(law *law)
 {
-	this->laws[law->get_group()] = law;
+	if (!this->has_law(law)) {
+		this->laws[law->get_group()] = law;
+		emit laws_changed();
+
+		if (this->is_primary()) {
+			emit this->get_holder()->laws_changed();
+		}
+	}
 }
 
 Q_INVOKABLE void landed_title::remove_law(law *law)
 {
 	if (this->has_law(law)) {
 		this->laws.erase(law->get_group());
+		emit laws_changed();
+
+		if (this->is_primary()) {
+			emit this->get_holder()->laws_changed();
+		}
 	}
 }
 

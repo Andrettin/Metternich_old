@@ -17,6 +17,7 @@ class dynasty;
 class gsml_property;
 class holding;
 class landed_title;
+class law;
 class phenotype;
 class province;
 class religion;
@@ -70,47 +71,8 @@ private:
 	static inline std::vector<character *> living_characters;
 
 public:
-	character(const std::string &identifier) : data_entry(identifier)
-	{
-		connect(this, &character::name_changed, this, &character::full_name_changed);
-		connect(this, &character::name_changed, this, &character::titled_name_changed);
-		connect(this, &character::dynasty_changed, this, &character::full_name_changed);
-		connect(this, &character::primary_title_changed, this, &character::titled_name_changed);
-
-		character::living_characters.push_back(this);
-	}
-
-	virtual ~character() override
-	{
-		//remove references from other characters to his one; necessary since this character could be purged e.g. if it was born after the start date
-		if (this->get_father() != nullptr) {
-			this->get_father()->children.erase(std::remove(this->get_father()->children.begin(), this->get_father()->children.end(), this), this->get_father()->children.end());
-		}
-
-		if (this->get_mother() != nullptr) {
-			this->get_mother()->children.erase(std::remove(this->get_mother()->children.begin(), this->get_mother()->children.end(), this), this->get_mother()->children.end());
-		}
-
-		if (this->get_spouse() != nullptr) {
-			this->get_spouse()->spouse = nullptr;
-		}
-
-		for (character *child : this->children) {
-			if (this->is_female()) {
-				child->mother = nullptr;
-			} else {
-				child->father = nullptr;
-			}
-		}
-
-		if (this->get_liege() != nullptr) {
-			this->get_liege()->vassals.erase(std::remove(this->get_liege()->vassals.begin(), this->get_liege()->vassals.end(), this), this->get_liege()->vassals.end());
-		}
-
-		for (character *vassal : this->vassals) {
-			vassal->liege = nullptr;
-		}
-	}
+	character(const std::string &identifier);
+	virtual ~character() override;
 
 	virtual void process_gsml_dated_property(const gsml_property &property, const QDateTime &date) override;
 	virtual void initialize_history() override;
@@ -246,6 +208,11 @@ public:
 	bool has_landed_title(const landed_title *title) const
 	{
 		return std::find(this->landed_titles.begin(), this->landed_titles.end(), title) != this->landed_titles.end();
+	}
+
+	bool is_landed() const
+	{
+		return this->get_primary_title() != nullptr;
 	}
 
 	void add_landed_title(landed_title *title);
@@ -393,6 +360,8 @@ public:
 	bool has_personality_trait() const;
 	void generate_personality_trait();
 
+	bool has_law(law *law) const;
+
 	int get_wealth() const
 	{
 		return this->wealth;
@@ -438,8 +407,9 @@ signals:
 	void religion_changed();
 	void primary_title_changed();
 	void liege_changed();
-	void wealth_changed();
 	void traits_changed();
+	void wealth_changed();
+	void laws_changed();
 
 private:
 	std::string name;

@@ -14,6 +14,7 @@
 #include "script/condition/commodity_condition.h"
 #include "script/condition/culture_condition.h"
 #include "script/condition/has_building_condition.h"
+#include "script/condition/has_law_condition.h"
 #include "script/condition/has_technology_condition.h"
 #include "script/condition/holding_type_condition.h"
 #include "script/condition/not_condition.h"
@@ -34,7 +35,9 @@ std::unique_ptr<condition<T>> condition<T>::from_gsml_property(const gsml_proper
 	const std::string &condition_identifier = property.get_key();
 
 	if constexpr (std::is_same_v<T, character>) {
-		if (condition_identifier == "trait") {
+		if (condition_identifier == "has_law") {
+			return std::make_unique<has_law_condition<T>>(property.get_value());
+		} else if (condition_identifier == "trait") {
 			return std::make_unique<trait_condition<T>>(property.get_value());
 		}
 	} else {

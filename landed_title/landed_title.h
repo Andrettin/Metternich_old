@@ -231,6 +231,7 @@ signals:
 	void holder_changed();
 	void de_jure_liege_title_changed();
 	void realm_changed();
+	void laws_changed();
 
 private:
 	QColor color;

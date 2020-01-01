@@ -55,6 +55,48 @@ character *character::generate(metternich::culture *culture, metternich::religio
 	return character;
 }
 
+character::character(const std::string &identifier) : data_entry(identifier)
+{
+	connect(this, &character::name_changed, this, &character::full_name_changed);
+	connect(this, &character::name_changed, this, &character::titled_name_changed);
+	connect(this, &character::dynasty_changed, this, &character::full_name_changed);
+	connect(this, &character::primary_title_changed, this, &character::titled_name_changed);
+
+	character::living_characters.push_back(this);
+}
+
+character::~character()
+{
+	//remove references from other characters to his one; necessary since this character could be purged e.g. if it was born after the start date
+	if (this->get_father() != nullptr) {
+		this->get_father()->children.erase(std::remove(this->get_father()->children.begin(), this->get_father()->children.end(), this), this->get_father()->children.end());
+	}
+
+	if (this->get_mother() != nullptr) {
+		this->get_mother()->children.erase(std::remove(this->get_mother()->children.begin(), this->get_mother()->children.end(), this), this->get_mother()->children.end());
+	}
+
+	if (this->get_spouse() != nullptr) {
+		this->get_spouse()->spouse = nullptr;
+	}
+
+	for (character *child : this->children) {
+		if (this->is_female()) {
+			child->mother = nullptr;
+		} else {
+			child->father = nullptr;
+		}
+	}
+
+	if (this->get_liege() != nullptr) {
+		this->get_liege()->vassals.erase(std::remove(this->get_liege()->vassals.begin(), this->get_liege()->vassals.end(), this), this->get_liege()->vassals.end());
+	}
+
+	for (character *vassal : this->vassals) {
+		vassal->liege = nullptr;
+	}
+}
+
 void character::process_gsml_dated_property(const gsml_property &property, const QDateTime &date)
 {
 	if (property.get_key() == "birth") {
@@ -247,6 +289,16 @@ void character::generate_personality_trait()
 
 	trait *chosen_trait = potential_traits[random::generate(potential_traits.size())];
 	this->add_trait(chosen_trait);
+}
+
+bool character::has_law(law *law) const
+{
+	if (this->get_primary_title() == nullptr) {
+		return false;
+	}
+
+	//check whether the character's primary title has the law
+	return this->get_primary_title()->has_law(law);
 }
 
 bool character::is_ai() const
