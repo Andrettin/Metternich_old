@@ -198,7 +198,7 @@ public:
 
 		while (identifier.empty() || data_type::try_get(identifier) != nullptr) {
 			QUuid uuid = QUuid::createUuid();
-			identifier = uuid.toString().toStdString();
+			identifier = uuid.toString(QUuid::WithoutBraces).toStdString();
 		}
 
 		return identifier;
