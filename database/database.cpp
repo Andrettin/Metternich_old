@@ -30,6 +30,8 @@
 #include "map/terrain_type.h"
 #include "map/world.h"
 #include "phenotype.h"
+#include "politics/government_type.h"
+#include "politics/government_type_group.h"
 #include "politics/law.h"
 #include "politics/law_group.h"
 #include "population/population_type.h"
@@ -202,7 +204,7 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 			} else {
 				throw std::runtime_error("Unknown type for object reference property \"" + std::string(property_name) + "\".");
 			}
-		} else if (property.get_key() == "group") {
+		} else if (property.get_key() == "group" && class_name == "metternich::law") {
 			if (class_name == "metternich::law") {
 				new_property_value = QVariant::fromValue(law_group::get_or_add(property.get_value()));
 			} else {
@@ -222,6 +224,10 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 			new_property_value = QVariant::fromValue(dynasty::get(property.get_value()));
 		} else if (property_class_name == "metternich::employment_type*") {
 			new_property_value = QVariant::fromValue(employment_type::get(property.get_value()));
+		} else if (property_class_name == "metternich::government_type*") {
+			new_property_value = QVariant::fromValue(government_type::get(property.get_value()));
+		} else if (property_class_name == "metternich::government_type_group") {
+			new_property_value = QVariant::fromValue(string_to_government_type_group(property.get_value()));
 		} else if (property_class_name == "metternich::holding*") {
 			const holding_slot *holding_slot = holding_slot::get(property.get_value());
 			holding *holding = holding_slot->get_holding();

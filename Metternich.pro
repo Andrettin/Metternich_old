@@ -50,6 +50,7 @@ SOURCES += \
         map/region.cpp \
         map/terrain_type.cpp \
         map/world.cpp \
+        politics/government_type.cpp \
         population/population_type.cpp \
         population/population_unit.cpp \
         religion/religion.cpp \
@@ -144,6 +145,8 @@ HEADERS += \
     map/world.h \
     pch.h \
     phenotype.h \
+    politics/government_type.h \
+    politics/government_type_group.h \
     politics/law.h \
     politics/law_group.h \
     population/population_type.h \
