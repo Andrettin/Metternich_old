@@ -25,20 +25,20 @@ void history::generate_population_units()
 	//add population units with discount existing enabled to the vector of population units used for generation (holding-level population units with that enabled are not used for generation per se, but generated population units may still be discounted from their size), as well as any population units in provinces or regions
 	for (province *province : province::get_all()) {
 		for (holding *holding : province->get_settlement_holdings()) {
-			for (const std::unique_ptr<population_unit> &population_unit : holding->get_population_units()) {
+			for (const qunique_ptr<population_unit> &population_unit : holding->get_population_units()) {
 				if (population_unit->discounts_existing()) {
 					base_population_units.push_back(population_unit.get());
 				}
 			}
 		}
 
-		for (const std::unique_ptr<population_unit> &population_unit : province->get_population_units()) {
+		for (const qunique_ptr<population_unit> &population_unit : province->get_population_units()) {
 			base_population_units.push_back(population_unit.get());
 		}
 	}
 
 	for (region *region : region::get_all()) {
-		for (const std::unique_ptr<population_unit> &population_unit : region->get_population_units()) {
+		for (const qunique_ptr<population_unit> &population_unit : region->get_population_units()) {
 			base_population_units.push_back(population_unit.get());
 		}
 	}
@@ -106,7 +106,7 @@ void history::generate_wildlife_units()
 
 	//add wildlife units with discount existing enabled to the vector of wildlife units used for generation (province-level population units with that enabled are not used for generation per se, but generated wildlife units may still be discounted from their size), as well as any wildlife units in regions
 	for (province *province : province::get_all()) {
-		for (const std::unique_ptr<wildlife_unit> &wildlife_unit : province->get_wildlife_units()) {
+		for (const qunique_ptr<wildlife_unit> &wildlife_unit : province->get_wildlife_units()) {
 			if (wildlife_unit->discounts_existing()) {
 				base_wildlife_units.push_back(wildlife_unit.get());
 			}
@@ -114,7 +114,7 @@ void history::generate_wildlife_units()
 	}
 
 	for (region *region : region::get_all()) {
-		for (const std::unique_ptr<wildlife_unit> &wildlife_unit : region->get_wildlife_units()) {
+		for (const qunique_ptr<wildlife_unit> &wildlife_unit : region->get_wildlife_units()) {
 			base_wildlife_units.push_back(wildlife_unit.get());
 		}
 	}

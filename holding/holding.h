@@ -1,6 +1,7 @@
 #pragma once
 
 #include "database/data_entry.h"
+#include "qunique_ptr.h"
 
 #include <QVariant>
 
@@ -122,12 +123,12 @@ public:
 
 	metternich::province *get_province() const;
 
-	const std::vector<std::unique_ptr<population_unit>> &get_population_units() const
+	const std::vector<qunique_ptr<population_unit>> &get_population_units() const
 	{
 		return this->population_units;
 	}
 
-	void add_population_unit(std::unique_ptr<population_unit> &&population_unit);
+	void add_population_unit(qunique_ptr<population_unit> &&population_unit);
 	population_unit *get_population_unit(const population_type *type, const culture *culture, const religion *religion, const phenotype *phenotype) const;
 	void change_population_size(population_type *type, culture *culture, religion *religion, phenotype *phenotype, const int change);
 	QVariantList get_population_units_qvariant_list() const;
@@ -474,7 +475,7 @@ private:
 	holding_slot *slot = nullptr;
 	holding_type *type = nullptr;
 	character *owner = nullptr; //the owner of the holding
-	std::vector<std::unique_ptr<population_unit>> population_units;
+	std::vector<qunique_ptr<population_unit>> population_units;
 	int base_population_capacity = 0; //the base population capacity
 	int population_capacity_modifier = 100; //the population capacity modifier
 	int population_capacity = 0; //the population capacity

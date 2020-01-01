@@ -37,10 +37,10 @@ public:
 
 	population_unit(population_type *type) : type(type)
 	{
-		connect(this, &population_unit::type_changed, this, &population_unit::icon_path_changed);
-		connect(this, &population_unit::culture_changed, this, &population_unit::icon_path_changed);
-		connect(this, &population_unit::religion_changed, this, &population_unit::icon_path_changed);
-		connect(this, &population_unit::phenotype_changed, this, &population_unit::icon_path_changed);
+		connect(this, &population_unit::type_changed, this, &population_unit_base::icon_path_changed);
+		connect(this, &population_unit::culture_changed, this, &population_unit_base::icon_path_changed);
+		connect(this, &population_unit::religion_changed, this, &population_unit_base::icon_path_changed);
+		connect(this, &population_unit::phenotype_changed, this, &population_unit_base::icon_path_changed);
 	}
 
 	virtual ~population_unit() override

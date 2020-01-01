@@ -2,6 +2,7 @@
 
 #include "database/data_entry.h"
 #include "database/data_type.h"
+#include "qunique_ptr.h"
 #include "technology/technology_set.h"
 
 #include <QColor>
@@ -413,23 +414,23 @@ public:
 	void set_selected(const bool selected, const bool notify_engine_interface = true);
 	bool is_selectable() const;
 
-	const std::vector<std::unique_ptr<population_unit>> &get_population_units() const
+	const std::vector<qunique_ptr<population_unit>> &get_population_units() const
 	{
 		return this->population_units;
 	}
 
-	void add_population_unit(std::unique_ptr<population_unit> &&population_unit);
+	void add_population_unit(qunique_ptr<population_unit> &&population_unit);
 
 	Q_INVOKABLE QVariantList get_population_per_type_qvariant_list() const;
 	Q_INVOKABLE QVariantList get_population_per_culture_qvariant_list() const;
 	Q_INVOKABLE QVariantList get_population_per_religion_qvariant_list() const;
 
-	const std::vector<std::unique_ptr<wildlife_unit>> &get_wildlife_units() const
+	const std::vector<qunique_ptr<wildlife_unit>> &get_wildlife_units() const
 	{
 		return this->wildlife_units;
 	}
 
-	void add_wildlife_unit(std::unique_ptr<wildlife_unit> &&wildlife_unit);
+	void add_wildlife_unit(qunique_ptr<wildlife_unit> &&wildlife_unit);
 	QVariantList get_wildlife_units_qvariant_list() const;
 	void sort_wildlife_units();
 	void remove_empty_wildlife_units();
@@ -527,12 +528,12 @@ private:
 	std::set<province *> border_provinces; //provinces bordering this one
 	technology_set technologies; //the technologies acquired for the province
 	std::set<trade_route *> trade_routes; //the trade routes going through the province
-	std::vector<std::unique_ptr<population_unit>> population_units; //population units set for this province in history, used during initialization to generate population units in the province's settlements
+	std::vector<qunique_ptr<population_unit>> population_units; //population units set for this province in history, used during initialization to generate population units in the province's settlements
 	std::map<population_type *, int> population_per_type; //the population for each population type
 	std::map<metternich::culture *, int> population_per_culture; //the population for each culture
 	std::map<metternich::religion *, int> population_per_religion; //the population for each religion
 	mutable std::shared_mutex population_groups_mutex;
-	std::vector<std::unique_ptr<wildlife_unit>> wildlife_units; //wildlife units set for this province in history
+	std::vector<qunique_ptr<wildlife_unit>> wildlife_units; //wildlife units set for this province in history
 	std::vector<QGeoPolygon> geopolygons;
 	std::vector<QGeoPath> geopaths;
 	bool inner_river = false; //whether the province has a minor river flowing through it

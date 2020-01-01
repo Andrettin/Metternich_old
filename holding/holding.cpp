@@ -78,7 +78,7 @@ void holding::initialize_history()
 			this->set_religion(this->get_province()->get_religion());
 		}
 
-		for (const std::unique_ptr<population_unit> &population_unit : this->get_population_units()) {
+		for (const qunique_ptr<population_unit> &population_unit : this->get_population_units()) {
 			if (!population_unit->is_history_initialized()) {
 				population_unit->initialize_history();
 			}
@@ -99,7 +99,7 @@ void holding::check_history() const
 	this->get_portrait_path(); //throws an exception if the portrait is not found
 
 	try {
-		for (const std::unique_ptr<population_unit> &population_unit : this->get_population_units()) {
+		for (const qunique_ptr<population_unit> &population_unit : this->get_population_units()) {
 			population_unit->check_history();
 		}
 	} catch (...) {
@@ -249,7 +249,7 @@ province *holding::get_province() const
 	return this->slot->get_province();
 }
 
-void holding::add_population_unit(std::unique_ptr<population_unit> &&population_unit)
+void holding::add_population_unit(qunique_ptr<population_unit> &&population_unit)
 {
 	this->change_population(population_unit->get_size());
 	this->population_units.push_back(std::move(population_unit));
@@ -268,7 +268,7 @@ void holding::add_population_unit(std::unique_ptr<population_unit> &&population_
 */
 population_unit *holding::get_population_unit(const population_type *type, const metternich::culture *culture, const metternich::religion *religion, const phenotype *phenotype) const
 {
-	for (const std::unique_ptr<population_unit> &population_unit : this->get_population_units()) {
+	for (const qunique_ptr<population_unit> &population_unit : this->get_population_units()) {
 		if (population_unit->get_type() != type) {
 			continue;
 		}
@@ -307,7 +307,7 @@ void holding::change_population_size(population_type *type, metternich::culture 
 	if (population_unit != nullptr) {
 		population_unit->change_size(change);
 	} else if (change > 0) {
-		auto new_population_unit = std::make_unique<metternich::population_unit>(type);
+		auto new_population_unit = make_qunique<metternich::population_unit>(type);
 		new_population_unit->moveToThread(QApplication::instance()->thread());
 		new_population_unit->set_holding(this);
 		new_population_unit->set_size(change);
@@ -322,7 +322,7 @@ QVariantList holding::get_population_units_qvariant_list() const
 {
 	QVariantList list;
 
-	for (const std::unique_ptr<population_unit> &population_unit : this->get_population_units()) {
+	for (const qunique_ptr<population_unit> &population_unit : this->get_population_units()) {
 		list.append(QVariant::fromValue(population_unit.get()));
 	}
 
@@ -331,7 +331,7 @@ QVariantList holding::get_population_units_qvariant_list() const
 
 void holding::sort_population_units()
 {
-	std::sort(this->population_units.begin(), this->population_units.end(), [](const std::unique_ptr<population_unit> &a, const std::unique_ptr<population_unit> &b) {
+	std::sort(this->population_units.begin(), this->population_units.end(), [](const qunique_ptr<population_unit> &a, const qunique_ptr<population_unit> &b) {
 		//give priority to population units with greater size, so that they will be displayed first
 		return a->get_size() > b->get_size();
 	});
@@ -346,7 +346,7 @@ void holding::remove_empty_population_units()
 {
 	bool removed_pop_unit = false;
 	for (size_t i = 0; i < this->population_units.size();) {
-		const std::unique_ptr<population_unit> &population_unit = this->population_units[i];
+		const qunique_ptr<population_unit> &population_unit = this->population_units[i];
 		if (population_unit->get_size() == 0) {
 			this->population_units.erase(this->population_units.begin() + static_cast<int>(i));
 			removed_pop_unit = true;
@@ -388,7 +388,7 @@ void holding::set_population(const int population)
 void holding::calculate_population()
 {
 	int population = 0;
-	for (const std::unique_ptr<population_unit> &population_unit : this->get_population_units()) {
+	for (const qunique_ptr<population_unit> &population_unit : this->get_population_units()) {
 		population += population_unit->get_size();
 	}
 	this->set_population(population);
@@ -402,7 +402,7 @@ void holding::do_population_growth()
 		return;
 	}
 
-	for (const std::unique_ptr<population_unit> &population_unit : this->get_population_units()) {
+	for (const qunique_ptr<population_unit> &population_unit : this->get_population_units()) {
 		const int population_capacity_difference = this->get_population_capacity() - this->get_population();
 
 		int change = population_unit->get_size() * population_growth / 10000;
@@ -456,7 +456,7 @@ void holding::calculate_population_groups()
 	this->population_per_culture.clear();
 	this->population_per_religion.clear();
 
-	for (const std::unique_ptr<population_unit> &population_unit : this->get_population_units()) {
+	for (const qunique_ptr<population_unit> &population_unit : this->get_population_units()) {
 		this->population_per_type[population_unit->get_type()] += population_unit->get_size();
 		this->population_per_culture[population_unit->get_culture()] += population_unit->get_size();
 		this->population_per_religion[population_unit->get_religion()] += population_unit->get_size();

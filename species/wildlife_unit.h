@@ -25,7 +25,7 @@ public:
 
 	wildlife_unit(species *species) : species(species)
 	{
-		connect(this, &wildlife_unit::species_changed, this, &wildlife_unit::icon_path_changed);
+		connect(this, &wildlife_unit::species_changed, this, &population_unit_base::icon_path_changed);
 		connect(this, &wildlife_unit::size_changed, this, &wildlife_unit::biomass_changed);
 	}
 

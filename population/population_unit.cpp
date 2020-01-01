@@ -23,9 +23,6 @@
 
 namespace metternich {
 
-/**
-**	@brief	Process the history database for population units
-*/
 void population_unit::process_history_database()
 {
 	//simple data types are only loaded in history, instanced directly based on their GSML data
@@ -33,7 +30,7 @@ void population_unit::process_history_database()
 		for (const gsml_data &data_entry : data.get_children()) {
 			const std::string &type_identifier = data_entry.get_tag();
 			population_type *type = population_type::get(type_identifier);
-			auto population_unit = std::make_unique<metternich::population_unit>(type);
+			auto population_unit = make_qunique<metternich::population_unit>(type);
 			population_unit->moveToThread(QApplication::instance()->thread());
 
 			try {
@@ -76,9 +73,6 @@ void population_unit::initialize_history()
 	data_entry_base::initialize_history();
 }
 
-/**
-**	@brief	Do the population unit's monthly actions
-*/
 void population_unit::do_month()
 {
 	if (this->get_size() == 0) {
@@ -95,7 +89,7 @@ void population_unit::do_month()
 
 void population_unit::do_mixing()
 {
-	for (const std::unique_ptr<population_unit> &other_population_unit : this->get_holding()->get_population_units()) {
+	for (const qunique_ptr<population_unit> &other_population_unit : this->get_holding()->get_population_units()) {
 		if (other_population_unit.get() == this) {
 			continue;
 		}
@@ -321,7 +315,7 @@ void population_unit::subtract_existing_sizes()
 */
 void population_unit::subtract_existing_sizes_in_holding(const metternich::holding *holding)
 {
-	for (const std::unique_ptr<population_unit> &population_unit : holding->get_population_units()) {
+	for (const qunique_ptr<population_unit> &population_unit : holding->get_population_units()) {
 		if (population_unit.get() == this) {
 			continue;
 		}
@@ -374,7 +368,7 @@ bool population_unit::can_distribute_to_holding(const metternich::holding *holdi
 
 	if (this->discounts_existing()) {
 		//the population unit can only be distributed to the given holding if there is no population unit there with the same type, culture, religion and phenotype as this one, if discount existing is enabled
-		for (const std::unique_ptr<population_unit> &population_unit : holding->get_population_units()) {
+		for (const qunique_ptr<population_unit> &population_unit : holding->get_population_units()) {
 			if (population_unit->get_type() != this->get_type()) {
 				continue;
 			}
@@ -430,7 +424,7 @@ void population_unit::distribute_to_holdings(const std::vector<metternich::holdi
 			continue;
 		}
 
-		auto population_unit = std::make_unique<metternich::population_unit>(this->get_type());
+		auto population_unit = make_qunique<metternich::population_unit>(this->get_type());
 		population_unit->moveToThread(QApplication::instance()->thread());
 		population_unit->set_holding(holding);
 		population_unit->set_size(size_per_holding);

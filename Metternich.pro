@@ -152,6 +152,7 @@ HEADERS += \
     population/population_type.h \
     population/population_unit.h \
     population/population_unit_base.h \
+    qunique_ptr.h \
     random.h \
     religion/religion.h \
     religion/religion_group.h \

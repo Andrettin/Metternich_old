@@ -15,7 +15,7 @@ void wildlife_unit::process_history_database()
 		for (const gsml_data &data_entry : data.get_children()) {
 			const std::string &species_identifier = data_entry.get_tag();
 			metternich::species *species = species::get(species_identifier);
-			auto wildlife_unit = std::make_unique<metternich::wildlife_unit>(species);
+			auto wildlife_unit = make_qunique<metternich::wildlife_unit>(species);
 			wildlife_unit->moveToThread(QApplication::instance()->thread());
 
 			try {
@@ -65,7 +65,7 @@ void wildlife_unit::subtract_existing_sizes()
 
 void wildlife_unit::subtract_existing_sizes_in_province(const metternich::province *province)
 {
-	for (const std::unique_ptr<wildlife_unit> &wildlife_unit : province->get_wildlife_units()) {
+	for (const qunique_ptr<wildlife_unit> &wildlife_unit : province->get_wildlife_units()) {
 		if (wildlife_unit.get() == this) {
 			continue;
 		}
@@ -89,7 +89,7 @@ bool wildlife_unit::can_distribute_to_province(const metternich::province *provi
 {
 	if (this->discounts_existing()) {
 		//the wildlife unit can only be distributed to the given province if there is no wildlife unit there with the same species as this one, if discount existing is enabled
-		for (const std::unique_ptr<wildlife_unit> &wildlife_unit : province->get_wildlife_units()) {
+		for (const qunique_ptr<wildlife_unit> &wildlife_unit : province->get_wildlife_units()) {
 			if (wildlife_unit->get_species() != this->get_species()) {
 				continue;
 			}
@@ -128,7 +128,7 @@ void wildlife_unit::distribute_to_provinces(const std::set<metternich::province 
 			continue;
 		}
 
-		auto wildlife_unit = std::make_unique<metternich::wildlife_unit>(this->get_species());
+		auto wildlife_unit = make_qunique<metternich::wildlife_unit>(this->get_species());
 		wildlife_unit->moveToThread(QApplication::instance()->thread());
 		wildlife_unit->set_province(province);
 		wildlife_unit->set_size(size_per_province);

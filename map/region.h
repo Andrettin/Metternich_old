@@ -2,6 +2,7 @@
 
 #include "database/data_entry.h"
 #include "database/data_type.h"
+#include "qunique_ptr.h"
 
 #include <QVariant>
 
@@ -122,19 +123,19 @@ public:
 		this->technologies.erase(technology);
 	}
 
-	const std::vector<std::unique_ptr<population_unit>> &get_population_units() const
+	const std::vector<qunique_ptr<population_unit>> &get_population_units() const
 	{
 		return this->population_units;
 	}
 
-	void add_population_unit(std::unique_ptr<population_unit> &&population_unit);
+	void add_population_unit(qunique_ptr<population_unit> &&population_unit);
 
-	const std::vector<std::unique_ptr<wildlife_unit>> &get_wildlife_units() const
+	const std::vector<qunique_ptr<wildlife_unit>> &get_wildlife_units() const
 	{
 		return this->wildlife_units;
 	}
 
-	void add_wildlife_unit(std::unique_ptr<wildlife_unit> &&wildlife_unit);
+	void add_wildlife_unit(qunique_ptr<wildlife_unit> &&wildlife_unit);
 
 signals:
 	void provinces_changed();
@@ -145,8 +146,8 @@ private:
 	std::set<region *> subregions; //subregions of this region
 	std::set<region *> superregions; //regions for which this region is a subregion
 	std::set<technology *> technologies; //technologies to be applied to this region's provinces
-	std::vector<std::unique_ptr<population_unit>> population_units; //population units set for this region in history, used during initialization to generate population units in the region's settlements
-	std::vector<std::unique_ptr<wildlife_unit>> wildlife_units; //wildlife units set for this region in history, used during initialization to generate wildlife units in the region's provinces
+	std::vector<qunique_ptr<population_unit>> population_units; //population units set for this region in history, used during initialization to generate population units in the region's settlements
+	std::vector<qunique_ptr<wildlife_unit>> wildlife_units; //wildlife units set for this region in history, used during initialization to generate wildlife units in the region's provinces
 };
 
 }
