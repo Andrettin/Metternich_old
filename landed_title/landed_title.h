@@ -177,6 +177,8 @@ public:
 		return this->capital_province;
 	}
 
+	metternich::holding *get_capital_holding() const;
+
 	culture *get_culture() const;
 	religion *get_religion() const;
 

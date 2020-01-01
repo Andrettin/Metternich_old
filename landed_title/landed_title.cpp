@@ -606,6 +606,19 @@ bool landed_title::is_primary() const
 	return this->get_holder()->get_primary_title() == this;
 }
 
+holding *landed_title::get_capital_holding() const
+{
+	if (this->get_holding() != nullptr) {
+		return this->get_holding();
+	}
+
+	if (this->get_capital_province() != nullptr) {
+		return this->get_capital_province()->get_capital_holding();
+	}
+
+	return nullptr;
+}
+
 culture *landed_title::get_culture() const
 {
 	if (this->get_holder() != nullptr) {
