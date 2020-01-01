@@ -11,13 +11,11 @@ namespace metternich {
 
 class gsml_property;
 class landed_title;
+class law_group;
 class timeline;
 class world;
 enum class game_speed : int;
 
-/**
-**	@brief	Defines for the engine which are loaded from the database
-*/
 class defines : public QObject, public singleton<defines>
 {
 	Q_OBJECT
@@ -30,6 +28,7 @@ class defines : public QObject, public singleton<defines>
 	Q_PROPERTY(int cultural_derivation_factor MEMBER cultural_derivation_factor READ get_cultural_derivation_factor)
 	Q_PROPERTY(int max_settlement_slots_per_province MEMBER max_settlement_slots_per_province READ get_max_settlement_slots_per_province)
 	Q_PROPERTY(int max_palace_slots_per_province MEMBER max_palace_slots_per_province READ get_max_palace_slots_per_province)
+	Q_PROPERTY(metternich::law_group* succession_law_group MEMBER succession_law_group READ get_succession_law_group)
 
 public:
 	defines();
@@ -82,6 +81,11 @@ public:
 		return this->max_palace_slots_per_province;
 	}
 
+	law_group *get_succession_law_group() const
+	{
+		return this->succession_law_group;
+	}
+
 private:
 	world *default_world = nullptr;
 	timeline *default_timeline = nullptr;
@@ -92,6 +96,7 @@ private:
 	int cultural_derivation_factor = 1; //permyriad; up to this fraction of people in a population unit will change cultures due to cultural derivation per month per derived culture
 	int max_settlement_slots_per_province = 0;
 	int max_palace_slots_per_province = 0;
+	law_group *succession_law_group = nullptr;
 };
 
 }

@@ -204,12 +204,8 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 			} else {
 				throw std::runtime_error("Unknown type for object reference property \"" + std::string(property_name) + "\".");
 			}
-		} else if (property.get_key() == "group" && class_name == "metternich::law") {
-			if (class_name == "metternich::law") {
-				new_property_value = QVariant::fromValue(law_group::get_or_add(property.get_value()));
-			} else {
-				throw std::runtime_error("Unknown type for object reference property \"" + std::string(property_name) + "\".");
-			}
+		} else if ((property.get_key() == "group" && class_name == "metternich::law") || property.get_key() == "succession_law_group") {
+			new_property_value = QVariant::fromValue(law_group::get_or_add(property.get_value()));
 		} else if (property_class_name == "metternich::calendar*") {
 			new_property_value = QVariant::fromValue(calendar::get(property.get_value()));
 		} else if (property_class_name == "metternich::character*") {
