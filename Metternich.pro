@@ -206,6 +206,7 @@ HEADERS += \
     util/filesystem_util.h \
     util/image_util.h \
     util/location_util.h \
+    util/map_util.h \
     util/number_util.h \
     util/parse_util.h \
     util/point_util.h \

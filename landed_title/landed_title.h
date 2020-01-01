@@ -215,17 +215,6 @@ public:
 		return "file:///" + QString::fromStdString(this->get_flag_path().string());
 	}
 
-	std::vector<law *> get_laws() const
-	{
-		std::vector<law *> laws;
-
-		for (const auto &kv_pair : this->laws) {
-			laws.push_back(kv_pair.second);
-		}
-
-		return laws;
-	}
-
 	QVariantList get_laws_qvariant_list() const;
 
 	law *get_law(law_group *law_group) const

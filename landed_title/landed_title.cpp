@@ -18,6 +18,7 @@
 #include "religion/religion_group.h"
 #include "translator.h"
 #include "util/container_util.h"
+#include "util/map_util.h"
 
 #include <stdexcept>
 
@@ -637,7 +638,7 @@ const std::filesystem::path &landed_title::get_flag_path() const
 
 QVariantList landed_title::get_laws_qvariant_list() const
 {
-	return container::to_qvariant_list(this->get_laws());
+	return container::to_qvariant_list(map::get_values(this->laws));
 }
 
 bool landed_title::has_law(const law *law) const

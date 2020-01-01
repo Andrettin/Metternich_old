@@ -5,25 +5,14 @@
 
 namespace metternich {
 
-/**
-**	@brief	Constructor
-*/
 holding_type::holding_type(const std::string &identifier) : data_entry(identifier)
 {
 }
 
-/**
-**	@brief	Destructor
-*/
 holding_type::~holding_type()
 {
 }
 
-/**
-**	@brief	Process a GSML scope
-**
-**	@param	scope	The scope
-*/
 void holding_type::process_gsml_scope(const gsml_data &scope)
 {
 	const std::string &tag = scope.get_tag();
