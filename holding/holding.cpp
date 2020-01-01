@@ -96,6 +96,16 @@ void holding::initialize_history()
 
 void holding::check_history() const
 {
+	if (this->is_settlement()) {
+		if (this->get_culture() == nullptr) {
+			throw std::runtime_error("The settlement holding of slot \"" + this->get_slot()->get_identifier() + "\" has no culture.");
+		}
+
+		if (this->get_religion() == nullptr) {
+			throw std::runtime_error("The settlement holding of slot \"" + this->get_slot()->get_identifier() + "\" has no religion.");
+		}
+	}
+
 	this->get_portrait_path(); //throws an exception if the portrait is not found
 
 	try {
