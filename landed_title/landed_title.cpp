@@ -21,13 +21,6 @@
 
 namespace metternich {
 
-/**
-**	@brief	Add a new instance of the class
-**
-**	@param	identifier	The instance's identifier
-**
-**	@return	The new instance
-*/
 landed_title *landed_title::add(const std::string &identifier)
 {
 	landed_title *title = data_type<landed_title>::add(identifier);
@@ -125,11 +118,6 @@ void landed_title::process_gsml_dated_property(const gsml_property &property, co
 	this->process_gsml_property(property);
 }
 
-/**
-**	@brief	Process a GSML scope
-**
-**	@param	scope	The scope
-*/
 void landed_title::process_gsml_scope(const gsml_data &scope)
 {
 	const std::string &tag = scope.get_tag();
@@ -143,9 +131,6 @@ void landed_title::process_gsml_scope(const gsml_data &scope)
 	}
 }
 
-/**
-**	@brief	Initialize the landed title
-*/
 void landed_title::initialize()
 {
 	if (this->get_tier() == landed_title_tier::barony) {
@@ -275,11 +260,6 @@ std::string landed_title::get_name() const
 	return translator::get()->translate(this->get_identifier_with_aliases(), this->get_tag_suffix_list_with_fallbacks());
 }
 
-/**
-**	@brief	Get the landed title's tier title name
-**
-**	@return	The landed title's tier title name
-*/
 std::string landed_title::get_tier_title_name() const
 {
 	std::vector<std::vector<std::string>> tag_suffix_list_with_fallbacks = this->get_tag_suffix_list_with_fallbacks();
@@ -289,11 +269,6 @@ std::string landed_title::get_tier_title_name() const
 	return translator::get()->translate(landed_title::get_tier_identifier(this->get_tier()), tag_suffix_list_with_fallbacks);
 }
 
-/**
-**	@brief	Get the landed title's titled name
-**
-**	@return	The landed title's titled name
-*/
 std::string landed_title::get_titled_name() const
 {
 	std::string titled_name = this->get_tier_title_name() + " of ";
@@ -301,11 +276,6 @@ std::string landed_title::get_titled_name() const
 	return titled_name;
 }
 
-/**
-**	@brief	Get the landed title's holder title name
-**
-**	@return	The landed title's holder title name
-*/
 std::string landed_title::get_holder_title_name() const
 {
 	std::vector<std::vector<std::string>> tag_suffix_list_with_fallbacks = this->get_tag_suffix_list_with_fallbacks();
@@ -628,11 +598,15 @@ landed_title *landed_title::get_de_jure_empire() const
 	return this->get_tier_de_jure_title(landed_title_tier::empire);
 }
 
-/**
-**	@brief	Get the title's culture
-**
-**	@return	The title's culture
-*/
+bool landed_title::is_primary() const
+{
+	if (this->get_holder() == nullptr) {
+		return false;
+	}
+
+	return this->get_holder()->get_primary_title() == this;
+}
+
 culture *landed_title::get_culture() const
 {
 	if (this->get_holder() != nullptr) {
@@ -644,11 +618,6 @@ culture *landed_title::get_culture() const
 	return nullptr;
 }
 
-/**
-**	@brief	Get the title's religion
-**
-**	@return	The title's religion
-*/
 religion *landed_title::get_religion() const
 {
 	if (this->get_holder() != nullptr) {
@@ -660,11 +629,6 @@ religion *landed_title::get_religion() const
 	return nullptr;
 }
 
-/**
-**	@brief	Get the path to the title's flag
-**
-**	@return	The path to the flag
-*/
 const std::filesystem::path &landed_title::get_flag_path() const
 {
 	std::string base_tag = this->get_flag_tag();

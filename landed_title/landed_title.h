@@ -165,6 +165,8 @@ public:
 		return this->get_de_jure_vassal_titles().empty() && this->get_province() == nullptr && this->get_holding_slot() == nullptr;
 	}
 
+	bool is_primary() const;
+
 	metternich::province *get_capital_province() const
 	{
 		return this->capital_province;
