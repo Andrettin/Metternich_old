@@ -11,6 +11,8 @@
 #include "holding/holding_type.h"
 #include "landed_title/landed_title_tier.h"
 #include "map/province.h"
+#include "politics/government_type.h"
+#include "politics/government_type_group.h"
 #include "politics/law.h"
 #include "religion/religion.h"
 #include "religion/religion_group.h"
@@ -85,12 +87,6 @@ const char *landed_title::get_tier_holder_identifier(const landed_title_tier tie
 	throw std::runtime_error("Invalid landed title tier enumeration value: " + std::to_string(static_cast<int>(tier)) + ".");
 }
 
-/**
-**	@brief	Process a GSML history property
-**
-**	@param	property	The property
-**	@param	date		The date of the property change
-*/
 void landed_title::process_gsml_dated_property(const gsml_property &property, const QDateTime &date)
 {
 	Q_UNUSED(date)
@@ -158,9 +154,6 @@ void landed_title::initialize()
 	data_entry_base::initialize();
 }
 
-/**
-**	@brief	Initialize the landed title's history
-*/
 void landed_title::initialize_history()
 {
 	if (this->random_holder) {
@@ -298,6 +291,10 @@ std::vector<std::vector<std::string>> landed_title::get_tag_suffix_list_with_fal
 		tag_list_with_fallbacks.push_back({this->get_holding()->get_type()->get_identifier()});
 	}
 
+	if (this->get_government_type() != nullptr) {
+		tag_list_with_fallbacks.push_back({this->get_government_type()->get_identifier(), government_type_group_to_string(this->get_government_type()->get_group())});
+	}
+
 	const culture *culture = this->get_culture();
 	if (culture != nullptr) {
 		tag_list_with_fallbacks.push_back({culture->get_identifier(), culture->get_culture_group()->get_identifier()});
@@ -331,6 +328,7 @@ void landed_title::set_holder(character *character)
 	if (character != nullptr) {
 		character->add_landed_title(this);
 	}
+
 	this->holder_title = nullptr; //set the holder title to null, so that the new holder (null or otherwise) isn't overwritten by a previous holder title
 	this->random_holder = false;
 
@@ -674,6 +672,15 @@ Q_INVOKABLE void landed_title::remove_law(law *law)
 			emit this->get_holder()->laws_changed();
 		}
 	}
+}
+
+government_type *landed_title::get_government_type() const
+{
+	if (this->get_holder() != nullptr) {
+		return this->get_holder()->get_government_type();
+	}
+
+	return nullptr;
 }
 
 }

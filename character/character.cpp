@@ -12,6 +12,7 @@
 #include "landed_title/landed_title.h"
 #include "landed_title/landed_title_tier.h"
 #include "random.h"
+#include "politics/government_type.h"
 #include "script/event/character_event.h"
 #include "util/container_util.h"
 #include "util/string_util.h"
@@ -61,6 +62,7 @@ character::character(const std::string &identifier) : data_entry(identifier)
 	connect(this, &character::name_changed, this, &character::titled_name_changed);
 	connect(this, &character::dynasty_changed, this, &character::full_name_changed);
 	connect(this, &character::primary_title_changed, this, &character::titled_name_changed);
+	connect(this, &character::government_type_changed, this, &character::titled_name_changed);
 
 	character::living_characters.push_back(this);
 }
@@ -289,6 +291,23 @@ void character::generate_personality_trait()
 
 	trait *chosen_trait = potential_traits[random::generate(potential_traits.size())];
 	this->add_trait(chosen_trait);
+}
+
+void character::set_government_type(metternich::government_type *government_type)
+{
+	if (government_type == this->get_government_type()) {
+		return;
+	}
+
+	this->government_type = government_type;
+
+	emit government_type_changed();
+
+	if (!this->get_landed_titles().empty()) {
+		for (landed_title *title : this->get_landed_titles()) {
+			emit title->government_type_changed();
+		}
+	}
 }
 
 bool character::has_law(law *law) const

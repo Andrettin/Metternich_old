@@ -14,6 +14,7 @@ namespace metternich {
 class commodity;
 class culture;
 class dynasty;
+class government_type;
 class gsml_property;
 class holding;
 class landed_title;
@@ -360,6 +361,13 @@ public:
 	bool has_personality_trait() const;
 	void generate_personality_trait();
 
+	government_type *get_government_type() const
+	{
+		return this->government_type;
+	}
+
+	void set_government_type(government_type *government_type);
+
 	bool has_law(law *law) const;
 
 	int get_wealth() const
@@ -408,6 +416,7 @@ signals:
 	void primary_title_changed();
 	void liege_changed();
 	void traits_changed();
+	void government_type_changed();
 	void wealth_changed();
 	void laws_changed();
 
@@ -430,6 +439,7 @@ private:
 	character *liege = nullptr;
 	std::vector<character *> vassals;
 	std::vector<trait *> traits;
+	government_type *government_type = nullptr;
 	int wealth = 0;
 	std::map<const commodity *, int> stored_commodities; //the amount of each commodity stored by the character
 };

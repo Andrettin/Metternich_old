@@ -12,6 +12,7 @@ namespace metternich {
 
 class character;
 class culture;
+class government_type;
 class holding;
 class holding_slot;
 class law;
@@ -35,10 +36,9 @@ class landed_title : public data_entry, public data_type<landed_title>
 	Q_PROPERTY(QString flag_tag READ get_flag_tag_qstring WRITE set_flag_tag_qstring)
 	Q_PROPERTY(QString flag_path READ get_flag_path_qstring CONSTANT)
 	Q_PROPERTY(QVariantList laws READ get_laws_qvariant_list)
+	Q_PROPERTY(metternich::government_type* government_type READ get_government_type NOTIFY government_type_changed)
 
 public:
-	landed_title(const std::string &identifier) : data_entry(identifier) {}
-
 	static constexpr const char *class_identifier = "landed_title";
 	static constexpr const char *database_folder = "landed_titles";
 	static constexpr const char *barony_prefix = "b_";
@@ -65,6 +65,11 @@ public:
 
 	static const char *get_tier_identifier(const landed_title_tier tier);
 	static const char *get_tier_holder_identifier(const landed_title_tier tier);
+
+	landed_title(const std::string &identifier) : data_entry(identifier)
+	{
+		connect(this, &landed_title::government_type_changed, this, &landed_title::titled_name_changed);
+	}
 
 	virtual void process_gsml_dated_property(const gsml_property &property, const QDateTime &date) override;
 	virtual void process_gsml_scope(const gsml_data &scope) override;
@@ -222,9 +227,23 @@ public:
 	}
 
 	QVariantList get_laws_qvariant_list() const;
+
+	law *get_law(law_group *law_group) const
+	{
+		auto find_iterator = this->laws.find(law_group);
+		if (find_iterator != this->laws.end()) {
+			return find_iterator->second;
+		}
+
+		return nullptr;
+	}
+
 	bool has_law(const law *law) const;
+
 	Q_INVOKABLE void add_law(law *law);
 	Q_INVOKABLE void remove_law(law *law);
+
+	government_type *get_government_type() const;
 
 signals:
 	void titled_name_changed();
@@ -232,6 +251,7 @@ signals:
 	void de_jure_liege_title_changed();
 	void realm_changed();
 	void laws_changed();
+	void government_type_changed();
 
 private:
 	QColor color;
