@@ -9,6 +9,8 @@
 namespace metternich {
 
 class building;
+class law;
+class law_group;
 class modifier;
 enum class holding_slot_type : int;
 
@@ -18,10 +20,13 @@ class holding_type : public data_entry, public data_type<holding_type>
 
 	Q_PROPERTY(metternich::holding_slot_type slot_type MEMBER slot_type READ get_slot_type)
 	Q_PROPERTY(QString portrait_tag READ get_portrait_tag_qstring WRITE set_portrait_tag_qstring)
+	Q_PROPERTY(QVariantList default_laws READ get_default_laws_qvariant_list)
 
 public:
 	static constexpr const char *class_identifier = "holding_type";
 	static constexpr const char *database_folder = "holding_types";
+
+	static std::set<std::string> get_database_dependencies();
 
 	holding_type(const std::string &identifier);
 	virtual ~holding_type() override;
@@ -81,6 +86,15 @@ public:
 		this->buildings.erase(building);
 	}
 
+	const std::map<law_group *, law *> &get_default_laws() const
+	{
+		return this->default_laws;
+	}
+
+	QVariantList get_default_laws_qvariant_list() const;
+	Q_INVOKABLE void add_default_law(law *law);
+	Q_INVOKABLE void remove_default_law(law *law);
+
 	const std::unique_ptr<metternich::modifier> &get_modifier() const
 	{
 		return this->modifier;
@@ -90,6 +104,7 @@ private:
 	holding_slot_type slot_type;	//the slot type which the holding type occupies
 	std::string portrait_tag;
 	std::set<building *> buildings;
+	std::map<law_group *, law *> default_laws;
 	std::unique_ptr<metternich::modifier> modifier; //the modifier applied to holdings of this type
 };
 

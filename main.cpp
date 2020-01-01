@@ -19,6 +19,7 @@
 #include "map/terrain_type.h"
 #include "map/world.h"
 #include "politics/government_type.h"
+#include "politics/law.h"
 #include "population/population_type.h"
 #include "population/population_unit.h"
 #include "religion/religion.h"
@@ -78,6 +79,7 @@ int main(int argc, char *argv[])
 		qmlRegisterType<holding_slot>();
 		qmlRegisterType<holding_type>();
 		qmlRegisterType<landed_title>();
+		qmlRegisterType<law>();
 		qmlRegisterType<population_type>();
 		qmlRegisterType<population_unit>();
 		qmlRegisterType<province>();
