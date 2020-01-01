@@ -13,6 +13,7 @@
 #include "landed_title/landed_title_tier.h"
 #include "random.h"
 #include "politics/government_type.h"
+#include "script/condition/condition_check.h"
 #include "script/event/character_event.h"
 #include "util/container_util.h"
 #include "util/string_util.h"
@@ -157,6 +158,8 @@ void character::initialize_history()
 		this->generate_personality_trait();
 	}
 
+	this->calculate_government_type();
+
 	data_entry_base::initialize_history();
 }
 
@@ -214,6 +217,36 @@ void character::set_culture(metternich::culture *culture)
 
 	this->culture = culture;
 	emit culture_changed();
+}
+
+void character::set_primary_title(landed_title *title)
+{
+	if (title == this->get_primary_title()) {
+		return;
+	}
+
+	landed_title *old_title = this->get_primary_title();
+
+	this->primary_title = title;
+
+	if (old_title != nullptr) {
+		if (title != nullptr) {
+			title->copy_title_laws_if_missing(old_title);
+		}
+		old_title->clear_non_succession_laws();
+	}
+
+	if (title != nullptr) {
+		title->set_missing_laws_to_default();
+	}
+
+	emit primary_title_changed();
+
+	if (!history::get()->is_loading()) {
+		if (title == nullptr || old_title == nullptr) {
+			this->calculate_government_type();
+		}
+	}
 }
 
 void character::choose_primary_title()
@@ -301,6 +334,17 @@ void character::set_government_type(metternich::government_type *government_type
 
 	this->government_type = government_type;
 
+	if (this->is_landed() && government_type != nullptr) {
+		//make the government type be recalculated if a relevant variable changes; only do this for landed characters, as unlanded ones just have the same government as their liege
+		this->government_condition_check = std::make_unique<condition_check<character>>(government_type->get_conditions(), this, [this](bool result){
+			if (!result) {
+				this->calculate_government_type();
+			}
+		});
+	} else {
+		this->government_condition_check.reset();
+	}
+
 	emit government_type_changed();
 
 	if (!this->get_landed_titles().empty()) {
@@ -308,6 +352,32 @@ void character::set_government_type(metternich::government_type *government_type
 			emit title->government_type_changed();
 		}
 	}
+}
+
+void character::calculate_government_type()
+{
+	if (!this->is_alive()) {
+		this->set_government_type(nullptr);
+		return;
+	}
+
+	if (!this->is_landed()) {
+		if (this->get_liege() != nullptr) {
+			this->set_government_type(this->get_liege()->get_government_type());
+		} else {
+			this->set_government_type(nullptr);
+		}
+		return;
+	}
+
+	for (metternich::government_type *government_type : government_type::get_all()) {
+		if (government_type->get_conditions() == nullptr || government_type->get_conditions()->check(this)) {
+			this->set_government_type(government_type);
+			return;
+		}
+	}
+
+	throw std::runtime_error("No valid government type for character \"" + this->get_full_name() + "\"" + " (\"" + this->get_identifier() + "\").");
 }
 
 bool character::has_law(law *law) const

@@ -233,6 +233,18 @@ public:
 
 	Q_INVOKABLE void add_law(law *law);
 	Q_INVOKABLE void remove_law(law *law);
+	void clear_non_succession_laws();
+	void set_missing_laws_to_default();
+	void set_missing_law_to_default_for_law_group(law_group *law_group);
+
+	void copy_title_laws_if_missing(const landed_title *title)
+	{
+		for (const auto &kv_pair : title->laws) {
+			if (!this->laws.contains(kv_pair.first)) {
+				this->add_law(kv_pair.second);
+			}
+		}
+	}
 
 	government_type *get_government_type() const;
 

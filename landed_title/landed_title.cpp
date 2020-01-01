@@ -4,6 +4,7 @@
 #include "character/dynasty.h"
 #include "culture/culture.h"
 #include "culture/culture_group.h"
+#include "defines.h"
 #include "game/game.h"
 #include "history/history.h"
 #include "holding/holding.h"
@@ -14,6 +15,7 @@
 #include "politics/government_type.h"
 #include "politics/government_type_group.h"
 #include "politics/law.h"
+#include "politics/law_group.h"
 #include "religion/religion.h"
 #include "religion/religion_group.h"
 #include "translator.h"
@@ -328,6 +330,14 @@ void landed_title::set_holder(character *character)
 
 	if (character != nullptr) {
 		character->add_landed_title(this);
+
+		if (!this->is_primary()) {
+			this->clear_non_succession_laws();
+			this->set_missing_law_to_default_for_law_group(defines::get()->get_succession_law_group());
+		}
+	} else {
+		this->laws.clear();
+		emit laws_changed();
 	}
 
 	this->holder_title = nullptr; //set the holder title to null, so that the new holder (null or otherwise) isn't overwritten by a previous holder title
@@ -684,6 +694,66 @@ Q_INVOKABLE void landed_title::remove_law(law *law)
 
 		if (this->is_primary()) {
 			emit this->get_holder()->laws_changed();
+		}
+	}
+}
+
+void landed_title::clear_non_succession_laws()
+{
+	if (this->laws.empty()) {
+		return;
+	}
+
+	if (this->laws.size() == 1 && this->laws.contains(defines::get()->get_succession_law_group())) {
+		//the title already has only a succession law
+		return;
+	}
+
+	//save the old succession law
+	law *succession_law = this->get_law(defines::get()->get_succession_law_group());
+
+	this->laws.clear();
+
+	if (succession_law != nullptr) {
+		//restore the succession law
+		this->laws[defines::get()->get_succession_law_group()] = succession_law;
+	}
+
+	emit laws_changed();
+
+	if (this->is_primary()) {
+		emit this->get_holder()->laws_changed();
+	}
+}
+
+void landed_title::set_missing_laws_to_default()
+{
+	const holding *capital_holding = this->get_capital_holding();
+	if (capital_holding != nullptr) {
+		for (const auto &kv_pair : capital_holding->get_type()->get_default_laws()) {
+			if (this->laws.contains(kv_pair.first)) {
+				continue;
+			}
+
+			this->add_law(kv_pair.second);
+		}
+	}
+}
+
+void landed_title::set_missing_law_to_default_for_law_group(law_group *law_group)
+{
+	if (this->laws.contains(law_group)) {
+		return;
+	}
+
+	const holding *capital_holding = this->get_capital_holding();
+	if (capital_holding != nullptr) {
+		const auto &default_laws = capital_holding->get_type()->get_default_laws();
+		auto find_iterator = default_laws.find(law_group);
+
+		if (find_iterator != default_laws.end()) {
+			this->add_law(find_iterator->second);
+			return;
 		}
 	}
 }

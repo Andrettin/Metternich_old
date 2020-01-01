@@ -24,6 +24,9 @@ class province;
 class religion;
 class trait;
 
+template <typename T>
+class condition_check;
+
 class character : public data_entry, public data_type<character>
 {
 	Q_OBJECT
@@ -188,17 +191,7 @@ public:
 		return this->primary_title;
 	}
 
-	void set_primary_title(landed_title *title)
-	{
-		if (title == this->get_primary_title()) {
-			return;
-		}
-
-		this->primary_title = title;
-
-		emit primary_title_changed();
-	}
-
+	void set_primary_title(landed_title *title);
 	void choose_primary_title();
 
 	const std::vector<landed_title *> &get_landed_titles() const
@@ -367,6 +360,7 @@ public:
 	}
 
 	void set_government_type(government_type *government_type);
+	void calculate_government_type();
 
 	bool has_law(law *law) const;
 
@@ -442,6 +436,7 @@ private:
 	government_type *government_type = nullptr;
 	int wealth = 0;
 	std::map<const commodity *, int> stored_commodities; //the amount of each commodity stored by the character
+	std::unique_ptr<condition_check<character>> government_condition_check;
 };
 
 }
