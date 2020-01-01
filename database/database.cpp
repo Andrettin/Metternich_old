@@ -103,7 +103,7 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 					}
 					success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(holding *, holding_value));
 				}
-			} else if (property.get_key() == "holding_types") {
+			} else if (property.get_key() == "holding_types" || property.get_key() == "allowed_holding_types") {
 				holding_type *holding_type_value = holding_type::get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(holding_type *, holding_type_value));
 			} else if (property.get_key() == "laws" || property.get_key() == "default_laws") {

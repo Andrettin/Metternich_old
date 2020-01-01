@@ -1,6 +1,8 @@
 #include "politics/government_type.h"
 
+#include "holding/holding_type.h"
 #include "script/condition/and_condition.h"
+#include "util/container_util.h"
 
 namespace metternich {
 
@@ -20,6 +22,11 @@ void government_type::process_gsml_scope(const gsml_data &scope)
 	} else {
 		data_entry_base::process_gsml_scope(scope);
 	}
+}
+
+QVariantList government_type::get_allowed_holding_types_qvariant_list() const
+{
+	return container::to_qvariant_list(this->get_allowed_holding_types());
 }
 
 }
