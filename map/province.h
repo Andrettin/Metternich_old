@@ -466,7 +466,7 @@ public:
 
 	QPoint get_center_pos() const
 	{
-		return this->rect.center();
+		return this->center_pos;
 	}
 
 	bool always_writes_geodata() const
@@ -510,10 +510,12 @@ private:
 	trade_node *trade_node = nullptr;
 	QColor color; //the color used to identify the province in the province map
 	QRect rect; //the rectangle that the province occupies
+	QPoint center_pos;
 	QImage image; //the province's image to be drawn on-screen
 	terrain_type *terrain = nullptr;
 	metternich::culture *culture = nullptr;
 	metternich::religion *religion = nullptr;
+	int pixel_count = 0; //the amount of pixels that the province takes on the map
 	int population = 0; //the sum of the population of all of the province's settlement holdings
 	int population_capacity_additive_modifier = 0; //the population capacity additive modifier which the province provides to its holdings
 	int population_capacity_modifier = 0; //the population capacity modifier which the province provides to its holdings

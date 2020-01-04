@@ -653,11 +653,15 @@ const QColor &province::get_map_mode_color(const map_mode mode) const
 
 void province::create_image(const std::vector<int> &pixel_indexes)
 {
+	this->pixel_count = static_cast<int>(pixel_indexes.size());
+
 	QPoint start_pos(-1, -1);
 	QPoint end_pos(-1, -1);
+	QPoint center_pos(0, 0);
 
 	for (const int index : pixel_indexes) {
 		QPoint pixel_pos = this->get_world()->get_pixel_pos(index);
+
 		if (start_pos.x() == -1 || pixel_pos.x() < start_pos.x()) {
 			start_pos.setX(pixel_pos.x());
 		}
@@ -670,8 +674,13 @@ void province::create_image(const std::vector<int> &pixel_indexes)
 		if (end_pos.y() == -1 || pixel_pos.y() > end_pos.y()) {
 			end_pos.setY(pixel_pos.y());
 		}
+
+		center_pos += pixel_pos;
 	}
 
+	center_pos /= this->pixel_count;
+
+	this->center_pos = center_pos;
 	this->rect = QRect(start_pos, end_pos);
 
 	this->image = QImage(this->rect.size(), QImage::Format_Indexed8);
