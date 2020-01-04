@@ -21,7 +21,7 @@ namespace metternich {
 std::set<std::string> holding_slot::get_database_dependencies()
 {
 	return {
-		//so that holding slots will be added to a province after the holding slots within the province's definition have been added to it
+		//so that holding slots will be added to a province after the holding slots within the province's definition have been added to it, and so that settlement holding slot initialization (and thus holding size calculation) will take place after provinces have been initialized (and thus calculated their area)
 		province::class_identifier
 	};
 }
@@ -47,7 +47,13 @@ void holding_slot::initialize()
 			this->generate_available_commodity();
 		}
 
+		//make sure the province's calculation of holding sizes has been done
+		if (!this->get_province()->is_initialized()) {
+			this->get_province()->initialize();
+		}
+
 		if (this->get_holding_size() == 0) {
+			//set a holding size of 100 if the province has given no holding size for the holding
 			this->holding_size = 100;
 		}
 	}
