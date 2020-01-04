@@ -495,6 +495,8 @@ void province::set_trade_node(metternich::trade_node *trade_node)
 		return;
 	}
 
+	const metternich::trade_node *old_trade_area = this->get_trade_area();
+
 	if (this->get_trade_node() != nullptr) {
 		this->get_trade_node()->remove_province(this);
 	}
@@ -505,11 +507,20 @@ void province::set_trade_node(metternich::trade_node *trade_node)
 	if (trade_node != nullptr) {
 		trade_node->add_province(this);
 	}
+
+	const metternich::trade_node *trade_area = this->get_trade_area();
+
+	if (old_trade_area != trade_area) {
+		emit trade_area_changed();
+	}
 }
 
 void province::calculate_trade_node()
 {
 	if (this->is_center_of_trade()) {
+		//anything that triggers a recalculation of the trade node for a province should trigger a recalculation of the trade area for a node as well
+		this->get_trade_node()->calculate_trade_area();
+
 		//the trade node of centers of trade cannot change, since trade nodes represent a collective of provinces which have a province as their center of trade
 		return;
 	}
@@ -520,10 +531,16 @@ void province::calculate_trade_node()
 		return;
 	}
 
+	metternich::trade_node *best_node = this->get_best_trade_node_from_list(trade_node::get_all());
+	this->set_trade_node(best_node);
+}
+
+trade_node *province::get_best_trade_node_from_list(const std::vector<metternich::trade_node *> &trade_nodes) const
+{
 	metternich::trade_node *best_node = nullptr;
 	int best_score = 0; //smaller is better
 
-	for (metternich::trade_node *node : trade_node::get_all()) {
+	for (metternich::trade_node *node : trade_nodes) {
 		if (node->get_world() != this->get_world()) {
 			continue;
 		}
@@ -565,7 +582,16 @@ void province::calculate_trade_node()
 		}
 	}
 
-	this->set_trade_node(best_node);
+	return best_node;
+}
+
+trade_node *province::get_trade_area() const
+{
+	if (this->get_trade_node() != nullptr) {
+		return this->get_trade_node()->get_trade_area();
+	}
+
+	return nullptr;
 }
 
 const QColor &province::get_map_mode_color(const map_mode mode) const
@@ -630,6 +656,12 @@ const QColor &province::get_map_mode_color(const map_mode mode) const
 				}
 				break;
 			}
+			case map_mode::trade_area: {
+				if (this->get_trade_area() != nullptr && this->get_owner() != nullptr) {
+					return this->get_trade_area()->get_color();
+				}
+				break;
+			}
 		}
 
 		switch (mode) {
@@ -639,6 +671,7 @@ const QColor &province::get_map_mode_color(const map_mode mode) const
 			case map_mode::religion:
 			case map_mode::religion_group:
 			case map_mode::trade_node:
+			case map_mode::trade_area:
 				return province::empty_province_color; //colonizable province
 			default:
 				break;
@@ -1386,6 +1419,18 @@ bool province::is_center_of_trade() const
 	return this->get_trade_node() != nullptr && this->get_trade_node()->get_center_of_trade() == this;
 }
 
+void province::set_major_center_of_trade(const bool major_center_of_trade)
+{
+	if (major_center_of_trade == this->is_major_center_of_trade()) {
+		return;
+	}
+
+	this->major_center_of_trade = major_center_of_trade;
+	emit major_center_of_trade_changed();
+
+	this->get_trade_node()->set_major(major_center_of_trade);
+}
+
 void province::set_selected(const bool selected, const bool notify_engine_interface)
 {
 	if (selected == this->is_selected()) {
@@ -1479,9 +1524,9 @@ QGeoCoordinate province::get_center_coordinate() const
 	return this->get_world()->get_pixel_pos_coordinate(this->get_center_pos());
 }
 
-void province::set_trade_node_recalculation_needed(const bool recalculation_needed)
+void province::set_trade_node_recalculation_needed(const bool recalculation_needed, const bool recalculate_for_dependent_provinces)
 {
-	if (this->is_center_of_trade() && recalculation_needed) {
+	if (recalculate_for_dependent_provinces && this->is_center_of_trade() && recalculation_needed) {
 		for (province *node_province : this->get_trade_node()->get_provinces()) {
 			if (node_province == this) {
 				continue;
@@ -1489,7 +1534,16 @@ void province::set_trade_node_recalculation_needed(const bool recalculation_need
 
 			node_province->set_trade_node_recalculation_needed(true);
 		}
-		return;
+
+		if (this->is_major_center_of_trade()) {
+			for (metternich::trade_node *dependent_node : this->get_trade_node()->get_trade_nodes()) {
+				if (dependent_node == this->get_trade_node()) {
+					continue;
+				}
+
+				dependent_node->get_center_of_trade()->set_trade_node_recalculation_needed(true, false);
+			}
+		}
 	}
 
 	if (recalculation_needed == this->trade_node_recalculation_needed) {

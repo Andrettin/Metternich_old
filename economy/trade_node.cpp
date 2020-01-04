@@ -1,5 +1,6 @@
 #include "economy/trade_node.h"
 
+#include "game/game.h"
 #include "map/province.h"
 #include "translator.h"
 
@@ -39,6 +40,60 @@ void trade_node::set_center_of_trade(province *province)
 	emit center_of_trade_changed();
 
 	province->set_trade_node(this);
+}
+
+void trade_node::set_major(const bool major)
+{
+	if (major == this->is_major()) {
+		return;
+	}
+
+	this->major = major;
+
+	if (major) {
+		trade_node::major_trade_nodes.push_back(this);
+	} else {
+		trade_node::major_trade_nodes.erase(std::remove(trade_node::major_trade_nodes.begin(), trade_node::major_trade_nodes.end(), this), trade_node::major_trade_nodes.end());
+	}
+
+	if (game::get()->is_running()) {
+		//recalculate the trade area of all nodes
+		for (metternich::trade_node *node : trade_node::get_all()) {
+			if (node == this) {
+				continue;
+			}
+
+			node->get_center_of_trade()->set_trade_node_recalculation_needed(true, false);
+		}
+	}
+}
+
+void trade_node::set_trade_area(trade_node *trade_area)
+{
+	if (trade_area == this->get_trade_area()) {
+		return;
+	}
+
+	this->trade_area = trade_area;
+	emit trade_area_changed();
+
+	for (province *node_province : this->get_provinces()) {
+		emit node_province->trade_area_changed();
+	}
+}
+
+void trade_node::calculate_trade_area()
+{
+	if (this->is_major()) {
+		//if this is a major trade node, then it is necessarily a part of its own area
+		this->set_trade_area(this);
+		return;
+	}
+
+	province *center_of_trade = this->get_center_of_trade();
+	metternich::trade_node *best_area = center_of_trade->get_best_trade_node_from_list(trade_node::major_trade_nodes);
+
+	this->set_trade_area(best_area);
 }
 
 world *trade_node::get_world() const

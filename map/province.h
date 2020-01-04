@@ -54,6 +54,8 @@ class province : public data_entry, public data_type<province>
 	Q_PROPERTY(metternich::landed_title* de_jure_empire READ get_de_jure_empire NOTIFY de_jure_empire_changed)
 	Q_PROPERTY(metternich::world* world READ get_world CONSTANT)
 	Q_PROPERTY(metternich::trade_node* trade_node READ get_trade_node NOTIFY trade_node_changed)
+	Q_PROPERTY(metternich::trade_node* trade_area READ get_trade_area NOTIFY trade_area_changed)
+	Q_PROPERTY(bool major_center_of_trade READ is_major_center_of_trade WRITE set_major_center_of_trade NOTIFY major_center_of_trade_changed)
 	Q_PROPERTY(QColor color MEMBER color READ get_color)
 	Q_PROPERTY(QRect rect READ get_rect CONSTANT)
 	Q_PROPERTY(QImage image READ get_image NOTIFY image_changed)
@@ -159,6 +161,9 @@ public:
 
 	void set_trade_node(trade_node *trade_node);
 	void calculate_trade_node();
+	trade_node *get_best_trade_node_from_list(const std::vector<trade_node *> &trade_nodes) const;
+
+	trade_node *get_trade_area() const;
 
 	const QColor &get_color() const
 	{
@@ -392,6 +397,13 @@ public:
 
 	bool is_center_of_trade() const;
 
+	bool is_major_center_of_trade() const
+	{
+		return this->major_center_of_trade;
+	}
+
+	void set_major_center_of_trade(const bool major_center_of_trade);
+
 	bool has_any_trade_route() const
 	{
 		return !this->trade_routes.empty();
@@ -484,7 +496,7 @@ public:
 		return this->write_geojson_value;
 	}
 
-	void set_trade_node_recalculation_needed(const bool recalculation_needed);
+	void set_trade_node_recalculation_needed(const bool recalculation_needed, const bool recalculate_for_dependent_provinces = true);
 
 signals:
 	void county_changed();
@@ -495,6 +507,8 @@ signals:
 	void empire_changed();
 	void de_jure_empire_changed();
 	void trade_node_changed();
+	void trade_area_changed();
+	void major_center_of_trade_changed();
 	void image_changed();
 	void terrain_changed();
 	void owner_changed();
@@ -538,6 +552,7 @@ private:
 	std::set<province *> border_provinces; //provinces bordering this one
 	technology_set technologies; //the technologies acquired for the province
 	std::set<trade_route *> trade_routes; //the trade routes going through the province
+	bool major_center_of_trade = false;
 	std::vector<qunique_ptr<population_unit>> population_units; //population units set for this province in history, used during initialization to generate population units in the province's settlements
 	std::map<population_type *, int> population_per_type; //the population for each population type
 	std::map<metternich::culture *, int> population_per_culture; //the population for each culture
