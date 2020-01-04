@@ -165,6 +165,7 @@ HEADERS += \
     script/condition/condition_check.h \
     script/condition/condition_check_base.h \
     script/condition/culture_condition.h \
+    script/condition/has_any_trade_route_condition.h \
     script/condition/has_building_condition.h \
     script/condition/has_law_condition.h \
     script/condition/has_technology_condition.h \
