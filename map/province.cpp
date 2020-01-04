@@ -594,7 +594,7 @@ trade_node *province::get_trade_area() const
 	return nullptr;
 }
 
-const QColor &province::get_map_mode_color(const map_mode mode) const
+const QColor &province::get_color_for_map_mode(const map_mode mode) const
 {
 	if (this->get_county() != nullptr) {
 		switch (mode) {
@@ -662,6 +662,8 @@ const QColor &province::get_map_mode_color(const map_mode mode) const
 				}
 				break;
 			}
+			default:
+				break;
 		}
 
 		switch (mode) {
@@ -739,7 +741,7 @@ void province::set_border_pixels(const std::vector<int> &pixel_indexes)
 
 void province::update_image()
 {
-	const QColor &province_color = this->get_map_mode_color(map::get()->get_mode());
+	const QColor &province_color = this->get_map_mode_color();
 
 	QColor border_color;
 	if (this->is_selected()) {
@@ -960,7 +962,7 @@ void province::set_culture(metternich::culture *culture)
 		map::get()->get_mode() == map_mode::culture
 		|| (map::get()->get_mode() == map_mode::culture_group && old_culture_group != culture_group)
 	) {
-		this->update_image();
+		this->update_color_for_map_mode(map::get()->get_mode());
 	}
 }
 
@@ -983,7 +985,7 @@ void province::set_religion(metternich::religion *religion)
 		map::get()->get_mode() == map_mode::religion
 		|| (map::get()->get_mode() == map_mode::religion_group && old_religion_group != religion_group)
 	) {
-		this->update_image();
+		this->update_color_for_map_mode(map::get()->get_mode());
 	}
 }
 

@@ -54,21 +54,11 @@ holding *engine_interface::get_selected_holding() const
 	return holding::get_selected_holding();
 }
 
-/**
-**	@brief	Get the map mode
-**
-**	@return	The map mode
-*/
 int engine_interface::get_map_mode() const
 {
 	return static_cast<int>(map::get()->get_mode());
 }
 
-/**
-**	@brief	Set the map mode
-**
-**	@param	map_mode	The new map mode
-*/
 void engine_interface::set_map_mode(const int map_mode)
 {
 	game::get()->post_order([map_mode]() {

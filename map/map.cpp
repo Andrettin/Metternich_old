@@ -21,7 +21,7 @@
 
 namespace metternich {
 
-map::map() : mode(map_mode::country)
+map::map() : mode(map_mode::none)
 {
 }
 
@@ -96,7 +96,7 @@ void map::set_mode(const map_mode mode)
 	this->mode = mode;
 
 	for (province *province : province::get_all()) {
-		province->update_image();
+		province->update_color_for_map_mode(this->get_mode());
 	}
 
 	emit engine_interface::get()->map_mode_changed();

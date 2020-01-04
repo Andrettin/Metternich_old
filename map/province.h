@@ -170,7 +170,28 @@ public:
 		return this->color;
 	}
 
-	const QColor &get_map_mode_color(map_mode mode) const;
+	const QColor &get_map_mode_color() const
+	{
+		return this->map_mode_color;
+	}
+
+	void set_map_mode_color(const QColor &color)
+	{
+		if (color == this->get_map_mode_color()) {
+			return;
+		}
+
+		this->map_mode_color = color;
+		this->update_image();
+	}
+
+	const QColor &get_color_for_map_mode(const map_mode mode) const;
+
+	void update_color_for_map_mode(const map_mode mode)
+	{
+		const QColor &color = this->get_color_for_map_mode(mode);
+		this->set_map_mode_color(color);
+	}
 
 	const QRect &get_rect() const
 	{
@@ -528,6 +549,7 @@ private:
 	world *world = nullptr;
 	trade_node *trade_node = nullptr;
 	QColor color; //the color used to identify the province in the province map
+	QColor map_mode_color; //the color used for the province by the current map mode
 	QRect rect; //the rectangle that the province occupies
 	QPoint center_pos;
 	QImage image; //the province's image to be drawn on-screen
