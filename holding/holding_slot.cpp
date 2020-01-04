@@ -46,10 +46,6 @@ void holding_slot::initialize()
 			//generate an available commodity for the holding if it has none
 			this->generate_available_commodity();
 		}
-
-		if (this->get_holding_size() == 0) {
-			this->holding_size = 100;
-		}
 	}
 
 	data_entry_base::initialize();

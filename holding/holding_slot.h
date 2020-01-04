@@ -158,7 +158,7 @@ private:
 	std::unique_ptr<holding> holding; //the holding built on this slot, if any
 	province *province = nullptr; //to which province this holding slot belongs
 	province_profile *province_profile = nullptr;
-	int holding_size = 0; //the holding size, which affects population capacity (100 = normal size)
+	int holding_size = 100; //the holding size, which affects population capacity (100 = normal size)
 	std::vector<metternich::commodity *> available_commodities; //the commodities available for production by the holding (if any)
 	bool population_distribution_allowed = true;
 };
