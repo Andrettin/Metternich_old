@@ -12,9 +12,10 @@ void trade_route::process_gsml_scope(const gsml_data &scope)
 	const std::string &tag = scope.get_tag();
 
 	if (tag == "path") {
+		this->clear_path();
 		for (const std::string &province_identifier : scope.get_values()) {
 			province *path_province = province::get(province_identifier);
-			this->path.push_back(path_province);
+			this->add_path_province(path_province);
 		}
 	} else if (tag == "geopath") {
 		this->set_geopath(scope.to_geopath());
@@ -34,24 +35,16 @@ void trade_route::initialize()
 	}
 
 	for (province *path_province : this->path) {
-		path_province->add_trade_route(this);
+		if (path_province == nullptr) {
+			throw std::runtime_error("The path of trade route \"" + this->get_identifier() + "\" contains a null province.");
+		}
+
+		if (path_province->is_center_of_trade() && !this->has_trade_node(path_province->get_trade_node())) {
+			this->add_trade_node(path_province->get_trade_node());
+		}
 	}
 
 	province *start_province = this->path.front();
-
-	if (start_province->get_trade_node() == nullptr) {
-		throw std::runtime_error("The start province of trade route \"" + this->get_identifier() + "\" has no trade node.");
-	}
-
-	this->add_trade_node(start_province->get_trade_node());
-
-	province *end_province = this->path.back();
-
-	if (end_province->get_trade_node() == nullptr) {
-		throw std::runtime_error("The end province of trade route \"" + this->get_identifier() + "\" has no trade node.");
-	}
-
-	this->add_trade_node(end_province->get_trade_node());
 
 	if (this->get_world() == nullptr) {
 		this->set_world(start_province->get_world());
@@ -100,6 +93,21 @@ void trade_route::check() const
 	}
 }
 
+gsml_data trade_route::get_cache_data() const
+{
+	gsml_data cache_data(this->get_identifier());
+
+	gsml_data path("path");
+
+	for (const province *path_province : this->path) {
+		path.add_value(path_province->get_identifier());
+	}
+
+	cache_data.add_child(std::move(path));
+
+	return cache_data;
+}
+
 void trade_route::set_geopath(const QGeoPath &geopath)
 {
 	if (geopath == this->get_geopath()) {
@@ -112,28 +120,33 @@ void trade_route::set_geopath(const QGeoPath &geopath)
 		throw std::runtime_error("Tried to set an invalid geopath for trade route \"" + this->get_identifier() + "\".");
 	}
 
-	//process the map as per the geopath data
-	this->path.clear();
+	const QGeoRectangle georectangle = this->geopath.boundingGeoRectangle();
+	this->rect = this->get_world()->get_georectangle_rect(georectangle);
+}
+
+void trade_route::calculate_path_from_geopath()
+{
+	if (!this->geopath.isValid()) {
+		return;
+	}
+
+	this->clear_path();
 
 	for (const QGeoCoordinate &coordinate : this->geopath.path()) {
 		province *path_province = this->get_world()->get_coordinate_province(coordinate);
 
-		if (this->path.empty() && !path_province->is_center_of_trade()) {
-			continue; //ignore provinces that aren't centers of trade for the first path element, as the wrong initial province could have been obtained simply due to the trade route start point being too close to the border
+		if (path_province == nullptr) {
+			continue; //ignore positions passed through by the trade route that don't have provinces
+		}
+
+		if (path_province->is_river()) {
+			continue; //ignore rivers
 		}
 
 		if (this->path.empty() || path_province != this->path.back()) {
-			this->path.push_back(path_province);
+			this->add_path_province(path_province);
 		}
 	}
-
-	//ensure that the end province is a center of trade, as the wrong end province could have been set due to the trade route end point being too close to the border of the real end province
-	while (!this->path.empty() && !this->path.back()->is_center_of_trade()) {
-		this->path.pop_back();
-	}
-
-	const QGeoRectangle georectangle = this->geopath.boundingGeoRectangle();
-	this->rect = this->get_world()->get_georectangle_rect(georectangle);
 }
 
 void trade_route::set_world(metternich::world *world)
@@ -159,6 +172,21 @@ void trade_route::add_trade_node(trade_node *node)
 QVariantList trade_route::get_path_qvariant_list() const
 {
 	return container::to_qvariant_list(this->path);
+}
+
+void trade_route::add_path_province(province *path_province)
+{
+	this->path.push_back(path_province);
+	path_province->add_trade_route(this);
+}
+
+void trade_route::clear_path()
+{
+	for (province *path_province : this->path) {
+		path_province->remove_trade_route(this);
+	}
+
+	this->path.clear();
 }
 
 QVariantList trade_route::get_path_points_qvariant_list() const

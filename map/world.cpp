@@ -71,15 +71,53 @@ terrain_type *world::get_coordinate_terrain(const QGeoCoordinate &coordinate) co
 	return terrain_type::get_by_rgb(rgb);
 }
 
-province *world::get_coordinate_province(const QGeoCoordinate &coordinate) const
+province *world::get_pos_province(const QPoint &pos) const
 {
 	if (this->province_image.isNull()) {
-		throw std::runtime_error("Cannot get coordinate province after clearing the province image from memory.");
+		throw std::runtime_error("Cannot get a position's province after clearing the province image from memory.");
 	}
 
-	QPoint pos = this->get_coordinate_pos(coordinate);
 	QRgb rgb = this->province_image.pixel(pos);
 	return province::get_by_rgb(rgb);
+}
+
+province *world::get_coordinate_province(const QGeoCoordinate &coordinate) const
+{
+	//check the province in the pixel corresponding to the coordinate, but also adjacent provinces, to avoid accuracy errors
+	const QPoint pixel_pos = this->get_coordinate_pos(coordinate);
+	province *pixel_province = this->get_pos_province(pixel_pos);
+	std::set<province *> checked_provinces;
+	checked_provinces.insert(pixel_province);
+
+	for (int x_offset = -1; x_offset <= -1; ++x_offset) {
+		for (int y_offset = -1; y_offset <= -1; ++y_offset) {
+			if (x_offset == 0 && y_offset == 0) {
+				continue;
+			}
+
+			const QPoint adjacent_pos = pixel_pos + QPoint(x_offset, y_offset);
+
+			if (!this->is_pos_valid(adjacent_pos)) {
+				continue;
+			}
+
+			province *adjacent_province = this->get_pos_province(adjacent_pos);
+			checked_provinces.insert(adjacent_province);
+
+		}
+	}
+
+	for (province *province : checked_provinces) {
+		if (province == nullptr) {
+			continue;
+		}
+
+		if (province->contains_coordinate(coordinate)) {
+			return province;
+		}
+	}
+
+	return nullptr;
 }
 
 void world::process_province_map_database()
@@ -500,6 +538,13 @@ void world::write_province_geodata_to_image(QImage &province_image, QImage &terr
 	}
 
 	this->geopath_provinces.clear();
+}
+
+void world::calculate_trade_route_paths_from_geopaths()
+{
+	for (trade_route *route : this->trade_routes) {
+		route->calculate_path_from_geopath();
+	}
 }
 
 void world::add_province(province *province)

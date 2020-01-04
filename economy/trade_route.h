@@ -29,13 +29,15 @@ public:
 	virtual void process_gsml_scope(const gsml_data &scope) override;
 	virtual void initialize() override;
 	virtual void check() const override;
-	
+	virtual gsml_data get_cache_data() const override;
+
 	const QGeoPath &get_geopath() const
 	{
 		return this->geopath;
 	}
 
 	void set_geopath(const QGeoPath &geopath);
+	void calculate_path_from_geopath();
 
 	world *get_world() const
 	{
@@ -44,9 +46,18 @@ public:
 
 	void set_world(world *world);
 
+	bool has_trade_node(trade_node *node) const
+	{
+		return this->trade_nodes.contains(node);
+	}
+
 	void add_trade_node(trade_node *node);
 
 	QVariantList get_path_qvariant_list() const;
+
+	void add_path_province(province *path_province);
+	void clear_path();
+
 	QVariantList get_path_points_qvariant_list() const;
 
 	const QRect &get_rect() const

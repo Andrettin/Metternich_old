@@ -68,6 +68,11 @@ public:
 		return "file:///" + QString::fromStdString(this->get_cache_path().string());
 	}
 
+	bool is_pos_valid(const QPoint &pos) const
+	{
+		return pos.x() > 0 && pos.y() > 0 && pos.x() < this->pixel_size.width() && pos.y() < this->pixel_size.height();
+	}
+
 	QPoint get_pixel_pos(const int index) const;
 	QPoint get_coordinate_pos(const QGeoCoordinate &coordinate) const;
 
@@ -81,6 +86,7 @@ public:
 
 	QGeoCoordinate get_pixel_pos_coordinate(const QPoint &pos) const;
 	terrain_type *get_coordinate_terrain(const QGeoCoordinate &coordinate) const;
+	province *get_pos_province(const QPoint &pos) const;
 	province *get_coordinate_province(const QGeoCoordinate &coordinate) const;
 
 	template <typename T>
@@ -128,6 +134,8 @@ public:
 	void write_province_geodata_to_image(QImage &province_image, QImage &terrain_image);
 	void write_terrain_geoshape_to_image(const terrain_type *terrain, QImage &image, const QGeoShape &geoshape);
 	void write_terrain_geopath_endpoints_to_image(QImage &image);
+
+	void calculate_trade_route_paths_from_geopaths();
 
 	QString get_loading_message_name() const
 	{

@@ -407,6 +407,11 @@ public:
 		this->trade_routes.insert(route);
 	}
 
+	void remove_trade_route(trade_route *route)
+	{
+		this->trade_routes.erase(route);
+	}
+
 	bool is_selected() const
 	{
 		return this->selected;
