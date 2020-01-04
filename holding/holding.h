@@ -52,7 +52,6 @@ class holding : public data_entry
 	Q_PROPERTY(metternich::commodity* commodity READ get_commodity WRITE set_commodity NOTIFY commodity_changed)
 	Q_PROPERTY(metternich::culture* culture READ get_culture WRITE set_culture NOTIFY culture_changed)
 	Q_PROPERTY(metternich::religion* religion READ get_religion WRITE set_religion NOTIFY religion_changed)
-	Q_PROPERTY(int holding_size READ get_holding_size WRITE set_holding_size NOTIFY holding_size_changed)
 	Q_PROPERTY(bool selected READ is_selected WRITE set_selected NOTIFY selected_changed)
 
 public:
@@ -398,21 +397,7 @@ public:
 		emit religion_changed();
 	}
 
-	int get_holding_size() const
-	{
-		return this->holding_size;
-	}
-
-	void set_holding_size(const int holding_size)
-	{
-		if (holding_size == this->get_holding_size()) {
-			return;
-		}
-
-		this->holding_size = holding_size;
-		emit holding_size_changed();
-		this->calculate_population_capacity();
-	}
+	int get_holding_size() const;
 
 	const std::map<const employment_type *, std::unique_ptr<employment>> &get_employments() const
 	{
@@ -468,7 +453,6 @@ signals:
 	void commodity_changed();
 	void culture_changed();
 	void religion_changed();
-	void holding_size_changed();
 	void selected_changed();
 
 private:
@@ -486,7 +470,6 @@ private:
 	building *under_construction_building = nullptr; //the building currently under construction
 	int construction_days = 0; //the amount of days remaining to construct the building under construction
 	metternich::commodity *commodity = nullptr; //the commodity produced by the holding (if any)
-	int holding_size = 100; //the holding size, which affects population capacity (100 = normal size)
 	metternich::culture *culture = nullptr; //the holding's culture
 	metternich::religion *religion = nullptr; //the holding's religion
 	std::set<identifiable_modifier *> modifiers; //modifiers applied to the holding

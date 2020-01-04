@@ -628,6 +628,11 @@ void holding::set_under_construction_building(building *building)
 	}
 }
 
+int holding::get_holding_size() const
+{
+	return this->get_slot()->get_holding_size();
+}
+
 /**
 **	@brief	Get the employment workforce for a particular employment type
 **

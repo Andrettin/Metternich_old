@@ -41,9 +41,15 @@ void holding_slot::initialize()
 		this->province_profile = nullptr;
 	}
 
-	if (this->get_available_commodities().empty()) {
-		//generate an available commodity for the holding if it has none
-		this->generate_available_commodity();
+	if (this->is_settlement()) {
+		if (this->get_available_commodities().empty()) {
+			//generate an available commodity for the holding if it has none
+			this->generate_available_commodity();
+		}
+
+		if (this->get_holding_size() == 0) {
+			this->holding_size = 100;
+		}
 	}
 
 	data_entry_base::initialize();
