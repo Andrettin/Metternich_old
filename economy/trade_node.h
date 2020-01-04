@@ -9,6 +9,7 @@ namespace metternich {
 
 class province;
 class trade_route;
+class world;
 
 class trade_node : public data_entry, public data_type<trade_node>
 {
