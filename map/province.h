@@ -234,6 +234,11 @@ public:
 
 	void set_religion(religion *religion);
 
+	int get_area() const
+	{
+		return this->area;
+	}
+
 	int get_population() const
 	{
 		return this->population;
@@ -557,6 +562,7 @@ private:
 	metternich::culture *culture = nullptr;
 	metternich::religion *religion = nullptr;
 	int pixel_count = 0; //the amount of pixels that the province takes on the map
+	int area = 0; //the area of the province, in square kilometers; used to calculate holding sizes
 	int population = 0; //the sum of the population of all of the province's settlement holdings
 	int population_capacity_additive_modifier = 0; //the population capacity additive modifier which the province provides to its holdings
 	int population_capacity_modifier = 0; //the population capacity modifier which the province provides to its holdings

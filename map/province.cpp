@@ -246,6 +246,10 @@ void province::initialize()
 		}
 	}
 
+	if (this->get_world()->get_surface_area() != 0 && this->get_area() == 0) {
+		this->area = this->get_world()->get_area_per_pixel() * this->pixel_count;
+	}
+
 	data_entry_base::initialize();
 }
 

@@ -16,6 +16,7 @@ class world : public data_entry, public data_type<world>
 {
 	Q_OBJECT
 
+	Q_PROPERTY(int surface_area MEMBER surface_area READ get_surface_area)
 	Q_PROPERTY(QVariantList provinces READ get_provinces_qvariant_list CONSTANT)
 	Q_PROPERTY(QVariantList trade_routes READ get_trade_routes_qvariant_list CONSTANT)
 	Q_PROPERTY(QString cache_path READ get_cache_path_qstring CONSTANT)
@@ -38,6 +39,16 @@ public:
 		this->province_image = QImage();
 
 		data_entry_base::initialize();
+	}
+
+	int get_surface_area() const
+	{
+		return this->surface_area;
+	}
+
+	int get_area_per_pixel() const
+	{
+		return this->get_surface_area() / this->pixel_size.width() / this->pixel_size.height();
 	}
 
 	const std::set<province *> &get_provinces() const
@@ -156,6 +167,7 @@ private:
 	void add_province(province *province);
 
 private:
+	int surface_area = 0; //the world's surface area, in square kilometers
 	std::set<province *> provinces;
 	std::set<trade_route *> trade_routes; //the trade routes which exist in the world
 	std::set<province *> geopath_provinces;
