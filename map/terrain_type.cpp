@@ -8,12 +8,6 @@
 
 namespace metternich {
 
-/**
-**	@brief	Get an instance of the class by the RGB value associated with it
-**	@param	rgb	The instance's RGB
-**	@param	should_find	Whether it is expected that an instance should be found (i.e. if none is, then it is an error).
-**	@return	The instance if found, or null otherwise
-*/
 terrain_type *terrain_type::get_by_rgb(const QRgb &rgb, const bool should_find)
 {
 	if (rgb == terrain_type::empty_rgb) {

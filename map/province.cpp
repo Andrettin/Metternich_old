@@ -949,6 +949,10 @@ void province::set_culture(metternich::culture *culture)
 		return;
 	}
 
+	if (culture == nullptr && this->get_owner() != nullptr) {
+		throw std::runtime_error("Tried to set the culture of province \"" + this->get_identifier() + "\" to null, despite it having an owner.");
+	}
+
 	const metternich::culture *old_culture = this->get_culture();
 	metternich::culture_group *old_culture_group = old_culture ? old_culture->get_culture_group() : nullptr;
 
@@ -970,6 +974,10 @@ void province::set_religion(metternich::religion *religion)
 {
 	if (religion == this->get_religion()) {
 		return;
+	}
+
+	if (religion == nullptr && this->get_owner() != nullptr) {
+		throw std::runtime_error("Tried to set the religion of province \"" + this->get_identifier() + "\" to null, despite it having an owner.");
 	}
 
 	metternich::religion *old_religion = this->get_religion();

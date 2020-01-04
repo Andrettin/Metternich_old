@@ -12,9 +12,6 @@
 
 namespace metternich {
 
-/**
-**	@brief	Custom translator class
-*/
 class translator : public QTranslator, public singleton<translator>
 {
 	Q_OBJECT

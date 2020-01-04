@@ -5,13 +5,6 @@
 
 namespace metternich {
 
-/**
-**	@brief	Parse a CSV data file
-**
-**	@param	filepath	The path to the file holding the CSV data
-**
-**	@return	The parsed CSV data for the file.
-*/
 csv_data csv_data::parse_file(const std::filesystem::path &filepath)
 {
 	if (!std::filesystem::exists(filepath)) {

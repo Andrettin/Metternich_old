@@ -6,9 +6,6 @@
 
 namespace metternich {
 
-/**
-**	@brief	CSV data
-*/
 class csv_data
 {
 public:

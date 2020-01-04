@@ -12,9 +12,6 @@ defines::defines() : default_game_speed(game_speed::normal)
 {
 }
 
-/**
-**	@brief	Load the defines
-*/
 void defines::load(const std::filesystem::path &data_path)
 {
 	std::filesystem::path defines_path(data_path / "common" / "defines.txt");
@@ -31,11 +28,6 @@ void defines::load(const std::filesystem::path &data_path)
 	}
 }
 
-/**
-**	@brief	Process a GSML property
-**
-**	@param	property	The property
-*/
 void defines::process_gsml_property(const gsml_property &property)
 {
 	if (property.get_key() == "default_game_speed") {

@@ -5,11 +5,6 @@
 
 namespace metternich {
 
-/**
-**	@brief	Process a GSML scope
-**
-**	@param	scope	The scope
-*/
 void culture_base::process_gsml_scope(const gsml_data &scope)
 {
 	const std::string &tag = scope.get_tag();
@@ -24,9 +19,6 @@ void culture_base::process_gsml_scope(const gsml_data &scope)
 	}
 }
 
-/**
-**	@brief	Check whether the instance is in a valid state
-*/
 void culture_base::check() const
 {
 	if (!this->get_color().isValid()) {

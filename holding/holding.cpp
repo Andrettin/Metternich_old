@@ -349,9 +349,6 @@ void holding::sort_population_units()
 	emit population_units_changed();
 }
 
-/**
-**	@brief	Remove population units that have size 0
-*/
 void holding::remove_empty_population_units()
 {
 	bool removed_pop_unit = false;
@@ -370,11 +367,6 @@ void holding::remove_empty_population_units()
 	}
 }
 
-/**
-**	@brief	Set the holding's population
-**
-**	@param	population	The new population size for the holding
-*/
 void holding::set_population(const int population)
 {
 	if (population == this->get_population()) {
@@ -430,6 +422,7 @@ void holding::do_population_growth()
 		}
 
 		population_unit->change_size(change);
+		population_unit->change_size(static_cast<int>(change));
 	}
 
 	this->check_overpopulation();
@@ -583,7 +576,6 @@ void holding::remove_building(building *building)
 **
 **	@param	building	The building
 **	@param	change		The multiplier for the change: 1 to apply, -1 to remove
-*/
 void holding::apply_building_effects(const building *building, const int change)
 {
 	if (building->get_employment_type() != nullptr) {

@@ -26,9 +26,6 @@ void culture::process_gsml_scope(const gsml_data &scope)
 	}
 }
 
-/**
-**	@brief	Initialize the culture
-*/
 void culture::initialize()
 {
 	if (this->get_species() == nullptr) {
@@ -42,9 +39,6 @@ void culture::initialize()
 	data_entry_base::initialize();
 }
 
-/**
-**	@brief	Check whether the culture is in a valid state
-*/
 void culture::check() const
 {
 	if (this->get_culture_group() == nullptr) {
@@ -79,9 +73,6 @@ QVariantList culture::get_derived_cultures_qvariant_list() const
 	return container::to_qvariant_list(this->get_derived_cultures());
 }
 
-/**
-**	@brief	Generate male name
-*/
 std::string culture::generate_male_name() const
 {
 	if (!this->get_male_names().empty()) {
@@ -95,9 +86,6 @@ std::string culture::generate_male_name() const
 	throw std::runtime_error("No male name could be generated for culture \"" + this->get_identifier() + "\"");
 }
 
-/**
-**	@brief	Generate female name
-*/
 std::string culture::generate_female_name() const
 {
 	if (!this->get_female_names().empty()) {
@@ -111,9 +99,6 @@ std::string culture::generate_female_name() const
 	throw std::runtime_error("No female name could be generated for culture \"" + this->get_identifier() + "\"");
 }
 
-/**
-**	@brief	Generate dynasty name
-*/
 std::string culture::generate_dynasty_name() const
 {
 	if (!this->dynasties.empty()) {

@@ -12,9 +12,6 @@ namespace metternich {
 class phenotype;
 class species;
 
-/**
-**	@brief	The base class for characteristics common to cultures and culture groups
-*/
 class culture_base : public data_entry
 {
 	Q_OBJECT
