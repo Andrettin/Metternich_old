@@ -15,7 +15,7 @@ class trade_node : public data_entry, public data_type<trade_node>
 	Q_OBJECT
 
 	Q_PROPERTY(QColor color MEMBER color READ get_color)
-	Q_PROPERTY(metternich::province* center_of_trade MEMBER center_of_trade READ get_center_of_trade NOTIFY center_of_trade_changed)
+	Q_PROPERTY(metternich::province* center_of_trade READ get_center_of_trade WRITE set_center_of_trade NOTIFY center_of_trade_changed)
 
 public:
 	trade_node(const std::string &identifier) : data_entry(identifier) {}
@@ -37,6 +37,13 @@ public:
 		return this->center_of_trade;
 	}
 
+	void set_center_of_trade(province *province);
+
+	const std::set<province *> &get_provinces() const
+	{
+		return this->provinces;
+	}
+
 	void add_province(province *province)
 	{
 		this->provinces.insert(province);
@@ -51,6 +58,8 @@ public:
 	{
 		this->trade_routes.insert(route);
 	}
+
+	world *get_world() const;
 
 signals:
 	void center_of_trade_changed();

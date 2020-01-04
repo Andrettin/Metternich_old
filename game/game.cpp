@@ -104,9 +104,6 @@ void game::run()
 	this->should_stop = false;
 }
 
-/**
-**	@brief	Do the game's per tick actions
-*/
 void game::do_tick()
 {
 	condition_check_base::recalculate_pending_checks();

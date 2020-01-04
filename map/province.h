@@ -53,7 +53,7 @@ class province : public data_entry, public data_type<province>
 	Q_PROPERTY(metternich::landed_title* empire READ get_empire NOTIFY empire_changed)
 	Q_PROPERTY(metternich::landed_title* de_jure_empire READ get_de_jure_empire NOTIFY de_jure_empire_changed)
 	Q_PROPERTY(metternich::world* world READ get_world CONSTANT)
-	Q_PROPERTY(metternich::trade_node* trade_node READ get_trade_node WRITE set_trade_node NOTIFY trade_node_changed)
+	Q_PROPERTY(metternich::trade_node* trade_node READ get_trade_node NOTIFY trade_node_changed)
 	Q_PROPERTY(QColor color MEMBER color READ get_color)
 	Q_PROPERTY(QRect rect READ get_rect CONSTANT)
 	Q_PROPERTY(QImage image READ get_image NOTIFY image_changed)
@@ -158,6 +158,7 @@ public:
 	}
 
 	void set_trade_node(trade_node *trade_node);
+	void calculate_trade_node();
 
 	const QColor &get_color() const
 	{
@@ -478,6 +479,8 @@ public:
 		return this->write_geojson_value;
 	}
 
+	void set_trade_node_recalculation_needed(const bool recalculation_needed);
+
 signals:
 	void county_changed();
 	void duchy_changed();
@@ -540,6 +543,7 @@ private:
 	bool selected = false;
 	bool always_write_geodata = false;
 	bool write_geojson_value = false;
+	bool trade_node_recalculation_needed = false;
 };
 
 }

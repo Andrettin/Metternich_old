@@ -265,14 +265,18 @@ void province::initialize_history()
 		}
 	}
 
-	this->calculate_population();
-	this->calculate_population_groups();
+	if (this->get_county() != nullptr) {
+		this->calculate_population();
+		this->calculate_population_groups();
 
-	if (this->has_river()) {
-		this->change_population_capacity_additive_modifier(10000); //increase population capacity if this province has a river
-	}
-	if (this->is_coastal()) {
-		this->change_population_capacity_additive_modifier(10000); //increase population capacity if this province is coastal
+		if (this->has_river()) {
+			this->change_population_capacity_additive_modifier(10000); //increase population capacity if this province has a river
+		}
+		if (this->is_coastal()) {
+			this->change_population_capacity_additive_modifier(10000); //increase population capacity if this province is coastal
+		}
+
+		this->calculate_trade_node();
 	}
 
 	data_entry_base::initialize_history();
@@ -288,13 +292,9 @@ void province::check() const
 		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no valid color.");
 	}
 
-	if (this->get_county()) {
+	if (this->get_county() != nullptr) {
 		if (this->get_settlement_holding_slots().empty()) {
 			throw std::runtime_error("Province \"" + this->get_identifier() + "\" has a county (not being a wasteland or water zone), but has no settlement holding slots.");
-		}
-
-		if (this->get_trade_node() == nullptr) {
-			throw std::runtime_error("Province \"" + this->get_identifier() + "\" has a county (not being a wasteland or water zone), but is not assigned to any trade node.");
 		}
 	}
 
@@ -323,6 +323,10 @@ void province::check_history() const
 		if (this->get_religion() == nullptr) {
 			throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no religion.");
 		}
+	}
+
+	if (this->get_trade_node() == nullptr && this->get_owner() != nullptr) {
+		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has an owner, but is not assigned to any trade node.");
 	}
 
 	if (this->get_capital_holding_slot() != nullptr && this->get_capital_holding_slot()->get_province() != this) {
@@ -365,6 +369,11 @@ void province::do_day()
 void province::do_month()
 {
 	this->calculate_population_groups();
+
+	if (this->trade_node_recalculation_needed) {
+		this->calculate_trade_node();
+		this->set_trade_node_recalculation_needed(false);
+	}
 }
 
 std::string province::get_name() const
@@ -496,6 +505,67 @@ void province::set_trade_node(metternich::trade_node *trade_node)
 	if (trade_node != nullptr) {
 		trade_node->add_province(this);
 	}
+}
+
+void province::calculate_trade_node()
+{
+	if (this->is_center_of_trade()) {
+		//the trade node of centers of trade cannot change, since trade nodes represent a collective of provinces which have a province as their center of trade
+		return;
+	}
+
+	if (this->get_owner() == nullptr) {
+		//provinces without an owner don't get assigned to any trade node
+		this->set_trade_node(nullptr);
+		return;
+	}
+
+	metternich::trade_node *best_node = nullptr;
+	int best_score = 0; //smaller is better
+
+	for (metternich::trade_node *node : trade_node::get_all()) {
+		if (node->get_world() != this->get_world()) {
+			continue;
+		}
+
+		province *center_of_trade = node->get_center_of_trade();
+		const int distance = static_cast<int>(this->get_center_coordinate().distanceTo(center_of_trade->get_center_coordinate()));
+
+		int score = distance; //the distance forms the basis for the score (hence smaller is better)
+		int score_modifier = 100;
+
+		if (this->get_county()->get_realm() == center_of_trade->get_county()->get_realm()) {
+			score_modifier += defines::get()->get_trade_node_score_realm_modifier();
+		}
+
+		if (this->get_culture() == center_of_trade->get_culture()) {
+			score_modifier += defines::get()->get_trade_node_score_culture_modifier();
+		}
+
+		if (this->get_culture()->get_culture_group() == center_of_trade->get_culture()->get_culture_group()) {
+			score_modifier += defines::get()->get_trade_node_score_culture_group_modifier();
+		}
+
+		if (this->get_religion() == center_of_trade->get_religion()) {
+			score_modifier += defines::get()->get_trade_node_score_religion_modifier();
+		}
+
+		if (this->get_religion()->get_religion_group() == center_of_trade->get_religion()->get_religion_group()) {
+			score_modifier += defines::get()->get_trade_node_score_religion_group_modifier();
+		}
+
+		score_modifier = std::max(0, score_modifier);
+
+		score *= score_modifier;
+		score /= 100;
+
+		if (best_node == nullptr || score < best_score) {
+			best_node = node;
+			best_score = score;
+		}
+	}
+
+	this->set_trade_node(best_node);
 }
 
 const QColor &province::get_map_mode_color(const map_mode mode) const
@@ -841,6 +911,8 @@ void province::set_culture(metternich::culture *culture)
 	emit culture_changed();
 	metternich::culture_group *culture_group = culture ? culture->get_culture_group() : nullptr;
 
+	this->set_trade_node_recalculation_needed(true);
+
 	if (
 		map::get()->get_mode() == map_mode::culture
 		|| (map::get()->get_mode() == map_mode::culture_group && old_culture_group != culture_group)
@@ -861,6 +933,8 @@ void province::set_religion(metternich::religion *religion)
 	this->religion = religion;
 	emit religion_changed();
 	metternich::religion_group *religion_group = religion ? religion->get_religion_group() : nullptr;
+
+	this->set_trade_node_recalculation_needed(true);
 
 	if (
 		map::get()->get_mode() == map_mode::religion
@@ -1393,6 +1467,26 @@ QVariantList province::get_geopaths_qvariant_list() const
 QGeoCoordinate province::get_center_coordinate() const
 {
 	return this->get_world()->get_pixel_pos_coordinate(this->get_center_pos());
+}
+
+void province::set_trade_node_recalculation_needed(const bool recalculation_needed)
+{
+	if (this->is_center_of_trade() && recalculation_needed) {
+		for (province *node_province : this->get_trade_node()->get_provinces()) {
+			if (node_province == this) {
+				continue;
+			}
+
+			node_province->set_trade_node_recalculation_needed(true);
+		}
+		return;
+	}
+
+	if (recalculation_needed == this->trade_node_recalculation_needed) {
+		return;
+	}
+
+	this->trade_node_recalculation_needed = recalculation_needed;
 }
 
 }

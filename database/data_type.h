@@ -227,7 +227,7 @@ public:
 				if constexpr (T::history_only == false) {
 					//non-history only data types have files with the same name as their identifiers, while for history only data types the file name is not relevant, with the identifier being scoped to within a file
 					if (T::try_get(dir_entry.path().stem().string()) == nullptr) {
-						throw std::runtime_error("Could not parse history for \"" + dir_entry.path().stem().string() + "\", as it is not a valid \"" + T::class_identifier + "\" instance identifier.");
+						throw std::runtime_error("Could not parse history for \"" + dir_entry.path().stem().string() + "\", as it is not a valid " + T::class_identifier + " instance identifier.");
 					}
 				}
 
@@ -314,7 +314,7 @@ public:
 			}
 
 			if (T::try_get(dir_entry.path().stem().string()) == nullptr) {
-				throw std::runtime_error("Could not process the cache for \"" + dir_entry.path().stem().string() + "\", as it is not a valid \"" + T::class_identifier + "\" instance identifier.");
+				throw std::runtime_error("Could not process the cache for \"" + dir_entry.path().stem().string() + "\", as it is not a valid " + T::class_identifier + " instance identifier.");
 			}
 
 			gsml_parser parser(dir_entry.path());

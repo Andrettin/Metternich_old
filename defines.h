@@ -29,6 +29,11 @@ class defines : public QObject, public singleton<defines>
 	Q_PROPERTY(int max_settlement_slots_per_province MEMBER max_settlement_slots_per_province READ get_max_settlement_slots_per_province)
 	Q_PROPERTY(int max_palace_slots_per_province MEMBER max_palace_slots_per_province READ get_max_palace_slots_per_province)
 	Q_PROPERTY(metternich::law_group* succession_law_group MEMBER succession_law_group READ get_succession_law_group)
+	Q_PROPERTY(int trade_node_score_realm_modifier MEMBER trade_node_score_realm_modifier READ get_trade_node_score_realm_modifier)
+	Q_PROPERTY(int trade_node_score_culture_modifier MEMBER trade_node_score_culture_modifier READ get_trade_node_score_culture_modifier)
+	Q_PROPERTY(int trade_node_score_culture_group_modifier MEMBER trade_node_score_culture_group_modifier READ get_trade_node_score_culture_group_modifier)
+	Q_PROPERTY(int trade_node_score_religion_modifier MEMBER trade_node_score_religion_modifier READ get_trade_node_score_religion_modifier)
+	Q_PROPERTY(int trade_node_score_religion_group_modifier MEMBER trade_node_score_religion_group_modifier READ get_trade_node_score_religion_group_modifier)
 
 public:
 	defines();
@@ -86,6 +91,31 @@ public:
 		return this->succession_law_group;
 	}
 
+	int get_trade_node_score_realm_modifier() const
+	{
+		return trade_node_score_realm_modifier;
+	}
+
+	int get_trade_node_score_culture_modifier() const
+	{
+		return trade_node_score_culture_modifier;
+	}
+
+	int get_trade_node_score_culture_group_modifier() const
+	{
+		return trade_node_score_culture_group_modifier;
+	}
+
+	int get_trade_node_score_religion_modifier() const
+	{
+		return trade_node_score_religion_modifier;
+	}
+
+	int get_trade_node_score_religion_group_modifier() const
+	{
+		return trade_node_score_religion_group_modifier;
+	}
+
 private:
 	world *default_world = nullptr;
 	timeline *default_timeline = nullptr;
@@ -97,6 +127,11 @@ private:
 	int max_settlement_slots_per_province = 0;
 	int max_palace_slots_per_province = 0;
 	law_group *succession_law_group = nullptr;
+	int trade_node_score_realm_modifier = 0;
+	int trade_node_score_culture_modifier = 0;
+	int trade_node_score_culture_group_modifier = 0;
+	int trade_node_score_religion_modifier = 0;
+	int trade_node_score_religion_group_modifier = 0;
 };
 
 }

@@ -322,8 +322,10 @@ void landed_title::set_holder(character *character)
 		return;
 	}
 
-	if (this->get_holder() != nullptr) {
-		this->get_holder()->remove_landed_title(this);
+	metternich::character *old_holder = this->get_holder();
+	const landed_title *old_realm = this->get_realm();
+	if (old_holder != nullptr) {
+		old_holder->remove_landed_title(this);
 	}
 
 	this->holder = character;
@@ -342,6 +344,8 @@ void landed_title::set_holder(character *character)
 
 	this->holder_title = nullptr; //set the holder title to null, so that the new holder (null or otherwise) isn't overwritten by a previous holder title
 	this->random_holder = false;
+
+	const landed_title *realm = this->get_realm();
 
 	if (this->get_province() != nullptr) {
 		//if this is a non-titular county, then the character holding it must also possess the county's capital holding
@@ -363,6 +367,14 @@ void landed_title::set_holder(character *character)
 		holding *hospital_holding = this->get_province()->get_hospital_holding_slot()->get_holding();
 		if (hospital_holding != nullptr) {
 			hospital_holding->set_owner(character);
+		}
+
+		if (old_holder == nullptr || character == nullptr) {
+			if (!history::get()->is_loading()) {
+				this->get_province()->calculate_trade_node();
+			}
+		} else if (old_realm != realm) {
+			this->get_province()->set_trade_node_recalculation_needed(true);
 		}
 	}
 
