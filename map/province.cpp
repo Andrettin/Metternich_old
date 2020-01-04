@@ -248,24 +248,6 @@ void province::initialize()
 
 	if (this->get_world()->get_surface_area() != 0 && this->get_area() == 0) {
 		this->area = this->get_world()->get_area_per_pixel() * this->pixel_count;
-
-		//set holding sizes
-		int holding_area = this->get_area();
-
-		//subtract preset holding sizes from the total area to distribute
-		for (holding_slot *holding_slot : this->get_settlement_holding_slots()) {
-			if (holding_slot->get_holding_size() != 0) {
-				holding_area -= holding_slot->get_holding_size() * holding_slot::default_holding_area / 100;
-			}
-		}
-
-		//distribute the remaining area of the province amongst its holdings
-		for (holding_slot *holding_slot : this->get_settlement_holding_slots()) {
-			if (holding_slot->get_holding_size() == 0) {
-				const int holding_size = holding_area / static_cast<int>(this->get_settlement_holding_slots().size()) * 100 / holding_slot::default_holding_area;
-				holding_slot->set_holding_size(holding_size);
-			}
-		}
 	}
 
 	data_entry_base::initialize();

@@ -34,7 +34,6 @@ public:
 	static constexpr const char *class_identifier = "holding_slot";
 	static constexpr const char *database_folder = "holding_slots";
 	static constexpr const char *prefix = "h_";
-	static constexpr int default_holding_area = 1000; //the default are of a settlement holding, in square kilometers
 
 	static std::set<std::string> get_database_dependencies();
 
