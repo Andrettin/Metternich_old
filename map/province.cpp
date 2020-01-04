@@ -638,6 +638,7 @@ const QColor &province::get_map_mode_color(const map_mode mode) const
 			case map_mode::culture_group:
 			case map_mode::religion:
 			case map_mode::religion_group:
+			case map_mode::trade_node:
 				return province::empty_province_color; //colonizable province
 			default:
 				break;
