@@ -538,7 +538,7 @@ void province::calculate_trade_node()
 trade_node *province::get_best_trade_node_from_list(const std::vector<metternich::trade_node *> &trade_nodes) const
 {
 	metternich::trade_node *best_node = nullptr;
-	int best_score = 0; //smaller is better
+	long long int best_score = 0; //smaller is better
 
 	for (metternich::trade_node *node : trade_nodes) {
 		if (node->get_world() != this->get_world()) {
@@ -546,28 +546,28 @@ trade_node *province::get_best_trade_node_from_list(const std::vector<metternich
 		}
 
 		province *center_of_trade = node->get_center_of_trade();
-		const int distance = static_cast<int>(this->get_center_coordinate().distanceTo(center_of_trade->get_center_coordinate()));
+		const long long int distance = static_cast<long long int>(this->get_center_coordinate().distanceTo(center_of_trade->get_center_coordinate()));
 
-		int score = distance; //the distance forms the basis for the score (hence smaller is better)
+		long long int score = distance; //the distance forms the basis for the score (hence smaller is better)
 		int score_modifier = 100;
 
-		if (this->get_county()->get_realm() == center_of_trade->get_county()->get_realm()) {
+		if (this->get_county()->get_realm() != center_of_trade->get_county()->get_realm()) {
 			score_modifier += defines::get()->get_trade_node_score_realm_modifier();
 		}
 
-		if (this->get_culture() == center_of_trade->get_culture()) {
+		if (this->get_culture() != center_of_trade->get_culture()) {
 			score_modifier += defines::get()->get_trade_node_score_culture_modifier();
 		}
 
-		if (this->get_culture()->get_culture_group() == center_of_trade->get_culture()->get_culture_group()) {
+		if (this->get_culture()->get_culture_group() != center_of_trade->get_culture()->get_culture_group()) {
 			score_modifier += defines::get()->get_trade_node_score_culture_group_modifier();
 		}
 
-		if (this->get_religion() == center_of_trade->get_religion()) {
+		if (this->get_religion() != center_of_trade->get_religion()) {
 			score_modifier += defines::get()->get_trade_node_score_religion_modifier();
 		}
 
-		if (this->get_religion()->get_religion_group() == center_of_trade->get_religion()->get_religion_group()) {
+		if (this->get_religion()->get_religion_group() != center_of_trade->get_religion()->get_religion_group()) {
 			score_modifier += defines::get()->get_trade_node_score_religion_group_modifier();
 		}
 
