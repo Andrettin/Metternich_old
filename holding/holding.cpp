@@ -407,7 +407,7 @@ void holding::do_population_growth()
 	for (const qunique_ptr<population_unit> &population_unit : this->get_population_units()) {
 		const int population_capacity_difference = this->get_population_capacity() - this->get_population();
 
-		int change = population_unit->get_size() * population_growth / 10000;
+		long long int change = static_cast<long long int>(population_unit->get_size()) * population_growth / 10000;
 		if (change == 0) {
 			if (population_growth != 0 && population_capacity_difference != 0) {
 				//if the change is zero but population growth is non-zero, then make a change of 1
@@ -421,7 +421,6 @@ void holding::do_population_growth()
 			change = population_capacity_difference; //don't grow the population beyond capacity
 		}
 
-		population_unit->change_size(change);
 		population_unit->change_size(static_cast<int>(change));
 	}
 
@@ -448,9 +447,6 @@ void holding::check_overpopulation()
 	}
 }
 
-/**
-**	@brief	Calculate the population for each culture, religion and etc.
-*/
 void holding::calculate_population_groups()
 {
 	std::unique_lock<std::shared_mutex> lock(this->population_groups_mutex);
@@ -571,11 +567,6 @@ void holding::remove_building(building *building)
 	building_slot->set_built(false);
 }
 
-/**
-**	@brief	Apply a building's effects to the holding
-**
-**	@param	building	The building
-**	@param	change		The multiplier for the change: 1 to apply, -1 to remove
 void holding::apply_building_effects(const building *building, const int change)
 {
 	if (building->get_employment_type() != nullptr) {
@@ -583,9 +574,6 @@ void holding::apply_building_effects(const building *building, const int change)
 	}
 }
 
-/**
-**	@brief	Calculate the building slots for the holding
-*/
 void holding::calculate_building_slots()
 {
 	bool changed = false;
@@ -627,11 +615,6 @@ void holding::calculate_building_slots()
 	}
 }
 
-/**
-**	@brief	Set the under construction building for the holding
-**
-**	@param	building	The building
-*/
 void holding::set_under_construction_building(building *building)
 {
 	if (building == this->get_under_construction_building()) {
@@ -687,12 +670,6 @@ void holding::set_employment_workforce(const employment_type *employment_type, c
 	}
 }
 
-/**
-**	@brief	Set whether the holding is selected
-**
-**	@param	selected	Whether the holding is being selected
-**	@param	notify_engine_interface	Whether to emit a signal notifying the engine interface of the change
-*/
 void holding::set_selected(const bool selected, const bool notify_engine_interface)
 {
 	if (selected == this->is_selected()) {
