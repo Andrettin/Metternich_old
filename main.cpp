@@ -4,6 +4,7 @@
 #include "database/database.h"
 #include "defines.h"
 #include "economy/commodity.h"
+#include "economy/trade_node.h"
 #include "empty_image_provider.h"
 #include "engine_interface.h"
 #include "game/game.h"
@@ -85,6 +86,7 @@ int main(int argc, char *argv[])
 		qmlRegisterType<province>();
 		qmlRegisterType<religion>();
 		qmlRegisterType<terrain_type>();
+		qmlRegisterType<trade_node>();
 		qmlRegisterType<world>();
 		engine.rootContext()->setContextProperty("metternich", engine_interface::get());
 		engine.addImageProvider(QLatin1String("provinces"), new province_image_provider);
