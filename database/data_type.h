@@ -119,6 +119,11 @@ public:
 		data_type::instances.erase(std::remove(data_type::instances.begin(), data_type::instances.end(), instance), data_type::instances.end());
 	}
 
+	static void remove(const std::string &identifier)
+	{
+		data_type::remove(data_type::get(identifier));
+	}
+
 	static void clear()
 	{
 		data_type::instances.clear();

@@ -27,6 +27,8 @@ public:
 	building_slot(building *building, holding *holding);
 	~building_slot();
 
+	void initialize_history();
+
 	building *get_building() const
 	{
 		return this->building;

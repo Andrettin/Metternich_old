@@ -412,6 +412,8 @@ public:
 		this->set_employment_workforce(employment_type, this->get_employment_workforce(employment_type) + change);
 	}
 
+	bool has_any_trade_route() const;
+
 	bool is_selected() const
 	{
 		return this->selected;
@@ -453,6 +455,7 @@ signals:
 	void commodity_changed();
 	void culture_changed();
 	void religion_changed();
+	void trade_routes_changed();
 	void selected_changed();
 
 private:

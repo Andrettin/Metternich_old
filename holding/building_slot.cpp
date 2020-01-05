@@ -9,8 +9,6 @@ namespace metternich {
 building_slot::building_slot(metternich::building *building, metternich::holding *holding)
 	: building(building), holding(holding)
 {
-	this->precondition_check = std::make_unique<metternich::condition_check<metternich::holding>>(building->get_preconditions(), holding, [this](bool result){ this->set_available(result); });
-	this->condition_check = std::make_unique<metternich::condition_check<metternich::holding>>(building->get_conditions(), holding, [this](bool result){ this->set_buildable(result); });
 }
 
 building_slot::~building_slot()
@@ -21,6 +19,13 @@ building_slot::~building_slot()
 	if (this->is_built()) {
 		this->set_built(false);
 	}
+}
+
+void building_slot::initialize_history()
+{
+	//create the condition checks only when initializing history, so that their result won't be calculated until history is ready
+	this->precondition_check = std::make_unique<metternich::condition_check<metternich::holding>>(this->get_building()->get_preconditions(), this->holding, [this](bool result){ this->set_available(result); });
+	this->condition_check = std::make_unique<metternich::condition_check<metternich::holding>>(this->get_building()->get_conditions(), this->holding, [this](bool result){ this->set_buildable(result); });
 }
 
 const std::filesystem::path &building_slot::get_icon_path() const

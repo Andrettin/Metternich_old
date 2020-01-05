@@ -52,6 +52,7 @@ holding::holding(metternich::holding_slot *slot, holding_type *type) : data_entr
 		}
 	}
 
+	connect(slot, &holding_slot::trade_routes_changed, this, &holding::trade_routes_changed);
 	connect(this, &holding::type_changed, this, &holding::titled_name_changed);
 	connect(this, &holding::type_changed, this, &holding::portrait_path_changed);
 	connect(this, &holding::culture_changed, this, &holding::portrait_path_changed);
@@ -89,6 +90,11 @@ void holding::initialize_history()
 		this->calculate_population();
 		this->calculate_population_groups();
 		this->check_overpopulation();
+	}
+
+	for (const auto &kv_pair : this->building_slots) {
+		const std::unique_ptr<building_slot> &building_slot = kv_pair.second;
+		building_slot->initialize_history();
 	}
 
 	data_entry_base::initialize_history();
@@ -256,7 +262,7 @@ void holding::set_owner(character *character)
 
 province *holding::get_province() const
 {
-	return this->slot->get_province();
+	return this->get_slot()->get_province();
 }
 
 void holding::add_population_unit(qunique_ptr<population_unit> &&population_unit)
@@ -673,6 +679,11 @@ void holding::set_employment_workforce(const employment_type *employment_type, c
 
 		this->employments[employment_type]->set_workforce_capacity(workforce);
 	}
+}
+
+bool holding::has_any_trade_route() const
+{
+	return this->get_slot()->has_any_trade_route();
 }
 
 void holding::set_selected(const bool selected, const bool notify_engine_interface)

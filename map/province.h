@@ -73,7 +73,7 @@ class province : public data_entry, public data_type<province>
 	Q_PROPERTY(metternich::holding_slot* fort_holding_slot READ get_fort_holding_slot CONSTANT)
 	Q_PROPERTY(metternich::holding_slot* university_holding_slot READ get_university_holding_slot CONSTANT)
 	Q_PROPERTY(metternich::holding_slot* hospital_holding_slot READ get_hospital_holding_slot CONSTANT)
-	Q_PROPERTY(metternich::holding_slot* trading_post_holding_slot READ get_trading_post_holding_slot CONSTANT)
+	Q_PROPERTY(metternich::holding_slot* trading_post_holding_slot READ get_trading_post_holding_slot NOTIFY trading_post_holding_slot_changed)
 	Q_PROPERTY(metternich::holding_slot* factory_holding_slot READ get_factory_holding_slot CONSTANT)
 	Q_PROPERTY(QVariantList technologies READ get_technologies_qvariant_list NOTIFY technologies_changed)
 	Q_PROPERTY(bool selected READ is_selected WRITE set_selected NOTIFY selected_changed)
@@ -348,6 +348,10 @@ public:
 		return this->trading_post_holding_slot;
 	}
 
+	std::string get_trading_post_holding_slot_identifier() const;
+	void create_trading_post_holding_slot();
+	void destroy_trading_post_holding_slot();
+
 	holding_slot *get_factory_holding_slot() const
 	{
 		return this->factory_holding_slot;
@@ -440,15 +444,8 @@ public:
 		return this->trade_routes.contains(route);
 	}
 
-	void add_trade_route(trade_route *route)
-	{
-		this->trade_routes.insert(route);
-	}
-
-	void remove_trade_route(trade_route *route)
-	{
-		this->trade_routes.erase(route);
-	}
+	void add_trade_route(trade_route *route);
+	void remove_trade_route(trade_route *route);
 
 	bool is_selected() const
 	{
@@ -546,7 +543,9 @@ signals:
 	void settlement_holding_slots_changed();
 	void settlement_holdings_changed();
 	void capital_holding_slot_changed();
+	void trading_post_holding_slot_changed();
 	void technologies_changed();
+	void trade_routes_changed();
 	void selected_changed();
 
 private:

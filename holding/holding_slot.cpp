@@ -136,8 +136,18 @@ void holding_slot::set_barony(landed_title *barony)
 
 void holding_slot::set_province(metternich::province *province)
 {
+	if (province == this->get_province()) {
+		return;
+	}
+
+	if (this->get_province() != nullptr) {
+		disconnect(this->get_province(), &province::trade_routes_changed, this, &holding_slot::trade_routes_changed);
+	}
+
 	this->province = province;
 	province->add_holding_slot(this);
+
+	connect(province, &province::trade_routes_changed, this, &holding_slot::trade_routes_changed);
 }
 
 /**
@@ -170,6 +180,11 @@ void holding_slot::generate_available_commodity()
 
 	metternich::commodity *commodity = calculate_chance_list_result(commodity_chances, this);
 	this->add_available_commodity(commodity);
+}
+
+bool holding_slot::has_any_trade_route() const
+{
+	return this->get_province()->has_any_trade_route();
 }
 
 }

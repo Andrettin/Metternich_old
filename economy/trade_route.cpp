@@ -177,15 +177,10 @@ QVariantList trade_route::get_path_qvariant_list() const
 void trade_route::add_path_province(province *path_province)
 {
 	this->path.push_back(path_province);
-	path_province->add_trade_route(this);
 }
 
 void trade_route::clear_path()
 {
-	for (province *path_province : this->path) {
-		path_province->remove_trade_route(this);
-	}
-
 	this->path.clear();
 }
 
@@ -204,6 +199,37 @@ QVariantList trade_route::get_path_points_qvariant_list() const
 	}
 
 	return path_points;
+}
+
+void trade_route::set_active(const bool active)
+{
+	if (active == this->is_active()) {
+		return;
+	}
+
+	this->active = active;
+	emit active_changed();
+
+	for (province *path_province : this->path) {
+		if (active) {
+			path_province->add_trade_route(this);
+		} else {
+			path_province->remove_trade_route(this);
+		}
+	}
+}
+
+void trade_route::calculate_active()
+{
+	//all trade nodes through which a trade route passes must be active for the trade route to be active
+	for (trade_node *node : this->trade_nodes) {
+		if (!node->is_active()) {
+			this->set_active(false);
+			return;
+		}
+	}
+
+	this->set_active(true);
 }
 
 }

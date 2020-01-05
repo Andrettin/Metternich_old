@@ -229,20 +229,17 @@ void province::initialize()
 			holding_slot->set_province(this);
 		}
 
-		//create a trading post holding slot for this province if none exists, and if it is coastal or on a trade route
-		if (this->get_trading_post_holding_slot() == nullptr && this->can_have_trading_post()) {
-			std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier_without_prefix() + "_trading_post";
-			holding_slot *holding_slot = holding_slot::add(holding_slot_identifier);
-			holding_slot->set_type(holding_slot_type::trading_post);
-			holding_slot->set_province(this);
-		}
-
 		//create a factory holding slot for this province if none exists
 		if (this->get_factory_holding_slot() == nullptr) {
 			std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier_without_prefix() + "_factory";
 			holding_slot *holding_slot = holding_slot::add(holding_slot_identifier);
 			holding_slot->set_type(holding_slot_type::factory);
 			holding_slot->set_province(this);
+		}
+
+		//create a trading post holding slot for this province if none exists
+		if (this->get_trading_post_holding_slot() == nullptr) {
+			this->create_trading_post_holding_slot();
 		}
 	}
 
@@ -281,6 +278,12 @@ void province::initialize_history()
 		}
 
 		this->calculate_trade_node();
+
+		if (!this->can_have_trading_post()) {
+			//destroy the created trading post holding slot if the province can't currently have a trading post
+			this->destroy_trading_post_holding_slot();
+		}
+
 	}
 
 	data_entry_base::initialize_history();
@@ -1299,6 +1302,28 @@ QVariantList province::get_palace_holding_slots_qvariant_list() const
 	return container::to_qvariant_list(this->get_palace_holding_slots());
 }
 
+std::string province::get_trading_post_holding_slot_identifier() const
+{
+	return holding_slot::prefix + this->get_identifier_without_prefix() + "_trading_post";
+}
+
+void province::create_trading_post_holding_slot()
+{
+	std::string holding_slot_identifier = this->get_trading_post_holding_slot_identifier();
+	holding_slot *holding_slot = holding_slot::add(holding_slot_identifier);
+	holding_slot->set_type(holding_slot_type::trading_post);
+	holding_slot->set_province(this);
+	emit trading_post_holding_slot_changed();
+}
+
+void province::destroy_trading_post_holding_slot()
+{
+	std::string holding_slot_identifier = this->get_trading_post_holding_slot_identifier();
+	holding_slot::remove(holding_slot_identifier);
+	this->trading_post_holding_slot = nullptr;
+	emit trading_post_holding_slot_changed();
+}
+
 void province::add_population_unit(qunique_ptr<population_unit> &&population_unit)
 {
 	this->population_units.push_back(std::move(population_unit));
@@ -1447,6 +1472,26 @@ void province::set_major_center_of_trade(const bool major_center_of_trade)
 	emit major_center_of_trade_changed();
 
 	this->get_trade_node()->set_major(major_center_of_trade);
+}
+
+void province::add_trade_route(trade_route *route)
+{
+	this->trade_routes.insert(route);
+	emit trade_routes_changed();
+
+	if (this->can_have_trading_post() && this->get_trading_post_holding_slot() == nullptr) {
+		this->create_trading_post_holding_slot();
+	}
+}
+
+void province::remove_trade_route(trade_route *route)
+{
+	this->trade_routes.erase(route);
+	emit trade_routes_changed();
+
+	if (!this->can_have_trading_post() && this->get_trading_post_holding_slot() != nullptr) {
+		this->destroy_trading_post_holding_slot();
+	}
 }
 
 void province::set_selected(const bool selected, const bool notify_engine_interface)

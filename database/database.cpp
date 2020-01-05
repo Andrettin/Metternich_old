@@ -166,7 +166,7 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 	} else if (property_type == QVariant::Int) {
 		int value = 0;
 
-		if (property.get_key() == "efficiency" || property.get_key() == "output_value" || property.get_key() == "output_modifier" || property.get_key() == "workforce_proportion" || property.get_key() == "proportion_to_workforce" || property.get_key() == "income_share" || property.get_key() == "base_price" || property.get_key() == "trade_node_score_realm_modifier" || property.get_key() == "trade_node_score_culture_modifier" || property.get_key() == "trade_node_score_culture_group_modifier" || property.get_key() == "trade_node_score_religion_modifier" || property.get_key() == "trade_node_score_religion_group_modifier") {
+		if (property.get_key() == "efficiency" || property.get_key() == "output_value" || property.get_key() == "output_modifier" || property.get_key() == "workforce_proportion" || property.get_key() == "proportion_to_workforce" || property.get_key() == "income_share" || property.get_key() == "base_price" || property.get_key() == "trade_node_score_realm_modifier" || property.get_key() == "trade_node_score_culture_modifier" || property.get_key() == "trade_node_score_culture_group_modifier" || property.get_key() == "trade_node_score_religion_modifier" || property.get_key() == "trade_node_score_religion_group_modifier" || property.get_key() == "holding_size") {
 			value = parse::centesimal_number_string_to_int(property.get_value());
 		} else if (property.get_key() == "base_population_growth" || property.get_key() == "cultural_derivation_factor") {
 			value = parse::fractional_number_string_to_int<4>(property.get_value());

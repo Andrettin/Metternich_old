@@ -50,8 +50,6 @@ std::unique_ptr<condition<T>> condition<T>::from_gsml_property(const gsml_proper
 			return std::make_unique<tier_de_jure_title_condition<T, landed_title_tier::kingdom>>(property.get_value());
 		} else if (condition_identifier == "de_jure_empire") {
 			return std::make_unique<tier_de_jure_title_condition<T, landed_title_tier::empire>>(property.get_value());
-		} else if (condition_identifier == "has_any_trade_route") {
-			return std::make_unique<has_any_trade_route_condition<T>>(string::to_bool(property.get_value()));
 		} else if (condition_identifier == "has_technology") {
 			return std::make_unique<has_technology_condition<T>>(property.get_value());
 		} else if (condition_identifier == "region") {
@@ -76,6 +74,12 @@ std::unique_ptr<condition<T>> condition<T>::from_gsml_property(const gsml_proper
 	if constexpr (!std::is_same_v<T, holding_slot>) {
 		if (condition_identifier == "culture") {
 			return std::make_unique<culture_condition<T>>(property.get_value());
+		}
+	}
+
+	if constexpr (std::is_same_v<T, holding> || std::is_same_v<T, holding_slot> || std::is_same_v<T, province>) {
+		if (condition_identifier == "has_any_trade_route") {
+			return std::make_unique<has_any_trade_route_condition<T>>(string::to_bool(property.get_value()));
 		}
 	}
 
