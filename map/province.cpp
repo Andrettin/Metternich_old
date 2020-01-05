@@ -21,6 +21,8 @@
 #include "map/region.h"
 #include "map/terrain_type.h"
 #include "map/world.h"
+#include "politics/government_type.h"
+#include "politics/government_type_group.h"
 #include "population/population_type.h"
 #include "population/population_unit.h"
 #include "religion/religion.h"
@@ -283,7 +285,6 @@ void province::initialize_history()
 			//destroy the created trading post holding slot if the province can't currently have a trading post
 			this->destroy_trading_post_holding_slot();
 		}
-
 	}
 
 	data_entry_base::initialize_history();
@@ -395,6 +396,12 @@ std::string province::get_name() const
 std::vector<std::vector<std::string>> province::get_tag_suffix_list_with_fallbacks() const
 {
 	std::vector<std::vector<std::string>> tag_list_with_fallbacks;
+
+	if (this->get_county() != nullptr) {
+		if (this->get_county()->get_government_type() != nullptr) {
+			tag_list_with_fallbacks.push_back({this->get_county()->get_government_type()->get_identifier(), government_type_group_to_string(this->get_county()->get_government_type()->get_group())});
+		}
+	}
 
 	if (this->get_culture() != nullptr) {
 		tag_list_with_fallbacks.push_back({this->get_culture()->get_identifier(), this->get_culture()->get_culture_group()->get_identifier()});

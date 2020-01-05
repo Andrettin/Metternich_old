@@ -16,6 +16,8 @@
 #include "holding/holding_type.h"
 #include "landed_title/landed_title.h"
 #include "map/province.h"
+#include "politics/government_type.h"
+#include "politics/government_type_group.h"
 #include "population/population_type.h"
 #include "population/population_unit.h"
 #include "random.h"
@@ -180,6 +182,12 @@ std::string holding::get_titled_name() const
 std::vector<std::vector<std::string>> holding::get_tag_suffix_list_with_fallbacks() const
 {
 	std::vector<std::vector<std::string>> tag_list_with_fallbacks;
+
+	if (this->get_barony() != nullptr) {
+		if (this->get_barony()->get_government_type() != nullptr) {
+			tag_list_with_fallbacks.push_back({this->get_barony()->get_government_type()->get_identifier(), government_type_group_to_string(this->get_barony()->get_government_type()->get_group())});
+		}
+	}
 
 	const metternich::culture *culture = nullptr;
 	const metternich::religion *religion = nullptr;

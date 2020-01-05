@@ -9,6 +9,8 @@
 #include "map/province.h"
 #include "map/province_profile.h"
 #include "map/region.h"
+#include "politics/government_type.h"
+#include "politics/government_type_group.h"
 #include "random.h"
 #include "religion/religion.h"
 #include "religion/religion_group.h"
@@ -96,6 +98,12 @@ std::string holding_slot::get_name() const
 std::vector<std::vector<std::string>> holding_slot::get_tag_suffix_list_with_fallbacks() const
 {
 	std::vector<std::vector<std::string>> tag_list_with_fallbacks;
+
+	if (this->get_barony() != nullptr) {
+		if (this->get_barony()->get_government_type() != nullptr) {
+			tag_list_with_fallbacks.push_back({this->get_barony()->get_government_type()->get_identifier(), government_type_group_to_string(this->get_barony()->get_government_type()->get_group())});
+		}
+	}
 
 	if (this->get_province()->get_culture() != nullptr) {
 		tag_list_with_fallbacks.push_back({this->get_province()->get_culture()->get_identifier(), this->get_province()->get_culture()->get_culture_group()->get_identifier()});
