@@ -42,6 +42,42 @@ void trade_node::set_center_of_trade(province *province)
 	province->set_trade_node(this);
 }
 
+void trade_node::set_active(const bool active)
+{
+	if (active == this->is_active()) {
+		return;
+	}
+
+	this->active = active;
+
+	if (active) {
+		trade_node::active_trade_nodes.insert(this);
+	} else {
+		trade_node::active_trade_nodes.erase(this);
+	}
+
+	if (game::get()->is_running()) {
+		//recalculate the trade node of all provinces if this trade node is becoming active, or of its dependent provinces if becoming inactive
+		if (active) {
+			for (province *province : province::get_all()) {
+				if (province->is_center_of_trade() || !province->get_owner()) {
+					continue;
+				}
+
+				province->set_trade_node_recalculation_needed(true);
+			}
+		} else {
+			for (province *province : this->get_provinces()) {
+				if (province == this->get_center_of_trade()) {
+					continue;
+				}
+
+				province->calculate_trade_node();
+			}
+		}
+	}
+}
+
 void trade_node::set_major(const bool major)
 {
 	if (major == this->is_major()) {
@@ -51,19 +87,30 @@ void trade_node::set_major(const bool major)
 	this->major = major;
 
 	if (major) {
-		trade_node::major_trade_nodes.push_back(this);
+		trade_node::major_trade_nodes.insert(this);
 	} else {
-		trade_node::major_trade_nodes.erase(std::remove(trade_node::major_trade_nodes.begin(), trade_node::major_trade_nodes.end(), this), trade_node::major_trade_nodes.end());
+		trade_node::major_trade_nodes.erase(this);
 	}
 
 	if (game::get()->is_running()) {
-		//recalculate the trade area of all nodes
-		for (metternich::trade_node *node : trade_node::get_all()) {
-			if (node == this) {
-				continue;
-			}
+		//recalculate the trade area of all nodes if this trade node is becoming major, or of its dependent nodes if becoming minor
+		//recalculate the trade area of all provinces
+		if (major) {
+			for (metternich::trade_node *node : trade_node::get_all_active()) {
+				if (node->is_major()) {
+					continue;
+				}
 
-			node->get_center_of_trade()->set_trade_node_recalculation_needed(true, false);
+				node->get_center_of_trade()->set_trade_node_recalculation_needed(true, false);
+			}
+		} else {
+			for (metternich::trade_node *node : this->get_trade_nodes()) {
+				if (node == this) {
+					continue;
+				}
+
+				node->get_center_of_trade()->calculate_trade_node();
+			}
 		}
 	}
 }

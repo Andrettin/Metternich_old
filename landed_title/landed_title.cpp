@@ -5,6 +5,7 @@
 #include "culture/culture.h"
 #include "culture/culture_group.h"
 #include "defines.h"
+#include "economy/trade_node.h"
 #include "game/game.h"
 #include "history/history.h"
 #include "holding/holding.h"
@@ -372,6 +373,10 @@ void landed_title::set_holder(character *character)
 		if (old_holder == nullptr || character == nullptr) {
 			if (!history::get()->is_loading()) {
 				this->get_province()->calculate_trade_node();
+			}
+
+			if (this->get_province()->is_center_of_trade()) {
+				this->get_province()->get_trade_node()->set_active(character != nullptr);
 			}
 		} else if (old_realm != realm) {
 			this->get_province()->set_trade_node_recalculation_needed(true);

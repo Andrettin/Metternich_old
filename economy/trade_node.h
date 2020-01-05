@@ -5,6 +5,8 @@
 
 #include <QColor>
 
+#include <set>
+
 namespace metternich {
 
 class province;
@@ -25,8 +27,14 @@ public:
 	static constexpr const char *class_identifier = "trade_node";
 	static constexpr const char *database_folder = "trade_nodes";
 
+	static const std::set<trade_node *> &get_all_active()
+	{
+		return trade_node::active_trade_nodes;
+	}
+
 private:
-	static inline std::vector<trade_node *> major_trade_nodes;
+	static inline std::set<trade_node *> active_trade_nodes;
+	static inline std::set<trade_node *> major_trade_nodes;
 
 public:
 	virtual void check() const override;
@@ -44,6 +52,13 @@ public:
 	}
 
 	void set_center_of_trade(province *province);
+
+	bool is_active() const
+	{
+		return this->active;
+	}
+
+	void set_active(const bool active);
 
 	bool is_major() const
 	{
@@ -94,6 +109,7 @@ signals:
 private:
 	QColor color;
 	province *center_of_trade = nullptr;
+	bool active = false; //whether this trade node is active, i.e. whether its center of trade has an owner
 	bool major = false; //whether this trade node is a major one, i.e. whether it is also a trade area
 	trade_node *trade_area = nullptr;
 	std::set<province *> provinces;

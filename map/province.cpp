@@ -535,11 +535,11 @@ void province::calculate_trade_node()
 		return;
 	}
 
-	metternich::trade_node *best_node = this->get_best_trade_node_from_list(trade_node::get_all());
+	metternich::trade_node *best_node = this->get_best_trade_node_from_list(trade_node::get_all_active());
 	this->set_trade_node(best_node);
 }
 
-trade_node *province::get_best_trade_node_from_list(const std::vector<metternich::trade_node *> &trade_nodes) const
+trade_node *province::get_best_trade_node_from_list(const std::set<metternich::trade_node *> &trade_nodes) const
 {
 	metternich::trade_node *best_node = nullptr;
 	long long int best_score = 0; //smaller is better

@@ -161,7 +161,7 @@ public:
 
 	void set_trade_node(trade_node *trade_node);
 	void calculate_trade_node();
-	trade_node *get_best_trade_node_from_list(const std::vector<trade_node *> &trade_nodes) const;
+	trade_node *get_best_trade_node_from_list(const std::set<trade_node *> &trade_nodes) const;
 
 	trade_node *get_trade_area() const;
 
