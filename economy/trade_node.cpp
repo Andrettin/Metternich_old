@@ -96,6 +96,8 @@ void trade_node::set_major(const bool major)
 		//recalculate the trade area of all nodes if this trade node is becoming major, or of its dependent nodes if becoming minor
 		//recalculate the trade area of all provinces
 		if (major) {
+			this->calculate_trade_area();
+
 			for (metternich::trade_node *node : trade_node::get_all_active()) {
 				if (node->is_major()) {
 					continue;
@@ -134,6 +136,12 @@ void trade_node::calculate_trade_area()
 	if (this->is_major()) {
 		//if this is a major trade node, then it is necessarily a part of its own area
 		this->set_trade_area(this);
+		return;
+	}
+
+	if (this->get_center_of_trade()->get_owner() == nullptr) {
+		//provinces without an owner don't get assigned to any trade node
+		this->set_trade_area(nullptr);
 		return;
 	}
 

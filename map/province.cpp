@@ -1439,6 +1439,10 @@ void province::set_major_center_of_trade(const bool major_center_of_trade)
 		return;
 	}
 
+	if (!this->is_center_of_trade() && major_center_of_trade) {
+		throw std::runtime_error("Tried to set province \"" + this->get_identifier() + "\", which is not a center of trade, to be a major center of trade.");
+	}
+
 	this->major_center_of_trade = major_center_of_trade;
 	emit major_center_of_trade_changed();
 
