@@ -90,7 +90,7 @@ public:
 	static constexpr const char *database_folder = "provinces";
 	static constexpr const char *prefix = "p_";
 	static constexpr QRgb empty_rgb = qRgb(0, 0, 0);
-	static const inline QColor water_province_color = QColor("#0080ff");
+	static const inline QColor water_province_color = QColor("#4682b4"); //steel blue
 	static const inline QColor wasteland_province_color = QColor(Qt::darkGray);
 	static const inline QColor empty_province_color = QColor("#f5f5dc");
 
