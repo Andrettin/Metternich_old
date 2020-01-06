@@ -478,12 +478,15 @@ void landed_title::set_de_jure_liege_title(landed_title *title)
 		this->get_de_jure_liege_title()->remove_de_jure_vassal_title(this);
 	}
 
-	if (static_cast<int>(title->get_tier()) - static_cast<int>(this->get_tier()) != 1) {
+	if (title != nullptr && static_cast<int>(title->get_tier()) - static_cast<int>(this->get_tier()) != 1) {
 		throw std::runtime_error("Tried to set title \"" + title->get_identifier() + "\" as the de jure liege of \"" + this->get_identifier() + "\", but the former is not one title tier above the latter.");
 	}
 
 	this->de_jure_liege_title = title;
-	title->add_de_jure_vassal_title(this);
+
+	if (title != nullptr) {
+		title->add_de_jure_vassal_title(this);
+	}
 
 	emit de_jure_liege_title_changed();
 }
