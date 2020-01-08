@@ -294,10 +294,6 @@ void world::load_province_map()
 
 		province->set_terrain(best_terrain);
 		province->set_inner_river(inner_river);
-
-		if (province->is_river()) {
-			this->geopath_provinces.insert(province);
-		}
 	}
 
 	for (const auto &kv_pair : province_pixel_indexes) {
@@ -519,6 +515,8 @@ void world::write_province_geodata_to_image(QImage &province_image, QImage &terr
 
 	std::set<QRgb> province_image_rgbs = image::get_rgbs(province_image);
 
+	std::vector<province *> geopath_provinces;
+
 	for (province *province : provinces) {
 		const int progress_percent = processed_provinces * 100 / static_cast<int>(province::get_all().size());
 		engine_interface::get()->set_loading_message("Writing " + this->get_loading_message_name() + " Provinces to Image... (" + QString::number(progress_percent) + "%)");
@@ -528,16 +526,18 @@ void world::write_province_geodata_to_image(QImage &province_image, QImage &terr
 		}
 
 		processed_provinces++;
+
+		if (province->is_river()) {
+			geopath_provinces.push_back(province);
+		}
 	}
 
 	//write geopath endpoints, but only after everything else, as they should have lower priority than the geopaths themselves
-	for (province *province : this->get_geopath_provinces()) {
+	for (province *province : geopath_provinces) {
 		if (!province_image_rgbs.contains(province->get_color().rgb()) || province->always_writes_geodata()) {
 			province->write_geopath_endpoints_to_image(province_image, terrain_image);
 		}
 	}
-
-	this->geopath_provinces.clear();
 }
 
 void world::calculate_trade_route_paths_from_geopaths()

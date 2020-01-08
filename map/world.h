@@ -61,11 +61,6 @@ public:
 		this->trade_routes.insert(route);
 	}
 
-	const std::set<province *> &get_geopath_provinces()
-	{
-		return this->geopath_provinces;
-	}
-
 	QVariantList get_provinces_qvariant_list() const;
 	QVariantList get_trade_routes_qvariant_list() const;
 
@@ -170,7 +165,6 @@ private:
 	int surface_area = 0; //the world's surface area, in square kilometers
 	std::set<province *> provinces;
 	std::set<trade_route *> trade_routes; //the trade routes which exist in the world
-	std::set<province *> geopath_provinces;
 	QSize pixel_size = QSize(0, 0); //the size of the world, in pixels
 	QImage terrain_image;
 	QImage province_image;
