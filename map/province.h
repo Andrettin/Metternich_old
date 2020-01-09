@@ -377,6 +377,11 @@ public:
 		return this->regions.contains(region);
 	}
 
+	const std::set<province *> &get_border_provinces() const
+	{
+		return this->border_provinces;
+	}
+
 	void add_border_province(province *province)
 	{
 		this->border_provinces.insert(province);
