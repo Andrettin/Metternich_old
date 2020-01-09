@@ -463,9 +463,9 @@ landed_title *landed_title::get_liege_title() const
 
 void landed_title::set_holder_title(landed_title *title)
 {
+	this->set_holder(nullptr); //set the holder title to null, so that the new holder title isn't overwritten by a previous holder
+	this->random_holder = false;
 	this->holder_title = title;
-	this->holder = nullptr; //set the holder title to null, so that the new holder title isn't overwritten by a previous holder
-
 }
 
 void landed_title::set_de_jure_liege_title(landed_title *title)
