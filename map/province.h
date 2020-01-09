@@ -447,6 +447,16 @@ public:
 	void add_trade_route(trade_route *route);
 	void remove_trade_route(trade_route *route);
 
+	long long int get_meters_distance_to(const province *other_province) const
+	{
+		return static_cast<long long int>(this->get_center_coordinate().distanceTo(other_province->get_center_coordinate()));
+	}
+
+	int get_kilometers_distance_to(const province *other_province) const
+	{
+		return static_cast<int>(this->get_meters_distance_to(other_province) / 1000);
+	}
+
 	bool is_selected() const
 	{
 		return this->selected;

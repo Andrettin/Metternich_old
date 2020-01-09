@@ -560,7 +560,7 @@ trade_node *province::get_best_trade_node_from_list(const std::set<metternich::t
 		}
 
 		province *center_of_trade = node->get_center_of_trade();
-		const long long int distance = static_cast<long long int>(this->get_center_coordinate().distanceTo(center_of_trade->get_center_coordinate()));
+		const long long int distance = this->get_meters_distance_to(center_of_trade);
 
 		long long int score = distance; //the distance forms the basis for the score (hence smaller is better)
 		int score_modifier = 100;
