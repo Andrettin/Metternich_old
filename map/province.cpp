@@ -528,6 +528,13 @@ void province::set_trade_node(metternich::trade_node *trade_node)
 	if (old_trade_area != trade_area) {
 		emit trade_area_changed();
 	}
+
+	if (
+		map::get()->get_mode() == map_mode::trade_node
+		|| (map::get()->get_mode() == map_mode::trade_area && old_trade_area != trade_area)
+	) {
+		this->update_color_for_map_mode(map::get()->get_mode());
+	}
 }
 
 void province::calculate_trade_node()
