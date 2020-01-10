@@ -22,25 +22,11 @@ QVariantList world::get_trade_routes_qvariant_list() const
 	return container::to_qvariant_list(this->trade_routes);
 }
 
-/**
-**	@brief	Convert a pixel index to a pixel position
-**
-**	@param	index	The index
-**
-**	@return The pixel position
-*/
 QPoint world::get_pixel_pos(const int index) const
 {
 	return point::from_index(index, this->pixel_size);
 }
 
-/**
-**	@brief	Convert a coordinate to a pixel position on the map
-**
-**	@param	coordinate	The geocoordinate
-**
-**	@return The pixel position corresponding to the coordinate
-*/
 QPoint world::get_coordinate_pos(const QGeoCoordinate &coordinate) const
 {
 	const double lon_per_pixel = 360.0 / static_cast<double>(this->pixel_size.width());
@@ -48,13 +34,6 @@ QPoint world::get_coordinate_pos(const QGeoCoordinate &coordinate) const
 	return geocoordinate::to_point(coordinate, lon_per_pixel, lat_per_pixel);
 }
 
-/**
-**	@brief	Convert a pixel position on the map to a geocoordinate
-**
-**	@param	pos	The pixel position
-**
-**	@return The geocoordinate corresponding to the pixel position
-*/
 QGeoCoordinate world::get_pixel_pos_coordinate(const QPoint &pixel_pos) const
 {
 	return point::to_geocoordinate(pixel_pos, this->pixel_size);
@@ -305,6 +284,29 @@ void world::load_province_map()
 		province *province = kv_pair.first;
 		province->set_border_pixels(kv_pair.second);
 	}
+
+	//add river crossings
+	for (province *world_province : this->get_provinces()) {
+		if (!world_province->is_river()) {
+			continue;
+		}
+
+		//add all of this province's border provinces to each other
+		for (province *border_province : world_province->get_border_provinces()) {
+			if (border_province->is_water()) {
+				continue;
+			}
+
+			for (province *other_border_province : world_province->get_border_provinces()) {
+				if (other_border_province->is_water()) {
+					continue;
+				}
+
+				border_province->add_border_province(other_border_province);
+				other_border_province->add_border_province(border_province);
+			}
+		}
+	}
 }
 
 void world::load_terrain_map()
@@ -313,9 +315,6 @@ void world::load_terrain_map()
 	this->terrain_image = QImage(QString::fromStdString((this->get_cache_path() / "terrain.png").string()));
 }
 
-/**
-**	@brief	Write geodata to image files
-*/
 void world::write_geodata_to_image()
 {
 	if (!std::filesystem::exists(this->get_cache_path())) {
@@ -365,11 +364,6 @@ void world::write_geodata_to_image()
 	terrain_image.save(QString::fromStdString((this->get_cache_path() / "terrain.png").string()));
 }
 
-/**
-**	@brief	Write terrain geodata to the terrain image, caching the result
-**
-**	@param	terrain_image	The terrain image to be written to
-*/
 void world::write_terrain_geodata_to_image(QImage &terrain_image)
 {
 	int progress = 0;
@@ -406,11 +400,6 @@ void world::write_terrain_geodata_to_image(QImage &terrain_image)
 	this->write_terrain_geopath_endpoints_to_image(terrain_image);
 }
 
-/**
-**	@brief	Write the terrain type's geopath endpoints to a terrain image
-**
-**	@param	image	The image to which the province's geodata will be written to
-*/
 void world::write_terrain_geopath_endpoints_to_image(QImage &image)
 {
 	for (const auto &kv_pair : this->terrain_geopaths) {
@@ -427,12 +416,6 @@ void world::write_terrain_geopath_endpoints_to_image(QImage &image)
 	}
 }
 
-/**
-**	@brief	Write a geoshape belonging to the terrain type to an image
-**
-**	@param	image			The image to which the geoshape is to be written
-**	@param	geoshape		The geoshape
-*/
 void world::write_terrain_geoshape_to_image(const terrain_type *terrain, QImage &image, const QGeoShape &geoshape)
 {
 	const QString terrain_loading_message = engine_interface::get()->get_loading_message();
@@ -495,11 +478,6 @@ void world::write_terrain_geoshape_to_image(const terrain_type *terrain, QImage 
 	engine_interface::get()->set_loading_message(terrain_loading_message);
 }
 
-/**
-**	@brief	Write province geodata to the province image, caching the result
-**
-**	@param	terrain_image	The terrain image to be written to, for terrain that is written from province data
-*/
 void world::write_province_geodata_to_image(QImage &province_image, QImage &terrain_image)
 {
 	std::vector<province *> provinces = container::to_vector(this->get_provinces());
