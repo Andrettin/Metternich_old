@@ -32,6 +32,7 @@ SOURCES += \
         economy/employment_owner.cpp \
         economy/employment_type.cpp \
         economy/trade_node.cpp \
+        economy/trade_path_finder.cpp \
         economy/trade_route.cpp \
         engine_interface.cpp \
         game/game.cpp \
@@ -118,6 +119,7 @@ HEADERS += \
     economy/employment_owner.h \
     economy/employment_type.h \
     economy/trade_node.h \
+    economy/trade_path_finder.h \
     economy/trade_route.h \
     empty_image_provider.h \
     engine_interface.h \
@@ -212,3 +214,7 @@ HEADERS += \
     util/parse_util.h \
     util/point_util.h \
     util/string_util.h
+
+win32 {
+    INCLUDEPATH += C:/Boost
+}

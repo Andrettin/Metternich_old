@@ -6,6 +6,7 @@
 #include "database/gsml_property.h"
 #include "defines.h"
 #include "economy/trade_node.h"
+#include "economy/trade_path_finder.h"
 #include "engine_interface.h"
 #include "game/game.h"
 #include "history/history.h"
@@ -551,48 +552,70 @@ void province::calculate_trade_node()
 
 trade_node *province::get_best_trade_node_from_list(const std::set<metternich::trade_node *> &trade_nodes) const
 {
-	metternich::trade_node *best_node = nullptr;
-	long long int best_score = 0; //smaller is better
+	std::vector<metternich::trade_node *> sorted_trade_nodes = container::to_vector(trade_nodes);
 
-	for (metternich::trade_node *node : trade_nodes) {
+	std::sort(sorted_trade_nodes.begin(), sorted_trade_nodes.end(), [this](const metternich::trade_node *a, const metternich::trade_node *b) {
+		if (a->get_world() == this->get_world() && b->get_world() == this->get_world()) {
+			return this->get_kilometers_distance_to(a->get_center_of_trade()) < this->get_kilometers_distance_to(b->get_center_of_trade());
+		}
+
+		return a < b;
+	});
+
+	metternich::trade_node *best_node = nullptr;
+	int best_trade_cost = 0;
+
+	for (metternich::trade_node *node : sorted_trade_nodes) {
 		if (node->get_world() != this->get_world()) {
 			continue;
 		}
 
 		province *center_of_trade = node->get_center_of_trade();
-		const long long int distance = this->get_meters_distance_to(center_of_trade);
 
-		long long int score = distance; //the distance forms the basis for the score (hence smaller is better)
-		int score_modifier = 100;
+		//the minimum, best-case trade cost that will be incurred between this province and the center of trade
+		const int distance = this->get_kilometers_distance_to(center_of_trade);
+		const int minimum_trade_cost = distance * 100 / province::base_distance * defines::get()->get_trade_cost_modifier_per_distance() / 100;
+
+		if (best_node != nullptr && minimum_trade_cost >= best_trade_cost) {
+			continue;
+		}
+
+		trade_path_finder pathfinder;
+		if (!pathfinder.find_path(this, center_of_trade)) {
+			continue;
+		}
+		int trade_cost = pathfinder.get_trade_cost();
+
+		int trade_cost_modifier = 100;
 
 		if (this->get_county()->get_realm() != center_of_trade->get_county()->get_realm()) {
-			score_modifier += defines::get()->get_trade_node_score_realm_modifier();
+			trade_cost_modifier += defines::get()->get_trade_node_score_realm_modifier();
 		}
 
 		if (this->get_culture() != center_of_trade->get_culture()) {
-			score_modifier += defines::get()->get_trade_node_score_culture_modifier();
+			trade_cost_modifier += defines::get()->get_trade_node_score_culture_modifier();
 		}
 
 		if (this->get_culture()->get_culture_group() != center_of_trade->get_culture()->get_culture_group()) {
-			score_modifier += defines::get()->get_trade_node_score_culture_group_modifier();
+			trade_cost_modifier += defines::get()->get_trade_node_score_culture_group_modifier();
 		}
 
 		if (this->get_religion() != center_of_trade->get_religion()) {
-			score_modifier += defines::get()->get_trade_node_score_religion_modifier();
+			trade_cost_modifier += defines::get()->get_trade_node_score_religion_modifier();
 		}
 
 		if (this->get_religion()->get_religion_group() != center_of_trade->get_religion()->get_religion_group()) {
-			score_modifier += defines::get()->get_trade_node_score_religion_group_modifier();
+			trade_cost_modifier += defines::get()->get_trade_node_score_religion_group_modifier();
 		}
 
-		score_modifier = std::max(0, score_modifier);
+		trade_cost_modifier = std::max(0, trade_cost_modifier);
 
-		score *= score_modifier;
-		score /= 100;
+		trade_cost *= trade_cost_modifier;
+		trade_cost /= 100;
 
-		if (best_node == nullptr || score < best_score) {
+		if (best_node == nullptr || trade_cost < best_trade_cost) {
 			best_node = node;
-			best_score = score;
+			best_trade_cost = trade_cost;
 		}
 	}
 

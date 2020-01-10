@@ -93,6 +93,7 @@ public:
 	static const inline QColor water_province_color = QColor("#4682b4"); //steel blue
 	static const inline QColor wasteland_province_color = QColor(Qt::darkGray);
 	static const inline QColor empty_province_color = QColor("#f5f5dc");
+	static constexpr int base_distance = 100; //in kilometers; distance used as the base unit for e.g. the trade cost modifier per distance
 
 	static std::set<std::string> get_database_dependencies();
 	static province *add(const std::string &identifier);
