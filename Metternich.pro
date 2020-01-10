@@ -45,6 +45,7 @@ SOURCES += \
         landed_title/landed_title.cpp \
         main.cpp \
         map/map.cpp \
+        map/pathfinder.cpp \
         map/province.cpp \
         map/province_image_provider.cpp \
         map/province_profile.cpp \
@@ -139,6 +140,7 @@ HEADERS += \
     landed_title/landed_title_tier.h \
     map/map.h \
     map/map_mode.h \
+    map/pathfinder.h \
     map/province.h \
     map/province_image_provider.h \
     map/province_profile.h \

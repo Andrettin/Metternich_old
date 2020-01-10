@@ -8,6 +8,7 @@
 
 namespace metternich {
 
+class pathfinder;
 class province;
 class terrain_type;
 class trade_route;
@@ -26,20 +27,10 @@ public:
 	static constexpr const char *database_folder = "worlds";
 
 public:
-	world(const std::string &identifier) : data_entry(identifier) {}
+	world(const std::string &identifier);
+	virtual ~world() override;
 
-	virtual void initialize() override
-	{
-		if (this->terrain_image.size() != this->province_image.size()) {
-			throw std::runtime_error("The terrain and province images of world \"" + this->get_identifier() + "\" have different sizes.");
-		}
-
-		//clear the terrain and province images, as there is no need to keep them in memory
-		this->terrain_image = QImage();
-		this->province_image = QImage();
-
-		data_entry_base::initialize();
-	}
+	virtual void initialize() override;
 
 	int get_surface_area() const
 	{
@@ -94,6 +85,11 @@ public:
 	terrain_type *get_coordinate_terrain(const QGeoCoordinate &coordinate) const;
 	province *get_pos_province(const QPoint &pos) const;
 	province *get_coordinate_province(const QGeoCoordinate &coordinate) const;
+
+	const pathfinder *get_pathfinder() const
+	{
+		return this->pathfinder.get();
+	}
 
 	template <typename T>
 	inline std::vector<gsml_data> parse_data_type_map_database() const
@@ -170,6 +166,7 @@ private:
 	QImage province_image;
 	std::map<const terrain_type *, std::vector<QGeoPolygon>> terrain_geopolygons;
 	std::map<const terrain_type *, std::vector<QGeoPath>> terrain_geopaths;
+	std::unique_ptr<pathfinder> pathfinder;
 };
 
 }

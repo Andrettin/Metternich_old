@@ -3,6 +3,7 @@
 #include "database/gsml_data.h"
 #include "economy/trade_route.h"
 #include "engine_interface.h"
+#include "map/pathfinder.h"
 #include "map/province.h"
 #include "map/terrain_type.h"
 #include "util/container_util.h"
@@ -11,6 +12,29 @@
 #include "util/point_util.h"
 
 namespace metternich {
+
+world::world(const std::string &identifier) : data_entry(identifier)
+{
+}
+
+world::~world()
+{
+}
+
+void world::initialize()
+{
+	if (this->terrain_image.size() != this->province_image.size()) {
+		throw std::runtime_error("The terrain and province images of world \"" + this->get_identifier() + "\" have different sizes.");
+	}
+
+	//clear the terrain and province images, as there is no need to keep them in memory
+	this->terrain_image = QImage();
+	this->province_image = QImage();
+
+	this->pathfinder = std::make_unique<metternich::pathfinder>(this->provinces);
+
+	data_entry_base::initialize();
+}
 
 QVariantList world::get_provinces_qvariant_list() const
 {
