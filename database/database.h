@@ -18,9 +18,6 @@ class data_entry;
 class data_type_metadata;
 class module;
 
-/**
-**	@brief	The database
-*/
 class database : public singleton<database>
 {
 public:
