@@ -1,7 +1,7 @@
 #include "economy/trade_node.h"
 
 #include "economy/trade_route.h"
-#include "game/game.h"
+#include "history/history.h"
 #include "map/province.h"
 #include "translator.h"
 
@@ -57,7 +57,7 @@ void trade_node::set_active(const bool active)
 		trade_node::active_trade_nodes.erase(this);
 	}
 
-	if (game::get()->is_running()) {
+	if (!history::get()->is_loading()) {
 		//recalculate the trade node of all provinces if this trade node is becoming active, or of its dependent provinces if becoming inactive
 		if (active) {
 			for (province *province : province::get_all()) {
@@ -102,7 +102,7 @@ void trade_node::set_major(const bool major)
 		trade_node::major_trade_nodes.erase(this);
 	}
 
-	if (game::get()->is_running()) {
+	if (!history::get()->is_loading()) {
 		//recalculate the trade area of all nodes if this trade node is becoming major, or of its dependent nodes if becoming minor
 		//recalculate the trade area of all provinces
 		if (major) {
