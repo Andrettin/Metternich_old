@@ -61,7 +61,6 @@ bool trade_path_finder::find_path(const province *start_province, const province
 	this->path.clear();
 
 	using graph_type = boost::adjacency_list<boost::listS, boost::vecS, boost::undirectedS, boost::no_property, boost::property<boost::edge_weight_t, cost_type>>;
-	using weight_map_type = boost::property_map<graph_type, boost::edge_weight_t>::type;
 	using vertex_type = graph_type::vertex_descriptor;
 	using edge_descriptor = graph_type::edge_descriptor;
 
@@ -74,31 +73,36 @@ bool trade_path_finder::find_path(const province *start_province, const province
 	}
 
 	graph_type graph(provinces.size());
-	weight_map_type weight_map = get(boost::edge_weight, graph);
 
 	for (province *province : provinces) {
 		for (metternich::province *border_province : province->get_border_provinces()) {
 			edge_descriptor e;
 			bool inserted;
 			boost::tie(e, inserted) = boost::add_edge(province_to_index[province], province_to_index[border_province], graph);
-			weight_map[e] = province->get_kilometers_distance_to(border_province) * 100 / province::base_distance * defines::get()->get_trade_cost_modifier_per_distance() / 100;
 		}
 	}
+
+	auto weight_function = boost::make_function_property_map<edge_descriptor, cost_type>([&provinces](edge_descriptor e) {
+		const province *source_province = provinces[e.m_source];
+		const province *target_province = provinces[e.m_target];
+		return source_province->get_kilometers_distance_to(target_province) * 100 / province::base_distance * defines::get()->get_trade_cost_modifier_per_distance() / 100;
+	});
 
 	vertex_type start = province_to_index[start_province];
 	vertex_type goal = province_to_index[goal_province];
 
-	std::vector<vertex_type> vertex_path(boost::num_vertices(graph));
+	std::vector<vertex_type> vertex_predecessors(boost::num_vertices(graph));
 	std::vector<cost_type> vertex_costs(boost::num_vertices(graph));
 	try {
 		astar_search_tree(graph, start, distance_heuristic<graph_type, cost_type>(goal, provinces),
-			predecessor_map(make_iterator_property_map(vertex_path.begin(), get(boost::vertex_index, graph))).
+			weight_map(weight_function).
+			predecessor_map(make_iterator_property_map(vertex_predecessors.begin(), get(boost::vertex_index, graph))).
 			distance_map(make_iterator_property_map(vertex_costs.begin(), get(boost::vertex_index, graph))).
 			visitor(astar_goal_visitor<vertex_type>(goal)));
 	} catch (found_goal) {
-		for (vertex_type v = goal;; v = vertex_path[v]) {
+		for (vertex_type v = goal;; v = vertex_predecessors[v]) {
 			this->path.push_back(provinces[v]);
-			if (vertex_path[v] == v) {
+			if (vertex_predecessors[v] == v) {
 				break;
 			}
 		}
