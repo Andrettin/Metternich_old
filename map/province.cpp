@@ -6,7 +6,6 @@
 #include "database/gsml_property.h"
 #include "defines.h"
 #include "economy/trade_node.h"
-#include "economy/trade_path_finder.h"
 #include "engine_interface.h"
 #include "game/game.h"
 #include "history/history.h"
@@ -19,6 +18,7 @@
 #include "landed_title/landed_title_tier.h"
 #include "map/map.h"
 #include "map/map_mode.h"
+#include "map/pathfinder.h"
 #include "map/region.h"
 #include "map/terrain_type.h"
 #include "map/world.h"
@@ -587,11 +587,12 @@ trade_node *province::get_best_trade_node_from_list(const std::set<metternich::t
 			continue;
 		}
 
-		trade_path_finder pathfinder;
-		if (!pathfinder.find_path(this, center_of_trade)) {
+		const pathfinder *pathfinder = this->get_world()->get_pathfinder();
+		const find_trade_path_result result = pathfinder->find_trade_path(this, center_of_trade);
+		if (!result.success) {
 			continue;
 		}
-		int trade_cost = pathfinder.get_trade_cost();
+		int trade_cost = result.trade_cost;
 
 		int trade_cost_modifier = 100;
 

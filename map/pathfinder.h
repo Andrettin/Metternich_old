@@ -1,47 +1,35 @@
 #pragma once
 
-#include <boost/graph/adjacency_list.hpp>
-
+#include <memory>
 #include <set>
 
 namespace metternich {
 
+class pathfinder_implementation;
 class province;
+
+struct find_trade_path_result
+{
+	find_trade_path_result(const bool success) : success(success)
+	{}
+
+	bool success = false;
+	int trade_cost = 0; //the resulting trade cost
+	std::vector<province *> path; //the resulting trade path
+};
 
 class pathfinder
 {
-	using cost = int;
-	using graph = boost::adjacency_list<boost::listS, boost::vecS, boost::undirectedS, boost::no_property, boost::property<boost::edge_weight_t, cost>>;
-	using vertex = graph::vertex_descriptor;
-	using edge_descriptor = graph::edge_descriptor;
+	class impl;
 
 public:
 	pathfinder(const std::set<province *> &provinces);
+	~pathfinder();
 
-	const std::vector<province *> &get_provinces() const
-	{
-		return this->provinces;
-	}
-
-	province *get_province(const vertex v) const
-	{
-		return this->provinces[v];
-	}
-
-	size_t get_province_index(const province *province) const
-	{
-		return this->province_to_index.find(province)->second;
-	}
-
-	const graph &get_province_graph() const
-	{
-		return this->province_graph;
-	}
+	find_trade_path_result find_trade_path(const province *start_province, const province *goal_province) const;
 
 private:
-	std::vector<province *> provinces;
-	std::map<const province *, size_t> province_to_index;
-	graph province_graph;
+	std::unique_ptr<impl> implementation;
 };
 
 }
