@@ -56,6 +56,7 @@ class province : public data_entry, public data_type<province>
 	Q_PROPERTY(metternich::trade_node* trade_node READ get_trade_node NOTIFY trade_node_changed)
 	Q_PROPERTY(metternich::trade_node* trade_area READ get_trade_area NOTIFY trade_area_changed)
 	Q_PROPERTY(bool major_center_of_trade READ is_major_center_of_trade WRITE set_major_center_of_trade NOTIFY major_center_of_trade_changed)
+	Q_PROPERTY(int trade_node_trade_cost READ get_trade_node_trade_cost NOTIFY trade_node_trade_cost_changed)
 	Q_PROPERTY(QColor color MEMBER color READ get_color)
 	Q_PROPERTY(QRect rect READ get_rect CONSTANT)
 	Q_PROPERTY(QImage image READ get_image NOTIFY image_changed)
@@ -162,7 +163,7 @@ public:
 
 	void set_trade_node(trade_node *trade_node);
 	void calculate_trade_node();
-	trade_node *get_best_trade_node_from_list(const std::set<trade_node *> &trade_nodes) const;
+	std::pair<trade_node *, int> get_best_trade_node_from_list(const std::set<trade_node *> &trade_nodes) const;
 
 	trade_node *get_trade_area() const;
 
@@ -440,6 +441,21 @@ public:
 
 	void set_major_center_of_trade(const bool major_center_of_trade);
 
+	int get_trade_node_trade_cost() const
+	{
+		return this->trade_node_trade_cost;
+	}
+
+	void set_trade_node_trade_cost(const int trade_cost)
+	{
+		if (trade_cost == this->get_trade_node_trade_cost()) {
+			return;
+		}
+
+		this->trade_node_trade_cost = trade_cost;
+		emit trade_node_trade_cost_changed();
+	}
+
 	bool has_any_trade_route() const
 	{
 		return !this->trade_routes.empty();
@@ -548,6 +564,7 @@ signals:
 	void trade_node_changed();
 	void trade_area_changed();
 	void major_center_of_trade_changed();
+	void trade_node_trade_cost_changed();
 	void image_changed();
 	void terrain_changed();
 	void owner_changed();
@@ -596,6 +613,7 @@ private:
 	technology_set technologies; //the technologies acquired for the province
 	std::set<trade_route *> trade_routes; //the trade routes going through the province
 	bool major_center_of_trade = false;
+	int trade_node_trade_cost = 0;
 	std::vector<qunique_ptr<population_unit>> population_units; //population units set for this province in history, used during initialization to generate population units in the province's settlements
 	std::map<population_type *, int> population_per_type; //the population for each population type
 	std::map<metternich::culture *, int> population_per_culture; //the population for each culture

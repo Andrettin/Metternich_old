@@ -41,6 +41,7 @@ void trade_node::set_center_of_trade(province *province)
 	emit center_of_trade_changed();
 
 	province->set_trade_node(this);
+	province->set_trade_node_trade_cost(0);
 }
 
 void trade_node::set_active(const bool active)
@@ -156,7 +157,7 @@ void trade_node::calculate_trade_area()
 	}
 
 	province *center_of_trade = this->get_center_of_trade();
-	metternich::trade_node *best_area = center_of_trade->get_best_trade_node_from_list(trade_node::major_trade_nodes);
+	metternich::trade_node *best_area = center_of_trade->get_best_trade_node_from_list(trade_node::major_trade_nodes).first;
 
 	this->set_trade_area(best_area);
 }

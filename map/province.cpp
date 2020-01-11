@@ -550,14 +550,16 @@ void province::calculate_trade_node()
 	if (this->get_owner() == nullptr) {
 		//provinces without an owner don't get assigned to any trade node
 		this->set_trade_node(nullptr);
+		this->set_trade_node_trade_cost(0);
 		return;
 	}
 
-	metternich::trade_node *best_node = this->get_best_trade_node_from_list(trade_node::get_all_active());
-	this->set_trade_node(best_node);
+	std::pair<metternich::trade_node *, int> best_trade_node_result = this->get_best_trade_node_from_list(trade_node::get_all_active());
+	this->set_trade_node(best_trade_node_result.first);
+	this->set_trade_node_trade_cost(best_trade_node_result.second);
 }
 
-trade_node *province::get_best_trade_node_from_list(const std::set<metternich::trade_node *> &trade_nodes) const
+std::pair<trade_node *, int> province::get_best_trade_node_from_list(const std::set<metternich::trade_node *> &trade_nodes) const
 {
 	std::vector<metternich::trade_node *> sorted_trade_nodes = container::to_vector(trade_nodes);
 
@@ -570,6 +572,7 @@ trade_node *province::get_best_trade_node_from_list(const std::set<metternich::t
 	});
 
 	metternich::trade_node *best_node = nullptr;
+	int best_score = 0; //smaller is better
 	int best_trade_cost = 0;
 
 	for (metternich::trade_node *node : sorted_trade_nodes) {
@@ -592,42 +595,43 @@ trade_node *province::get_best_trade_node_from_list(const std::set<metternich::t
 		if (!result.success) {
 			continue;
 		}
-		int trade_cost = result.trade_cost;
+		int score = result.trade_cost; //smaller is better
 
-		int trade_cost_modifier = 100;
+		int score_modifier = 100;
 
 		if (this->get_county()->get_realm() != center_of_trade->get_county()->get_realm()) {
-			trade_cost_modifier += defines::get()->get_trade_node_score_realm_modifier();
+			score_modifier += defines::get()->get_trade_node_score_realm_modifier();
 		}
 
 		if (this->get_culture() != center_of_trade->get_culture()) {
-			trade_cost_modifier += defines::get()->get_trade_node_score_culture_modifier();
+			score_modifier += defines::get()->get_trade_node_score_culture_modifier();
 		}
 
 		if (this->get_culture()->get_culture_group() != center_of_trade->get_culture()->get_culture_group()) {
-			trade_cost_modifier += defines::get()->get_trade_node_score_culture_group_modifier();
+			score_modifier += defines::get()->get_trade_node_score_culture_group_modifier();
 		}
 
 		if (this->get_religion() != center_of_trade->get_religion()) {
-			trade_cost_modifier += defines::get()->get_trade_node_score_religion_modifier();
+			score_modifier += defines::get()->get_trade_node_score_religion_modifier();
 		}
 
 		if (this->get_religion()->get_religion_group() != center_of_trade->get_religion()->get_religion_group()) {
-			trade_cost_modifier += defines::get()->get_trade_node_score_religion_group_modifier();
+			score_modifier += defines::get()->get_trade_node_score_religion_group_modifier();
 		}
 
-		trade_cost_modifier = std::max(0, trade_cost_modifier);
+		score_modifier = std::max(0, score_modifier);
 
-		trade_cost *= trade_cost_modifier;
-		trade_cost /= 100;
+		score *= score_modifier;
+		score /= 100;
 
-		if (best_node == nullptr || trade_cost < best_trade_cost) {
+		if (best_node == nullptr || score < best_score) {
 			best_node = node;
-			best_trade_cost = trade_cost;
+			best_score = score;
+			best_trade_cost = result.trade_cost;
 		}
 	}
 
-	return best_node;
+	return std::make_pair(best_node, best_trade_cost);
 }
 
 trade_node *province::get_trade_area() const
