@@ -54,9 +54,6 @@ void game::start(const timeline *timeline, const QDateTime &start_date)
 	game_loop_thread.detach();
 }
 
-/**
-**	@brief	Run the game's game loop
-*/
 void game::run()
 {
 	while (!this->should_stop) {
@@ -153,9 +150,6 @@ void game::do_tick()
 	}
 }
 
-/**
-**	@brief	Do the game's daily actions
-*/
 void game::do_day()
 {
 	const QDate date = this->current_date.date();
@@ -282,9 +276,6 @@ void game::generate_missing_title_holders()
 	}
 }
 
-/**
-**	@brief	Purge superfluous characters
-*/
 void game::purge_superfluous_characters()
 {
 	std::vector<character *> characters_to_remove;

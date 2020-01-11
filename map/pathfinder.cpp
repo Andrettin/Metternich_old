@@ -148,7 +148,14 @@ pathfinder::impl::cost pathfinder::impl::get_trade_cost(const edge e) const
 {
 	const province *source_province = this->provinces[e.m_source];
 	const province *target_province = this->provinces[e.m_target];
-	return source_province->get_kilometers_distance_to(target_province) * 100 / province::base_distance * defines::get()->get_trade_cost_modifier_per_distance() / 100;
+
+	int trade_cost = source_province->get_kilometers_distance_to(target_province) * 100 / province::base_distance * defines::get()->get_trade_cost_modifier_per_distance() / 100;
+
+	if (source_province->is_water() != target_province->is_water()) {
+		trade_cost += defines::get()->get_base_port_trade_cost_modifier();
+	}
+
+	return trade_cost;
 }
 
 }

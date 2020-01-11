@@ -35,6 +35,7 @@ class defines : public QObject, public singleton<defines>
 	Q_PROPERTY(int trade_node_score_religion_modifier MEMBER trade_node_score_religion_modifier READ get_trade_node_score_religion_modifier)
 	Q_PROPERTY(int trade_node_score_religion_group_modifier MEMBER trade_node_score_religion_group_modifier READ get_trade_node_score_religion_group_modifier)
 	Q_PROPERTY(int trade_cost_modifier_per_distance MEMBER trade_cost_modifier_per_distance READ get_trade_cost_modifier_per_distance)
+	Q_PROPERTY(int base_port_trade_cost_modifier MEMBER base_port_trade_cost_modifier READ get_base_port_trade_cost_modifier)
 
 public:
 
@@ -123,6 +124,11 @@ public:
 		return trade_cost_modifier_per_distance;
 	}
 
+	int get_base_port_trade_cost_modifier() const
+	{
+		return base_port_trade_cost_modifier;
+	}
+
 private:
 	world *default_world = nullptr;
 	timeline *default_timeline = nullptr;
@@ -140,6 +146,7 @@ private:
 	int trade_node_score_religion_modifier = 0;
 	int trade_node_score_religion_group_modifier = 0;
 	int trade_cost_modifier_per_distance = 0; //trade cost modifier for every 100 kilometers of distance
+	int base_port_trade_cost_modifier = 0; //base trade cost modifier when going from a water province to a land one or vice-versa
 };
 
 }
