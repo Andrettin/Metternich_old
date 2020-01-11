@@ -41,7 +41,6 @@ void trade_node::set_center_of_trade(province *province)
 	emit center_of_trade_changed();
 
 	province->set_trade_node(this);
-	province->set_trade_node_trade_cost(0);
 }
 
 void trade_node::set_active(const bool active)

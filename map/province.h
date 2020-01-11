@@ -452,6 +452,10 @@ public:
 			return;
 		}
 
+		if (trade_cost < 0) {
+			throw std::runtime_error("Tried to set a negative trade node trade cost for province \"" + this->get_identifier() + "\".");
+		}
+
 		this->trade_node_trade_cost = trade_cost;
 		emit trade_node_trade_cost_changed();
 	}

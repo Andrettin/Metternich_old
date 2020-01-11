@@ -145,7 +145,7 @@ private:
 	int trade_node_score_culture_group_modifier = 0;
 	int trade_node_score_religion_modifier = 0;
 	int trade_node_score_religion_group_modifier = 0;
-	int trade_cost_modifier_per_distance = 0; //trade cost modifier for every 100 kilometers of distance
+	int trade_cost_modifier_per_distance = 0; //trade cost modifier for every [province::base_distance] kilometers
 	int base_port_trade_cost_modifier = 0; //base trade cost modifier when going from a water province to a land one or vice-versa
 };
 

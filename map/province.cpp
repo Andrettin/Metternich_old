@@ -529,6 +529,10 @@ void province::set_trade_node(metternich::trade_node *trade_node)
 		emit trade_area_changed();
 	}
 
+	if (trade_node == nullptr || this->is_center_of_trade()) {
+		this->set_trade_node_trade_cost(0);
+	}
+
 	if (
 		map::get()->get_mode() == map_mode::trade_node
 		|| (map::get()->get_mode() == map_mode::trade_area && old_trade_area != trade_area)
@@ -550,7 +554,6 @@ void province::calculate_trade_node()
 	if (this->get_owner() == nullptr) {
 		//provinces without an owner don't get assigned to any trade node
 		this->set_trade_node(nullptr);
-		this->set_trade_node_trade_cost(0);
 		return;
 	}
 
@@ -595,6 +598,7 @@ std::pair<trade_node *, int> province::get_best_trade_node_from_list(const std::
 		if (!result.success) {
 			continue;
 		}
+
 		int score = result.trade_cost; //smaller is better
 
 		int score_modifier = 100;
