@@ -510,8 +510,6 @@ void province::set_trade_node(metternich::trade_node *trade_node)
 		return;
 	}
 
-	const metternich::trade_node *old_trade_area = this->get_trade_area();
-
 	if (this->get_trade_node() != nullptr) {
 		this->get_trade_node()->remove_province(this);
 	}
@@ -523,20 +521,11 @@ void province::set_trade_node(metternich::trade_node *trade_node)
 		trade_node->add_province(this);
 	}
 
-	const metternich::trade_node *trade_area = this->get_trade_area();
-
-	if (old_trade_area != trade_area) {
-		emit trade_area_changed();
-	}
-
 	if (trade_node == nullptr || this->is_center_of_trade()) {
 		this->set_trade_node_trade_cost(0);
 	}
 
-	if (
-		map::get()->get_mode() == map_mode::trade_node
-		|| (map::get()->get_mode() == map_mode::trade_area && old_trade_area != trade_area)
-	) {
+	if (map::get()->get_mode() == map_mode::trade_node) {
 		this->update_color_for_map_mode(map::get()->get_mode());
 	}
 }
@@ -544,9 +533,6 @@ void province::set_trade_node(metternich::trade_node *trade_node)
 void province::calculate_trade_node()
 {
 	if (this->is_center_of_trade()) {
-		//anything that triggers a recalculation of the trade node for a province should trigger a recalculation of the trade area for a node as well
-		this->get_trade_node()->calculate_trade_area();
-
 		//the trade node of centers of trade cannot change, since trade nodes represent a collective of provinces which have a province as their center of trade
 		return;
 	}
@@ -638,15 +624,6 @@ std::pair<trade_node *, int> province::get_best_trade_node_from_list(const std::
 	return std::make_pair(best_node, best_trade_cost);
 }
 
-trade_node *province::get_trade_area() const
-{
-	if (this->get_trade_node() != nullptr) {
-		return this->get_trade_node()->get_trade_area();
-	}
-
-	return nullptr;
-}
-
 const QColor &province::get_color_for_map_mode(const map_mode mode) const
 {
 	if (this->get_county() != nullptr) {
@@ -709,12 +686,6 @@ const QColor &province::get_color_for_map_mode(const map_mode mode) const
 				}
 				break;
 			}
-			case map_mode::trade_area: {
-				if (this->get_trade_area() != nullptr && this->get_owner() != nullptr) {
-					return this->get_trade_area()->get_color();
-				}
-				break;
-			}
 			default:
 				break;
 		}
@@ -726,7 +697,6 @@ const QColor &province::get_color_for_map_mode(const map_mode mode) const
 			case map_mode::religion:
 			case map_mode::religion_group:
 			case map_mode::trade_node:
-			case map_mode::trade_area:
 				return province::empty_province_color; //colonizable province
 			default:
 				break;
@@ -1504,22 +1474,6 @@ bool province::is_center_of_trade() const
 	return this->get_trade_node() != nullptr && this->get_trade_node()->get_center_of_trade() == this;
 }
 
-void province::set_major_center_of_trade(const bool major_center_of_trade)
-{
-	if (major_center_of_trade == this->is_major_center_of_trade()) {
-		return;
-	}
-
-	if (!this->is_center_of_trade() && major_center_of_trade) {
-		throw std::runtime_error("Tried to set province \"" + this->get_identifier() + "\", which is not a center of trade, to be a major center of trade.");
-	}
-
-	this->major_center_of_trade = major_center_of_trade;
-	emit major_center_of_trade_changed();
-
-	this->get_trade_node()->set_major(major_center_of_trade);
-}
-
 void province::add_trade_route(trade_route *route)
 {
 	this->trade_routes.insert(route);
@@ -1642,16 +1596,6 @@ void province::set_trade_node_recalculation_needed(const bool recalculation_need
 			}
 
 			node_province->set_trade_node_recalculation_needed(true);
-		}
-
-		if (this->is_major_center_of_trade()) {
-			for (metternich::trade_node *dependent_node : this->get_trade_node()->get_trade_nodes()) {
-				if (dependent_node == this->get_trade_node()) {
-					continue;
-				}
-
-				dependent_node->get_center_of_trade()->set_trade_node_recalculation_needed(true, false);
-			}
 		}
 	}
 
