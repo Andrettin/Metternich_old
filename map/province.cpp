@@ -589,7 +589,7 @@ std::pair<trade_node *, int> province::get_best_trade_node_from_list(const std::
 		const int distance = this->get_kilometers_distance_to(center_of_trade);
 		const int minimum_trade_cost = distance * 100 / province::base_distance * defines::get()->get_trade_cost_modifier_per_distance() / 100;
 
-		if (best_node != nullptr && minimum_trade_cost >= best_trade_cost) {
+		if (best_node != nullptr && minimum_trade_cost >= best_score) {
 			continue;
 		}
 
