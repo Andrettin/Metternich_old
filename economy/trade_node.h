@@ -10,7 +10,6 @@
 namespace metternich {
 
 class province;
-class trade_route;
 class world;
 
 class trade_node : public data_entry, public data_type<trade_node>
@@ -73,16 +72,6 @@ public:
 		this->provinces.erase(province);
 	}
 
-	void add_trade_route(trade_route *route)
-	{
-		this->trade_routes.insert(route);
-	}
-
-	const std::set<trade_node *> &get_trade_nodes() const
-	{
-		return this->trade_nodes;
-	}
-
 	world *get_world() const;
 
 signals:
@@ -93,8 +82,6 @@ private:
 	province *center_of_trade = nullptr;
 	bool active = false; //whether this trade node is active, i.e. whether its center of trade has an owner
 	std::set<province *> provinces;
-	std::set<trade_route *> trade_routes; //the trade routes going through the trade node
-	std::set<trade_node *> trade_nodes; //the trade (sub-)nodes, if this is a trade area
 };
 
 }

@@ -148,14 +148,8 @@ void holding_slot::set_province(metternich::province *province)
 		return;
 	}
 
-	if (this->get_province() != nullptr) {
-		disconnect(this->get_province(), &province::trade_routes_changed, this, &holding_slot::trade_routes_changed);
-	}
-
 	this->province = province;
 	province->add_holding_slot(this);
-
-	connect(province, &province::trade_routes_changed, this, &holding_slot::trade_routes_changed);
 }
 
 /**

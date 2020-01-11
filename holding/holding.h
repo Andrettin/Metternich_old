@@ -455,7 +455,6 @@ signals:
 	void commodity_changed();
 	void culture_changed();
 	void religion_changed();
-	void trade_routes_changed();
 	void selected_changed();
 
 private:

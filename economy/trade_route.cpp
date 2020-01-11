@@ -1,6 +1,5 @@
 #include "economy/trade_route.h"
 
-#include "economy/trade_node.h"
 #include "map/province.h"
 #include "map/world.h"
 #include "util/container_util.h"
@@ -39,9 +38,7 @@ void trade_route::initialize()
 			throw std::runtime_error("The path of trade route \"" + this->get_identifier() + "\" contains a null province.");
 		}
 
-		if (path_province->is_center_of_trade() && !this->has_trade_node(path_province->get_trade_node())) {
-			this->add_trade_node(path_province->get_trade_node());
-		}
+		path_province->add_trade_route(this);
 	}
 
 	province *start_province = this->path.front();
@@ -75,21 +72,6 @@ void trade_route::initialize()
 		}
 
 		this->rect = QRect(top_left, bottom_right);
-	}
-}
-
-void trade_route::check() const
-{
-	const province *start_province = this->path.front();
-
-	if (!start_province->is_center_of_trade()) {
-		throw std::runtime_error("The path of trade route \"" + this->get_identifier() + "\" does not start with a center of trade.");
-	}
-
-	const province *end_province = this->path.back();
-
-	if (!end_province->is_center_of_trade()) {
-		throw std::runtime_error("The path of trade route \"" + this->get_identifier() + "\" does not end with a center of trade.");
 	}
 }
 
@@ -159,16 +141,6 @@ void trade_route::set_world(metternich::world *world)
 	world->add_trade_route(this);
 }
 
-void trade_route::add_trade_node(trade_node *node)
-{
-	if (node == nullptr) {
-		throw std::runtime_error("Tried to add null as a trade node for trade route \"" + this->get_identifier() + "\".");
-	}
-
-	this->trade_nodes.insert(node);
-	node->add_trade_route(this);
-}
-
 QVariantList trade_route::get_path_qvariant_list() const
 {
 	return container::to_qvariant_list(this->path);
@@ -199,37 +171,6 @@ QVariantList trade_route::get_path_points_qvariant_list() const
 	}
 
 	return path_points;
-}
-
-void trade_route::set_active(const bool active)
-{
-	if (active == this->is_active()) {
-		return;
-	}
-
-	this->active = active;
-	emit active_changed();
-
-	for (province *path_province : this->path) {
-		if (active) {
-			path_province->add_trade_route(this);
-		} else {
-			path_province->remove_trade_route(this);
-		}
-	}
-}
-
-void trade_route::calculate_active()
-{
-	//all trade nodes through which a trade route passes must be active for the trade route to be active
-	for (trade_node *node : this->trade_nodes) {
-		if (!node->is_active()) {
-			this->set_active(false);
-			return;
-		}
-	}
-
-	this->set_active(true);
 }
 
 }

@@ -54,7 +54,6 @@ holding::holding(metternich::holding_slot *slot, holding_type *type) : data_entr
 		}
 	}
 
-	connect(slot, &holding_slot::trade_routes_changed, this, &holding::trade_routes_changed);
 	connect(this, &holding::type_changed, this, &holding::titled_name_changed);
 	connect(this, &holding::type_changed, this, &holding::portrait_path_changed);
 	connect(this, &holding::culture_changed, this, &holding::portrait_path_changed);
