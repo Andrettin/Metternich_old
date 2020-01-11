@@ -370,6 +370,13 @@ void landed_title::set_holder(character *character)
 			hospital_holding->set_owner(character);
 		}
 
+		if (this->get_province()->get_trading_post_holding_slot() != nullptr) {
+			holding *trading_post_holding = this->get_province()->get_trading_post_holding_slot()->get_holding();
+			if (trading_post_holding != nullptr && (trading_post_holding->get_owner() == nullptr || trading_post_holding->get_owner() == old_holder)) {
+				trading_post_holding->set_owner(character);
+			}
+		}
+
 		if (old_holder == nullptr || character == nullptr) {
 			if (!history::get()->is_loading()) {
 				this->get_province()->calculate_trade_node();
