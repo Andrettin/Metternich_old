@@ -214,7 +214,8 @@ HEADERS += \
     util/number_util.h \
     util/parse_util.h \
     util/point_util.h \
-    util/string_util.h
+    util/string_util.h \
+    util/vector_util.h
 
 win32 {
     INCLUDEPATH += C:/Boost
