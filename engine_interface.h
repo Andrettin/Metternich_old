@@ -64,16 +64,22 @@ public:
 
 	const QString &get_loading_message() const
 	{
+		std::shared_lock<std::shared_mutex> lock(this->loading_message_mutex);
 		return this->loading_message;
 	}
 
 	void set_loading_message(const QString &loading_message)
 	{
-		if (loading_message == this->get_loading_message()) {
-			return;
+		{
+			std::unique_lock<std::shared_mutex> lock(this->loading_message_mutex);
+
+			if (loading_message == this->loading_message) {
+				return;
+			}
+
+			this->loading_message = loading_message;
 		}
 
-		this->loading_message = loading_message;
 		emit loading_message_changed();
 	}
 
@@ -98,6 +104,7 @@ private:
 	character *selected_character = nullptr;
 	std::vector<std::unique_ptr<event_instance>> event_instances;
 	mutable std::shared_mutex event_instances_mutex;
+	mutable std::shared_mutex loading_message_mutex;
 };
 
 }

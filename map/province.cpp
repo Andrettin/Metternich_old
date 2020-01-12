@@ -38,7 +38,6 @@
 
 #include <QApplication>
 #include <QGeoCircle>
-#include <QPainter>
 #include <QtLocation/private/qgeojson_p.h>
 
 namespace metternich {
