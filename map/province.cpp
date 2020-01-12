@@ -1679,6 +1679,27 @@ QPoint province::get_nearest_valid_pos(const QPoint &pos) const
 	throw std::runtime_error("Could not find a nearest valid position for point (" + std::to_string(pos.x()) + ", " + std::to_string(pos.y()) + ") in province \"" + this->get_identifier() + "\".");
 }
 
+std::vector<QPoint> province::get_secondary_settlement_pos_list() const
+{
+	std::vector<QPoint> pos_list;
+
+	//get the positions of settlements slots other than the capital one
+	for (holding_slot *settlement_slot : this->get_settlement_holding_slots()) {
+		if (settlement_slot == this->get_capital_holding_slot()) {
+			continue;
+		}
+
+		const QPoint &settlement_pos = settlement_slot->get_pos();
+		if (settlement_pos.x() == -1 || settlement_pos.y() == -1) {
+			continue;
+		}
+
+		pos_list.push_back(settlement_pos);
+	}
+
+	return pos_list;
+}
+
 void province::set_trade_node_recalculation_needed(const bool recalculation_needed, const bool recalculate_for_dependent_provinces)
 {
 	if (recalculate_for_dependent_provinces && this->is_center_of_trade() && recalculation_needed) {

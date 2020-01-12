@@ -557,6 +557,7 @@ public:
 
 	const QPoint &get_main_pos() const;
 	QPoint get_nearest_valid_pos(const QPoint &pos) const;
+	std::vector<QPoint> get_secondary_settlement_pos_list() const;
 
 	bool always_writes_geodata() const
 	{

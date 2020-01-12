@@ -6,6 +6,7 @@
 #include "util/container_util.h"
 #include "util/map_util.h"
 #include "util/point_util.h"
+#include "util/vector_util.h"
 
 namespace metternich {
 
@@ -168,36 +169,24 @@ QVariantList trade_route::get_path_branch_points_qvariant_list() const
 			if ((i + 1) < path_branch_provinces.size()) {
 				const province *next_path_province = path_branch_provinces[i + 1];
 				const QPoint &next_main_pos = next_path_province->get_main_pos();
-				const int distance_to_next_main_pos = point::distance_to(main_pos, next_main_pos);
 
 				//draw the path through settlement slot positions between the two main province positions
-				for (holding_slot *settlement_slot : path_province->get_settlement_holding_slots()) {
-					if (path_province->get_capital_holding_slot() == settlement_slot) {
-						continue; //already the main pos
-					}
+				std::vector<QPoint> secondary_pos_list = path_province->get_secondary_settlement_pos_list();
+				vector::merge(secondary_pos_list, next_path_province->get_secondary_settlement_pos_list());
 
-					const QPoint &settlement_pos = settlement_slot->get_pos();
-					if (settlement_pos.x() == -1 || settlement_pos.y() == -1) {
-						continue;
-					}
+				//sort the secondary positions by distance from the current main pos
+				std::sort(secondary_pos_list.begin(), secondary_pos_list.end(), [main_pos](const QPoint &a, const QPoint &b) {
+					return point::distance_to(a, main_pos) < point::distance_to(b, main_pos);
+				});
 
-					if (point::distance_to(settlement_pos, main_pos) < distance_to_next_main_pos && point::distance_to(settlement_pos, next_main_pos) < distance_to_next_main_pos) {
-						path_branch_points_qvariant_list.append(settlement_pos - this->get_rect().topLeft());
-					}
-				}
+				int distance_to_next_main_pos = point::distance_to(main_pos, next_main_pos);
+				QPoint previous_pos = main_pos;
 
-				for (holding_slot *settlement_slot : next_path_province->get_settlement_holding_slots()) {
-					if (next_path_province->get_capital_holding_slot() == settlement_slot) {
-						continue; //already the main pos
-					}
-
-					const QPoint &settlement_pos = settlement_slot->get_pos();
-					if (settlement_pos.x() == -1 || settlement_pos.y() == -1) {
-						continue;
-					}
-
-					if (point::distance_to(settlement_pos, main_pos) < distance_to_next_main_pos && point::distance_to(settlement_pos, next_main_pos) < distance_to_next_main_pos) {
-						path_branch_points_qvariant_list.append(settlement_pos - this->get_rect().topLeft());
+				for (const QPoint &secondary_pos : secondary_pos_list) {
+					if (point::distance_to(secondary_pos, previous_pos) < distance_to_next_main_pos && point::distance_to(secondary_pos, next_main_pos) < distance_to_next_main_pos) {
+						path_branch_points_qvariant_list.append(secondary_pos - this->get_rect().topLeft());
+						distance_to_next_main_pos = point::distance_to(secondary_pos, next_main_pos);
+						previous_pos = secondary_pos;
 					}
 				}
 			}
