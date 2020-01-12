@@ -23,18 +23,18 @@ class gsml_parser;
 class gsml_data
 {
 public:
-	static gsml_data from_point(const QPoint &point)
+	static gsml_data from_point(const QPoint &point, const std::string &tag = std::string())
 	{
-		gsml_data point_data;
+		gsml_data point_data(tag);
 		point_data.add_value(std::to_string(point.x()));
 		point_data.add_value(std::to_string(point.y()));
 		return point_data;
 	}
 
 	template <int precision>
-	static gsml_data from_geocoordinate(const double longitude, const double latitude)
+	static gsml_data from_geocoordinate(const double longitude, const double latitude, const std::string &tag = std::string())
 	{
-		gsml_data geocoordinate_data;
+		gsml_data geocoordinate_data(tag);
 
 		std::ostringstream lon_string_stream;
 		lon_string_stream << std::setprecision(precision) << longitude;
@@ -48,9 +48,9 @@ public:
 	}
 
 	template <int precision>
-	static gsml_data from_geocoordinate(const QGeoCoordinate &geocoordinate)
+	static gsml_data from_geocoordinate(const QGeoCoordinate &geocoordinate, const std::string &tag = std::string())
 	{
-		return gsml_data::from_geocoordinate<precision>(geocoordinate.longitude(), geocoordinate.latitude());
+		return gsml_data::from_geocoordinate<precision>(geocoordinate.longitude(), geocoordinate.latitude(), tag);
 	}
 
 	gsml_data(std::string &&tag = std::string());
