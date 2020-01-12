@@ -174,20 +174,11 @@ QVariantList trade_route::get_path_branch_points_qvariant_list() const
 				std::vector<QPoint> secondary_pos_list = path_province->get_secondary_settlement_pos_list();
 				vector::merge(secondary_pos_list, next_path_province->get_secondary_settlement_pos_list());
 
-				//sort the secondary positions by distance from the current main pos
-				std::sort(secondary_pos_list.begin(), secondary_pos_list.end(), [main_pos](const QPoint &a, const QPoint &b) {
-					return point::distance_to(a, main_pos) < point::distance_to(b, main_pos);
-				});
-
-				int distance_to_next_main_pos = point::distance_to(main_pos, next_main_pos);
-				QPoint previous_pos = main_pos;
-
-				for (const QPoint &secondary_pos : secondary_pos_list) {
-					if (point::distance_to(secondary_pos, previous_pos) < distance_to_next_main_pos && point::distance_to(secondary_pos, next_main_pos) < distance_to_next_main_pos) {
-						path_branch_points_qvariant_list.append(secondary_pos - this->get_rect().topLeft());
-						distance_to_next_main_pos = point::distance_to(secondary_pos, next_main_pos);
-						previous_pos = secondary_pos;
-					}
+				QPoint intermediate_pos = point::get_best_intermediate_point(main_pos, next_main_pos, secondary_pos_list);
+				while (intermediate_pos.x() != -1 && intermediate_pos.y() != -1) {
+					secondary_pos_list.erase(std::remove(secondary_pos_list.begin(), secondary_pos_list.end(), intermediate_pos), secondary_pos_list.end());
+					path_branch_points_qvariant_list.append(intermediate_pos - this->get_rect().topLeft());
+					intermediate_pos = point::get_best_intermediate_point(intermediate_pos, next_main_pos, secondary_pos_list);
 				}
 			}
 		}
