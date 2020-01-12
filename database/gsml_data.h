@@ -23,6 +23,36 @@ class gsml_parser;
 class gsml_data
 {
 public:
+	static gsml_data from_point(const QPoint &point)
+	{
+		gsml_data point_data;
+		point_data.add_value(std::to_string(point.x()));
+		point_data.add_value(std::to_string(point.y()));
+		return point_data;
+	}
+
+	template <int precision>
+	static gsml_data from_geocoordinate(const double longitude, const double latitude)
+	{
+		gsml_data geocoordinate_data;
+
+		std::ostringstream lon_string_stream;
+		lon_string_stream << std::setprecision(precision) << longitude;
+		geocoordinate_data.add_value(lon_string_stream.str());
+
+		std::ostringstream lat_string_stream;
+		lat_string_stream << std::setprecision(precision) << latitude;
+		geocoordinate_data.add_value(lat_string_stream.str());
+
+		return geocoordinate_data;
+	}
+
+	template <int precision>
+	static gsml_data from_geocoordinate(const QGeoCoordinate &geocoordinate)
+	{
+		return gsml_data::from_geocoordinate<precision>(geocoordinate.longitude(), geocoordinate.latitude());
+	}
+
 	gsml_data(std::string &&tag = std::string());
 
 	gsml_data(std::string &&tag, const gsml_operator scope_operator)
@@ -34,7 +64,11 @@ public:
 	{
 	}
 
-public:
+	gsml_data(const std::string &tag, const gsml_operator scope_operator)
+		: gsml_data(std::string(tag), scope_operator)
+	{
+	}
+
 	const std::string &get_tag() const
 	{
 		return this->tag;
@@ -131,6 +165,11 @@ public:
 		});
 	}
 
+	bool is_empty() const
+	{
+		return this->get_children().empty() && this->get_properties().empty() && this->get_values().empty();
+	}
+
 	QColor to_color() const
 	{
 		if (this->get_values().size() != 3) {
@@ -142,6 +181,13 @@ public:
 		const int blue = std::stoi(this->values.at(2));
 
 		return QColor(red, green, blue);
+	}
+
+	QPoint to_point() const
+	{
+		const int x = std::stoi(this->get_values()[0]);
+		const int y = std::stoi(this->get_values()[1]);
+		return QPoint(x, y);
 	}
 
 	QGeoCoordinate to_geocoordinate() const

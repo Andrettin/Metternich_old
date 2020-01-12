@@ -122,9 +122,20 @@ void province::process_gsml_scope(const gsml_data &scope)
 			this->border_provinces.insert(border_province);
 		}
 	} else if (tag.substr(0, 2) == holding_slot::prefix) {
-		holding_slot *holding_slot = holding_slot::add(tag);
+		holding_slot *holding_slot = nullptr;
+		if (scope.get_operator() == gsml_operator::assignment) {
+			holding_slot = holding_slot::add(tag);
+		} else if (scope.get_operator() == gsml_operator::addition) {
+			holding_slot = this->get_holding_slot(tag);
+		} else {
+			throw std::runtime_error("Invalid operator for scope (\"" + tag + "\").");
+		}
+
 		database::process_gsml_data(holding_slot, scope);
-		holding_slot->set_province(this);
+
+		if (scope.get_operator() == gsml_operator::assignment) {
+			holding_slot->set_province(this);
+		}
 	} else {
 		data_entry_base::process_gsml_scope(scope);
 	}
@@ -366,6 +377,14 @@ gsml_data province::get_cache_data() const
 	}
 
 	cache_data.add_child(std::move(border_provinces));
+
+	for (const holding_slot *slot : this->get_settlement_holding_slots()) {
+		gsml_data slot_cache_data = slot->get_cache_data();
+
+		if (!slot_cache_data.is_empty()) {
+			cache_data.add_child(std::move(slot_cache_data));
+		}
+	}
 
 	return cache_data;
 }
@@ -756,57 +775,7 @@ void province::create_image(const std::vector<int> &pixel_indexes)
 	}
 
 	//if the center pos is outside the actual pixels of the province, change it to the nearest pixel actually in the province
-	if (this->image.pixel(center_pos - start_pos) == qRgba(0, 0, 0, 0)) {
-		int offset = 0;
-		bool found_pos = false;
-		bool checked_valid_pos = true; //whether a valid position was checked in the loop
-
-		while (!found_pos && checked_valid_pos) {
-			offset++;
-			checked_valid_pos = false;
-
-			for (int x_offset = -offset; x_offset <= offset; ++x_offset) {
-				int y_offset = -(offset - std::abs(x_offset));
-
-				for (int y_offset_multiplier = -1; y_offset_multiplier <= 1; y_offset_multiplier += 2) {
-					y_offset *= y_offset_multiplier;
-
-					QPoint near_pos = center_pos + QPoint(x_offset, y_offset);
-					if (this->rect.contains(near_pos)) {
-						checked_valid_pos = true;
-
-						if (this->image.pixel(near_pos - start_pos) != qRgba(0, 0, 0, 0)) {
-							center_pos = near_pos;
-							found_pos = true;
-							break;
-						}
-					}
-
-					// do the same with the inverted coordinate position of the offsets
-					near_pos = center_pos + QPoint(y_offset, x_offset);
-					if (this->rect.contains(near_pos)) {
-						checked_valid_pos = true;
-
-						if (this->image.pixel(near_pos - start_pos) != qRgba(0, 0, 0, 0)) {
-							center_pos = near_pos;
-							found_pos = true;
-							break;
-						}
-					}
-
-					if (y_offset == 0) {
-						break; //no need to do it a second time if the y offset is 0
-					}
-				}
-
-				if (found_pos) {
-					break;
-				}
-			}
-		}
-	}
-
-	this->center_pos = center_pos;
+	this->center_pos = this->get_nearest_valid_pos(center_pos);
 }
 
 void province::set_border_pixels(const std::vector<int> &pixel_indexes)
@@ -1330,6 +1299,8 @@ void province::set_capital_holding_slot(holding_slot *holding_slot)
 		return;
 	}
 
+	const QPoint &old_main_pos = this->get_main_pos();
+
 	if (holding_slot != nullptr) {
 		if (holding_slot->get_province() != this) {
 			throw std::runtime_error("Tried to set holding \"" + holding_slot->get_identifier() + "\" as the capital holding of province \"" + this->get_identifier() + "\", but it belongs to another province.");
@@ -1342,6 +1313,12 @@ void province::set_capital_holding_slot(holding_slot *holding_slot)
 
 	this->capital_holding_slot = holding_slot;
 	emit capital_holding_slot_changed();
+
+	const QPoint &main_pos = this->get_main_pos();
+
+	if (old_main_pos != main_pos) {
+		emit main_pos_changed();
+	}
 }
 
 holding *province::get_capital_holding() const
@@ -1640,6 +1617,66 @@ QVariantList province::get_geopaths_qvariant_list() const
 QGeoCoordinate province::get_center_coordinate() const
 {
 	return this->get_world()->get_pixel_pos_coordinate(this->get_center_pos());
+}
+
+const QPoint &province::get_main_pos() const
+{
+	if (this->get_capital_holding_slot() != nullptr && this->get_capital_holding_slot()->get_pos().x() != -1 && this->get_capital_holding_slot()->get_pos().y() != -1) {
+		return this->get_capital_holding_slot()->get_pos();
+	}
+
+	return this->get_center_pos();
+}
+
+QPoint province::get_nearest_valid_pos(const QPoint &pos) const
+{
+	QPoint start_pos = this->rect.topLeft();
+	if (this->image.pixel(pos - start_pos) != qRgba(0, 0, 0, 0)) {
+		return pos; //the pos itself is already a valid position, so return the pos itself
+	}
+
+	//get the nearest position to a point that is actually a position inside the province
+
+	int offset = 0;
+	bool checked_valid_pos = true; //whether a valid position was checked in the loop
+
+	while (checked_valid_pos) {
+		offset++;
+		checked_valid_pos = false;
+
+		for (int x_offset = -offset; x_offset <= offset; ++x_offset) {
+			int y_offset = -(offset - std::abs(x_offset));
+
+			for (int y_offset_multiplier = -1; y_offset_multiplier <= 1; y_offset_multiplier += 2) {
+				y_offset *= y_offset_multiplier;
+
+				QPoint near_pos = pos + QPoint(x_offset, y_offset);
+				if (this->rect.contains(near_pos)) {
+					checked_valid_pos = true;
+
+					if (this->image.pixel(near_pos - start_pos) != qRgba(0, 0, 0, 0)) {
+						return near_pos;
+					}
+				}
+
+				// do the same with the inverted coordinate position of the offsets
+				near_pos = pos + QPoint(y_offset, x_offset);
+				if (this->rect.contains(near_pos)) {
+					checked_valid_pos = true;
+
+					if (this->image.pixel(near_pos - start_pos) != qRgba(0, 0, 0, 0)) {
+						return near_pos;
+					}
+				}
+
+				if (y_offset == 0) {
+					break; //no need to do it a second time if the y offset is 0
+				}
+			}
+		}
+	}
+
+	throw std::runtime_error("Could not find a nearest valid position for point (" + std::to_string(pos.x()) + ", " + std::to_string(pos.y()) + ") in province \"" + this->get_identifier() + "\".");
 }
 
 void province::set_trade_node_recalculation_needed(const bool recalculation_needed, const bool recalculate_for_dependent_provinces)

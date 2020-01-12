@@ -242,16 +242,7 @@ void map::process_geojson_coordinates(const QVariantList &coordinates, gsml_data
 		const double longitude = coordinate[0].toDouble();
 		const double latitude = coordinate[1].toDouble();
 
-		gsml_data coordinate_data;
-
-		std::ostringstream lon_string_stream;
-		lon_string_stream << std::setprecision(map::geojson_coordinate_precision) << longitude;
-		coordinate_data.add_value(lon_string_stream.str());
-
-		std::ostringstream lat_string_stream;
-		lat_string_stream << std::setprecision(map::geojson_coordinate_precision) << latitude;
-		coordinate_data.add_value(lat_string_stream.str());
-
+		gsml_data coordinate_data = gsml_data::from_geocoordinate<map::geocoordinate_precision>(longitude, latitude);
 		coordinate_list_data.add_child(std::move(coordinate_data));
 	}
 }

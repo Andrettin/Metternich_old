@@ -79,6 +79,7 @@ class province : public data_entry, public data_type<province>
 	Q_PROPERTY(bool selectable READ is_selectable CONSTANT)
 	Q_PROPERTY(QGeoCoordinate center_coordinate READ get_center_coordinate CONSTANT)
 	Q_PROPERTY(QPoint center_pos READ get_center_pos CONSTANT)
+	Q_PROPERTY(QPoint main_pos READ get_main_pos NOTIFY main_pos_changed)
 	Q_PROPERTY(QVariantList geopolygons READ get_geopolygons_qvariant_list CONSTANT)
 	Q_PROPERTY(QVariantList geopaths READ get_geopaths_qvariant_list CONSTANT)
 	Q_PROPERTY(bool always_write_geodata MEMBER always_write_geodata READ always_writes_geodata)
@@ -549,10 +550,13 @@ public:
 
 	QGeoCoordinate get_center_coordinate() const;
 
-	QPoint get_center_pos() const
+	const QPoint &get_center_pos() const
 	{
 		return this->center_pos;
 	}
+
+	const QPoint &get_main_pos() const;
+	QPoint get_nearest_valid_pos(const QPoint &pos) const;
 
 	bool always_writes_geodata() const
 	{
@@ -587,6 +591,7 @@ signals:
 	void settlement_holding_slots_changed();
 	void settlement_holdings_changed();
 	void capital_holding_slot_changed();
+	void main_pos_changed();
 	void trading_post_holding_slot_changed();
 	void technologies_changed();
 	void active_trade_routes_changed();

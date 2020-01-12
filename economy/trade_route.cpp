@@ -63,6 +63,8 @@ void trade_route::initialize()
 		if (path_element->get_previous().empty() || path_element->get_next().empty()) {
 			this->path_endpoints.insert(path_province);
 		}
+
+		connect(path_province, &province::main_pos_changed, this, &trade_route::path_branch_points_changed);
 	}
 
 	const province *endpoint_province = *this->path_endpoints.begin();
@@ -77,22 +79,22 @@ void trade_route::initialize()
 
 		for (const auto &kv_pair : this->path) {
 			const province *path_province = kv_pair.first;
-			const QPoint province_pos = path_province->get_center_pos();
+			const QRect &province_rect = path_province->get_rect();
 
-			if (top_left.x() == -1 || province_pos.x() < top_left.x()) {
-				top_left.setX(province_pos.x());
+			if (top_left.x() == -1 || province_rect.x() < top_left.x()) {
+				top_left.setX(province_rect.x());
 			}
 
-			if (top_left.y() == -1 || province_pos.y() < top_left.y()) {
-				top_left.setY(province_pos.y());
+			if (top_left.y() == -1 || province_rect.y() < top_left.y()) {
+				top_left.setY(province_rect.y());
 			}
 
-			if (bottom_right.x() == -1 || province_pos.x() > bottom_right.x()) {
-				bottom_right.setX(province_pos.x());
+			if (bottom_right.x() == -1 || province_rect.right() > bottom_right.x()) {
+				bottom_right.setX(province_rect.right());
 			}
 
-			if (bottom_right.y() == -1 || province_pos.y() > bottom_right.y()) {
-				bottom_right.setY(province_pos.y());
+			if (bottom_right.y() == -1 || province_rect.bottom() > bottom_right.y()) {
+				bottom_right.setY(province_rect.bottom());
 			}
 		}
 
@@ -157,7 +159,7 @@ QVariantList trade_route::get_path_branch_points_qvariant_list() const
 		QVariantList path_branch_points_qvariant_list;
 
 		for (const province *path_province : path_branch_provinces) {
-			path_branch_points_qvariant_list.append(path_province->get_center_pos() - this->get_rect().topLeft());
+			path_branch_points_qvariant_list.append(path_province->get_main_pos() - this->get_rect().topLeft());
 		}
 
 		path_points_qvariant_list.push_back(path_branch_points_qvariant_list);

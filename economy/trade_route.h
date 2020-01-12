@@ -99,6 +99,7 @@ public:
 
 signals:
 	void active_changed();
+	void path_branch_points_changed();
 
 private:
 	world *world = nullptr;

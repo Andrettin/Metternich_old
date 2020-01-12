@@ -3,6 +3,7 @@
 #include "database/gsml_data.h"
 #include "economy/trade_route.h"
 #include "engine_interface.h"
+#include "holding/holding_slot.h"
 #include "map/pathfinder.h"
 #include "map/province.h"
 #include "map/terrain_type.h"
@@ -298,25 +299,32 @@ void world::load_province_map()
 		province->set_border_pixels(kv_pair.second);
 	}
 
-	//add river crossings
 	for (province *world_province : this->get_provinces()) {
-		if (!world_province->is_river()) {
-			continue;
-		}
-
-		//add all of this province's border provinces to each other
-		for (province *border_province : world_province->get_border_provinces()) {
-			if (border_province->is_water()) {
-				continue;
-			}
-
-			for (province *other_border_province : world_province->get_border_provinces()) {
-				if (other_border_province->is_water()) {
+		//add river crossings
+		if (world_province->is_river()) {
+			//add all of this province's border provinces to each other
+			for (province *border_province : world_province->get_border_provinces()) {
+				if (border_province->is_water()) {
 					continue;
 				}
 
-				border_province->add_border_province(other_border_province);
-				other_border_province->add_border_province(border_province);
+				for (province *other_border_province : world_province->get_border_provinces()) {
+					if (other_border_province->is_water()) {
+						continue;
+					}
+
+					border_province->add_border_province(other_border_province);
+					other_border_province->add_border_province(border_province);
+				}
+			}
+		}
+
+		//transform holding slot geocoordinates into positions
+		for (holding_slot *slot : world_province->get_settlement_holding_slots()) {
+			if (slot->get_geocoordinate().isValid()) {
+				QPoint pos = this->get_coordinate_pos(slot->get_geocoordinate());
+				pos = slot->get_province()->get_nearest_valid_pos(pos);
+				slot->set_pos(pos);
 			}
 		}
 	}

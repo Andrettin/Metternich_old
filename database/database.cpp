@@ -320,6 +320,18 @@ QVariant database::process_gsml_scope_value(const gsml_data &scope, const QMetaP
 		}
 
 		new_property_value = scope.to_color();
+	} else if (property_type == QVariant::Point) {
+		if (scope.get_operator() != gsml_operator::assignment) {
+			throw std::runtime_error("Only the assignment operator is available for point properties.");
+		}
+
+		new_property_value = scope.to_point();
+	} else if (property_class_name == "QGeoCoordinate") {
+		if (scope.get_operator() != gsml_operator::assignment) {
+			throw std::runtime_error("Only the assignment operator is available for geocoordinate properties.");
+		}
+
+		new_property_value = QVariant::fromValue(scope.to_geocoordinate());
 	} else {
 		throw std::runtime_error("Invalid type for scope property \"" + std::string(property_name) + "\": \"" + std::string(meta_property.typeName()) + "\".");
 	}
@@ -335,9 +347,6 @@ database::~database()
 {
 }
 
-/**
-**	@brief	Load the database
-*/
 void database::load()
 {
 	engine_interface::get()->set_loading_message("Loading Database...");
@@ -377,9 +386,6 @@ void database::load()
 	}
 }
 
-/**
-**	@brief	Initialize the database
-*/
 void database::initialize()
 {
 	//initialize data entries for each data type

@@ -3,6 +3,9 @@
 #include "database/data_entry.h"
 #include "database/data_type.h"
 
+#include <QGeoCoordinate>
+#include <QPoint>
+
 #include <string>
 #include <vector>
 
@@ -26,6 +29,8 @@ class holding_slot : public data_entry, public data_type<holding_slot>
 	Q_PROPERTY(bool settlement READ is_settlement CONSTANT)
 	Q_PROPERTY(metternich::landed_title* barony READ get_barony WRITE set_barony NOTIFY barony_changed)
 	Q_PROPERTY(metternich::holding* holding READ get_holding NOTIFY holding_changed)
+	Q_PROPERTY(QGeoCoordinate geocoordinate MEMBER geocoordinate)
+	Q_PROPERTY(QPoint pos READ get_pos WRITE set_pos NOTIFY pos_changed)
 	Q_PROPERTY(int holding_size READ get_holding_size WRITE set_holding_size NOTIFY holding_size_changed)
 	Q_PROPERTY(QVariantList available_commodities READ get_available_commodities_qvariant_list NOTIFY available_commodities_changed)
 	Q_PROPERTY(bool population_distribution_allowed MEMBER population_distribution_allowed READ is_population_distribution_allowed)
@@ -54,6 +59,7 @@ public:
 	virtual void initialize_history() override;
 	virtual void check() const override;
 	virtual void check_history() const override;
+	virtual gsml_data get_cache_data() const override;
 
 	virtual std::string get_name() const override;
 
@@ -105,6 +111,26 @@ public:
 
 	void set_province(province *province);
 
+	const QPoint &get_pos() const
+	{
+		return this->pos;
+	}
+
+	void set_pos(const QPoint &pos)
+	{
+		if (pos == this->get_pos()) {
+			return;
+		}
+
+		this->pos = pos;
+		emit pos_changed();
+	}
+
+	const QGeoCoordinate &get_geocoordinate() const
+	{
+		return this->geocoordinate;
+	}
+
 	int get_holding_size() const
 	{
 		return this->holding_size;
@@ -152,6 +178,7 @@ public:
 signals:
 	void barony_changed();
 	void holding_changed();
+	void pos_changed();
 	void holding_size_changed();
 	void available_commodities_changed();
 	void active_trade_routes_changed();
@@ -162,6 +189,8 @@ private:
 	std::unique_ptr<holding> holding; //the holding built on this slot, if any
 	province *province = nullptr; //to which province this holding slot belongs
 	province_profile *province_profile = nullptr;
+	QGeoCoordinate geocoordinate;
+	QPoint pos = QPoint(-1, -1);
 	int holding_size = 100; //the holding size, which affects population capacity (100 = normal size)
 	std::vector<metternich::commodity *> available_commodities; //the commodities available for production by the holding (if any)
 	bool population_distribution_allowed = true;

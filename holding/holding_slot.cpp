@@ -9,6 +9,7 @@
 #include "map/province.h"
 #include "map/province_profile.h"
 #include "map/region.h"
+#include "map/world.h"
 #include "politics/government_type.h"
 #include "politics/government_type_group.h"
 #include "random.h"
@@ -86,6 +87,17 @@ void holding_slot::check_history() const
 	this->check();
 }
 
+gsml_data holding_slot::get_cache_data() const
+{
+	gsml_data cache_data(this->get_identifier(), gsml_operator::addition);
+
+	if (this->get_pos().x() != -1 && this->get_pos().y() != -1) {
+		cache_data.add_child(gsml_data::from_point(this->get_pos()));
+	}
+
+	return cache_data;
+}
+
 std::string holding_slot::get_name() const
 {
 	if (this->get_barony() != nullptr) {
@@ -116,21 +128,11 @@ std::vector<std::vector<std::string>> holding_slot::get_tag_suffix_list_with_fal
 	return tag_list_with_fallbacks;
 }
 
-/**
-**	@brief	Get whether the holding slot is a settlement one
-**
-**	@return	True if the holding slot is a settlement one, or false otherwise
-*/
 bool holding_slot::is_settlement() const
 {
 	return this->get_type() == holding_slot_type::settlement;
 }
 
-/**
-**	@brief	Set the holding slot's barony
-**
-**	@param	barony	The new barony for the holding slot
-*/
 void holding_slot::set_barony(landed_title *barony)
 {
 	if (barony == this->get_barony()) {
@@ -158,11 +160,6 @@ void holding_slot::set_province(metternich::province *province)
 	connect(province, &province::active_trade_routes_changed, this, &holding_slot::active_trade_routes_changed);
 }
 
-/**
-**	@brief	Get the holding slot's available commodities as a QVariantList
-**
-**	@return	The available commodities as a QVariantList
-*/
 QVariantList holding_slot::get_available_commodities_qvariant_list() const
 {
 	return container::to_qvariant_list(this->get_available_commodities());
@@ -174,9 +171,6 @@ void holding_slot::set_holding(std::unique_ptr<metternich::holding> &&holding)
 	emit holding_changed();
 }
 
-/**
-**	@brief	Generate a commodity for the holding slot to have as available to produce
-*/
 void holding_slot::generate_available_commodity()
 {
 	std::map<metternich::commodity *, const chance_factor<holding_slot> *> commodity_chances;

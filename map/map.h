@@ -20,7 +20,7 @@ enum class map_mode : int;
 class map : public singleton<map>
 {
 private:
-	static constexpr int geojson_coordinate_precision = 17;
+	static constexpr int geocoordinate_precision = 17;
 
 public:
 	map();
