@@ -153,6 +153,7 @@ signals:
 	void holding_changed();
 	void holding_size_changed();
 	void available_commodities_changed();
+	void trade_routes_changed();
 
 private:
 	holding_slot_type type; //the type of the holding slot

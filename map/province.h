@@ -459,15 +459,8 @@ public:
 		return this->trade_routes.contains(route);
 	}
 
-	void add_trade_route(trade_route *route)
-	{
-		this->trade_routes.insert(route);
-	}
-
-	void remove_trade_route(trade_route *route)
-	{
-		this->trade_routes.erase(route);
-	}
+	void add_trade_route(trade_route *route);
+	void remove_trade_route(trade_route *route);
 
 	long long int get_meters_distance_to(const province *other_province) const
 	{
@@ -576,6 +569,7 @@ signals:
 	void capital_holding_slot_changed();
 	void trading_post_holding_slot_changed();
 	void technologies_changed();
+	void trade_routes_changed();
 	void selected_changed();
 
 private:

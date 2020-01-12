@@ -1,5 +1,6 @@
 #include "economy/trade_node.h"
 
+#include "economy/trade_route.h"
 #include "history/history.h"
 #include "map/province.h"
 #include "translator.h"
@@ -74,6 +75,15 @@ void trade_node::set_active(const bool active)
 
 				province->calculate_trade_node();
 			}
+		}
+	}
+
+	//update the activity of trade routes which pass through this node
+	for (trade_route *route : this->trade_routes) {
+		if (active) {
+			route->calculate_active();
+		} else {
+			route->set_active(false);
 		}
 	}
 }

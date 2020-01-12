@@ -19,6 +19,7 @@ class trade_route : public data_entry, public data_type<trade_route>
 	Q_PROPERTY(QVariantList path READ get_path_qvariant_list CONSTANT)
 	Q_PROPERTY(QVariantList path_points READ get_path_points_qvariant_list CONSTANT)
 	Q_PROPERTY(QRect rect MEMBER rect READ get_rect CONSTANT)
+	Q_PROPERTY(bool active READ is_active NOTIFY active_changed)
 
 public:
 	trade_route(const std::string &identifier) : data_entry(identifier) {}
@@ -28,6 +29,7 @@ public:
 
 	virtual void process_gsml_scope(const gsml_data &scope) override;
 	virtual void initialize() override;
+	virtual void check() const override;
 	virtual gsml_data get_cache_data() const override;
 
 	const QGeoPath &get_geopath() const
@@ -45,6 +47,13 @@ public:
 
 	void set_world(world *world);
 
+	bool has_trade_node(trade_node *node) const
+	{
+		return this->trade_nodes.contains(node);
+	}
+
+	void add_trade_node(trade_node *node);
+
 	QVariantList get_path_qvariant_list() const;
 
 	void add_path_province(province *path_province);
@@ -57,11 +66,24 @@ public:
 		return this->rect;
 	}
 
+	bool is_active() const
+	{
+		return this->active;
+	}
+
+	void set_active(const bool active);
+	void calculate_active();
+
+signals:
+	void active_changed();
+
 private:
 	world *world = nullptr;
 	std::vector<province *> path;
+	std::set<trade_node *> trade_nodes;
 	QRect rect;
 	QGeoPath geopath;
+	bool active = false; //whether the trade route is active
 };
 
 }
