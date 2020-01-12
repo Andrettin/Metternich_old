@@ -716,7 +716,8 @@ void province::create_image(const std::vector<int> &pixel_indexes)
 
 	QPoint start_pos(-1, -1);
 	QPoint end_pos(-1, -1);
-	QPoint center_pos(0, 0);
+	long long int center_x = 0;
+	long long int center_y = 0;
 
 	for (const int index : pixel_indexes) {
 		QPoint pixel_pos = this->get_world()->get_pixel_pos(index);
@@ -734,10 +735,13 @@ void province::create_image(const std::vector<int> &pixel_indexes)
 			end_pos.setY(pixel_pos.y());
 		}
 
-		center_pos += pixel_pos;
+		center_x += pixel_pos.x();
+		center_y += pixel_pos.y();
 	}
 
-	center_pos /= this->pixel_count;
+	center_x /= this->pixel_count;
+	center_y /= this->pixel_count;
+	QPoint center_pos(static_cast<int>(center_x), static_cast<int>(center_y));
 
 	this->rect = QRect(start_pos, end_pos);
 
@@ -756,9 +760,11 @@ void province::create_image(const std::vector<int> &pixel_indexes)
 	if (this->image.pixel(center_pos - start_pos) == qRgba(0, 0, 0, 0)) {
 		int offset = 0;
 		bool found_pos = false;
+		bool checked_valid_pos = true; //whether a valid position was checked in the loop
 
-		while (!found_pos) {
+		while (!found_pos && checked_valid_pos) {
 			offset++;
+			checked_valid_pos = false;
 
 			for (int x_offset = -offset; x_offset <= offset; ++x_offset) {
 				int y_offset = -(offset - std::abs(x_offset));
@@ -767,18 +773,26 @@ void province::create_image(const std::vector<int> &pixel_indexes)
 					y_offset *= y_offset_multiplier;
 
 					QPoint near_pos = center_pos + QPoint(x_offset, y_offset);
-					if (this->image.pixel(near_pos - start_pos) != qRgba(0, 0, 0, 0)) {
-						center_pos = near_pos;
-						found_pos = true;
-						break;
+					if (this->rect.contains(near_pos)) {
+						checked_valid_pos = true;
+
+						if (this->image.pixel(near_pos - start_pos) != qRgba(0, 0, 0, 0)) {
+							center_pos = near_pos;
+							found_pos = true;
+							break;
+						}
 					}
 
 					// do the same with the inverted coordinate position of the offsets
 					near_pos = center_pos + QPoint(y_offset, x_offset);
-					if (this->image.pixel(near_pos - start_pos) != qRgba(0, 0, 0, 0)) {
-						center_pos = near_pos;
-						found_pos = true;
-						break;
+					if (this->rect.contains(near_pos)) {
+						checked_valid_pos = true;
+
+						if (this->image.pixel(near_pos - start_pos) != qRgba(0, 0, 0, 0)) {
+							center_pos = near_pos;
+							found_pos = true;
+							break;
+						}
 					}
 
 					if (y_offset == 0) {
