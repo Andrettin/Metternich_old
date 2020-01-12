@@ -739,7 +739,6 @@ void province::create_image(const std::vector<int> &pixel_indexes)
 
 	center_pos /= this->pixel_count;
 
-	this->center_pos = center_pos;
 	this->rect = QRect(start_pos, end_pos);
 
 	this->image = QImage(this->rect.size(), QImage::Format_Indexed8);
@@ -752,6 +751,49 @@ void province::create_image(const std::vector<int> &pixel_indexes)
 		QPoint pixel_pos = this->get_world()->get_pixel_pos(index) - this->rect.topLeft();
 		this->image.setPixel(pixel_pos, 1);
 	}
+
+	//if the center pos is outside the actual pixels of the province, change it to the nearest pixel actually in the province
+	if (this->image.pixel(center_pos - start_pos) == qRgba(0, 0, 0, 0)) {
+		int offset = 0;
+		bool found_pos = false;
+
+		while (!found_pos) {
+			offset++;
+
+			for (int x_offset = -offset; x_offset <= offset; ++x_offset) {
+				int y_offset = -(offset - std::abs(x_offset));
+
+				for (int y_offset_multiplier = -1; y_offset_multiplier <= 1; y_offset_multiplier += 2) {
+					y_offset *= y_offset_multiplier;
+
+					QPoint near_pos = center_pos + QPoint(x_offset, y_offset);
+					if (this->image.pixel(near_pos - start_pos) != qRgba(0, 0, 0, 0)) {
+						center_pos = near_pos;
+						found_pos = true;
+						break;
+					}
+
+					// do the same with the inverted coordinate position of the offsets
+					near_pos = center_pos + QPoint(y_offset, x_offset);
+					if (this->image.pixel(near_pos - start_pos) != qRgba(0, 0, 0, 0)) {
+						center_pos = near_pos;
+						found_pos = true;
+						break;
+					}
+
+					if (y_offset == 0) {
+						break; //no need to do it a second time if the y offset is 0
+					}
+				}
+
+				if (found_pos) {
+					break;
+				}
+			}
+		}
+	}
+
+	this->center_pos = center_pos;
 }
 
 void province::set_border_pixels(const std::vector<int> &pixel_indexes)
