@@ -1,6 +1,5 @@
 #include "map/map.h"
 
-#include "economy/trade_route.h"
 #include "engine_interface.h"
 #include "map/map_mode.h"
 #include "map/province.h"
@@ -32,7 +31,6 @@ void map::load()
 	if (cache_valid) {
 		engine_interface::get()->set_loading_message("Loading Map Cache...");
 		province::process_cache();
-		trade_route::process_cache();
 	} else {
 		engine_interface::get()->set_loading_message("Building Map Cache...");
 
@@ -47,7 +45,6 @@ void map::load()
 			//load map data for terrain types and provinces
 			world->process_province_map_database();
 			world->process_terrain_map_database();
-			world->process_trade_route_map_database();
 
 			world->write_geodata_to_image();
 		}
@@ -62,16 +59,9 @@ void map::load()
 	for (world *world : world::get_all()) {
 		world->load_terrain_map();
 		world->load_province_map();
-		//load the trade route map database even if the cache is valid, to use the geopaths to draw the routes on the map
-		world->process_trade_route_map_database();
 	}
 
 	if (!cache_valid) {
-		engine_interface::get()->set_loading_message("Calculating Trade Route Paths...");
-		for (world *world : world::get_all()) {
-			world->calculate_trade_route_paths_from_geopaths();
-		}
-
 		engine_interface::get()->set_loading_message("Saving Cache...");
 		this->save_cache();
 	}
@@ -363,7 +353,6 @@ void map::save_cache()
 	ofstream.close();
 
 	province::save_cache();
-	trade_route::save_cache();
 }
 
 }

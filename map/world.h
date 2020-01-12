@@ -126,7 +126,6 @@ public:
 	void process_terrain_map_database();
 	void process_terrain_gsml_data(const terrain_type *terrain, const gsml_data &data);
 	void process_terrain_gsml_scope(const terrain_type *terrain, const gsml_data &scope);
-	void process_trade_route_map_database();
 
 	void load_province_map();
 	void load_terrain_map();
@@ -136,8 +135,6 @@ public:
 	void write_province_geodata_to_image(QImage &province_image, QImage &terrain_image);
 	void write_terrain_geoshape_to_image(const terrain_type *terrain, QImage &image, const QGeoShape &geoshape);
 	void write_terrain_geopath_endpoints_to_image(QImage &image);
-
-	void calculate_trade_route_paths_from_geopaths();
 
 	QString get_loading_message_name() const
 	{

@@ -16,8 +16,6 @@ void trade_route::process_gsml_scope(const gsml_data &scope)
 			province *path_province = province::get(province_identifier);
 			this->add_path_province(path_province);
 		}
-	} else if (tag == "geopath") {
-		this->set_geopath(scope.to_geopath());
 	} else {
 		data_entry_base::process_gsml_scope(scope);
 	}
@@ -75,77 +73,6 @@ void trade_route::initialize()
 	}
 }
 
-void trade_route::check() const
-{
-	const province *start_province = this->path.front();
-
-	if (!start_province->is_center_of_trade()) {
-		throw std::runtime_error("The path of trade route \"" + this->get_identifier() + "\" does not start with a center of trade.");
-	}
-
-	const province *end_province = this->path.back();
-
-	if (!end_province->is_center_of_trade()) {
-		throw std::runtime_error("The path of trade route \"" + this->get_identifier() + "\" does not end with a center of trade.");
-	}
-}
-
-gsml_data trade_route::get_cache_data() const
-{
-	gsml_data cache_data(this->get_identifier());
-
-	gsml_data path("path");
-
-	for (const province *path_province : this->path) {
-		path.add_value(path_province->get_identifier());
-	}
-
-	cache_data.add_child(std::move(path));
-
-	return cache_data;
-}
-
-void trade_route::set_geopath(const QGeoPath &geopath)
-{
-	if (geopath == this->get_geopath()) {
-		return;
-	}
-
-	this->geopath = geopath;
-
-	if (!this->geopath.isValid()) {
-		throw std::runtime_error("Tried to set an invalid geopath for trade route \"" + this->get_identifier() + "\".");
-	}
-
-	const QGeoRectangle georectangle = this->geopath.boundingGeoRectangle();
-	this->rect = this->get_world()->get_georectangle_rect(georectangle);
-}
-
-void trade_route::calculate_path_from_geopath()
-{
-	if (!this->geopath.isValid()) {
-		return;
-	}
-
-	this->clear_path();
-
-	for (const QGeoCoordinate &coordinate : this->geopath.path()) {
-		province *path_province = this->get_world()->get_coordinate_province(coordinate);
-
-		if (path_province == nullptr) {
-			continue; //ignore positions passed through by the trade route that don't have provinces
-		}
-
-		if (path_province->is_river()) {
-			continue; //ignore rivers
-		}
-
-		if (this->path.empty() || path_province != this->path.back()) {
-			this->add_path_province(path_province);
-		}
-	}
-}
-
 void trade_route::set_world(metternich::world *world)
 {
 	if (world == this->get_world()) {
@@ -175,14 +102,8 @@ QVariantList trade_route::get_path_points_qvariant_list() const
 {
 	QVariantList path_points;
 
-	if (this->get_geopath().isValid()) {
-		for (const QGeoCoordinate &coordinate : this->geopath.path()) {
-			path_points.append(this->get_world()->get_coordinate_pos(coordinate) - this->get_rect().topLeft());
-		}
-	} else {
-		for (province *path_province : this->path) {
-			path_points.append(path_province->get_center_pos() - this->get_rect().topLeft());
-		}
+	for (province *path_province : this->path) {
+		path_points.append(path_province->get_center_pos() - this->get_rect().topLeft());
 	}
 
 	return path_points;

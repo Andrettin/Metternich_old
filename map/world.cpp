@@ -199,17 +199,6 @@ void world::process_terrain_gsml_scope(const terrain_type *terrain, const gsml_d
 	}
 }
 
-void world::process_trade_route_map_database()
-{
-	std::vector<gsml_data> gsml_map_data_to_process = this->parse_data_type_map_database<trade_route>();
-
-	for (gsml_data &data : gsml_map_data_to_process) {
-		trade_route *route = trade_route::get(data.get_tag());
-		route->set_world(this);
-		database::process_gsml_data<metternich::trade_route>(route, data);
-	}
-}
-
 void world::load_province_map()
 {
 	engine_interface::get()->set_loading_message("Loading " + this->get_loading_message_name() + " Provinces... (0%)");
@@ -539,13 +528,6 @@ void world::write_province_geodata_to_image(QImage &province_image, QImage &terr
 		if (!province_image_rgbs.contains(province->get_color().rgb()) || province->always_writes_geodata()) {
 			province->write_geopath_endpoints_to_image(province_image, terrain_image);
 		}
-	}
-}
-
-void world::calculate_trade_route_paths_from_geopaths()
-{
-	for (trade_route *route : this->trade_routes) {
-		route->calculate_path_from_geopath();
 	}
 }
 

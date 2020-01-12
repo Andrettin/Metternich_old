@@ -3,7 +3,6 @@
 #include "database/data_entry.h"
 #include "database/data_type.h"
 
-#include <QGeoPath>
 #include <QRect>
 
 namespace metternich {
@@ -28,16 +27,6 @@ public:
 
 	virtual void process_gsml_scope(const gsml_data &scope) override;
 	virtual void initialize() override;
-	virtual void check() const override;
-	virtual gsml_data get_cache_data() const override;
-
-	const QGeoPath &get_geopath() const
-	{
-		return this->geopath;
-	}
-
-	void set_geopath(const QGeoPath &geopath);
-	void calculate_path_from_geopath();
 
 	world *get_world() const
 	{
@@ -78,7 +67,6 @@ private:
 	world *world = nullptr;
 	std::vector<province *> path;
 	QRect rect;
-	QGeoPath geopath;
 	bool active = false; //whether the trade route is active
 };
 
