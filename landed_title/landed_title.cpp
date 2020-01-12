@@ -6,6 +6,7 @@
 #include "culture/culture_group.h"
 #include "defines.h"
 #include "economy/trade_node.h"
+#include "economy/trade_route.h"
 #include "game/game.h"
 #include "history/history.h"
 #include "holding/holding.h"
@@ -384,6 +385,17 @@ void landed_title::set_holder(character *character)
 
 			if (this->get_province()->is_center_of_trade()) {
 				this->get_province()->get_trade_node()->set_active(character != nullptr);
+			}
+
+			//update the activity of trade routes which pass through this province
+			for (trade_route *route : this->get_province()->get_trade_routes()) {
+				if (route->is_endpoint(this->get_province())) {
+					if (character != nullptr) {
+						route->calculate_active();
+					} else {
+						route->set_active(false);
+					}
+				}
 			}
 		} else if (old_realm != realm) {
 			this->get_province()->set_trade_node_recalculation_needed(true);

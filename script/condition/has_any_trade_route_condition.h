@@ -25,11 +25,6 @@ public:
 		return scope->has_any_trade_route();
 	}
 
-	virtual void bind_condition_check(condition_check<T> &check, const T *scope) const override
-	{
-		scope->connect(scope, &T::trade_routes_changed, scope, [&check](){ check.set_result_recalculation_needed(); }, Qt::ConnectionType::DirectConnection);
-	}
-
 private:
 	bool has_any_trade_route = false;
 };

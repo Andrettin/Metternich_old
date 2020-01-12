@@ -9,7 +9,6 @@
 namespace metternich {
 
 class province;
-class trade_node;
 class world;
 
 class trade_route : public data_entry, public data_type<trade_route>
@@ -47,19 +46,17 @@ public:
 
 	void set_world(world *world);
 
-	bool has_trade_node(trade_node *node) const
-	{
-		return this->trade_nodes.contains(node);
-	}
-
-	void add_trade_node(trade_node *node);
-
 	QVariantList get_path_qvariant_list() const;
 
 	void add_path_province(province *path_province);
 	void clear_path();
 
 	QVariantList get_path_points_qvariant_list() const;
+
+	bool is_endpoint(const province *province) const
+	{
+		return path.front() == province || path.back() == province;
+	}
 
 	const QRect &get_rect() const
 	{
@@ -80,7 +77,6 @@ signals:
 private:
 	world *world = nullptr;
 	std::vector<province *> path;
-	std::set<trade_node *> trade_nodes;
 	QRect rect;
 	QGeoPath geopath;
 	bool active = false; //whether the trade route is active

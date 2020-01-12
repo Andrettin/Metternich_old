@@ -410,7 +410,7 @@ public:
 
 	bool can_have_trading_post() const
 	{
-		return this->is_coastal() || this->has_any_trade_route();
+		return this->is_coastal() || this->has_any_active_trade_route();
 	}
 
 	const technology_set &get_technologies() const
@@ -449,6 +449,11 @@ public:
 		emit trade_node_trade_cost_changed();
 	}
 
+	const std::set<trade_route *> &get_trade_routes() const
+	{
+		return this->trade_routes;
+	}
+
 	bool has_any_trade_route() const
 	{
 		return !this->trade_routes.empty();
@@ -459,8 +464,23 @@ public:
 		return this->trade_routes.contains(route);
 	}
 
-	void add_trade_route(trade_route *route);
-	void remove_trade_route(trade_route *route);
+	void add_trade_route(trade_route *route)
+	{
+		this->trade_routes.insert(route);
+	}
+
+	void remove_trade_route(trade_route *route)
+	{
+		this->trade_routes.erase(route);
+	}
+
+	bool has_any_active_trade_route() const
+	{
+		return !this->active_trade_routes.empty();
+	}
+
+	void add_active_trade_route(trade_route *route);
+	void remove_active_trade_route(trade_route *route);
 
 	long long int get_meters_distance_to(const province *other_province) const
 	{
@@ -569,7 +589,7 @@ signals:
 	void capital_holding_slot_changed();
 	void trading_post_holding_slot_changed();
 	void technologies_changed();
-	void trade_routes_changed();
+	void active_trade_routes_changed();
 	void selected_changed();
 
 private:
@@ -603,6 +623,7 @@ private:
 	std::set<province *> border_provinces; //provinces bordering this one
 	technology_set technologies; //the technologies acquired for the province
 	std::set<trade_route *> trade_routes; //the trade routes going through the province
+	std::set<trade_route *> active_trade_routes; //the active trade routes going through the province
 	int trade_node_trade_cost = 0;
 	std::vector<qunique_ptr<population_unit>> population_units; //population units set for this province in history, used during initialization to generate population units in the province's settlements
 	std::map<population_type *, int> population_per_type; //the population for each population type

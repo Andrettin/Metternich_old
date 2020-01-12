@@ -413,6 +413,7 @@ public:
 	}
 
 	bool has_any_trade_route() const;
+	bool has_any_active_trade_route() const;
 
 	bool is_selected() const
 	{
@@ -455,7 +456,7 @@ signals:
 	void commodity_changed();
 	void culture_changed();
 	void religion_changed();
-	void trade_routes_changed();
+	void active_trade_routes_changed();
 	void selected_changed();
 
 private:

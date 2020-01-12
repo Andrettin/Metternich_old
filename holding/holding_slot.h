@@ -147,13 +147,14 @@ public:
 	}
 
 	bool has_any_trade_route() const;
+	bool has_any_active_trade_route() const;
 
 signals:
 	void barony_changed();
 	void holding_changed();
 	void holding_size_changed();
 	void available_commodities_changed();
-	void trade_routes_changed();
+	void active_trade_routes_changed();
 
 private:
 	holding_slot_type type; //the type of the holding slot

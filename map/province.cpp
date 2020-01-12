@@ -1474,20 +1474,20 @@ bool province::is_center_of_trade() const
 	return this->get_trade_node() != nullptr && this->get_trade_node()->get_center_of_trade() == this;
 }
 
-void province::add_trade_route(trade_route *route)
+void province::add_active_trade_route(trade_route *route)
 {
-	this->trade_routes.insert(route);
-	emit trade_routes_changed();
+	this->active_trade_routes.insert(route);
+	emit active_trade_routes_changed();
 
 	if (this->can_have_trading_post() && this->get_trading_post_holding_slot() == nullptr) {
 		this->create_trading_post_holding_slot();
 	}
 }
 
-void province::remove_trade_route(trade_route *route)
+void province::remove_active_trade_route(trade_route *route)
 {
-	this->trade_routes.erase(route);
-	emit trade_routes_changed();
+	this->active_trade_routes.erase(route);
+	emit active_trade_routes_changed();
 
 	if (!this->can_have_trading_post() && this->get_trading_post_holding_slot() != nullptr) {
 		this->destroy_trading_post_holding_slot();

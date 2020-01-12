@@ -13,6 +13,7 @@
 #include "script/condition/borders_water_condition.h"
 #include "script/condition/commodity_condition.h"
 #include "script/condition/culture_condition.h"
+#include "script/condition/has_any_active_trade_route_condition.h"
 #include "script/condition/has_any_trade_route_condition.h"
 #include "script/condition/has_building_condition.h"
 #include "script/condition/has_law_condition.h"
@@ -78,7 +79,9 @@ std::unique_ptr<condition<T>> condition<T>::from_gsml_property(const gsml_proper
 	}
 
 	if constexpr (std::is_same_v<T, holding> || std::is_same_v<T, holding_slot> || std::is_same_v<T, province>) {
-		if (condition_identifier == "has_any_trade_route") {
+		if (condition_identifier == "has_any_active_trade_route") {
+			return std::make_unique<has_any_active_trade_route_condition<T>>(string::to_bool(property.get_value()));
+		} else if (condition_identifier == "has_any_trade_route") {
 			return std::make_unique<has_any_trade_route_condition<T>>(string::to_bool(property.get_value()));
 		}
 	}

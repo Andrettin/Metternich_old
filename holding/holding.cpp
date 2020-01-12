@@ -54,7 +54,7 @@ holding::holding(metternich::holding_slot *slot, holding_type *type) : data_entr
 		}
 	}
 
-	connect(slot, &holding_slot::trade_routes_changed, this, &holding::trade_routes_changed);
+	connect(slot, &holding_slot::active_trade_routes_changed, this, &holding::active_trade_routes_changed);
 	connect(this, &holding::type_changed, this, &holding::titled_name_changed);
 	connect(this, &holding::type_changed, this, &holding::portrait_path_changed);
 	connect(this, &holding::culture_changed, this, &holding::portrait_path_changed);
@@ -692,6 +692,11 @@ void holding::set_employment_workforce(const employment_type *employment_type, c
 bool holding::has_any_trade_route() const
 {
 	return this->get_slot()->has_any_trade_route();
+}
+
+bool holding::has_any_active_trade_route() const
+{
+	return this->get_slot()->has_any_active_trade_route();
 }
 
 void holding::set_selected(const bool selected, const bool notify_engine_interface)
