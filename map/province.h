@@ -409,6 +409,11 @@ public:
 	bool is_ocean() const;
 	bool is_river() const;
 
+	bool is_land() const
+	{
+		return !this->is_water();
+	}
+
 	bool can_have_trading_post() const
 	{
 		return this->is_coastal() || this->has_any_active_trade_route();
@@ -482,6 +487,8 @@ public:
 
 	void add_active_trade_route(trade_route *route);
 	void remove_active_trade_route(trade_route *route);
+	bool has_trade_route_connection_to(const province *other_province) const;
+	bool has_any_trade_route_land_connection() const;
 
 	long long int get_meters_distance_to(const province *other_province) const
 	{

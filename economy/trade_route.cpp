@@ -10,6 +10,86 @@
 
 namespace metternich {
 
+
+class trade_route::path_element
+{
+public:
+	path_element(province *province) : province(province)
+	{
+	}
+
+	province *get_province() const
+	{
+		return this->province;
+	}
+
+	bool has_connection_to(const province *province) const
+	{
+		for (const path_element *element : this->get_previous()) {
+			if (element->get_province() == province) {
+				return true;
+			}
+		}
+
+		for (const path_element *element : this->get_next()) {
+			if (element->get_province() == province) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	bool has_any_land_connection() const
+	{
+		for (const path_element *element : this->get_previous()) {
+			if (element->get_province()->is_land()) {
+				return true;
+			}
+		}
+
+		for (const path_element *element : this->get_next()) {
+			if (element->get_province()->is_land()) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	const std::set<path_element *> &get_previous() const
+	{
+		return this->previous;
+	}
+
+	void add_to_previous(path_element *element)
+	{
+		this->previous.insert(element);
+
+		if (!element->next.contains(this)) {
+			element->next.insert(this);
+		}
+	}
+
+	const std::set<path_element *> &get_next() const
+	{
+		return this->next;
+	}
+
+private:
+	province *province = nullptr; //the province for this path element
+	std::set<path_element *> previous; //path elements immediately preceding this one
+	std::set<path_element *> next; //path elements immediately succeeding this one
+};
+
+trade_route::trade_route(const std::string &identifier) : data_entry(identifier)
+{
+}
+
+trade_route::~trade_route()
+{
+}
+
 void trade_route::process_gsml_scope(const gsml_data &scope)
 {
 	const std::string &tag = scope.get_tag();
@@ -54,15 +134,14 @@ void trade_route::initialize()
 		throw std::runtime_error("The path of trade route \"" + this->get_identifier() + "\" consists of only one province.");
 	}
 
-	for (const auto &kv_pair : this->path) {
-		province *path_province = kv_pair.first;
+	for (province *path_province : this->provinces) {
 		if (path_province == nullptr) {
 			throw std::runtime_error("The path of trade route \"" + this->get_identifier() + "\" contains a null province.");
 		}
 
 		path_province->add_trade_route(this);
 
-		trade_route_path_element *path_element = kv_pair.second.get();
+		trade_route::path_element *path_element = this->get_province_path_element(path_province);
 		if (path_element->get_previous().empty() || path_element->get_next().empty()) {
 			this->path_endpoints.insert(path_province);
 		}
@@ -117,7 +196,7 @@ void trade_route::set_world(metternich::world *world)
 
 QVariantList trade_route::get_path_qvariant_list() const
 {
-	return container::to_qvariant_list(map::get_keys(this->path));
+	return container::to_qvariant_list(this->provinces);
 }
 
 void trade_route::add_path_branch(const std::vector<province *> &path_branch)
@@ -127,12 +206,14 @@ void trade_route::add_path_branch(const std::vector<province *> &path_branch)
 	for (size_t i = 0; i < path_branch.size(); ++i) {
 		province *path_province = path_branch[i];
 
-		trade_route_path_element *path_element = nullptr;
+		this->provinces.insert(path_province);
+
+		trade_route::path_element *path_element = nullptr;
 		auto find_iterator = this->path.find(path_province);
 		if (find_iterator != this->path.end()) {
 			path_element = find_iterator->second.get();
 		} else {
-			auto new_path_element = std::make_unique<trade_route_path_element>(path_province);
+			auto new_path_element = std::make_unique<trade_route::path_element>(path_province);
 			path_element = new_path_element.get();
 			this->path[path_province] = std::move(new_path_element);
 		}
@@ -189,6 +270,16 @@ QVariantList trade_route::get_path_branch_points_qvariant_list() const
 	return path_points_qvariant_list;
 }
 
+bool trade_route::has_connection_between(const province *source_province, const province *target_province) const
+{
+	return this->get_province_path_element(source_province)->has_connection_to(target_province);
+}
+
+bool trade_route::has_any_land_connection_for_province(const province *province) const
+{
+	return this->get_province_path_element(province)->has_any_land_connection();
+}
+
 void trade_route::set_active(const bool active)
 {
 	if (active == this->is_active()) {
@@ -198,8 +289,7 @@ void trade_route::set_active(const bool active)
 	this->active = active;
 	emit active_changed();
 
-	for (const auto &kv_pair : this->path) {
-		province *path_province = kv_pair.first;
+	for (province *path_province : this->provinces) {
 		if (active) {
 			path_province->add_active_trade_route(this);
 		} else {

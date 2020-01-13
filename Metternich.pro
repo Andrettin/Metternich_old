@@ -169,6 +169,7 @@ HEADERS += \
     script/condition/culture_condition.h \
     script/condition/has_any_active_trade_route_condition.h \
     script/condition/has_any_trade_route_condition.h \
+    script/condition/has_any_trade_route_land_connection_condition.h \
     script/condition/has_building_condition.h \
     script/condition/has_law_condition.h \
     script/condition/has_technology_condition.h \

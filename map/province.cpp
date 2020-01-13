@@ -6,6 +6,7 @@
 #include "database/gsml_property.h"
 #include "defines.h"
 #include "economy/trade_node.h"
+#include "economy/trade_route.h"
 #include "engine_interface.h"
 #include "game/game.h"
 #include "history/history.h"
@@ -1524,6 +1525,32 @@ void province::remove_active_trade_route(trade_route *route)
 	if (!this->can_have_trading_post() && this->get_trading_post_holding_slot() != nullptr) {
 		this->destroy_trading_post_holding_slot();
 	}
+}
+
+bool province::has_trade_route_connection_to(const province *other_province) const
+{
+	for (trade_route *route : this->active_trade_routes) {
+		if (!other_province->has_trade_route(route)) {
+			continue;
+		}
+
+		if (route->has_connection_between(this, other_province)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool province::has_any_trade_route_land_connection() const
+{
+	for (trade_route *route : this->active_trade_routes) {
+		if (route->has_any_land_connection_for_province(this)) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void province::set_selected(const bool selected, const bool notify_engine_interface)

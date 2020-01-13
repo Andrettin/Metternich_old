@@ -10,45 +10,10 @@ namespace metternich {
 class province;
 class world;
 
-class trade_route_path_element
-{
-public:
-	trade_route_path_element(province *province) : province(province)
-	{
-	}
-
-	province *get_province() const
-	{
-		return this->province;
-	}
-
-	const std::set<trade_route_path_element *> &get_previous() const
-	{
-		return this->previous;
-	}
-
-	void add_to_previous(trade_route_path_element *element)
-	{
-		this->previous.insert(element);
-
-		if (!element->next.contains(this)) {
-			element->next.insert(this);
-		}
-	}
-
-	const std::set<trade_route_path_element *> &get_next() const
-	{
-		return this->next;
-	}
-
-private:
-	province *province = nullptr; //the province for this path element
-	std::set<trade_route_path_element *> previous; //path elements immediately preceding this one
-	std::set<trade_route_path_element *> next; //path elements immediately succeeding this one
-};
-
 class trade_route : public data_entry, public data_type<trade_route>
 {
+	class path_element;
+
 	Q_OBJECT
 
 	Q_PROPERTY(QVariantList path READ get_path_qvariant_list CONSTANT)
@@ -57,7 +22,8 @@ class trade_route : public data_entry, public data_type<trade_route>
 	Q_PROPERTY(bool active READ is_active NOTIFY active_changed)
 
 public:
-	trade_route(const std::string &identifier) : data_entry(identifier) {}
+	trade_route(const std::string &identifier);
+	virtual ~trade_route() override;
 
 	static constexpr const char *class_identifier = "trade_route";
 	static constexpr const char *database_folder = "trade_routes";
@@ -84,6 +50,9 @@ public:
 		return this->path_endpoints.contains(province);
 	}
 
+	bool has_connection_between(const province *source_province, const province *target_province) const;
+	bool has_any_land_connection_for_province(const province *province) const;
+
 	const QRect &get_rect() const
 	{
 		return this->rect;
@@ -97,13 +66,26 @@ public:
 	void set_active(const bool active);
 	void calculate_active();
 
+private:
+	path_element *get_province_path_element(const province *province) const
+	{
+		auto find_iterator = this->path.find(province);
+
+		if (find_iterator != this->path.end()) {
+			return find_iterator->second.get();
+		}
+
+		throw std::runtime_error("No path element in trade route \"" + this->get_identifier() + "\" found for province.");
+	}
+
 signals:
 	void active_changed();
 	void path_branch_points_changed();
 
 private:
 	world *world = nullptr;
-	std::map<province *, std::unique_ptr<trade_route_path_element>> path;
+	std::set<province *> provinces; //the provinces through which the trade route passes
+	std::map<const province *, std::unique_ptr<path_element>> path;
 	std::set<const province *> path_endpoints;
 	std::vector<std::vector<const province *>> path_branch_provinces; //used to draw the trade route
 	QRect rect;

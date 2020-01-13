@@ -699,6 +699,11 @@ bool holding::has_any_active_trade_route() const
 	return this->get_slot()->has_any_active_trade_route();
 }
 
+bool holding::has_any_trade_route_land_connection() const
+{
+	return this->get_slot()->has_any_trade_route_land_connection();
+}
+
 void holding::set_selected(const bool selected, const bool notify_engine_interface)
 {
 	if (selected == this->is_selected()) {

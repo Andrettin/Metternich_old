@@ -174,6 +174,7 @@ public:
 
 	bool has_any_trade_route() const;
 	bool has_any_active_trade_route() const;
+	bool has_any_trade_route_land_connection() const;
 
 signals:
 	void barony_changed();

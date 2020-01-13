@@ -194,4 +194,9 @@ bool holding_slot::has_any_active_trade_route() const
 	return this->get_province()->has_any_active_trade_route();
 }
 
+bool holding_slot::has_any_trade_route_land_connection() const
+{
+	return this->get_province()->has_any_trade_route_land_connection();
+}
+
 }
