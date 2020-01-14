@@ -2,18 +2,24 @@
 
 #include "history/history.h"
 #include "map/province.h"
+#include "map/world.h"
 #include "translator.h"
 
 namespace metternich {
+
+void trade_node::initialize()
+{
+	if (this->get_center_of_trade() == nullptr) {
+		throw std::runtime_error("Trade node \"" + this->get_identifier() + "\" has no center of trade province.");
+	}
+
+	this->get_world()->add_trade_node(this);
+}
 
 void trade_node::check() const
 {
 	if (!this->get_color().isValid()) {
 		throw std::runtime_error("Trade node \"" + this->get_identifier() + "\" has no valid color.");
-	}
-
-	if (this->get_center_of_trade() == nullptr) {
-		throw std::runtime_error("Trade node \"" + this->get_identifier() + "\" has no center of trade province.");
 	}
 
 	if (this->get_center_of_trade()->get_trade_node() == nullptr) {
@@ -51,9 +57,9 @@ void trade_node::set_active(const bool active)
 	this->active = active;
 
 	if (active) {
-		trade_node::active_trade_nodes.insert(this);
+		this->get_world()->add_active_trade_node(this);
 	} else {
-		trade_node::active_trade_nodes.erase(this);
+		this->get_world()->remove_active_trade_node(this);
 	}
 
 	if (!history::get()->is_loading()) {

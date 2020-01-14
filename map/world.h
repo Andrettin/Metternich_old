@@ -11,6 +11,7 @@ namespace metternich {
 class pathfinder;
 class province;
 class terrain_type;
+class trade_node;
 class trade_route;
 
 class world : public data_entry, public data_type<world>
@@ -19,6 +20,7 @@ class world : public data_entry, public data_type<world>
 
 	Q_PROPERTY(int surface_area MEMBER surface_area READ get_surface_area)
 	Q_PROPERTY(QVariantList provinces READ get_provinces_qvariant_list CONSTANT)
+	Q_PROPERTY(QVariantList trade_nodes READ get_trade_nodes_qvariant_list CONSTANT)
 	Q_PROPERTY(QVariantList trade_routes READ get_trade_routes_qvariant_list CONSTANT)
 	Q_PROPERTY(QString cache_path READ get_cache_path_qstring CONSTANT)
 
@@ -47,12 +49,35 @@ public:
 		return this->provinces;
 	}
 
+	QVariantList get_provinces_qvariant_list() const;
+
+	void add_trade_node(trade_node *node)
+	{
+		this->trade_nodes.insert(node);
+	}
+
+	QVariantList get_trade_nodes_qvariant_list() const;
+
+	const std::set<trade_node *> &get_active_trade_nodes() const
+	{
+		return this->active_trade_nodes;
+	}
+
+	void add_active_trade_node(trade_node *node)
+	{
+		this->active_trade_nodes.insert(node);
+	}
+
+	void remove_active_trade_node(trade_node *node)
+	{
+		this->active_trade_nodes.erase(node);
+	}
+
 	void add_trade_route(trade_route *route)
 	{
 		this->trade_routes.insert(route);
 	}
 
-	QVariantList get_provinces_qvariant_list() const;
 	QVariantList get_trade_routes_qvariant_list() const;
 
 	std::filesystem::path get_cache_path() const
@@ -157,7 +182,9 @@ private:
 private:
 	int surface_area = 0; //the world's surface area, in square kilometers
 	std::set<province *> provinces;
-	std::set<trade_route *> trade_routes; //the trade routes which exist in the world
+	std::set<trade_node *> trade_nodes; //the trade nodes in the world
+	std::set<trade_node *> active_trade_nodes; //the active trade nodes in the world
+	std::set<trade_route *> trade_routes; //the trade routes in the world
 	QSize pixel_size = QSize(0, 0); //the size of the world, in pixels
 	QImage terrain_image;
 	QImage province_image;

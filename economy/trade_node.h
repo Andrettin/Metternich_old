@@ -25,15 +25,10 @@ public:
 	static constexpr const char *class_identifier = "trade_node";
 	static constexpr const char *database_folder = "trade_nodes";
 
-	static const std::set<trade_node *> &get_all_active()
-	{
-		return trade_node::active_trade_nodes;
-	}
-
 private:
-	static inline std::set<trade_node *> active_trade_nodes;
 
 public:
+	virtual void initialize() override;
 	virtual void check() const override;
 	
 	virtual std::string get_name() const override;

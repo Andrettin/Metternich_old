@@ -1,6 +1,7 @@
 #include "map/world.h"
 
 #include "database/gsml_data.h"
+#include "economy/trade_node.h"
 #include "economy/trade_route.h"
 #include "engine_interface.h"
 #include "holding/holding_slot.h"
@@ -40,6 +41,11 @@ void world::initialize()
 QVariantList world::get_provinces_qvariant_list() const
 {
 	return container::to_qvariant_list(this->get_provinces());
+}
+
+QVariantList world::get_trade_nodes_qvariant_list() const
+{
+	return container::to_qvariant_list(this->trade_nodes);
 }
 
 QVariantList world::get_trade_routes_qvariant_list() const

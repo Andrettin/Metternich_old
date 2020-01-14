@@ -562,7 +562,7 @@ void province::calculate_trade_node()
 		return;
 	}
 
-	std::pair<metternich::trade_node *, int> best_trade_node_result = this->get_best_trade_node_from_list(trade_node::get_all_active());
+	std::pair<metternich::trade_node *, int> best_trade_node_result = this->get_best_trade_node_from_list(this->get_world()->get_active_trade_nodes());
 	this->set_trade_node(best_trade_node_result.first);
 	this->set_trade_node_trade_cost(best_trade_node_result.second);
 }
@@ -572,11 +572,7 @@ std::pair<trade_node *, int> province::get_best_trade_node_from_list(const std::
 	std::vector<metternich::trade_node *> sorted_trade_nodes = container::to_vector(trade_nodes);
 
 	std::sort(sorted_trade_nodes.begin(), sorted_trade_nodes.end(), [this](const metternich::trade_node *a, const metternich::trade_node *b) {
-		if (a->get_world() == this->get_world() && b->get_world() == this->get_world()) {
-			return this->get_kilometers_distance_to(a->get_center_of_trade()) < this->get_kilometers_distance_to(b->get_center_of_trade());
-		}
-
-		return a < b;
+		return this->get_kilometers_distance_to(a->get_center_of_trade()) < this->get_kilometers_distance_to(b->get_center_of_trade());
 	});
 
 	metternich::trade_node *best_node = nullptr;
