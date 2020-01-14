@@ -27,10 +27,16 @@ public:
 	static constexpr const char *database_folder = "trade_nodes";
 
 private:
+	static inline const std::vector<province *> empty_path;
 
 public:
 	virtual void initialize() override;
 	virtual void check() const override;
+
+	virtual void initialize_history() override
+	{
+		this->calculate_trade_paths();
+	}
 	
 	virtual std::string get_name() const override;
 
@@ -68,22 +74,35 @@ public:
 		this->provinces.erase(province);
 	}
 
-	const std::set<trade_node *> &get_trade_nodes() const
+	world *get_world() const;
+
+	const std::vector<province *> &get_trade_path(const trade_node *other_node) const
 	{
-		return this->trade_nodes;
+		auto find_iterator = this->trade_paths.find(other_node);
+		if (find_iterator != this->trade_paths.end()) {
+			return find_iterator->second;
+		}
+
+		return trade_node::empty_path;
 	}
 
-	world *get_world() const;
+	void set_trade_path(const trade_node *other_node, const std::vector<province *> &path, const bool notify = true);
+	void calculate_trade_paths();
+	void calculate_trade_path(const trade_node *other_node, const bool notify = true);
+	void clear_trade_paths();
 
 signals:
 	void center_of_trade_changed();
 	void active_changed();
+	void trade_paths_changed();
 
 private:
 	QColor color;
 	province *center_of_trade = nullptr;
 	bool active = false; //whether this trade node is active, i.e. whether its center of trade has an owner
 	std::set<province *> provinces;
+	std::map<const trade_node *, int> trade_costs; //trade costs with other trade nodes
+	std::map<const trade_node *, std::vector<province *>> trade_paths; //paths to other trade nodes
 };
 
 }

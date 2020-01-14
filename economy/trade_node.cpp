@@ -1,9 +1,11 @@
 #include "economy/trade_node.h"
 
 #include "history/history.h"
+#include "map/pathfinder.h"
 #include "map/province.h"
 #include "map/world.h"
 #include "translator.h"
+#include "util/map_util.h"
 
 namespace metternich {
 
@@ -83,6 +85,16 @@ void trade_node::set_active(const bool active)
 				province->calculate_trade_node();
 			}
 		}
+
+		this->calculate_trade_paths();
+
+		for (trade_node *node : this->get_world()->get_active_trade_nodes()) {
+			if (node == this) {
+				continue;
+			}
+
+			node->calculate_trade_path(this);
+		}
 	}
 }
 
@@ -93,6 +105,73 @@ world *trade_node::get_world() const
 	}
 
 	return nullptr;
+}
+
+void trade_node::set_trade_path(const trade_node *other_node, const std::vector<province *> &path, const bool notify)
+{
+	if (path == this->get_trade_path(other_node)) {
+		return;
+	}
+
+	if (path.empty()) {
+		this->trade_paths.erase(other_node);
+	} else {
+		this->trade_paths[other_node] = path;
+	}
+
+	if (notify) {
+		emit trade_paths_changed();
+	}
+}
+
+void trade_node::calculate_trade_paths()
+{
+	if (!this->is_active()) {
+		this->clear_trade_paths();
+		this->trade_costs.clear();
+		return;
+	}
+
+	for (const trade_node *node : this->get_world()->get_active_trade_nodes()) {
+		if (node == this) {
+			continue;
+		}
+
+		this->calculate_trade_path(node, false);
+	}
+
+	emit trade_paths_changed();
+}
+
+void trade_node::calculate_trade_path(const trade_node *other_node, const bool notify)
+{
+	if (!other_node->is_active()) {
+		this->set_trade_path(other_node, trade_node::empty_path, notify);
+		this->trade_costs.erase(other_node);
+		return;
+	}
+
+	//calculate the trade path with another node
+	const pathfinder *pathfinder = this->get_world()->get_pathfinder();
+	const find_trade_path_result result = pathfinder->find_trade_path(this->get_center_of_trade(), other_node->get_center_of_trade());
+
+	if (!result.success) {
+		return;
+	}
+
+	this->set_trade_path(other_node, result.path, notify);
+	this->trade_costs[other_node] = result.trade_cost;
+}
+
+void trade_node::clear_trade_paths()
+{
+	const std::set<const trade_node *> path_nodes = map::get_keys(this->trade_paths);
+
+	for (const trade_node *node : path_nodes) {
+		this->set_trade_path(node, trade_node::empty_path, false);
+	}
+
+	emit trade_paths_changed();
 }
 
 }
