@@ -416,6 +416,10 @@ public:
 
 	bool can_have_trading_post() const
 	{
+		if (this->get_county() == nullptr) {
+			return false;
+		}
+
 		return this->is_coastal() || this->has_any_active_trade_route();
 	}
 
