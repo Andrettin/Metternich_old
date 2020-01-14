@@ -62,6 +62,8 @@ void trade_node::set_active(const bool active)
 		this->get_world()->remove_active_trade_node(this);
 	}
 
+	emit active_changed();
+
 	if (!history::get()->is_loading()) {
 		//recalculate the trade node of all provinces if this trade node is becoming active, or of its dependent provinces if becoming inactive
 		if (active) {

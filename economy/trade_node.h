@@ -18,6 +18,7 @@ class trade_node : public data_entry, public data_type<trade_node>
 
 	Q_PROPERTY(QColor color MEMBER color READ get_color)
 	Q_PROPERTY(metternich::province* center_of_trade READ get_center_of_trade WRITE set_center_of_trade NOTIFY center_of_trade_changed)
+	Q_PROPERTY(bool active READ is_active NOTIFY active_changed)
 
 public:
 	trade_node(const std::string &identifier) : data_entry(identifier) {}
@@ -76,13 +77,13 @@ public:
 
 signals:
 	void center_of_trade_changed();
+	void active_changed();
 
 private:
 	QColor color;
 	province *center_of_trade = nullptr;
 	bool active = false; //whether this trade node is active, i.e. whether its center of trade has an owner
 	std::set<province *> provinces;
-	std::set<trade_node *> trade_nodes; //the trade (sub-)nodes, if this is a trade area
 };
 
 }
