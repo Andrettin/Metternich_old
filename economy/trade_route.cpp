@@ -82,6 +82,43 @@ private:
 	std::set<path_element *> next; //path elements immediately succeeding this one
 };
 
+void trade_route::add_path_points_to_qvariantlist(QVariantList &point_list, const std::vector<const province *> &path_provinces, const QPoint &start_map_pos)
+{
+	QVariantList path_point_list;
+
+	for (size_t i = 0; i < path_provinces.size(); ++i) {
+		const province *path_province = path_provinces[i];
+		const province *next_path_province = nullptr;
+		if ((i + 1) < path_provinces.size()) {
+			next_path_province = path_provinces[i + 1];
+		}
+		trade_route::add_path_province_points_to_qvariantlist(path_point_list, path_province, start_map_pos, next_path_province);
+	}
+
+	point_list.push_back(path_point_list);
+}
+
+void trade_route::add_path_province_points_to_qvariantlist(QVariantList &point_list, const province *path_province, const QPoint &start_map_pos, const province *next_path_province)
+{
+	const QPoint &main_pos = path_province->get_main_pos();
+	point_list.append(main_pos - start_map_pos);
+
+	if (next_path_province != nullptr) {
+		const QPoint &next_main_pos = next_path_province->get_main_pos();
+
+		//draw the path through settlement slot positions between the two main province positions
+		std::vector<QPoint> secondary_pos_list = path_province->get_secondary_settlement_pos_list();
+		vector::merge(secondary_pos_list, next_path_province->get_secondary_settlement_pos_list());
+
+		QPoint intermediate_pos = point::get_best_intermediate_point(main_pos, next_main_pos, secondary_pos_list);
+		while (intermediate_pos.x() != -1 && intermediate_pos.y() != -1) {
+			secondary_pos_list.erase(std::remove(secondary_pos_list.begin(), secondary_pos_list.end(), intermediate_pos), secondary_pos_list.end());
+			point_list.append(intermediate_pos - start_map_pos);
+			intermediate_pos = point::get_best_intermediate_point(intermediate_pos, next_main_pos, secondary_pos_list);
+		}
+	}
+}
+
 trade_route::trade_route(const std::string &identifier) : data_entry(identifier)
 {
 }
@@ -237,37 +274,13 @@ void trade_route::clear_path()
 
 QVariantList trade_route::get_path_branch_points_qvariant_list() const
 {
-	QVariantList path_points_qvariant_list;
+	QVariantList path_points_list;
 
 	for (const std::vector<const province *> &path_branch_provinces : this->path_branch_provinces) {
-		QVariantList path_branch_points_qvariant_list;
-
-		for (size_t i = 0; i < path_branch_provinces.size(); ++i) {
-			const province *path_province = path_branch_provinces[i];
-			const QPoint &main_pos = path_province->get_main_pos();
-			path_branch_points_qvariant_list.append(main_pos - this->get_rect().topLeft());
-
-			if ((i + 1) < path_branch_provinces.size()) {
-				const province *next_path_province = path_branch_provinces[i + 1];
-				const QPoint &next_main_pos = next_path_province->get_main_pos();
-
-				//draw the path through settlement slot positions between the two main province positions
-				std::vector<QPoint> secondary_pos_list = path_province->get_secondary_settlement_pos_list();
-				vector::merge(secondary_pos_list, next_path_province->get_secondary_settlement_pos_list());
-
-				QPoint intermediate_pos = point::get_best_intermediate_point(main_pos, next_main_pos, secondary_pos_list);
-				while (intermediate_pos.x() != -1 && intermediate_pos.y() != -1) {
-					secondary_pos_list.erase(std::remove(secondary_pos_list.begin(), secondary_pos_list.end(), intermediate_pos), secondary_pos_list.end());
-					path_branch_points_qvariant_list.append(intermediate_pos - this->get_rect().topLeft());
-					intermediate_pos = point::get_best_intermediate_point(intermediate_pos, next_main_pos, secondary_pos_list);
-				}
-			}
-		}
-
-		path_points_qvariant_list.push_back(path_branch_points_qvariant_list);
+		trade_route::add_path_points_to_qvariantlist(path_points_list, path_branch_provinces, this->get_rect().topLeft());
 	}
 
-	return path_points_qvariant_list;
+	return path_points_list;
 }
 
 bool trade_route::has_connection_between(const province *source_province, const province *target_province) const

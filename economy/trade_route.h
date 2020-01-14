@@ -17,16 +17,19 @@ class trade_route : public data_entry, public data_type<trade_route>
 	Q_OBJECT
 
 	Q_PROPERTY(QVariantList path READ get_path_qvariant_list CONSTANT)
-	Q_PROPERTY(QVariantList path_branch_points READ get_path_branch_points_qvariant_list CONSTANT)
+	Q_PROPERTY(QVariantList path_branch_points READ get_path_branch_points_qvariant_list NOTIFY path_branch_points_changed)
 	Q_PROPERTY(QRect rect MEMBER rect READ get_rect CONSTANT)
 	Q_PROPERTY(bool active READ is_active NOTIFY active_changed)
 
 public:
-	trade_route(const std::string &identifier);
-	virtual ~trade_route() override;
-
 	static constexpr const char *class_identifier = "trade_route";
 	static constexpr const char *database_folder = "trade_routes";
+
+	static void add_path_points_to_qvariantlist(QVariantList &point_list, const std::vector<const province *> &path_provinces, const QPoint &start_map_pos);
+	static void add_path_province_points_to_qvariantlist(QVariantList &point_list, const province *path_province, const QPoint &start_map_pos, const province *next_path_province);
+
+	trade_route(const std::string &identifier);
+	virtual ~trade_route() override;
 
 	virtual void process_gsml_scope(const gsml_data &scope) override;
 	virtual void initialize() override;
