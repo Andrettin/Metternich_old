@@ -206,6 +206,46 @@ void world::process_terrain_gsml_scope(const terrain_type *terrain, const gsml_d
 	}
 }
 
+void world::process_path_map_database()
+{
+	for (const std::filesystem::path &path : database::get()->get_map_paths()) {
+		std::filesystem::path map_path = path / this->get_identifier() / "paths";
+
+		if (!std::filesystem::exists(map_path)) {
+			continue;
+		}
+
+		std::filesystem::directory_iterator dir_iterator(map_path);
+
+		for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
+			if (dir_entry.is_regular_file() && dir_entry.path().extension() == ".txt") {
+				gsml_parser parser(dir_entry.path());
+				this->process_path_gsml_data(parser.parse());
+			}
+		}
+	}
+}
+
+void world::process_path_gsml_data(const gsml_data &data)
+{
+	for (const gsml_data &child_data : data.get_children()) {
+		this->process_path_gsml_scope(child_data);
+	}
+}
+
+void world::process_path_gsml_scope(const gsml_data &scope)
+{
+	const std::string &tag = scope.get_tag();
+
+	if (tag == "geopaths") {
+		for (const gsml_data &path_data : scope.get_children()) {
+			this->path_geopaths.push_back(path_data.to_geopath());
+		}
+	} else {
+		throw std::runtime_error("Invalid scope for path map data: \"" + tag + "\".");
+	}
+}
+
 void world::load_province_map()
 {
 	engine_interface::get()->set_loading_message("Loading " + this->get_loading_message_name() + " Provinces... (0%)");
@@ -331,6 +371,17 @@ void world::load_province_map()
 				QPoint pos = this->get_coordinate_pos(slot->get_geocoordinate());
 				pos = slot->get_province()->get_nearest_valid_pos(pos);
 				slot->set_pos(pos);
+				world_province->add_path_pos(pos);
+			}
+		}
+	}
+
+	for (const QGeoPath &geopath : this->path_geopaths) {
+		for (const QGeoCoordinate &geocoordinate : geopath.path()) {
+			const QPoint path_pos = this->get_coordinate_pos(geocoordinate);
+			province *pos_province = this->get_pos_province(path_pos);
+			if (pos_province != nullptr) {
+				pos_province->add_path_pos(path_pos);
 			}
 		}
 	}

@@ -4,6 +4,7 @@
 #include "database/data_type.h"
 #include "qunique_ptr.h"
 #include "technology/technology_set.h"
+#include "util/point_set.h"
 
 #include <QColor>
 #include <QGeoCoordinate>
@@ -568,7 +569,16 @@ public:
 
 	const QPoint &get_main_pos() const;
 	QPoint get_nearest_valid_pos(const QPoint &pos) const;
-	std::vector<QPoint> get_secondary_settlement_pos_list() const;
+
+	const point_set &get_path_pos_list() const
+	{
+		return this->path_pos_list;
+	}
+
+	void add_path_pos(const QPoint &pos)
+	{
+		this->path_pos_list.insert(pos);
+	}
 
 	bool always_writes_geodata() const
 	{
@@ -648,6 +658,7 @@ private:
 	std::map<metternich::religion *, int> population_per_religion; //the population for each religion
 	mutable std::shared_mutex population_groups_mutex;
 	std::vector<qunique_ptr<wildlife_unit>> wildlife_units; //wildlife units set for this province in history
+	point_set path_pos_list; //the list of positions used to help drawing the province's path
 	std::vector<QGeoPolygon> geopolygons;
 	std::vector<QGeoPath> geopaths;
 	bool inner_river = false; //whether the province has a minor river flowing through it

@@ -372,11 +372,9 @@ gsml_data province::get_cache_data() const
 	}
 
 	gsml_data border_provinces("border_provinces");
-
 	for (const province *province : this->border_provinces) {
 		border_provinces.add_value(province->get_identifier());
 	}
-
 	cache_data.add_child(std::move(border_provinces));
 
 	for (const holding_slot *slot : this->get_settlement_holding_slots()) {
@@ -386,6 +384,12 @@ gsml_data province::get_cache_data() const
 			cache_data.add_child(std::move(slot_cache_data));
 		}
 	}
+
+	gsml_data path_pos_list_data("path_pos_list");
+	for (const QPoint &path_pos : this->get_path_pos_list()) {
+		path_pos_list_data.add_child(gsml_data::from_point(path_pos));
+	}
+	cache_data.add_child(std::move(path_pos_list_data));
 
 	return cache_data;
 }
@@ -1700,27 +1704,6 @@ QPoint province::get_nearest_valid_pos(const QPoint &pos) const
 	}
 
 	throw std::runtime_error("Could not find a nearest valid position for point (" + std::to_string(pos.x()) + ", " + std::to_string(pos.y()) + ") in province \"" + this->get_identifier() + "\".");
-}
-
-std::vector<QPoint> province::get_secondary_settlement_pos_list() const
-{
-	std::vector<QPoint> pos_list;
-
-	//get the positions of settlements slots other than the capital one
-	for (holding_slot *settlement_slot : this->get_settlement_holding_slots()) {
-		if (settlement_slot == this->get_capital_holding_slot()) {
-			continue;
-		}
-
-		const QPoint &settlement_pos = settlement_slot->get_pos();
-		if (settlement_pos.x() == -1 || settlement_pos.y() == -1) {
-			continue;
-		}
-
-		pos_list.push_back(settlement_pos);
-	}
-
-	return pos_list;
 }
 
 void province::set_trade_node_recalculation_needed(const bool recalculation_needed, const bool recalculate_for_dependent_provinces)

@@ -45,6 +45,7 @@ void map::load()
 			//load map data for terrain types and provinces
 			world->process_province_map_database();
 			world->process_terrain_map_database();
+			world->process_path_map_database();
 
 			world->write_geodata_to_image();
 		}

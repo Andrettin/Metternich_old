@@ -6,7 +6,7 @@
 #include "util/container_util.h"
 #include "util/map_util.h"
 #include "util/point_util.h"
-#include "util/vector_util.h"
+#include "util/set_util.h"
 
 namespace metternich {
 
@@ -107,12 +107,14 @@ void trade_route::add_path_province_points_to_qvariantlist(QVariantList &point_l
 		const QPoint &next_main_pos = next_path_province->get_main_pos();
 
 		//draw the path through settlement slot positions between the two main province positions
-		std::vector<QPoint> secondary_pos_list = path_province->get_secondary_settlement_pos_list();
-		vector::merge(secondary_pos_list, next_path_province->get_secondary_settlement_pos_list());
+		point_set secondary_pos_list = path_province->get_path_pos_list();
+		set::merge(secondary_pos_list, next_path_province->get_path_pos_list());
+		secondary_pos_list.erase(main_pos);
+		secondary_pos_list.erase(next_main_pos);
 
 		QPoint intermediate_pos = point::get_best_intermediate_point(main_pos, next_main_pos, secondary_pos_list);
 		while (intermediate_pos.x() != -1 && intermediate_pos.y() != -1) {
-			secondary_pos_list.erase(std::remove(secondary_pos_list.begin(), secondary_pos_list.end(), intermediate_pos), secondary_pos_list.end());
+			secondary_pos_list.erase(intermediate_pos);
 			point_list.append(intermediate_pos - start_map_pos);
 			intermediate_pos = point::get_best_intermediate_point(intermediate_pos, next_main_pos, secondary_pos_list);
 		}
