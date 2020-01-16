@@ -74,7 +74,8 @@ SOURCES += \
         technology/technology_set.cpp \
         third_party/maskedmousearea/maskedmousearea.cpp \
         translator.cpp \
-        util/image_util.cpp
+        util/image_util.cpp \
+        util/point_set.cpp
 
 RESOURCES += qml.qrc
 
@@ -214,6 +215,7 @@ HEADERS += \
     util/map_util.h \
     util/number_util.h \
     util/parse_util.h \
+    util/point_set.h \
     util/point_util.h \
     util/string_util.h \
     util/vector_util.h

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "util/point_set.h"
+
 #include <QPoint>
 #include <QSize>
 
@@ -29,7 +31,7 @@ inline int distance_to(const QPoint &point, const QPoint &other_point)
 	return static_cast<int>(sqrt(dx * dx + dy * dy));
 }
 
-inline QPoint get_best_intermediate_point(const QPoint &point, const QPoint &target_point, const std::vector<QPoint> &other_points)
+inline QPoint get_best_intermediate_point(const QPoint &point, const QPoint &target_point, const point_set &other_points)
 {
 	const int distance_to_target_pos = point::distance_to(point, target_point);
 	QPoint best_intermediate_point(-1, -1);
