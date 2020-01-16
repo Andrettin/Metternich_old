@@ -217,6 +217,7 @@ HEADERS += \
     util/parse_util.h \
     util/point_set.h \
     util/point_util.h \
+    util/set_util.h \
     util/string_util.h \
     util/vector_util.h
 
