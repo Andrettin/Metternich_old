@@ -115,7 +115,7 @@ void province::process_gsml_scope(const gsml_data &scope)
 			if (this->get_terrain() != nullptr) {
 				geopath.setWidth(this->get_terrain()->get_path_width());
 			}
-			this->geopaths.push_back(geopath);
+			this->geopaths.push_back(std::move(geopath));
 		}
 	} else if (tag == "border_provinces") {
 		for (const std::string &border_province_identifier : scope.get_values()) {
@@ -1657,19 +1657,23 @@ const QPoint &province::get_main_pos() const
 
 QPoint province::get_nearest_valid_pos(const QPoint &pos) const
 {
+	if (this->image.isNull()) {
+		throw std::runtime_error("Tried to get the nearest valid position for point (" + std::to_string(pos.x()) + ", " + std::to_string(pos.y()) + ") in province \"" + this->get_identifier() + "\", but the latter has no valid image to check the position of pixels with.");
+	}
+
 	QPoint start_pos = this->rect.topLeft();
-	if (this->image.pixel(pos - start_pos) != qRgba(0, 0, 0, 0)) {
+	if (this->rect.contains(pos) && this->image.pixel(pos - start_pos) != qRgba(0, 0, 0, 0)) {
 		return pos; //the pos itself is already a valid position, so return the pos itself
 	}
 
 	//get the nearest position to a point that is actually a position inside the province
 
 	int offset = 0;
-	bool checked_valid_pos = true; //whether a valid position was checked in the loop
+	bool checked_pos_in_rect = true; //whether a position within the province's rectangle was checked in the loop
 
-	while (checked_valid_pos) {
+	while (checked_pos_in_rect) {
 		offset++;
-		checked_valid_pos = false;
+		checked_pos_in_rect = false;
 
 		for (int x_offset = -offset; x_offset <= offset; ++x_offset) {
 			int y_offset = -(offset - std::abs(x_offset));
@@ -1679,7 +1683,7 @@ QPoint province::get_nearest_valid_pos(const QPoint &pos) const
 
 				QPoint near_pos = pos + QPoint(x_offset, y_offset);
 				if (this->rect.contains(near_pos)) {
-					checked_valid_pos = true;
+					checked_pos_in_rect = true;
 
 					if (this->image.pixel(near_pos - start_pos) != qRgba(0, 0, 0, 0)) {
 						return near_pos;
@@ -1689,7 +1693,7 @@ QPoint province::get_nearest_valid_pos(const QPoint &pos) const
 				// do the same with the inverted coordinate position of the offsets
 				near_pos = pos + QPoint(y_offset, x_offset);
 				if (this->rect.contains(near_pos)) {
-					checked_valid_pos = true;
+					checked_pos_in_rect = true;
 
 					if (this->image.pixel(near_pos - start_pos) != qRgba(0, 0, 0, 0)) {
 						return near_pos;

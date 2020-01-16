@@ -374,6 +374,14 @@ void world::load_province_map()
 				world_province->add_path_pos(pos);
 			}
 		}
+
+		//add geopath coordinates to the province's path position list
+		for (const QGeoPath &geopath : world_province->get_geopaths()) {
+			for (const QGeoCoordinate &geocoordinate : geopath.path()) {
+				QPoint path_pos = this->get_coordinate_pos(geocoordinate);
+				world_province->add_path_pos(path_pos);
+			}
+		}
 	}
 
 	for (const QGeoPath &geopath : this->path_geopaths) {

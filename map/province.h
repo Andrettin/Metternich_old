@@ -540,6 +540,12 @@ public:
 	}
 
 	QVariantList get_geopolygons_qvariant_list() const;
+
+	const std::vector<QGeoPath> &get_geopaths() const
+	{
+		return this->geopaths;
+	}
+
 	QVariantList get_geopaths_qvariant_list() const;
 
 	bool contains_coordinate(const QGeoCoordinate &coordinate) const
