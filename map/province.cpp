@@ -1670,8 +1670,9 @@ QPoint province::get_nearest_valid_pos(const QPoint &pos) const
 
 	int offset = 0;
 	bool checked_pos_in_rect = true; //whether a position within the province's rectangle was checked in the loop
+	bool checked_any_pos_in_rect = false; //whether any position in the province's rectangle has been checked so far
 
-	while (checked_pos_in_rect) {
+	while (checked_pos_in_rect || !checked_any_pos_in_rect) {
 		offset++;
 		checked_pos_in_rect = false;
 
@@ -1684,6 +1685,7 @@ QPoint province::get_nearest_valid_pos(const QPoint &pos) const
 				QPoint near_pos = pos + QPoint(x_offset, y_offset);
 				if (this->rect.contains(near_pos)) {
 					checked_pos_in_rect = true;
+					checked_any_pos_in_rect = true;
 
 					if (this->image.pixel(near_pos - start_pos) != qRgba(0, 0, 0, 0)) {
 						return near_pos;
@@ -1694,6 +1696,7 @@ QPoint province::get_nearest_valid_pos(const QPoint &pos) const
 				near_pos = pos + QPoint(y_offset, x_offset);
 				if (this->rect.contains(near_pos)) {
 					checked_pos_in_rect = true;
+					checked_any_pos_in_rect = true;
 
 					if (this->image.pixel(near_pos - start_pos) != qRgba(0, 0, 0, 0)) {
 						return near_pos;
