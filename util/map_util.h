@@ -18,6 +18,19 @@ inline std::set<typename T::key_type> get_keys(const T &map)
 }
 
 template <typename T>
+inline std::vector<typename T::key_type> get_key_vector(const T &map)
+{
+	std::vector<typename T::key_type> vector;
+	vector.reserve(map.size());
+
+	for (const auto &kv_pair : map) {
+		vector.push_back(kv_pair.first);
+	}
+
+	return vector;
+}
+
+template <typename T>
 inline std::vector<typename T::mapped_type> get_values(const T &map)
 {
 	std::vector<typename T::mapped_type> vector;

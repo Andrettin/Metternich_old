@@ -45,6 +45,7 @@ template <typename T>
 inline std::vector<typename T::value_type> to_vector(const T &container)
 {
 	std::vector<typename T::value_type> vector;
+	vector.reserve(container.size());
 
 	for (const typename T::value_type &element : container) {
 		vector.push_back(element);
