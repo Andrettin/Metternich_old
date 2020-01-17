@@ -32,9 +32,7 @@ public:
 	world(const std::string &identifier);
 	virtual ~world() override;
 
-	virtual void process_gsml_scope(const gsml_data &scope) override;
 	virtual void initialize() override;
-	virtual gsml_data get_cache_data() const override;
 
 	int get_surface_area() const
 	{
@@ -199,7 +197,6 @@ private:
 	std::map<const terrain_type *, std::vector<QGeoPath>> terrain_geopaths;
 	std::vector<QGeoPath> path_geopaths; //geopaths for paths (which determine the path points for provinces)
 	std::unique_ptr<pathfinder> pathfinder;
-	std::vector<std::vector<QPoint>> province_pos_paths;
 };
 
 }
