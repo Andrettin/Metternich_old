@@ -31,6 +31,30 @@ inline int distance_to(const QPoint &point, const QPoint &other_point)
 	return static_cast<int>(sqrt(dx * dx + dy * dy));
 }
 
+inline QPoint get_nearest_point(const QPoint &point, const std::vector<QPoint> &other_points)
+{
+	QPoint nearest_point(-1, -1);
+	int best_distance = 0;
+
+	for (const QPoint &other_point : other_points) {
+		if (other_point == point) {
+			return other_point;
+		}
+
+		const int distance = point::distance_to(point, other_point);
+		if (best_distance == 0 || distance < best_distance) {
+			nearest_point = other_point;
+			best_distance = distance;
+		}
+	}
+
+	if (best_distance == 0) {
+		throw std::runtime_error("No nearest point found in list.");
+	}
+
+	return nearest_point;
+}
+
 inline QPoint get_best_intermediate_point(const QPoint &point, const QPoint &target_point, const point_set &other_points)
 {
 	const int distance_to_target_pos = point::distance_to(point, target_point);
