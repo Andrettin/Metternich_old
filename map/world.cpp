@@ -375,7 +375,7 @@ void world::load_province_map()
 			}
 		}
 
-		//add geopath coordinates to the province's path position list
+		//add geopath coordinates to the province's path position list (for e.g. rivers)
 		for (const QGeoPath &geopath : world_province->get_geopaths()) {
 			for (const QGeoCoordinate &geocoordinate : geopath.path()) {
 				QPoint path_pos = this->get_coordinate_pos(geocoordinate);
