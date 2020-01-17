@@ -1662,7 +1662,7 @@ QPoint province::get_nearest_valid_pos(const QPoint &pos) const
 	}
 
 	QPoint start_pos = this->rect.topLeft();
-	if (this->rect.contains(pos) && this->image.pixel(pos - start_pos) != qRgba(0, 0, 0, 0)) {
+	if (this->is_valid_pos(pos)) {
 		return pos; //the pos itself is already a valid position, so return the pos itself
 	}
 

@@ -574,6 +574,13 @@ public:
 	}
 
 	const QPoint &get_main_pos() const;
+
+	bool is_valid_pos(const QPoint &pos) const
+	{
+		//whether the position is a valid one in the province
+		return this->rect.contains(pos) && this->image.pixel(pos - this->rect.topLeft()) != qRgba(0, 0, 0, 0);
+	}
+
 	QPoint get_nearest_valid_pos(const QPoint &pos) const;
 
 	const point_set &get_path_pos_list() const
