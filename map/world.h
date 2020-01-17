@@ -153,10 +153,6 @@ public:
 	void process_terrain_gsml_data(const terrain_type *terrain, const gsml_data &data);
 	void process_terrain_gsml_scope(const terrain_type *terrain, const gsml_data &scope);
 
-	void process_path_map_database();
-	void process_path_gsml_data(const gsml_data &data);
-	void process_path_gsml_scope(const gsml_data &scope);
-
 	void load_province_map();
 	void load_terrain_map();
 
@@ -195,7 +191,6 @@ private:
 	QImage province_image;
 	std::map<const terrain_type *, std::vector<QGeoPolygon>> terrain_geopolygons;
 	std::map<const terrain_type *, std::vector<QGeoPath>> terrain_geopaths;
-	std::vector<QGeoPath> path_geopaths; //geopaths for paths (which determine the path points for provinces)
 	std::unique_ptr<pathfinder> pathfinder;
 };
 
