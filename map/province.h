@@ -4,7 +4,7 @@
 #include "database/data_type.h"
 #include "qunique_ptr.h"
 #include "technology/technology_set.h"
-#include "util/point_set.h"
+#include "util/point_container.h"
 
 #include <QColor>
 #include <QGeoCoordinate>

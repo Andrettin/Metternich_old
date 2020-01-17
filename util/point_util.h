@@ -1,6 +1,6 @@
 #pragma once
 
-#include "util/point_set.h"
+#include "util/point_container.h"
 
 #include <QPoint>
 #include <QSize>
