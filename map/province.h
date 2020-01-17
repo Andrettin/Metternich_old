@@ -593,6 +593,44 @@ public:
 		this->path_pos_list.insert(pos);
 	}
 
+	bool is_valid_line_to(const QPoint &start_pos, const QPoint &target_pos, const province *other_province) const
+	{
+		//check if every point on a line from the given position to the target point is on either province
+		const QPoint diff(std::abs(start_pos.x() - target_pos.x()), std::abs(start_pos.y() - target_pos.y()));
+		const QPoint multiplier(start_pos.x() < target_pos.x() ? 1 : -1, start_pos.y() < target_pos.y() ? 1 : -1);
+		if (diff.x() >= diff.y()) {
+			const int y_modulo = diff.y() != 0 ? diff.x() / diff.y() : 0;
+
+			QPoint offset(1, 0);
+			for (; offset.x() <= diff.x(); offset.rx()++) {
+				if (y_modulo != 0 && offset.x() % y_modulo == 0) {
+					offset.ry()++;
+				}
+
+				const QPoint line_pos = start_pos + QPoint(offset.x() * multiplier.x(), offset.y() * multiplier.y());
+				if (!this->is_valid_pos(line_pos) && !other_province->is_valid_pos(line_pos)) {
+					return false;
+				}
+			}
+		} else {
+			const int x_modulo = diff.x() != 0 ? diff.y() / diff.x() : 0;
+
+			QPoint offset(0, 1);
+			for (; offset.y() <= diff.y(); offset.ry()++) {
+				if (x_modulo != 0 && offset.y() % x_modulo == 0) {
+					offset.rx()++;
+				}
+
+				const QPoint line_pos = start_pos + QPoint(offset.x() * multiplier.x(), offset.y() * multiplier.y());
+				if (!this->is_valid_pos(line_pos) && !other_province->is_valid_pos(line_pos)) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
 	bool always_writes_geodata() const
 	{
 		return this->always_write_geodata;
