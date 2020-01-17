@@ -56,10 +56,10 @@ private:
 };
 
 template <class vertex>
-class trade_path_visitor : public boost::default_astar_visitor
+class astar_visitor : public boost::default_astar_visitor
 {
 public:
-	trade_path_visitor(vertex goal) : goal(goal)
+	astar_visitor(vertex goal) : goal(goal)
 	{}
 
 	template <class graph>
@@ -127,7 +127,7 @@ find_trade_path_result pathfinder::impl::find_trade_path(const province *start_p
 			weight_map(weight_function).
 			predecessor_map(make_iterator_property_map(vertex_predecessors.begin(), get(boost::vertex_index, this->province_graph))).
 			distance_map(make_iterator_property_map(vertex_costs.begin(), get(boost::vertex_index, this->province_graph))).
-			visitor(trade_path_visitor<vertex>(goal)));
+			visitor(astar_visitor<vertex>(goal)));
 	} catch (found_goal) {
 		find_trade_path_result result(true);
 		for (vertex v = goal;; v = vertex_predecessors[v]) {
