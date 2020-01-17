@@ -147,6 +147,31 @@ void world::process_province_map_database()
 	}
 }
 
+void world::process_holding_slot_map_database()
+{
+	if (std::string(holding_slot::database_folder).empty()) {
+		return;
+	}
+
+	std::vector<QVariantList> geojson_data_list = this->parse_data_type_map_geojson_database<holding_slot>();
+
+	for (const QVariantList &geojson_data : geojson_data_list) {
+		const QVariantMap feature_collection = geojson_data.front().toMap();
+		const QVariantList feature_collection_data = feature_collection.value("data").toList();
+
+		for (const QVariant &feature_variant : feature_collection_data) {
+			const QVariantMap feature = feature_variant.toMap();
+			const QVariantMap properties = feature.value("properties").toMap();
+			const QString holding_slot_identifier = properties.value("holding_slot").toString();
+
+			holding_slot *slot = holding_slot::get(holding_slot_identifier.toStdString());
+
+			const QGeoCircle geocircle = feature.value("data").value<QGeoCircle>();
+			slot->set_geocoordinate(geocircle.center());
+		}
+	}
+}
+
 void world::process_terrain_map_database()
 {
 	for (const std::filesystem::path &path : database::get()->get_map_paths()) {

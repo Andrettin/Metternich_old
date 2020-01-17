@@ -34,6 +34,7 @@
 #include <QVariant>
 #include <QVariantList>
 #include <QVector>
+#include <QtLocation/private/qgeojson_p.h>
 
 #include <algorithm>
 #include <chrono>

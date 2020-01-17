@@ -29,7 +29,7 @@ class holding_slot : public data_entry, public data_type<holding_slot>
 	Q_PROPERTY(bool settlement READ is_settlement CONSTANT)
 	Q_PROPERTY(metternich::landed_title* barony READ get_barony WRITE set_barony NOTIFY barony_changed)
 	Q_PROPERTY(metternich::holding* holding READ get_holding NOTIFY holding_changed)
-	Q_PROPERTY(QGeoCoordinate geocoordinate MEMBER geocoordinate)
+	Q_PROPERTY(QGeoCoordinate geocoordinate READ get_geocoordinate WRITE set_geocoordinate)
 	Q_PROPERTY(QPoint pos READ get_pos WRITE set_pos NOTIFY pos_changed)
 	Q_PROPERTY(int holding_size READ get_holding_size WRITE set_holding_size NOTIFY holding_size_changed)
 	Q_PROPERTY(QVariantList available_commodities READ get_available_commodities_qvariant_list NOTIFY available_commodities_changed)
@@ -129,6 +129,11 @@ public:
 	const QGeoCoordinate &get_geocoordinate() const
 	{
 		return this->geocoordinate;
+	}
+
+	void set_geocoordinate(const QGeoCoordinate &geocoordinate)
+	{
+		this->geocoordinate = geocoordinate;
 	}
 
 	int get_holding_size() const

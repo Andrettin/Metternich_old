@@ -39,11 +39,10 @@ void map::load()
 		std::filesystem::remove_all(cache_path);
 		std::filesystem::create_directories(cache_path);
 
-		this->load_geojson_files();
-
 		for (world *world : world::get_all()) {
 			//load map data for terrain types and provinces
 			world->process_province_map_database();
+			world->process_holding_slot_map_database();
 			world->process_terrain_map_database();
 
 			world->write_geodata_to_image();
@@ -285,11 +284,6 @@ void map::save_geojson_data_to_gsml()
 	this->geojson_path_data.clear();
 }
 
-/**
-**	@brief	Check to see if the cache is valid
-**
-**	@return	True if the cache is valid, or false otherwise
-*/
 bool map::check_cache()
 {
 	QCryptographicHash hash(QCryptographicHash::Md5);

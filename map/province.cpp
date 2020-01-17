@@ -389,11 +389,13 @@ gsml_data province::get_cache_data() const
 		}
 	}
 
-	gsml_data path_pos_list_data("path_pos_list");
-	for (const QPoint &path_pos : this->get_path_pos_list()) {
-		path_pos_list_data.add_child(gsml_data::from_point(path_pos));
+	if (!this->get_path_pos_list().empty()) {
+		gsml_data path_pos_list_data("path_pos_list");
+		for (const QPoint &path_pos : this->get_path_pos_list()) {
+			path_pos_list_data.add_child(gsml_data::from_point(path_pos));
+		}
+		cache_data.add_child(std::move(path_pos_list_data));
 	}
-	cache_data.add_child(std::move(path_pos_list_data));
 
 	return cache_data;
 }
