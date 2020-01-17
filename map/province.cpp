@@ -122,6 +122,10 @@ void province::process_gsml_scope(const gsml_data &scope)
 			province *border_province = province::get(border_province_identifier);
 			this->border_provinces.insert(border_province);
 		}
+	} else if (tag == "path_pos_list") {
+		for (const gsml_data &pos_data : scope.get_children()) {
+			this->add_path_pos(pos_data.to_point());
+		}
 	} else if (tag.substr(0, 2) == holding_slot::prefix) {
 		holding_slot *holding_slot = nullptr;
 		if (scope.get_operator() == gsml_operator::assignment) {
