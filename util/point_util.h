@@ -55,7 +55,7 @@ inline QPoint get_nearest_point(const QPoint &point, const std::vector<QPoint> &
 	return nearest_point;
 }
 
-inline QPoint get_best_intermediate_point(const QPoint &point, const QPoint &target_point, const point_set &other_points)
+inline QPoint get_best_intermediate_point(const QPoint &point, const QPoint &target_point, const point_set &other_points, const std::function<bool(const QPoint &, const QPoint &)> &function = nullptr)
 {
 	const int distance_to_target_pos = point::distance_to(point, target_point);
 	QPoint best_intermediate_point(-1, -1);
@@ -68,6 +68,13 @@ inline QPoint get_best_intermediate_point(const QPoint &point, const QPoint &tar
 
 		const int distance = point::distance_to(point, intermediate_point);
 		if (best_distance == 0 || distance < best_distance) {
+			if (function) {
+				const bool valid_intermediate_point = function(point, intermediate_point);
+				if (!valid_intermediate_point) {
+					continue;
+				}
+			}
+
 			best_intermediate_point = intermediate_point;
 			best_distance = distance;
 		}
