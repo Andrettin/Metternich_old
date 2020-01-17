@@ -23,6 +23,23 @@ world::~world()
 {
 }
 
+void world::process_gsml_scope(const gsml_data &scope)
+{
+	const std::string &tag = scope.get_tag();
+
+	if (tag == "province_pos_paths") {
+		for (const gsml_data &path_data : scope.get_children()) {
+			std::vector<QPoint> path;
+			for (const gsml_data &pos_data : path_data.get_children()) {
+				path.push_back(pos_data.to_point());
+			}
+			this->province_pos_paths.push_back(std::move(path));
+		}
+	} else {
+		data_entry_base::process_gsml_scope(scope);
+	}
+}
+
 void world::initialize()
 {
 	if (this->terrain_image.size() != this->province_image.size()) {
@@ -35,7 +52,32 @@ void world::initialize()
 
 	this->pathfinder = std::make_unique<metternich::pathfinder>(this->provinces);
 
+	for (const std::vector<QPoint> &path : this->province_pos_paths) {
+		this->pathfinder->add_province_pos_path(path);
+	}
+
+	this->province_pos_paths.clear();
+
 	data_entry_base::initialize();
+}
+
+gsml_data world::get_cache_data() const
+{
+	gsml_data cache_data(this->get_identifier());
+
+	gsml_data province_pos_paths_data("province_pos_paths");
+
+	for (const std::vector<QPoint> &path : this->province_pos_paths) {
+		gsml_data path_data;
+		for (const QPoint &path_pos : path) {
+			path_data.add_child(gsml_data::from_point(path_pos));
+		}
+		province_pos_paths_data.add_child(std::move(path_data));
+	}
+
+	cache_data.add_child(std::move(province_pos_paths_data));
+
+	return cache_data;
 }
 
 QVariantList world::get_provinces_qvariant_list() const
@@ -371,28 +413,39 @@ void world::load_province_map()
 				QPoint pos = this->get_coordinate_pos(slot->get_geocoordinate());
 				pos = slot->get_province()->get_nearest_valid_pos(pos);
 				slot->set_pos(pos);
-				world_province->add_path_pos(pos);
 			}
 		}
 
 		//add geopath coordinates to the province's path position list
 		for (const QGeoPath &geopath : world_province->get_geopaths()) {
+			std::vector<QPoint> path;
 			for (const QGeoCoordinate &geocoordinate : geopath.path()) {
 				QPoint path_pos = this->get_coordinate_pos(geocoordinate);
 				path_pos = world_province->get_nearest_valid_pos(path_pos);
 				world_province->add_path_pos(path_pos);
+
+				if (path.empty() || path_pos != path.back()) {
+					path.push_back(std::move(path_pos));
+				}
 			}
+			this->province_pos_paths.push_back(std::move(path));
 		}
 	}
 
 	for (const QGeoPath &geopath : this->path_geopaths) {
+		std::vector<QPoint> path;
 		for (const QGeoCoordinate &geocoordinate : geopath.path()) {
 			const QPoint path_pos = this->get_coordinate_pos(geocoordinate);
 			province *pos_province = this->get_pos_province(path_pos);
 			if (pos_province != nullptr) {
 				pos_province->add_path_pos(path_pos);
 			}
+
+			if (path.empty() || path_pos != path.back()) {
+				path.push_back(std::move(path_pos));
+			}
 		}
+		this->province_pos_paths.push_back(std::move(path));
 	}
 }
 

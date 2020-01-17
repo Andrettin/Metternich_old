@@ -18,6 +18,15 @@ struct find_trade_path_result
 	std::vector<province *> path; //the resulting trade path
 };
 
+struct find_province_pos_path_result
+{
+	find_province_pos_path_result(const bool success) : success(success)
+	{}
+
+	bool success = false;
+	std::vector<QPoint> path; //the resulting province pos path
+};
+
 class pathfinder
 {
 	class impl;
@@ -27,6 +36,9 @@ public:
 	~pathfinder();
 
 	find_trade_path_result find_trade_path(const province *start_province, const province *goal_province) const;
+	find_province_pos_path_result find_province_pos_path(const province *start_province, const province *goal_province) const;
+
+	void add_province_pos_path(const std::vector<QPoint> &pos_list);
 
 private:
 	std::unique_ptr<impl> implementation;

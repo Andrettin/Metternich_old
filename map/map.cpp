@@ -31,6 +31,7 @@ void map::load()
 	if (cache_valid) {
 		engine_interface::get()->set_loading_message("Loading Map Cache...");
 		province::process_cache();
+		world::process_cache();
 	} else {
 		engine_interface::get()->set_loading_message("Building Map Cache...");
 
@@ -345,6 +346,7 @@ void map::save_cache()
 	ofstream.close();
 
 	province::save_cache();
+	world::save_cache();
 }
 
 }
