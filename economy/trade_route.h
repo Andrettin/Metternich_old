@@ -18,6 +18,7 @@ class trade_route : public data_entry, public data_type<trade_route>
 
 	Q_PROPERTY(QVariantList path READ get_path_qvariant_list CONSTANT)
 	Q_PROPERTY(QVariantList path_branch_points READ get_path_branch_points_qvariant_list NOTIFY path_branch_points_changed)
+	Q_PROPERTY(QString path_branch_points_svg READ get_path_branch_points_svg NOTIFY path_branch_points_changed)
 	Q_PROPERTY(QRect rect MEMBER rect READ get_rect CONSTANT)
 	Q_PROPERTY(bool active READ is_active NOTIFY active_changed)
 
@@ -47,6 +48,7 @@ public:
 	void clear_path();
 
 	QVariantList get_path_branch_points_qvariant_list() const;
+	QString get_path_branch_points_svg() const;
 
 	bool is_endpoint(const province *province) const
 	{

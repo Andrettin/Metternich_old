@@ -285,6 +285,33 @@ QVariantList trade_route::get_path_branch_points_qvariant_list() const
 	return path_points_list;
 }
 
+QString trade_route::get_path_branch_points_svg() const
+{
+	QString svg;
+
+	const QVariantList path_branches_list = this->get_path_branch_points_qvariant_list();
+
+	for (const QVariant &path_branch_variant : path_branches_list) {
+		const QVariantList path_branch = path_branch_variant.toList();
+
+		for (int i = 0; i < path_branch.size(); ++i) {
+			const QVariant &point_variant = path_branch[i];
+			const QPoint point = point_variant.toPoint();
+
+			if (i == 0) {
+				svg += "M ";
+			} else {
+				svg += "L ";
+			}
+
+			svg += QString::number(point.x()) + " ";
+			svg += QString::number(point.y()) + " ";
+		}
+	}
+
+	return svg;
+}
+
 bool trade_route::has_connection_between(const province *source_province, const province *target_province) const
 {
 	return this->get_province_path_element(source_province)->has_connection_to(target_province);
