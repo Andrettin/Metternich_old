@@ -185,6 +185,10 @@ public:
 
 	QPoint to_point() const
 	{
+		if (this->get_values().size() != 2) {
+			throw std::runtime_error("Point scopes need to contain exactly two values.");
+		}
+
 		const int x = std::stoi(this->get_values()[0]);
 		const int y = std::stoi(this->get_values()[1]);
 		return QPoint(x, y);
@@ -192,6 +196,10 @@ public:
 
 	QGeoCoordinate to_geocoordinate() const
 	{
+		if (this->get_values().size() != 2) {
+			throw std::runtime_error("Geocoordinate scopes need to contain exactly two values.");
+		}
+
 		const double longitude = std::stod(this->get_values()[0]);
 		const double latitude = std::stod(this->get_values()[1]);
 		return QGeoCoordinate(latitude, longitude);

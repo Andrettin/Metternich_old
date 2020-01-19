@@ -328,7 +328,11 @@ public:
 
 		for (gsml_data &data : cache_data_to_process) {
 			T *instance = T::get(data.get_tag());
-			database::process_gsml_data<T>(instance, data);
+			try {
+				database::process_gsml_data<T>(instance, data);
+			} catch (...) {
+				std::throw_with_nested(std::runtime_error("Failed to process the cache data for " + std::string(T::class_identifier) + " instance \"" + instance->get_identifier() + "\"."));
+			}
 		}
 	}
 
@@ -380,7 +384,7 @@ public:
 			try {
 				instance->check();
 			} catch (...) {
-				std::throw_with_nested(std::runtime_error("The " + std::string(std::string(T::class_identifier)) + " instance \"" + instance->get_identifier() + "\" is in an invalid state."));
+				std::throw_with_nested(std::runtime_error("The " + std::string(T::class_identifier) + " instance \"" + instance->get_identifier() + "\" is in an invalid state."));
 			}
 		}
 	}
@@ -391,7 +395,7 @@ public:
 			try {
 				instance->check_history();
 			} catch (...) {
-				std::throw_with_nested(std::runtime_error("The " + std::string(std::string(T::class_identifier)) + " instance \"" + instance->get_identifier() + "\" is in an invalid state."));
+				std::throw_with_nested(std::runtime_error("The " + std::string(T::class_identifier) + " instance \"" + instance->get_identifier() + "\" is in an invalid state."));
 			}
 		}
 	}
