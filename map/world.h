@@ -192,9 +192,27 @@ public:
 		return geojson_data_list;
 	}
 
-	void process_province_map_database();
-	void process_holding_slot_map_database();
+	template <typename T>
+	inline void process_data_type_map_geojson_database()
+	{
+		if (std::string(T::database_folder).empty()) {
+			return;
+		}
 
+		std::vector<QVariantList> geojson_data_list = this->parse_data_type_map_geojson_database<T>();
+
+		for (const QVariantList &geojson_data : geojson_data_list) {
+			const QVariantMap feature_collection = geojson_data.front().toMap();
+			const QVariantList feature_collection_data = feature_collection.value("data").toList();
+
+			for (const QVariant &feature_variant : feature_collection_data) {
+				const QVariantMap feature = feature_variant.toMap();
+				T::process_geojson_feature(feature);
+			}
+		}
+	}
+
+	void process_province_map_database();
 	void process_terrain_map_database();
 	void process_terrain_gsml_data(const terrain_type *terrain, const gsml_data &data);
 	void process_terrain_gsml_scope(const terrain_type *terrain, const gsml_data &scope);

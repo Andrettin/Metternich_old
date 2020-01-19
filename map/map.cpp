@@ -1,6 +1,7 @@
 #include "map/map.h"
 
 #include "engine_interface.h"
+#include "holding/holding_slot.h"
 #include "map/map_mode.h"
 #include "map/province.h"
 #include "map/terrain_type.h"
@@ -42,7 +43,7 @@ void map::load()
 		for (world *world : world::get_all()) {
 			//load map data for terrain types and provinces
 			world->process_province_map_database();
-			world->process_holding_slot_map_database();
+			world->process_data_type_map_geojson_database<holding_slot>();
 			world->process_terrain_map_database();
 
 			world->write_geodata_to_image();

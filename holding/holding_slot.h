@@ -52,6 +52,17 @@ public:
 		return holding_slot;
 	}
 
+	static void process_geojson_feature(const QVariantMap &feature)
+	{
+		const QVariantMap properties = feature.value("properties").toMap();
+		const QString holding_slot_identifier = properties.value("holding_slot").toString();
+
+		holding_slot *slot = holding_slot::get(holding_slot_identifier.toStdString());
+
+		const QGeoCircle geocircle = feature.value("data").value<QGeoCircle>();
+		slot->set_geocoordinate(geocircle.center());
+	}
+
 	holding_slot(const std::string &identifier);
 	virtual ~holding_slot() override;
 
