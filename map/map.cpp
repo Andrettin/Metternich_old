@@ -21,6 +21,35 @@
 
 namespace metternich {
 
+
+class path
+{
+public:
+	static constexpr const char *database_folder = "paths";
+
+	static void process_geojson_feature(const QVariantMap &feature)
+	{
+		const QVariantMap properties = feature.value("properties").toMap();
+		const QString start_province_identifier = properties.value("start_province").toString();
+		const QString end_province_identifier = properties.value("end_province").toString();
+
+		province *start_province = province::get(start_province_identifier.toStdString());
+		province *end_province = province::get(end_province_identifier.toStdString());
+
+		const QVariantList geopath_list = feature.value("data").toList();
+
+		if (geopath_list.size() > 1) {
+			throw std::runtime_error("Tried to process a path GeoJSON feature with more than one geopath.");
+		}
+
+		const QVariantMap geopath_variant_map = geopath_list.front().toMap();
+		const QGeoPath geopath = geopath_variant_map.value("data").value<QGeoPath>();
+		path::geopaths[std::make_pair(start_province, end_province)] = geopath;
+	}
+
+	static inline std::map<std::pair<province *, province *>, QGeoPath> geopaths;
+};
+
 map::map() : mode(map_mode::none)
 {
 }
@@ -45,6 +74,7 @@ void map::load()
 			world->process_province_map_database();
 			world->process_data_type_map_geojson_database<holding_slot>();
 			world->process_terrain_map_database();
+			world->process_data_type_map_geojson_database<path>();
 
 			world->write_geodata_to_image();
 		}
@@ -59,6 +89,29 @@ void map::load()
 	for (world *world : world::get_all()) {
 		world->load_terrain_map();
 		world->load_province_map();
+	}
+
+
+	for (const auto &kv_pair : path::geopaths) {
+		province *start_province = kv_pair.first.first;
+		province *end_province = kv_pair.first.second;
+		const QGeoPath &geopath = kv_pair.second;
+		const world *world = start_province->get_world();
+
+		std::vector<QPoint> path;
+		for (const QGeoCoordinate &geocoordinate : geopath.path()) {
+			const QPoint path_pos = world->get_coordinate_pos(geocoordinate);
+
+			if (path.empty() || path_pos != path.back()) {
+				path.push_back(std::move(path_pos));
+			}
+		}
+
+		std::vector<QPoint> reversed_path = path;
+		std::reverse(reversed_path.begin(), reversed_path.end());
+
+		start_province->add_path_pos_list(end_province, std::move(path));
+		end_province->add_path_pos_list(start_province, std::move(reversed_path));
 	}
 
 	if (!cache_valid) {

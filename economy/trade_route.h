@@ -27,7 +27,6 @@ public:
 	static constexpr const char *database_folder = "trade_routes";
 
 	static void add_path_points_to_qvariantlist(QVariantList &point_list, const std::vector<const province *> &path_provinces, const QPoint &start_map_pos);
-	static void add_path_province_points_to_qvariantlist(QVariantList &point_list, const province *path_province, const QPoint &start_map_pos, const province *next_path_province);
 
 	trade_route(const std::string &identifier);
 	virtual ~trade_route() override;

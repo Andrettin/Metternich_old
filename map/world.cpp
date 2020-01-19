@@ -331,7 +331,6 @@ void world::load_province_map()
 				QPoint pos = this->get_coordinate_pos(slot->get_geocoordinate());
 				pos = slot->get_province()->get_nearest_valid_pos(pos);
 				slot->set_pos(pos);
-				world_province->add_path_pos(pos);
 			}
 		}
 
@@ -340,7 +339,6 @@ void world::load_province_map()
 			for (const QGeoCoordinate &geocoordinate : geopath.path()) {
 				QPoint path_pos = this->get_coordinate_pos(geocoordinate);
 				path_pos = world_province->get_nearest_valid_pos(path_pos);
-				world_province->add_path_pos(path_pos);
 			}
 		}
 	}

@@ -4,7 +4,6 @@
 #include "database/data_type.h"
 #include "qunique_ptr.h"
 #include "technology/technology_set.h"
-#include "util/point_container.h"
 
 #include <QColor>
 #include <QGeoCoordinate>
@@ -583,14 +582,21 @@ public:
 
 	QPoint get_nearest_valid_pos(const QPoint &pos) const;
 
-	const point_set &get_path_pos_list() const
+	const std::vector<QPoint> &get_path_pos_list(const province *other_province) const
 	{
-		return this->path_pos_list;
+		static std::vector<QPoint> empty_list;
+
+		auto find_iterator = this->path_pos_map.find(other_province);
+		if (find_iterator != this->path_pos_map.end()) {
+			return find_iterator->second;
+		}
+
+		return empty_list;
 	}
 
-	void add_path_pos(const QPoint &pos)
+	void add_path_pos_list(const province *other_province, std::vector<QPoint> &&path_pos_list)
 	{
-		this->path_pos_list.insert(pos);
+		this->path_pos_map[other_province] = std::move(path_pos_list);
 	}
 
 	bool is_valid_line_to(const QPoint &start_pos, const QPoint &target_pos, const province *other_province) const
@@ -709,7 +715,7 @@ private:
 	std::map<metternich::religion *, int> population_per_religion; //the population for each religion
 	mutable std::shared_mutex population_groups_mutex;
 	std::vector<qunique_ptr<wildlife_unit>> wildlife_units; //wildlife units set for this province in history
-	point_set path_pos_list; //the list of positions used to help drawing the province's path
+	std::map<const province *, std::vector<QPoint>> path_pos_map; //lists of the path positions for the paths between this province and its border provinces
 	std::vector<QGeoPolygon> geopolygons;
 	std::vector<QGeoPath> geopaths;
 	bool inner_river = false; //whether the province has a minor river flowing through it

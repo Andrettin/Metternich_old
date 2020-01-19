@@ -88,37 +88,29 @@ void trade_route::add_path_points_to_qvariantlist(QVariantList &point_list, cons
 
 	for (size_t i = 0; i < path_provinces.size(); ++i) {
 		const province *path_province = path_provinces[i];
-		const province *next_path_province = nullptr;
 		if ((i + 1) < path_provinces.size()) {
-			next_path_province = path_provinces[i + 1];
+			const province *next_path_province = path_provinces[i + 1];
+
+			const std::vector<QPoint> &path_pos_list = path_province->get_path_pos_list(next_path_province);
+			if (!path_pos_list.empty()) {
+				for (const QPoint &path_pos : path_pos_list) {
+					path_point_list.append(path_pos - start_map_pos);
+				}
+
+				if ((i + 2) >= path_provinces.size()) {
+					//if the next province in the path is the last, and we had a pos path to it, then there's no need to continue, as that would draw that province's main pos (i.e. the pos path wouldn't be taken into account)
+					break;
+				}
+
+				continue;
+			}
 		}
-		trade_route::add_path_province_points_to_qvariantlist(path_point_list, path_province, start_map_pos, next_path_province);
+
+		const QPoint &main_pos = path_province->get_main_pos();
+		path_point_list.append(main_pos - start_map_pos);
 	}
 
 	point_list.push_back(path_point_list);
-}
-
-void trade_route::add_path_province_points_to_qvariantlist(QVariantList &point_list, const province *path_province, const QPoint &start_map_pos, const province *next_path_province)
-{
-	const QPoint &main_pos = path_province->get_main_pos();
-	point_list.append(main_pos - start_map_pos);
-
-	if (next_path_province != nullptr) {
-		const QPoint &next_main_pos = next_path_province->get_main_pos();
-
-		//draw the path through settlement slot positions between the two main province positions
-		point_set secondary_pos_list = path_province->get_path_pos_list();
-		set::merge(secondary_pos_list, next_path_province->get_path_pos_list());
-		secondary_pos_list.erase(main_pos);
-		secondary_pos_list.erase(next_main_pos);
-
-		QPoint intermediate_pos = point::get_best_intermediate_point(main_pos, next_main_pos, secondary_pos_list);
-		while (intermediate_pos.x() != -1 && intermediate_pos.y() != -1) {
-			secondary_pos_list.erase(intermediate_pos);
-			point_list.append(intermediate_pos - start_map_pos);
-			intermediate_pos = point::get_best_intermediate_point(intermediate_pos, next_main_pos, secondary_pos_list);
-		}
-	}
 }
 
 trade_route::trade_route(const std::string &identifier) : data_entry(identifier)

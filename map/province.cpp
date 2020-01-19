@@ -122,9 +122,14 @@ void province::process_gsml_scope(const gsml_data &scope)
 			province *border_province = province::get(border_province_identifier);
 			this->border_provinces.insert(border_province);
 		}
-	} else if (tag == "path_pos_list") {
-		for (const gsml_data &pos_data : scope.get_children()) {
-			this->add_path_pos(pos_data.to_point());
+	} else if (tag == "path_pos_map") {
+		for (const gsml_data &pos_list_data : scope.get_children()) {
+			const province *other_province = province::get(pos_list_data.get_tag());
+			std::vector<QPoint> pos_list;
+			for (const gsml_data &pos_data : pos_list_data.get_children()) {
+				pos_list.push_back(pos_data.to_point());
+			}
+			this->add_path_pos_list(other_province, std::move(pos_list));
 		}
 	} else if (tag.substr(0, 2) == holding_slot::prefix) {
 		holding_slot *holding_slot = nullptr;
@@ -389,12 +394,16 @@ gsml_data province::get_cache_data() const
 		}
 	}
 
-	if (!this->get_path_pos_list().empty()) {
-		gsml_data path_pos_list_data("path_pos_list");
-		for (const QPoint &path_pos : this->get_path_pos_list()) {
-			path_pos_list_data.add_child(gsml_data::from_point(path_pos));
+	if (!this->path_pos_map.empty()) {
+		gsml_data path_pos_map_data("path_pos_map");
+		for (const auto &kv_pair : this->path_pos_map) {
+			gsml_data path_pos_list_data(kv_pair.first->get_identifier());
+			for (const QPoint &path_pos : kv_pair.second) {
+				path_pos_list_data.add_child(gsml_data::from_point(path_pos));
+			}
+			path_pos_map_data.add_child(std::move(path_pos_list_data));
 		}
-		cache_data.add_child(std::move(path_pos_list_data));
+		cache_data.add_child(std::move(path_pos_map_data));
 	}
 
 	return cache_data;
@@ -1667,13 +1676,13 @@ QPoint province::get_nearest_valid_pos(const QPoint &pos) const
 		throw std::runtime_error("Tried to get the nearest valid position for point (" + std::to_string(pos.x()) + ", " + std::to_string(pos.y()) + ") in province \"" + this->get_identifier() + "\", but the latter has no valid image to check the position of pixels with.");
 	}
 
-	QPoint start_pos = this->rect.topLeft();
 	if (this->is_valid_pos(pos)) {
 		return pos; //the pos itself is already a valid position, so return the pos itself
 	}
 
 	//get the nearest position to a point that is actually a position inside the province
 
+	const QPoint start_pos = this->rect.topLeft();
 	int offset = 0;
 	bool checked_pos_in_rect = true; //whether a position within the province's rectangle was checked in the loop
 	bool checked_any_pos_in_rect = false; //whether any position in the province's rectangle has been checked so far
