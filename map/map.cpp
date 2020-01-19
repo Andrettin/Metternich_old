@@ -100,7 +100,18 @@ void map::load()
 
 		std::vector<QPoint> path;
 		for (const QGeoCoordinate &geocoordinate : geopath.path()) {
-			const QPoint path_pos = world->get_coordinate_pos(geocoordinate);
+			QPoint path_pos = world->get_coordinate_pos(geocoordinate);
+
+			if (!start_province->is_valid_pos(path_pos) && !end_province->is_valid_pos(path_pos) && !start_province->has_river_crossing_with(end_province)) {
+				QPoint start_province_nearest_pos = start_province->get_nearest_valid_pos(path_pos);
+				QPoint end_province_nearest_pos = end_province->get_nearest_valid_pos(path_pos);
+
+				if (point::distance_to(start_province_nearest_pos, path_pos) <= point::distance_to(end_province_nearest_pos, path_pos)) {
+					path_pos = start_province_nearest_pos;
+				} else {
+					path_pos = end_province_nearest_pos;
+				}
+			}
 
 			if (path.empty() || path_pos != path.back()) {
 				path.push_back(std::move(path_pos));
