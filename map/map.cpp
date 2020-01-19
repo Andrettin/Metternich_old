@@ -103,8 +103,8 @@ void map::load()
 			QPoint path_pos = world->get_coordinate_pos(geocoordinate);
 
 			if (!start_province->is_valid_pos(path_pos) && !end_province->is_valid_pos(path_pos) && !start_province->has_river_crossing_with(end_province)) {
-				QPoint start_province_nearest_pos = start_province->get_nearest_valid_pos(path_pos);
-				QPoint end_province_nearest_pos = end_province->get_nearest_valid_pos(path_pos);
+				const QPoint start_province_nearest_pos = start_province->get_nearest_valid_pos(path_pos);
+				const QPoint end_province_nearest_pos = end_province->get_nearest_valid_pos(path_pos);
 
 				if (point::distance_to(start_province_nearest_pos, path_pos) <= point::distance_to(end_province_nearest_pos, path_pos)) {
 					path_pos = start_province_nearest_pos;
@@ -114,8 +114,8 @@ void map::load()
 			}
 
 			if (path.empty() || path_pos != path.back()) {
-				if (path.empty() && world->get_pos_province(path_pos) != start_province) {
-					throw std::runtime_error("The starting position of the path between the provinces of \"" + start_province->get_identifier() + "\" and \"" + end_province->get_identifier() + "\" is not in \"" + start_province->get_identifier() + "\".");
+				if (path.empty() && world->get_pos_province(path_pos) == end_province) {
+					throw std::runtime_error("The starting position of the path between the provinces of \"" + start_province->get_identifier() + "\" and \"" + end_province->get_identifier() + "\" is in the end province instead of in the start one.");
 				}
 
 				path.push_back(std::move(path_pos));
