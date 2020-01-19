@@ -381,6 +381,11 @@ public:
 		return this->border_provinces;
 	}
 
+	bool borders_province(province *other_province) const
+	{
+		return this->border_provinces.contains(other_province);
+	}
+
 	void add_border_province(province *province)
 	{
 		this->border_provinces.insert(province);
@@ -388,6 +393,18 @@ public:
 
 	bool borders_water() const;
 	bool borders_river() const;
+
+	bool has_river_crossing_with(province *other_province) const
+	{
+		return this->river_crossings.contains(other_province);
+	}
+
+	void add_river_crossing(province *other_province)
+	{
+		this->river_crossings.insert(other_province);
+		this->add_border_province(other_province);
+	}
+
 	bool has_river() const;
 
 	bool has_inner_river() const
@@ -705,6 +722,7 @@ private:
 	holding_slot *factory_holding_slot = nullptr;
 	std::set<region *> regions; //the regions to which this province belongs
 	std::set<province *> border_provinces; //provinces bordering this one
+	std::set<province *> river_crossings; //provinces bordering this one which are reached by crossing a major river
 	technology_set technologies; //the technologies acquired for the province
 	std::set<trade_route *> trade_routes; //the trade routes going through the province
 	std::set<trade_route *> active_trade_routes; //the active trade routes going through the province

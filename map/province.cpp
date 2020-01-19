@@ -122,6 +122,11 @@ void province::process_gsml_scope(const gsml_data &scope)
 			province *border_province = province::get(border_province_identifier);
 			this->border_provinces.insert(border_province);
 		}
+	} else if (tag == "river_crossings") {
+		for (const std::string &border_province_identifier : scope.get_values()) {
+			province *border_province = province::get(border_province_identifier);
+			this->river_crossings.insert(border_province);
+		}
 	} else if (tag == "path_pos_map") {
 		for (const gsml_data &pos_list_data : scope.get_children()) {
 			const province *other_province = province::get(pos_list_data.get_tag());
@@ -385,6 +390,12 @@ gsml_data province::get_cache_data() const
 		border_provinces.add_value(province->get_identifier());
 	}
 	cache_data.add_child(std::move(border_provinces));
+
+	gsml_data river_crossings("river_crossings");
+	for (const province *province : this->river_crossings) {
+		river_crossings.add_value(province->get_identifier());
+	}
+	cache_data.add_child(std::move(river_crossings));
 
 	for (const holding_slot *slot : this->get_settlement_holding_slots()) {
 		gsml_data slot_cache_data = slot->get_cache_data();

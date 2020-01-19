@@ -319,8 +319,12 @@ void world::load_province_map()
 						continue;
 					}
 
-					border_province->add_border_province(other_border_province);
-					other_border_province->add_border_province(border_province);
+					if (border_province->borders_province(other_border_province)) {
+						continue; //already borders the other province directly
+					}
+
+					border_province->add_river_crossing(other_border_province);
+					other_border_province->add_river_crossing(border_province);
 				}
 			}
 		}
