@@ -39,7 +39,7 @@ public:
 		const QVariantList geopath_list = feature.value("data").toList();
 
 		if (geopath_list.size() > 1) {
-			throw std::runtime_error("Tried to process a path GeoJSON feature with more than one geopath.");
+			throw std::runtime_error("Tried to process a path GeoJSON feature with more than one geopath (for provinces \"" + start_province->get_identifier() + "\" and \"" + end_province->get_identifier() + "\").");
 		}
 
 		const QVariantMap geopath_variant_map = geopath_list.front().toMap();
