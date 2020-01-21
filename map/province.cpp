@@ -36,6 +36,7 @@
 #include "util/container_util.h"
 #include "util/location_util.h"
 #include "util/point_util.h"
+#include "util/rect_util.h"
 
 #include <QApplication>
 #include <QGeoCircle>
@@ -1693,46 +1694,30 @@ QPoint province::get_nearest_valid_pos(const QPoint &pos) const
 
 	//get the nearest position to a point that is actually a position inside the province
 
-	const QPoint start_pos = this->rect.topLeft();
-	int offset = 0;
-	bool checked_pos_in_rect = true; //whether a position within the province's rectangle was checked in the loop
-	bool checked_any_pos_in_rect = false; //whether any position in the province's rectangle has been checked so far
+	QRect check_rect(pos, QSize(1, 1));
 
-	while (checked_pos_in_rect || !checked_any_pos_in_rect) {
-		offset++;
-		checked_pos_in_rect = false;
+	bool checked_valid_pos = true;
+	while (checked_valid_pos) {
+		checked_valid_pos = false;
+		check_rect.adjust(-1, -1, 1, 1);
 
-		for (int x_offset = -offset; x_offset <= offset; ++x_offset) {
-			int y_offset = -(offset - std::abs(x_offset));
+		QPoint result_pos(-1, -1);
 
-			for (int y_offset_multiplier = -1; y_offset_multiplier <= 1; y_offset_multiplier += 2) {
-				y_offset *= y_offset_multiplier;
-
-				QPoint near_pos = pos + QPoint(x_offset, y_offset);
-				if (this->rect.contains(near_pos)) {
-					checked_pos_in_rect = true;
-					checked_any_pos_in_rect = true;
-
-					if (this->image.pixel(near_pos - start_pos) != qRgba(0, 0, 0, 0)) {
-						return near_pos;
-					}
-				}
-
-				// do the same with the inverted coordinate position of the offsets
-				near_pos = pos + QPoint(y_offset, x_offset);
-				if (this->rect.contains(near_pos)) {
-					checked_pos_in_rect = true;
-					checked_any_pos_in_rect = true;
-
-					if (this->image.pixel(near_pos - start_pos) != qRgba(0, 0, 0, 0)) {
-						return near_pos;
-					}
-				}
-
-				if (y_offset == 0) {
-					break; //no need to do it a second time if the y offset is 0
-				}
+		rect::for_each_perimeter_point_until(check_rect, [&](const QPoint &pos) {
+			if (this->is_valid_pos(pos)) {
+				result_pos = pos;
+				return true;
 			}
+
+			if (this->get_world()->is_pos_valid(pos)) {
+				checked_valid_pos = true;
+			}
+
+			return false;
+		});
+
+		if (result_pos.x() != -1 && result_pos.y() != -1) {
+			return result_pos;
 		}
 	}
 
