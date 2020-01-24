@@ -44,7 +44,14 @@ public:
 
 		const QVariantMap geopath_variant_map = geopath_list.front().toMap();
 		const QGeoPath geopath = geopath_variant_map.value("data").value<QGeoPath>();
-		path::geopaths[std::make_pair(start_province, end_province)] = geopath;
+
+		const std::pair<province *, province *> province_pair(start_province, end_province);
+
+		if (path::geopaths.contains(province_pair)) {
+			throw std::runtime_error("Tried to add a path province geopath for provinces \"" + start_province->get_identifier() + "\" and \"" + end_province->get_identifier() + "\", but another one is already present for them.");
+		}
+
+		path::geopaths[province_pair] = geopath;
 	}
 
 	static inline std::map<std::pair<province *, province *>, QGeoPath> geopaths;
