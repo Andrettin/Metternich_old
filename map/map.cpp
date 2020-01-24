@@ -122,7 +122,7 @@ void map::load()
 
 			if (path.empty() || path_pos != path.back()) {
 				if (path.empty() && world->get_pos_province(path_pos) == end_province) {
-					throw std::runtime_error("The starting position of the path between the provinces of \"" + start_province->get_identifier() + "\" and \"" + end_province->get_identifier() + "\" is in the end province instead of in the start one.");
+					qWarning() << QString::fromStdString("The starting position of the path between the provinces of \"" + start_province->get_identifier() + "\" and \"" + end_province->get_identifier() + "\" is in the end province instead of in the start one.");
 				}
 
 				path.push_back(std::move(path_pos));
