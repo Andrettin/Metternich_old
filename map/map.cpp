@@ -109,7 +109,7 @@ void map::load()
 		for (const QGeoCoordinate &geocoordinate : geopath.path()) {
 			QPoint path_pos = world->get_coordinate_pos(geocoordinate);
 
-			if (!start_province->is_valid_pos(path_pos) && !end_province->is_valid_pos(path_pos) && !start_province->has_river_crossing_with(end_province)) {
+			if (!start_province->is_pos_valid(path_pos) && !end_province->is_pos_valid(path_pos) && !start_province->has_river_crossing_with(end_province)) {
 				const QPoint start_province_nearest_pos = start_province->get_nearest_valid_pos(path_pos);
 				const QPoint end_province_nearest_pos = end_province->get_nearest_valid_pos(path_pos);
 
