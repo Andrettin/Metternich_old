@@ -592,7 +592,7 @@ public:
 
 	const QPoint &get_main_pos() const;
 
-	bool is_valid_pos(const QPoint &pos) const
+	bool is_pos_valid(const QPoint &pos) const
 	{
 		//whether the position is a valid one in the province
 		return this->rect.contains(pos) && this->image.pixel(pos - this->rect.topLeft()) != qRgba(0, 0, 0, 0);
@@ -617,7 +617,7 @@ public:
 		this->path_pos_map[other_province] = std::move(path_pos_list);
 	}
 
-	bool is_valid_line_to(const QPoint &start_pos, const QPoint &target_pos, const province *other_province) const
+	bool is_line_to_valid(const QPoint &start_pos, const QPoint &target_pos, const province *other_province) const
 	{
 		//check if every point on a line from the given position to the target point is on either province
 		const QPoint diff(std::abs(start_pos.x() - target_pos.x()), std::abs(start_pos.y() - target_pos.y()));
@@ -632,7 +632,7 @@ public:
 				}
 
 				const QPoint line_pos = start_pos + QPoint(offset.x() * multiplier.x(), offset.y() * multiplier.y());
-				if (!this->is_valid_pos(line_pos) && !other_province->is_valid_pos(line_pos)) {
+				if (!this->is_pos_valid(line_pos) && !other_province->is_pos_valid(line_pos)) {
 					return false;
 				}
 			}
@@ -646,7 +646,7 @@ public:
 				}
 
 				const QPoint line_pos = start_pos + QPoint(offset.x() * multiplier.x(), offset.y() * multiplier.y());
-				if (!this->is_valid_pos(line_pos) && !other_province->is_valid_pos(line_pos)) {
+				if (!this->is_pos_valid(line_pos) && !other_province->is_pos_valid(line_pos)) {
 					return false;
 				}
 			}

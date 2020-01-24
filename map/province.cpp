@@ -1705,7 +1705,7 @@ QPoint province::get_nearest_valid_pos(const QPoint &pos) const
 		throw std::runtime_error("Tried to get the nearest valid position for point (" + std::to_string(pos.x()) + ", " + std::to_string(pos.y()) + ") in province \"" + this->get_identifier() + "\", but the latter has no valid image to check the position of pixels with.");
 	}
 
-	if (this->is_valid_pos(pos)) {
+	if (this->is_pos_valid(pos)) {
 		return pos; //the pos itself is already a valid position, so return the pos itself
 	}
 
@@ -1721,7 +1721,7 @@ QPoint province::get_nearest_valid_pos(const QPoint &pos) const
 		QPoint result_pos(-1, -1);
 
 		rect::for_each_perimeter_point_until(check_rect, [&](const QPoint &pos) {
-			if (this->is_valid_pos(pos)) {
+			if (this->is_pos_valid(pos)) {
 				result_pos = pos;
 				return true;
 			}
