@@ -15,6 +15,8 @@
 #include "holding/holding_slot_type.h"
 #include "holding/holding_type.h"
 #include "landed_title/landed_title.h"
+#include "map/map.h"
+#include "map/map_mode.h"
 #include "map/province.h"
 #include "politics/government_type.h"
 #include "politics/government_type_group.h"
@@ -266,6 +268,10 @@ void holding::set_owner(character *character)
 
 	this->owner = character;
 	emit owner_changed();
+
+	if (this->get_slot()->get_type() == holding_slot_type::trading_post && map::get()->get_mode() == map_mode::trade_zone) {
+		this->get_province()->update_color_for_map_mode(map::get()->get_mode());
+	}
 }
 
 province *holding::get_province() const

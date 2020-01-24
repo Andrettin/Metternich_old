@@ -6,6 +6,8 @@
 #include "holding/holding.h"
 #include "holding/holding_slot_type.h"
 #include "landed_title/landed_title.h"
+#include "map/map.h"
+#include "map/map_mode.h"
 #include "map/province.h"
 #include "map/province_profile.h"
 #include "map/region.h"
@@ -169,6 +171,10 @@ void holding_slot::set_holding(std::unique_ptr<metternich::holding> &&holding)
 {
 	this->holding = std::move(holding);
 	emit holding_changed();
+
+	if (this->get_type() == holding_slot_type::trading_post && map::get()->get_mode() == map_mode::trade_zone) {
+		this->get_province()->update_color_for_map_mode(map::get()->get_mode());
+	}
 }
 
 void holding_slot::generate_available_commodity()

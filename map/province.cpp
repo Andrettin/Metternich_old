@@ -1,5 +1,6 @@
 #include "map/province.h"
 
+#include "character/character.h"
 #include "culture/culture.h"
 #include "culture/culture_group.h"
 #include "database/gsml_data.h"
@@ -732,6 +733,12 @@ const QColor &province::get_color_for_map_mode(const map_mode mode) const
 				}
 				break;
 			}
+			case map_mode::trade_zone: {
+				if (this->get_trading_post_holding() != nullptr) {
+					return this->get_trading_post_holding()->get_owner()->get_realm()->get_color();
+				}
+				break;
+			}
 			default:
 				break;
 		}
@@ -1394,10 +1401,20 @@ void province::create_trading_post_holding_slot()
 
 void province::destroy_trading_post_holding_slot()
 {
+	this->get_trading_post_holding_slot()->set_holding(nullptr);
 	std::string holding_slot_identifier = this->get_trading_post_holding_slot_identifier();
 	holding_slot::remove(holding_slot_identifier);
 	this->trading_post_holding_slot = nullptr;
 	emit trading_post_holding_slot_changed();
+}
+
+holding *province::get_trading_post_holding() const
+{
+	if (this->get_trading_post_holding_slot() != nullptr) {
+		return this->get_trading_post_holding_slot()->get_holding();
+	}
+
+	return nullptr;
 }
 
 void province::add_population_unit(qunique_ptr<population_unit> &&population_unit)

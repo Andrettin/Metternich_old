@@ -350,6 +350,7 @@ public:
 	std::string get_trading_post_holding_slot_identifier() const;
 	void create_trading_post_holding_slot();
 	void destroy_trading_post_holding_slot();
+	holding *get_trading_post_holding() const;
 
 	holding_slot *get_factory_holding_slot() const
 	{

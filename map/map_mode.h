@@ -13,7 +13,8 @@ enum class map_mode : int
 	culture_group,
 	religion,
 	religion_group,
-	trade_node
+	trade_node,
+	trade_zone //the map mode detailing which countries control trading posts where
 };
 
 }
