@@ -1,18 +1,15 @@
 #pragma once
 
-#include "holding/holding.h"
-#include "map/province.h"
 #include "script/modifier_effect/modifier_effect.h"
 
 namespace metternich {
 
-/**
-**	@brief	A population growth modifier effect
-*/
-class population_growth_modifier_effect : public modifier_effect
+template <typename T>
+class population_growth_modifier_effect : public modifier_effect<T>
 {
 public:
-	population_growth_modifier_effect(const int population_growth) : population_growth(population_growth) {}
+	population_growth_modifier_effect(const int population_growth)
+		: population_growth(population_growth) {}
 
 	virtual const std::string &get_identifier() const override
 	{
@@ -20,14 +17,13 @@ public:
 		return identifier;
 	}
 
-	virtual void apply(province *province, const int change) const override
+	virtual void apply(T *scope, const int change) const override
 	{
-		province->change_population_growth_modifier(this->population_growth * change);
-	}
-
-	virtual void apply(holding *holding, const int change) const override
-	{
-		holding->change_base_population_growth(this->population_growth * change);
+		if constexpr (std::is_same_v<T, holding>) {
+			scope->change_base_population_growth(this->population_growth * change);
+		} else {
+			scope->change_population_growth_modifier(this->population_growth * change);
+		}
 	}
 
 private:

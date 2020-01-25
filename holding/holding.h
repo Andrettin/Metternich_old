@@ -19,9 +19,9 @@ class commodity;
 class culture;
 class employment;
 class employment_type;
+class holding_modifier;
 class holding_slot;
 class holding_type;
-class identifiable_modifier;
 class landed_title;
 class phenotype;
 class population_type;
@@ -477,7 +477,7 @@ private:
 	metternich::commodity *commodity = nullptr; //the commodity produced by the holding (if any)
 	metternich::culture *culture = nullptr; //the holding's culture
 	metternich::religion *religion = nullptr; //the holding's religion
-	std::set<identifiable_modifier *> modifiers; //modifiers applied to the holding
+	std::set<holding_modifier *> modifiers; //modifiers applied to the holding
 	bool selected = false;
 	std::map<const employment_type *, std::unique_ptr<employment>> employments; //employments, mapped to their respective employment types
 	std::map<population_type *, int> population_per_type; //the population for each population type

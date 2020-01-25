@@ -2,13 +2,12 @@
 
 namespace metternich {
 
+class character;
 class gsml_property;
 class holding;
 class province;
 
-/**
-**	@brief	A modifier effect
-*/
+template <typename T>
 class modifier_effect
 {
 public:
@@ -17,20 +16,11 @@ public:
 	virtual ~modifier_effect() {}
 
 	virtual const std::string &get_identifier() const = 0;
-
-	virtual void apply(province *province, const int change) const
-	{
-		Q_UNUSED(province)
-		Q_UNUSED(change)
-		throw std::runtime_error("Invalid modifier effect for province: \"" + this->get_identifier() + "\".");
-	}
-
-	virtual void apply(holding *holding, const int change) const
-	{
-		Q_UNUSED(holding)
-		Q_UNUSED(change)
-		throw std::runtime_error("Invalid modifier effect for holding: \"" + this->get_identifier() + "\".");
-	}
+	virtual void apply(T *scope, const int change) const = 0;
 };
+
+extern template class modifier_effect<character>;
+extern template class modifier_effect<holding>;
+extern template class modifier_effect<province>;
 
 }

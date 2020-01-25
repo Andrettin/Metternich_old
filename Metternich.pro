@@ -64,9 +64,7 @@ SOURCES += \
         script/event/event_option.cpp \
         script/event/scoped_event_base.cpp \
         script/factor_modifier.cpp \
-        script/identifiable_modifier.cpp \
         script/modifier.cpp \
-        script/modifier_base.cpp \
         script/modifier_effect/modifier_effect.cpp \
         species/species.cpp \
         species/wildlife_unit.cpp \
@@ -190,13 +188,13 @@ HEADERS += \
     script/event/event_option.h \
     script/event/scoped_event_base.h \
     script/factor_modifier.h \
-    script/identifiable_modifier.h \
+    script/holding_modifier.h \
     script/modifier.h \
-    script/modifier_base.h \
     script/modifier_effect/modifier_effect.h \
     script/modifier_effect/population_capacity_modifier_effect.h \
     script/modifier_effect/population_capacity_modifier_modifier_effect.h \
     script/modifier_effect/population_growth_modifier_effect.h \
+    script/province_modifier.h \
     script/scope_util.h \
     singleton.h \
     species/species.h \

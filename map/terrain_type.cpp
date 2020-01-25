@@ -43,7 +43,7 @@ void terrain_type::process_gsml_scope(const gsml_data &scope)
 		this->color = scope.to_color();
 		terrain_type::instances_by_rgb[this->color.rgb()] = this;
 	} else if (tag == "modifier") {
-		this->modifier = std::make_unique<metternich::modifier>();
+		this->modifier = std::make_unique<metternich::modifier<province>>();
 		database::process_gsml_data(this->modifier, scope);
 	} else {
 		data_entry_base::process_gsml_scope(scope);

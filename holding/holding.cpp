@@ -25,7 +25,7 @@
 #include "random.h"
 #include "religion/religion.h"
 #include "religion/religion_group.h"
-#include "script/identifiable_modifier.h"
+#include "script/holding_modifier.h"
 #include "script/modifier.h"
 #include "translator.h"
 #include "util/container_util.h"
@@ -455,14 +455,14 @@ void holding::check_overpopulation()
 	//give the overpopulation modifier if the holding has become overpopulated, or remove it if it was overpopulated but isn't anymore
 	const bool overpopulated = this->get_population() > this->get_population_capacity();
 	if (overpopulated) {
-		if (this->modifiers.find(identifiable_modifier::get_overpopulation_modifier()) == this->modifiers.end()) {
-			identifiable_modifier::get_overpopulation_modifier()->apply(this);
-			this->modifiers.insert(identifiable_modifier::get_overpopulation_modifier());
+		if (this->modifiers.find(holding_modifier::get_overpopulation_modifier()) == this->modifiers.end()) {
+			holding_modifier::get_overpopulation_modifier()->apply(this);
+			this->modifiers.insert(holding_modifier::get_overpopulation_modifier());
 		}
 	} else {
-		if (this->modifiers.find(identifiable_modifier::get_overpopulation_modifier()) != this->modifiers.end()) {
-			identifiable_modifier::get_overpopulation_modifier()->remove(this);
-			this->modifiers.erase(identifiable_modifier::get_overpopulation_modifier());
+		if (this->modifiers.find(holding_modifier::get_overpopulation_modifier()) != this->modifiers.end()) {
+			holding_modifier::get_overpopulation_modifier()->remove(this);
+			this->modifiers.erase(holding_modifier::get_overpopulation_modifier());
 		}
 	}
 }

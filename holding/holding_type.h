@@ -9,10 +9,13 @@
 namespace metternich {
 
 class building;
+class holding;
 class law;
 class law_group;
-class modifier;
 enum class holding_slot_type : int;
+
+template <typename T>
+class modifier;
 
 class holding_type : public data_entry, public data_type<holding_type>
 {
@@ -95,7 +98,7 @@ public:
 	Q_INVOKABLE void add_default_law(law *law);
 	Q_INVOKABLE void remove_default_law(law *law);
 
-	const std::unique_ptr<metternich::modifier> &get_modifier() const
+	const std::unique_ptr<metternich::modifier<holding>> &get_modifier() const
 	{
 		return this->modifier;
 	}
@@ -105,7 +108,7 @@ private:
 	std::string portrait_tag;
 	std::set<building *> buildings;
 	std::map<law_group *, law *> default_laws;
-	std::unique_ptr<metternich::modifier> modifier; //the modifier applied to holdings of this type
+	std::unique_ptr<metternich::modifier<holding>> modifier; //the modifier applied to holdings of this type
 };
 
 }

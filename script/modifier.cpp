@@ -5,15 +5,47 @@
 
 namespace metternich {
 
-/**
-**	@brief	Process a GSML property
-**
-**	@param	property	The property
-*/
-void modifier::process_gsml_property(const gsml_property &property)
+template <typename T>
+modifier<T>::modifier()
 {
-	std::unique_ptr<modifier_effect> modifier_effect = modifier_effect::from_gsml_property(property);
-	this->add_modifier_effect(std::move(modifier_effect));
 }
+
+template <typename T>
+modifier<T>::~modifier()
+{
+}
+
+template <typename T>
+void modifier<T>::process_gsml_property(const gsml_property &property)
+{
+	std::unique_ptr<modifier_effect<T>> effect = modifier_effect<T>::from_gsml_property(property);
+	this->add_modifier_effect(std::move(effect));
+}
+
+template <typename T>
+void modifier<T>::apply(T *scope) const
+{
+	for (const std::unique_ptr<modifier_effect<T>> &modifier_effect : this->modifier_effects) {
+		modifier_effect->apply(scope, 1);
+	}
+}
+
+template <typename T>
+void modifier<T>::remove(T *scope) const
+{
+	for (const std::unique_ptr<modifier_effect<T>> &modifier_effect : this->modifier_effects) {
+		modifier_effect->apply(scope, -1);
+	}
+}
+
+template <typename T>
+void modifier<T>::add_modifier_effect(std::unique_ptr<modifier_effect<T>> &&modifier_effect)
+{
+	this->modifier_effects.push_back(std::move(modifier_effect));
+}
+
+template class modifier<character>;
+template class modifier<holding>;
+template class modifier<province>;
 
 }
