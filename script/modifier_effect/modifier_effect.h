@@ -17,6 +17,7 @@ public:
 
 	virtual const std::string &get_identifier() const = 0;
 	virtual void apply(T *scope, const int change) const = 0;
+	virtual std::string get_string() const = 0;
 };
 
 extern template class modifier_effect<character>;

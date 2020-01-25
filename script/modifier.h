@@ -33,6 +33,7 @@ public:
 
 	void apply(T *scope) const;
 	void remove(T *scope) const;
+	std::string get_string() const;
 
 private:
 	void add_modifier_effect(std::unique_ptr<modifier_effect<T>> &&modifier_effect);

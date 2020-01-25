@@ -1,6 +1,7 @@
 #pragma once
 
 #include "script/modifier_effect/modifier_effect.h"
+#include "util/number_util.h"
 
 namespace metternich {
 
@@ -24,6 +25,11 @@ public:
 		} else {
 			scope->change_population_growth_modifier(this->population_growth * change);
 		}
+	}
+
+	virtual std::string get_string() const override
+	{
+		return "Population Growth: " + number::to_signed_centesimal_string(this->population_growth) + "%";
 	}
 
 private:

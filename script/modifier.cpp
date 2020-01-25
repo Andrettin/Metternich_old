@@ -39,6 +39,19 @@ void modifier<T>::remove(T *scope) const
 }
 
 template <typename T>
+std::string modifier<T>::get_string() const
+{
+	std::string str;
+	for (size_t i = 0; i < this->modifier_effects.size(); ++i) {
+		if (i > 0) {
+			str += "\n";
+		}
+		str += this->modifier_effects[i]->get_string();
+	}
+	return str;
+}
+
+template <typename T>
 void modifier<T>::add_modifier_effect(std::unique_ptr<modifier_effect<T>> &&modifier_effect)
 {
 	this->modifier_effects.push_back(std::move(modifier_effect));

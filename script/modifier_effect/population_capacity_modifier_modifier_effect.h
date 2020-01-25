@@ -1,6 +1,7 @@
 #pragma once
 
 #include "script/modifier_effect/modifier_effect.h"
+#include "util/number_util.h"
 
 namespace metternich {
 
@@ -24,6 +25,11 @@ public:
 		} else {
 			scope->change_population_capacity_modifier(this->population_capacity_modifier * change);
 		}
+	}
+
+	virtual std::string get_string() const override
+	{
+		return "Population Capacity Modifier: " + number::to_signed_string(this->population_capacity_modifier) + "%";
 	}
 
 private:
