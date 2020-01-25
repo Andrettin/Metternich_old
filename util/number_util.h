@@ -68,4 +68,14 @@ inline double floor_to_centesimal(double number)
 	return floor_to_decimal_places<2>(number);
 }
 
+inline std::string to_signed_string(const int number)
+{
+	std::string number_str;
+	if (number >= 0) {
+		number_str += "+";
+	}
+	number_str += std::to_string(number);
+	return number_str;
+}
+
 }
