@@ -334,17 +334,8 @@ public:
 
 	QVariantList get_traits_qvariant_list() const;
 
-	Q_INVOKABLE void add_trait(trait *trait)
-	{
-		this->traits.push_back(trait);
-		emit traits_changed();
-	}
-
-	Q_INVOKABLE void remove_trait(trait *trait)
-	{
-		this->traits.erase(std::remove(this->traits.begin(), this->traits.end(), trait), this->traits.end());
-		emit traits_changed();
-	}
+	Q_INVOKABLE void add_trait(trait *trait);
+	Q_INVOKABLE void remove_trait(trait *trait);
 
 	bool has_trait(const trait *trait) const
 	{

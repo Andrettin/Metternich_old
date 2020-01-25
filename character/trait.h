@@ -8,6 +8,11 @@
 
 namespace metternich {
 
+class character;
+
+template <typename T>
+class modifier;
+
 class trait : public data_entry, public data_type<trait>
 {
 	Q_OBJECT
@@ -29,7 +34,10 @@ private:
 	static inline std::set<trait *> personality_traits;
 
 public:
-	trait(const std::string &identifier) : data_entry(identifier) {}
+	trait(const std::string &identifier);
+	virtual ~trait() override;
+
+	virtual void process_gsml_scope(const gsml_data &scope) override;
 
 	virtual void check() const override
 	{
@@ -91,9 +99,15 @@ public:
 		}
 	}
 
+	const std::unique_ptr<metternich::modifier<character>> &get_modifier() const
+	{
+		return this->modifier;
+	}
+
 private:
 	std::string icon_tag;
 	bool personality = false; //whether this is a personality trait
+	std::unique_ptr<metternich::modifier<character>> modifier; //the modifier applied to characters with this trait
 };
 
 }

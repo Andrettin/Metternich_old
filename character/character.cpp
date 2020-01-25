@@ -15,6 +15,7 @@
 #include "politics/government_type.h"
 #include "script/condition/condition_check.h"
 #include "script/event/character_event.h"
+#include "script/modifier.h"
 #include "util/container_util.h"
 #include "util/string_util.h"
 
@@ -297,6 +298,32 @@ province *character::get_capital_province() const
 QVariantList character::get_traits_qvariant_list() const
 {
 	return container::to_qvariant_list(this->get_traits());
+}
+
+void character::add_trait(trait *trait)
+{
+	if (this->has_trait(trait)) {
+		return;
+	}
+
+	this->traits.push_back(trait);
+	if (trait->get_modifier() != nullptr) {
+		trait->get_modifier()->apply(this);
+	}
+	emit traits_changed();
+}
+
+void character::remove_trait(trait *trait)
+{
+	if (!this->has_trait(trait)) {
+		return;
+	}
+
+	this->traits.erase(std::remove(this->traits.begin(), this->traits.end(), trait), this->traits.end());
+	if (trait->get_modifier() != nullptr) {
+		trait->get_modifier()->remove(this);
+	}
+	emit traits_changed();
 }
 
 bool character::has_personality_trait() const
