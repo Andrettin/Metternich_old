@@ -46,6 +46,7 @@ class character : public data_entry, public data_type<character>
 	Q_PROPERTY(metternich::character* liege READ get_liege WRITE set_liege NOTIFY liege_changed)
 	Q_PROPERTY(metternich::character* employer READ get_liege WRITE set_liege NOTIFY liege_changed)
 	Q_PROPERTY(QVariantList traits READ get_traits_qvariant_list NOTIFY traits_changed)
+	Q_PROPERTY(int dueling READ get_dueling NOTIFY dueling_changed)
 	Q_PROPERTY(int wealth READ get_wealth WRITE set_wealth NOTIFY wealth_changed)
 
 public:
@@ -355,6 +356,26 @@ public:
 
 	bool has_law(law *law) const;
 
+	int get_dueling() const
+	{
+		return this->dueling;
+	}
+
+	void set_dueling(const int dueling)
+	{
+		if (this->dueling == dueling) {
+			return;
+		}
+
+		this->dueling = dueling;
+		emit dueling_changed();
+	}
+
+	void change_dueling(const int change)
+	{
+		this->set_dueling(this->get_dueling() + change);
+	}
+
 	int get_wealth() const
 	{
 		return this->wealth;
@@ -402,6 +423,7 @@ signals:
 	void liege_changed();
 	void traits_changed();
 	void government_type_changed();
+	void dueling_changed();
 	void wealth_changed();
 	void laws_changed();
 
@@ -425,6 +447,7 @@ private:
 	std::vector<character *> vassals;
 	std::vector<trait *> traits;
 	government_type *government_type = nullptr;
+	int dueling = 0; //the character's skill in personal combat
 	int wealth = 0;
 	std::map<const commodity *, int> stored_commodities; //the amount of each commodity stored by the character
 	std::unique_ptr<condition_check<character>> government_condition_check;
