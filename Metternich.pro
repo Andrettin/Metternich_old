@@ -189,6 +189,7 @@ HEADERS += \
     script/event/event_option.h \
     script/event/scoped_event_base.h \
     script/factor_modifier.h \
+    script/flag/scoped_flag.h \
     script/holding_modifier.h \
     script/modifier.h \
     script/modifier_effect/dueling_modifier_effect.h \
