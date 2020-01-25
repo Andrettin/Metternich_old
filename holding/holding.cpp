@@ -404,9 +404,6 @@ void holding::set_population(const int population)
 	this->get_province()->change_population(population_change);
 }
 
-/**
-**	@brief	Calculate the population size for the holding
-*/
 void holding::calculate_population()
 {
 	int population = 0;

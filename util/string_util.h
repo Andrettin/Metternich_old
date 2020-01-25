@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QString>
+
 #include <algorithm>
 #include <string>
 #include <vector>
@@ -160,6 +162,11 @@ inline std::vector<std::string> get_suffix_combinations(const std::vector<std::v
 inline std::string highlight(const std::string &str)
 {
 	return "<font color=\"gold\">" + str + "</font>";
+}
+
+inline QString to_tooltip(const std::string &str)
+{
+	return QString::fromStdString(string::replace(str, "\n", "<br>"));
 }
 
 }

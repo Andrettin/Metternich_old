@@ -79,8 +79,8 @@ void scoped_event_base<T>::do_event(T *scope) const
 				option_ptr->do_effects(scope);
 			};
 
-			std::string effects_string = string::replace(option->get_effects_string(scope), "\n", "<br>");
-			auto option_instance = std::make_unique<event_option_instance>(QString::fromStdString(option->get_name()), QString::fromStdString(effects_string), option_effects);
+			const std::string effects_string = option->get_effects_string(scope);
+			auto option_instance = std::make_unique<event_option_instance>(QString::fromStdString(option->get_name()), string::to_tooltip(effects_string), option_effects);
 			option_instances.push_back(std::move(option_instance));
 		}
 		
