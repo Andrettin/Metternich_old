@@ -190,6 +190,7 @@ HEADERS += \
     script/factor_modifier.h \
     script/holding_modifier.h \
     script/modifier.h \
+    script/modifier_effect/dueling_modifier_effect.h \
     script/modifier_effect/modifier_effect.h \
     script/modifier_effect/population_capacity_modifier_effect.h \
     script/modifier_effect/population_capacity_modifier_modifier_effect.h \
