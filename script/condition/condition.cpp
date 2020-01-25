@@ -17,6 +17,7 @@
 #include "script/condition/has_any_trade_route_condition.h"
 #include "script/condition/has_any_trade_route_land_connection_condition.h"
 #include "script/condition/has_building_condition.h"
+#include "script/condition/has_flag_condition.h"
 #include "script/condition/has_law_condition.h"
 #include "script/condition/has_technology_condition.h"
 #include "script/condition/holding_type_condition.h"
@@ -86,6 +87,12 @@ std::unique_ptr<condition<T>> condition<T>::from_gsml_property(const gsml_proper
 			return std::make_unique<has_any_trade_route_condition<T>>(string::to_bool(property.get_value()));
 		} else if (condition_identifier == "has_any_trade_route_land_connection") {
 			return std::make_unique<has_any_trade_route_land_connection_condition<T>>(string::to_bool(property.get_value()));
+		}
+	}
+
+	if constexpr (std::is_same_v<T, character>) {
+		if (condition_identifier == "has_flag") {
+			return std::make_unique<has_flag_condition<T>>(property.get_value());
 		}
 	}
 
