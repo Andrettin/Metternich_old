@@ -5,6 +5,7 @@
 #include "database/gsml_property.h"
 #include "holding/holding.h"
 #include "map/province.h"
+#include "script/effect/flags_effect.h"
 #include "script/effect/traits_effect.h"
 
 namespace metternich {
@@ -17,6 +18,12 @@ std::unique_ptr<effect<T>> effect<T>::from_gsml_property(const gsml_property &pr
 	if constexpr (std::is_same_v<T, character>) {
 		if (effect_identifier == "traits") {
 			return std::make_unique<traits_effect<T>>(property.get_value(), property.get_operator());
+		}
+	}
+
+	if constexpr (std::is_same_v<T, character>) {
+		if (effect_identifier == "flags") {
+			return std::make_unique<flags_effect<T>>(property.get_value(), property.get_operator());
 		}
 	}
 
