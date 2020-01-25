@@ -109,6 +109,7 @@ HEADERS += \
     database/gsml_operator.h \
     database/gsml_parser.h \
     database/gsml_property.h \
+    database/identifiable_type.h \
     database/module.h \
     database/simple_data_type.h \
     defines.h \
