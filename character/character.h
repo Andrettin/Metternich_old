@@ -27,6 +27,9 @@ class trait;
 template <typename T>
 class condition_check;
 
+template <typename T>
+class scoped_flag;
+
 class character : public data_entry, public data_type<character>
 {
 	Q_OBJECT
@@ -411,6 +414,31 @@ public:
 	bool can_build_in_holding(const holding *holding);
 	Q_INVOKABLE bool can_build_in_holding(const QVariant &holding_variant);
 
+	bool has_flag(const scoped_flag<character> *flag) const
+	{
+		return this->flags.contains(flag);
+	}
+
+	void add_flag(const scoped_flag<character> *flag)
+	{
+		if (this->has_flag(flag)) {
+			return;
+		}
+
+		this->flags.insert(flag);
+		emit flags_changed();
+	}
+
+	void remove_flag(const scoped_flag<character> *flag)
+	{
+		if (!this->has_flag(flag)) {
+			return;
+		}
+
+		this->flags.erase(flag);
+		emit flags_changed();
+	}
+
 signals:
 	void name_changed();
 	void full_name_changed();
@@ -426,6 +454,7 @@ signals:
 	void dueling_changed();
 	void wealth_changed();
 	void laws_changed();
+	void flags_changed();
 
 private:
 	std::string name;
@@ -451,6 +480,7 @@ private:
 	int wealth = 0;
 	std::map<const commodity *, int> stored_commodities; //the amount of each commodity stored by the character
 	std::unique_ptr<condition_check<character>> government_condition_check;
+	std::set<const scoped_flag<character> *> flags;
 };
 
 }
