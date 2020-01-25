@@ -68,6 +68,11 @@ public:
 		throw std::runtime_error("The subtraction operator is not supported for \"" + this->get_identifier() + "\" effects.");
 	}
 
+	virtual bool is_hidden() const
+	{
+		return false;
+	}
+
 private:
 	gsml_operator effect_operator;
 };

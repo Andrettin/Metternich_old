@@ -31,11 +31,18 @@ template <typename T>
 std::string event_option<T>::get_effects_string(const T *scope) const
 {
 	std::string effects_string;
-	for (size_t i = 0; i < this->effects.size(); ++i) {
-		if (i > 0) {
+	bool first = true;
+	for (const std::unique_ptr<effect<T>> &effect : this->effects) {
+		if (effect->is_hidden()) {
+			continue;
+		}
+
+		if (first) {
+			first = false;
+		} else {
 			effects_string += "\n";
 		}
-		effects_string += this->effects[i]->get_string(scope);
+		effects_string += effect->get_string(scope);
 	}
 	return effects_string;
 }
