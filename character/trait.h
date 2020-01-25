@@ -20,6 +20,7 @@ class trait : public data_entry, public data_type<trait>
 	Q_PROPERTY(QString icon_tag READ get_icon_tag_qstring WRITE set_icon_tag_qstring)
 	Q_PROPERTY(QString icon_path READ get_icon_path_qstring CONSTANT)
 	Q_PROPERTY(bool personality READ is_personality WRITE set_personality)
+	Q_PROPERTY(QString modifier_effects_string READ get_modifier_effects_string CONSTANT)
 
 public:
 	static constexpr const char *class_identifier = "trait";
@@ -103,6 +104,8 @@ public:
 	{
 		return this->modifier;
 	}
+
+	QString get_modifier_effects_string() const;
 
 private:
 	std::string icon_tag;

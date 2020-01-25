@@ -1,6 +1,7 @@
 #include "character/trait.h"
 
 #include "script/modifier.h"
+#include "util/string_util.h"
 
 namespace metternich {
 
@@ -29,6 +30,15 @@ const std::filesystem::path &trait::get_icon_path() const
 	std::string base_tag = this->get_icon_tag();
 	const std::filesystem::path &icon_path = database::get()->get_tagged_icon_path(base_tag);
 	return icon_path;
+}
+
+QString trait::get_modifier_effects_string() const
+{
+	if (this->get_modifier() == nullptr) {
+		return QString();
+	}
+
+	return string::to_tooltip(this->get_modifier()->get_string());
 }
 
 }
