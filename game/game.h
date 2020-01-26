@@ -100,12 +100,24 @@ public:
 
 	void do_orders()
 	{
+		std::function<void()> order;
+		while ((order = this->get_next_order())) {
+			order();
+		}
+	}
+
+private:
+	std::function<void()> get_next_order()
+	{
 		std::shared_lock<std::shared_mutex> lock(this->mutex);
 
-		while (!this->orders.empty()) {
-			this->orders.front()();
-			this->orders.pop();
+		if (this->orders.empty()) {
+			return std::function<void()>();
 		}
+
+		std::function<void()> order = std::move(this->orders.front());
+		this->orders.pop();
+		return order;
 	}
 
 	void generate_missing_title_holders();
