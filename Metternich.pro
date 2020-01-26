@@ -183,6 +183,7 @@ HEADERS += \
     script/condition/trait_condition.h \
     script/condition/world_condition.h \
     script/effect/effect.h \
+    script/effect/event_effect.h \
     script/effect/flags_effect.h \
     script/effect/traits_effect.h \
     script/effect/wealth_effect.h \
