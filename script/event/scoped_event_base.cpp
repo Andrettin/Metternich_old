@@ -72,7 +72,7 @@ void scoped_event_base<T>::do_event(T *scope) const
 		this->pick_option(scope);
 	} else {
 		//add event to the list of events to be shown to the player
-		std::vector<std::unique_ptr<event_option_instance>> option_instances;
+		std::vector<qunique_ptr<event_option_instance>> option_instances;
 		for (const std::unique_ptr<event_option<T>> &option : this->options) {
 			const event_option<T> *option_ptr = option.get();
 			std::function<void()> option_effects = [option_ptr, scope]() {
@@ -80,11 +80,13 @@ void scoped_event_base<T>::do_event(T *scope) const
 			};
 
 			const std::string effects_string = option->get_effects_string(scope);
-			auto option_instance = std::make_unique<event_option_instance>(QString::fromStdString(option->get_name()), string::to_tooltip(effects_string), option_effects);
+			auto option_instance = make_qunique<event_option_instance>(QString::fromStdString(option->get_name()), string::to_tooltip(effects_string), option_effects);
+			option_instance->moveToThread(QApplication::instance()->thread());
 			option_instances.push_back(std::move(option_instance));
 		}
 		
-		auto evt_instance = std::make_unique<event_instance>(QString::fromStdString(this->get_title()), QString::fromStdString(this->get_description()), std::move(option_instances));
+		auto evt_instance = make_qunique<event_instance>(QString::fromStdString(this->get_title()), QString::fromStdString(this->get_description()), std::move(option_instances));
+		evt_instance->moveToThread(QApplication::instance()->thread());
 		engine_interface::get()->add_event_instance(std::move(evt_instance));
 	}
 }

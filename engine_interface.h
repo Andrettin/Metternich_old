@@ -1,5 +1,6 @@
 #pragma once
 
+#include "qunique_ptr.h"
 #include "singleton.h"
 
 #include <QObject>
@@ -87,7 +88,7 @@ public:
 	void set_map_mode(const int map_mode);
 	
 	QVariantList get_event_instances() const;
-	void add_event_instance(std::unique_ptr<event_instance> &&event_instance);
+	void add_event_instance(qunique_ptr<event_instance> &&event_instance);
 	Q_INVOKABLE void remove_event_instance(const QVariant &event_instance_variant);
 
 signals:
@@ -102,7 +103,7 @@ signals:
 private:
 	QString loading_message; //the loading message to be displayed
 	character *selected_character = nullptr;
-	std::vector<std::unique_ptr<event_instance>> event_instances;
+	std::vector<qunique_ptr<event_instance>> event_instances;
 	mutable std::shared_mutex event_instances_mutex;
 	mutable std::shared_mutex loading_message_mutex;
 };

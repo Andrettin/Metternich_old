@@ -1,5 +1,7 @@
 #pragma once
 
+#include "qunique_ptr.h"
+
 #include <QObject>
 #include <QString>
 #include <QVariantList>
@@ -21,7 +23,7 @@ class event_instance : public QObject
 	Q_PROPERTY(QVariantList options READ get_options CONSTANT)
 
 public:
-	event_instance(const QString &name, const QString &description, std::vector<std::unique_ptr<event_option_instance>> &&options);
+	event_instance(const QString &name, const QString &description, std::vector<qunique_ptr<event_option_instance>> &&options);
 	~event_instance();
 	
 	QVariantList get_options() const;
@@ -29,7 +31,7 @@ public:
 private:
 	QString name;
 	QString description;
-	std::vector<std::unique_ptr<event_option_instance>> options;
+	std::vector<qunique_ptr<event_option_instance>> options;
 };
 
 //an instance of an event option to be shown to the player

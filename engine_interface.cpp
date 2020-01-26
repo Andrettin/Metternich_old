@@ -72,14 +72,14 @@ QVariantList engine_interface::get_event_instances() const
 	
 	std::vector<event_instance *> event_instances;
 	
-	for (const std::unique_ptr<event_instance> &event_instance : this->event_instances) {
+	for (const qunique_ptr<event_instance> &event_instance : this->event_instances) {
 		event_instances.push_back(event_instance.get());
 	}
 	
 	return container::to_qvariant_list(event_instances);
 }
 
-void engine_interface::add_event_instance(std::unique_ptr<event_instance> &&event_instance)
+void engine_interface::add_event_instance(qunique_ptr<event_instance> &&event_instance)
 {
 	{
 		std::unique_lock<std::shared_mutex> lock(this->event_instances_mutex);
