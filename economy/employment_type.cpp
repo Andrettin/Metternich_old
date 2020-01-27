@@ -8,27 +8,14 @@
 
 namespace metternich {
 
-/**
-**	@brief	Constructor
-**
-**	@param	identifier	The employment type's string identifier
-*/
 employment_type::employment_type(const std::string &identifier) : data_entry(identifier)
 {
 }
 
-/**
-**	@brief	Destructor
-*/
 employment_type::~employment_type()
 {
 }
 
-/**
-**	@brief	Process a GSML property
-**
-**	@param	property	The property
-*/
 void employment_type::process_gsml_property(const gsml_property &property)
 {
 	if (property.get_key() == "template") {
@@ -42,11 +29,6 @@ void employment_type::process_gsml_property(const gsml_property &property)
 	}
 }
 
-/**
-**	@brief	Process a GSML scope
-**
-**	@param	scope	The scope
-*/
 void employment_type::process_gsml_scope(const gsml_data &scope)
 {
 	const std::string &tag = scope.get_tag();
@@ -76,9 +58,6 @@ void employment_type::process_gsml_scope(const gsml_data &scope)
 	}
 }
 
-/**
-**	@brief	Initialize the employment type
-*/
 void employment_type::initialize()
 {
 	//inherit the data from the template

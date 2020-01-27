@@ -7,9 +7,6 @@
 
 namespace metternich {
 
-/**
-**	@brief	A scripted holding type condition
-*/
 template <typename T>
 class holding_type_condition : public condition<T>
 {

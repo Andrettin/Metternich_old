@@ -7,27 +7,14 @@
 
 namespace metternich {
 
-/**
-**	@brief	Constructor
-**
-**	@param	identifier	The commodity's string identifier
-*/
 commodity::commodity(const std::string &identifier) : data_entry(identifier)
 {
 }
 
-/**
-**	@brief	Destructor
-*/
 commodity::~commodity()
 {
 }
 
-/**
-**	@brief	Process a GSML scope
-**
-**	@param	scope	The scope
-*/
 void commodity::process_gsml_scope(const gsml_data &scope)
 {
 	const std::string &tag = scope.get_tag();

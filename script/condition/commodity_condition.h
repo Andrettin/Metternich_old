@@ -8,9 +8,6 @@ namespace metternich {
 
 class commodity;
 
-/**
-**	@brief	A scripted commodity condition
-*/
 template <typename T>
 class commodity_condition : public condition<T>
 {

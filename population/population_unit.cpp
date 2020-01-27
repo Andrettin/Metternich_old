@@ -153,11 +153,6 @@ std::vector<std::vector<std::string>> population_unit::get_tag_suffix_list_with_
 	return tag_list_with_fallbacks;
 }
 
-/**
-**	@brief	Set the population unit's culture
-**
-**	@param	culture	The new culture
-*/
 void population_unit::set_culture(metternich::culture *culture)
 {
 	if (culture == this->get_culture()) {
@@ -284,11 +279,6 @@ void population_unit::set_discount_any_type(const bool discount_any_type)
 	emit discount_types_changed();
 }
 
-/**
-**	@brief	Get the population unit's discount types as a QVariantList
-**
-**	@return The variant list
-*/
 QVariantList population_unit::get_discount_types_qvariant_list() const
 {
 	return container::to_qvariant_list(this->get_discount_types());
@@ -461,11 +451,6 @@ void population_unit::seek_employment()
 	}
 }
 
-/**
-**	@brief	Get the path to the population unit's icon
-**
-**	@return	The path to the icon
-*/
 const std::filesystem::path &population_unit::get_icon_path() const
 {
 	const std::string &base_tag = this->get_type()->get_icon_tag();

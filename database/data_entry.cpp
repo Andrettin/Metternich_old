@@ -10,11 +10,6 @@
 
 namespace metternich {
 
-/**
-**	@brief	Process a GSML property
-**
-**	@param	property	The property
-*/
 void data_entry_base::process_gsml_property(const gsml_property &property)
 {
 	if (property.get_key() == "aliases") {

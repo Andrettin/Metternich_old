@@ -69,6 +69,10 @@ void event_option<T>::process_gsml_scope(const gsml_data &scope)
 		for (const gsml_property &property : scope.get_properties()) {
 			this->effects.push_back(effect<T>::from_gsml_property(property));
 		}
+
+		for (const gsml_data &scope : scope.get_children()) {
+			this->effects.push_back(effect<T>::from_gsml_scope(scope));
+		}
 	} else {
 		throw std::runtime_error("Invalid event option scope: \"" + scope.get_tag() + "\".");
 	}

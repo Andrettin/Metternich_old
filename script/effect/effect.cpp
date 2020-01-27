@@ -1,12 +1,14 @@
 #include "script/effect/effect.h"
 
 #include "character/character.h"
+#include "database/gsml_data.h"
 #include "database/gsml_operator.h"
 #include "database/gsml_property.h"
 #include "holding/holding.h"
 #include "map/province.h"
 #include "script/effect/event_effect.h"
 #include "script/effect/flags_effect.h"
+#include "script/effect/random_list_effect.h"
 #include "script/effect/traits_effect.h"
 #include "script/effect/wealth_effect.h"
 
@@ -34,6 +36,18 @@ std::unique_ptr<effect<T>> effect<T>::from_gsml_property(const gsml_property &pr
 	}
 
 	throw std::runtime_error("Invalid property effect: \"" + effect_identifier + "\".");
+}
+
+template <typename T>
+std::unique_ptr<effect<T>> effect<T>::from_gsml_scope(const gsml_data &scope)
+{
+	const std::string &effect_identifier = scope.get_tag();
+
+	if (effect_identifier == "random_list") {
+		return std::make_unique<random_list_effect<T>>(scope.get_children(), scope.get_operator());
+	}
+
+	throw std::runtime_error("Invalid scope effect: \"" + effect_identifier + "\".");
 }
 
 template <typename T>

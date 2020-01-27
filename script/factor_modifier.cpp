@@ -8,27 +8,16 @@
 
 namespace metternich {
 
-/**
-**	@brief	Constructor
-*/
 template <typename T>
 factor_modifier<T>::factor_modifier()
 {
 }
 
-/**
-**	@brief	Destructor
-*/
 template <typename T>
 factor_modifier<T>::~factor_modifier()
 {
 }
 
-/**
-**	@brief	Process a GSML property
-**
-**	@param	property	The property
-*/
 template <typename T>
 void factor_modifier<T>::process_gsml_property(const gsml_property &property)
 {
@@ -48,11 +37,6 @@ void factor_modifier<T>::process_gsml_property(const gsml_property &property)
 	}
 }
 
-/**
-**	@brief	Process a GSML scope
-**
-**	@param	scope	The scope
-*/
 template <typename T>
 void factor_modifier<T>::process_gsml_scope(const gsml_data &scope)
 {
@@ -61,6 +45,8 @@ void factor_modifier<T>::process_gsml_scope(const gsml_data &scope)
 }
 
 template class factor_modifier<character>;
+template class factor_modifier<holding>;
 template class factor_modifier<holding_slot>;
+template class factor_modifier<province>;
 
 }

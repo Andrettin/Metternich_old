@@ -185,6 +185,7 @@ HEADERS += \
     script/effect/effect.h \
     script/effect/event_effect.h \
     script/effect/flags_effect.h \
+    script/effect/random_list_effect.h \
     script/effect/traits_effect.h \
     script/effect/wealth_effect.h \
     script/event/character_event.h \

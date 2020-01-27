@@ -24,11 +24,6 @@ chance_factor<T>::~chance_factor()
 {
 }
 
-/**
-**	@brief	Process a GSML property
-**
-**	@param	property	The property
-*/
 template <typename T>
 void chance_factor<T>::process_gsml_property(const gsml_property &property)
 {
@@ -47,11 +42,6 @@ void chance_factor<T>::process_gsml_property(const gsml_property &property)
 	}
 }
 
-/**
-**	@brief	Process a GSML scope
-**
-**	@param	scope	The scope
-*/
 template <typename T>
 void chance_factor<T>::process_gsml_scope(const gsml_data &scope)
 {

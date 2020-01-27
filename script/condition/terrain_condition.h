@@ -9,9 +9,6 @@ namespace metternich {
 
 class terrain_type;
 
-/**
-**	@brief	A scripted terrain condition
-*/
 template <typename T>
 class terrain_condition : public condition<T>
 {

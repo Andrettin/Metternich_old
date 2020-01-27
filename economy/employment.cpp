@@ -7,10 +7,6 @@
 
 namespace metternich {
 
-
-/**
-**	@brief	Do the employment's daily actions
-*/
 void employment::do_day()
 {
 	for (auto &kv_pair : this->employee_sizes) {

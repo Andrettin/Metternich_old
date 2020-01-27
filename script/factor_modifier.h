@@ -53,6 +53,8 @@ private:
 };
 
 extern template class factor_modifier<character>;
+extern template class factor_modifier<holding>;
 extern template class factor_modifier<holding_slot>;
+extern template class factor_modifier<province>;
 
 }

@@ -52,13 +52,6 @@ landed_title *landed_title::add(const std::string &identifier)
 	return title;
 }
 
-/**
-**	@brief	Get the string identifier for a landed title tier
-**
-**	@param	tier	The tier enumeration value
-**
-**	@return	The string identifier for the title tier
-*/
 const char *landed_title::get_tier_identifier(const landed_title_tier tier)
 {
 	switch (tier) {
@@ -72,13 +65,6 @@ const char *landed_title::get_tier_identifier(const landed_title_tier tier)
 	throw std::runtime_error("Invalid landed title tier enumeration value: " + std::to_string(static_cast<int>(tier)) + ".");
 }
 
-/**
-**	@brief	Get the string identifier for a landed title tier's holder
-**
-**	@param	tier	The tier enumeration value
-**
-**	@return	The string identifier for the title tier's holder
-*/
 const char *landed_title::get_tier_holder_identifier(const landed_title_tier tier)
 {
 	switch (tier) {

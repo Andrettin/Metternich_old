@@ -10,16 +10,10 @@
 
 namespace metternich {
 
-/**
-**	@brief	The singleton template class
-*/
 template <typename T>
 class singleton
 {
 public:
-	/**
-	**	@brief	Get the singleton instance
-	*/
 	static T *get()
 	{
 		std::call_once(singleton<T>::once_flag, [](){
@@ -30,9 +24,6 @@ public:
 	}
 
 private:
-	/**
-	**	@brief	Create the singleton instance
-	*/
 	static void create()
 	{
 		singleton<T>::instance = std::make_unique<T>();

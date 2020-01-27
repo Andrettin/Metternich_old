@@ -13,13 +13,6 @@ gsml_parser::gsml_parser(const std::filesystem::path &filepath)
 {
 }
 
-/**
-**	@brief	Parse a GSML data file
-**
-**	@param	filepath	The path to the file holding the GSML data
-**
-**	@return	The parsed GSML data for the file.
-*/
 gsml_data gsml_parser::parse()
 {
 	if (!std::filesystem::exists(this->filepath)) {
@@ -53,11 +46,6 @@ gsml_data gsml_parser::parse()
 	return file_gsml_data;
 }
 
-/**
-**	@brief	Parse a line in a GSML data file
-**
-**	@param	line	The line to be parsed
-*/
 void gsml_parser::parse_line(const std::string &line)
 {
 	bool opened_quotation_marks = false;

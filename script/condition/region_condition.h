@@ -9,9 +9,6 @@ namespace metternich {
 
 class region;
 
-/**
-**	@brief	A scripted region condition
-*/
 template <typename T>
 class region_condition : public condition<T>
 {

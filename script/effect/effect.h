@@ -6,6 +6,7 @@
 namespace metternich {
 
 class character;
+class gsml_data;
 class gsml_property;
 class holding;
 class population_unit;
@@ -17,6 +18,7 @@ class effect
 {
 public:
 	static std::unique_ptr<effect> from_gsml_property(const gsml_property &property);
+	static std::unique_ptr<effect> from_gsml_scope(const gsml_data &scope);
 
 	effect(const gsml_operator effect_operator);
 	virtual ~effect() {}

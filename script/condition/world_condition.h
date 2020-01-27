@@ -11,9 +11,6 @@ namespace metternich {
 
 class world;
 
-/**
-**	@brief	A scripted world condition
-*/
 template <typename T>
 class world_condition : public condition<T>
 {
