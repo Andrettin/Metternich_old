@@ -73,6 +73,11 @@ public:
 		return character::living_characters;
 	}
 
+	static void purge_null_characters()
+	{
+		character::living_characters.erase(std::remove(character::living_characters.begin(), character::living_characters.end(), nullptr), character::living_characters.end());
+	}
+
 	static character *generate(culture *culture, religion *religion, phenotype *phenotype = nullptr);
 
 private:
@@ -148,7 +153,8 @@ public:
 		if (this->alive) {
 			character::living_characters.push_back(this);
 		} else {
-			character::living_characters.erase(std::remove(character::living_characters.begin(), character::living_characters.end(), this), character::living_characters.end());
+			auto find_iterator = std::find(character::living_characters.begin(), character::living_characters.end(), this);
+			*find_iterator = nullptr;
 		}
 		emit alive_changed();
 	}

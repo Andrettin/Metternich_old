@@ -135,17 +135,18 @@ void game::do_tick()
 			}
 			break;
 		case tick_period::day:
-			if (old_date.date().day() != this->current_date.date().day()) {
-				this->do_day();
+			if (old_date.date().year() != this->current_date.date().year()) {
+				this->do_year();
 			}
 
 			if (old_date.date().month() != this->current_date.date().month()) {
 				this->do_month();
 			}
 
-			if (old_date.date().year() != this->current_date.date().year()) {
-				this->do_year();
+			if (old_date.date().day() != this->current_date.date().day()) {
+				this->do_day();
 			}
+
 			break;
 	}
 }
@@ -159,14 +160,6 @@ void game::do_day()
 	const size_t current_year_day = static_cast<size_t>(date.dayOfYear());
 
 	const std::vector<holding_slot *> &holding_slots = holding_slot::get_all();
-	for (holding_slot *holding_slot : holding_slots) {
-		if (holding_slot->get_holding() == nullptr) {
-			continue;
-		}
-
-		holding_slot->get_holding()->do_day();
-	}
-
 	//process the monthly actions of different ones on each day of the month, for the sake of performance
 	for (size_t i = (current_day - 1); i < holding_slots.size(); i += days_in_month) {
 		holding_slot *holding_slot = holding_slots[i];
@@ -178,15 +171,15 @@ void game::do_day()
 		holding_slot->get_holding()->do_month();
 	}
 
-	const std::vector<province *> &provinces = province::get_all();
-	for (province *province : provinces) {
-		if (province->get_county() == nullptr) {
+	for (holding_slot *holding_slot : holding_slots) {
+		if (holding_slot->get_holding() == nullptr) {
 			continue;
 		}
 
-		province->do_day();
+		holding_slot->get_holding()->do_day();
 	}
 
+	const std::vector<province *> &provinces = province::get_all();
 	for (size_t i = (current_day - 1); i < provinces.size(); i += days_in_month) {
 		province *province = provinces[i];
 
@@ -197,15 +190,32 @@ void game::do_day()
 		province->do_month();
 	}
 
-	const std::vector<character *> &living_characters = character::get_all_living();
-	for (size_t i = (current_day - 1); i < living_characters.size(); i += days_in_month) {
-		character *character = living_characters[i];
-		character->do_month();
+	for (province *province : provinces) {
+		if (province->get_county() == nullptr) {
+			continue;
+		}
+
+		province->do_day();
 	}
 
+	const std::vector<character *> &living_characters = character::get_all_living();
 	for (size_t i = (current_year_day - 1); i < living_characters.size(); i += days_in_year) {
 		character *character = living_characters[i];
+
+		if (character == nullptr) {
+			continue;
+		}
+
 		character->do_year();
+	}
+
+	for (size_t i = (current_day - 1); i < living_characters.size(); i += days_in_month) {
+		character *character = living_characters[i];
+		if (character == nullptr) {
+			continue;
+		}
+
+		character->do_month();
 	}
 }
 
@@ -215,6 +225,8 @@ void game::do_month()
 
 void game::do_year()
 {
+	//dead characters were replaced by nullptrs in the living character list to not upset the monthly/yearly pulse order, but when a year turns they can be freely purged
+	character::purge_null_characters();
 }
 
 QString game::get_current_date_string() const
