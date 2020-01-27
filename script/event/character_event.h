@@ -19,6 +19,17 @@ public:
 
 	character_event(const std::string &identifier) : event(identifier) {}
 
+	virtual void process_gsml_property(const gsml_property &property) override
+	{
+		const std::string &key = property.get_key();
+
+		if (key == "triggers") {
+			scoped_event_base::process_gsml_property(property);
+		} else {
+			data_entry_base::process_gsml_property(property);
+		}
+	}
+
 	virtual void process_gsml_scope(const gsml_data &scope) override
 	{
 		const std::string &tag = scope.get_tag();

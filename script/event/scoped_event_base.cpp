@@ -9,6 +9,7 @@
 #include "script/condition/and_condition.h"
 #include "script/event/event_instance.h"
 #include "script/event/event_option.h"
+#include "script/event/event_trigger.h"
 #include "translator.h"
 #include "util/string_util.h"
 
@@ -26,6 +27,22 @@ scoped_event_base<T>::scoped_event_base()
 template <typename T>
 scoped_event_base<T>::~scoped_event_base()
 {
+}
+
+template <typename T>
+void scoped_event_base<T>::process_gsml_property(const gsml_property &property)
+{
+	if (property.get_key() == "triggers") {
+		switch (property.get_operator()) {
+			case gsml_operator::addition:
+				event_trigger<T>::get(property.get_value())->add_event(this);
+				break;
+			default:
+				throw std::runtime_error("Invalid operator for \"" + property.get_key() + "\" event property.");
+		}
+	} else {
+		throw std::runtime_error("Invalid event property: \"" + property.get_key() + "\".");
+	}
 }
 
 template <typename T>

@@ -191,6 +191,7 @@ HEADERS += \
     script/event/event.h \
     script/event/event_instance.h \
     script/event/event_option.h \
+    script/event/event_trigger.h \
     script/event/scoped_event_base.h \
     script/factor_modifier.h \
     script/flag/scoped_flag.h \

@@ -22,6 +22,7 @@ public:
 	scoped_event_base();
 	virtual ~scoped_event_base();
 
+	void process_gsml_property(const gsml_property &property);
 	void process_gsml_scope(const gsml_data &scope);
 
 	virtual const std::string &get_tag() const = 0;
