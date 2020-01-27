@@ -15,6 +15,7 @@
 #include "politics/government_type.h"
 #include "script/condition/condition_check.h"
 #include "script/event/character_event.h"
+#include "script/event/event_trigger.h"
 #include "script/modifier.h"
 #include "util/container_util.h"
 #include "util/string_util.h"
@@ -167,7 +168,7 @@ void character::initialize_history()
 void character::do_month()
 {
 	//do character events
-	for (character_event *event : character_event::get_all()) {
+	for (const auto *event : character_event_trigger::monthly_pulse->get_events()) {
 		if (event->check_conditions(this)) {
 			event->do_event(this);
 		}
