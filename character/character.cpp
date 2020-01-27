@@ -175,6 +175,15 @@ void character::do_month()
 	}
 }
 
+void character::do_year()
+{
+	for (const auto *event : character_event_trigger::yearly_pulse->get_events()) {
+		if (event->check_conditions(this)) {
+			event->do_event(this);
+		}
+	}
+}
+
 void character::set_name(const std::string &name)
 {
 	if (name == this->name) {

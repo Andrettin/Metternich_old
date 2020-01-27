@@ -154,7 +154,9 @@ void game::do_day()
 {
 	const QDate date = this->current_date.date();
 	const size_t days_in_month = static_cast<size_t>(date.daysInMonth());
+	const size_t days_in_year = static_cast<size_t>(date.daysInYear());
 	const size_t current_day = static_cast<size_t>(date.day());
+	const size_t current_year_day = static_cast<size_t>(date.dayOfYear());
 
 	const std::vector<holding_slot *> &holding_slots = holding_slot::get_all();
 	for (holding_slot *holding_slot : holding_slots) {
@@ -199,6 +201,11 @@ void game::do_day()
 	for (size_t i = (current_day - 1); i < living_characters.size(); i += days_in_month) {
 		character *character = living_characters[i];
 		character->do_month();
+	}
+
+	for (size_t i = (current_year_day - 1); i < living_characters.size(); i += days_in_year) {
+		character *character = living_characters[i];
+		character->do_year();
 	}
 }
 

@@ -53,6 +53,7 @@ class character_event_trigger : public event_trigger<character>
 {
 public:
 	static inline const event_trigger<character> *monthly_pulse = event_trigger::add("monthly_pulse");
+	static inline const event_trigger<character> *yearly_pulse = event_trigger::add("yearly_pulse");
 };
 
 }
