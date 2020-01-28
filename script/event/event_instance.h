@@ -12,7 +12,7 @@
 namespace metternich {
 
 class event_option_instance;
-	
+
 //an instance of an event to be shown to the player
 class event_instance : public QObject
 {
@@ -27,7 +27,7 @@ public:
 	~event_instance();
 	
 	QVariantList get_options() const;
-	
+
 private:
 	QString name;
 	QString description;

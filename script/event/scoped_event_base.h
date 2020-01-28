@@ -13,6 +13,9 @@ template <typename T>
 class condition;
 
 template <typename T>
+class effect;
+
+template <typename T>
 class event_option;
 
 template <typename T>
@@ -35,6 +38,7 @@ public:
 
 private:
 	std::unique_ptr<condition<T>> conditions;
+	std::vector<std::unique_ptr<effect<T>>> immediate_effects;
 	std::vector<std::unique_ptr<event_option<T>>> options;
 };
 

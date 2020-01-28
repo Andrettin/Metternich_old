@@ -34,7 +34,7 @@ public:
 	{
 		const std::string &tag = scope.get_tag();
 
-		if (tag == "conditions" || tag == "option") {
+		if (tag == "conditions" || tag == "immediate_effects" || tag == "option") {
 			scoped_event_base::process_gsml_scope(scope);
 		} else {
 			data_entry_base::process_gsml_scope(scope);
