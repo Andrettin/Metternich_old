@@ -4,10 +4,10 @@
 #include "database/gsml_property.h"
 #include "holding/holding.h"
 #include "map/province.h"
-#include "script/modifier_effect/dueling_modifier_effect.h"
 #include "script/modifier_effect/population_capacity_modifier_effect.h"
 #include "script/modifier_effect/population_capacity_modifier_modifier_effect.h"
 #include "script/modifier_effect/population_growth_modifier_effect.h"
+#include "script/modifier_effect/prowess_modifier_effect.h"
 #include "util/parse_util.h"
 
 namespace metternich {
@@ -28,8 +28,8 @@ std::unique_ptr<modifier_effect<T>> modifier_effect<T>::from_gsml_property(const
 	}
 
 	if constexpr (std::is_same_v<T, character>) {
-		if (identifier == "dueling") {
-			return std::make_unique<dueling_modifier_effect<T>>(std::stoi(property.get_value()));
+		if (identifier == "prowess") {
+			return std::make_unique<prowess_modifier_effect<T>>(std::stoi(property.get_value()));
 		}
 
 	}

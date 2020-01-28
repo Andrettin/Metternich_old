@@ -6,30 +6,30 @@
 namespace metternich {
 
 template <typename T>
-class dueling_modifier_effect : public modifier_effect<T>
+class prowess_modifier_effect : public modifier_effect<T>
 {
 public:
-	dueling_modifier_effect(const int dueling)
-		: dueling(dueling) {}
+	prowess_modifier_effect(const int prowess)
+		: prowess(prowess) {}
 
 	virtual const std::string &get_identifier() const override
 	{
-		static const std::string identifier = "dueling";
+		static const std::string identifier = "prowess";
 		return identifier;
 	}
 
 	virtual void apply(T *scope, const int change) const override
 	{
-		scope->change_dueling(this->dueling * change);
+		scope->change_prowess(this->prowess * change);
 	}
 
 	virtual std::string get_string() const override
 	{
-		return "Dueling: " + number::to_signed_string(this->dueling);
+		return "Prowess: " + number::to_signed_string(this->prowess);
 	}
 
 private:
-	int dueling = 0;
+	int prowess = 0;
 };
 
 }
