@@ -34,6 +34,7 @@ class engine_interface : public QObject, public singleton<engine_interface>
 	Q_PROPERTY(metternich::holding* selected_holding READ get_selected_holding NOTIFY selected_holding_changed)
 	Q_PROPERTY(metternich::character* selected_character READ get_selected_character WRITE set_selected_character NOTIFY selected_character_changed)
 	Q_PROPERTY(QString loading_message READ get_loading_message NOTIFY loading_message_changed)
+	Q_PROPERTY(bool paused READ is_paused WRITE set_paused NOTIFY paused_changed)
 	Q_PROPERTY(int map_mode READ get_map_mode WRITE set_map_mode NOTIFY map_mode_changed)
 	Q_PROPERTY(QVariantList event_instances READ get_event_instances NOTIFY event_instances_changed)
 
@@ -84,6 +85,8 @@ public:
 		emit loading_message_changed();
 	}
 
+	bool is_paused() const;
+	void set_paused(const bool paused);
 	int get_map_mode() const;
 	void set_map_mode(const int map_mode);
 	
@@ -97,6 +100,7 @@ signals:
 	void selected_holding_changed();
 	void selected_character_changed();
 	void loading_message_changed();
+	void paused_changed();
 	void map_mode_changed();
 	void event_instances_changed();
 

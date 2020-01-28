@@ -15,6 +15,7 @@ namespace metternich {
 
 engine_interface::engine_interface()
 {
+	connect(game::get(), &game::paused_changed, this, &engine_interface::paused_changed);
 }
 
 engine_interface::~engine_interface()
@@ -52,6 +53,18 @@ province *engine_interface::get_selected_province() const
 holding *engine_interface::get_selected_holding() const
 {
 	return holding::get_selected_holding();
+}
+
+bool engine_interface::is_paused() const
+{
+	return game::get()->is_paused();
+}
+
+void engine_interface::set_paused(const bool paused)
+{
+	game::get()->post_order([paused]() {
+		game::get()->set_paused(paused);
+	});
 }
 
 int engine_interface::get_map_mode() const

@@ -49,6 +49,7 @@ void game::start(const timeline *timeline, const QDateTime &start_date)
 	this->starting = false;
 	this->running = true;
 	emit running_changed();
+	this->set_paused(true);
 
 	std::thread game_loop_thread(&game::run, this);
 	game_loop_thread.detach();

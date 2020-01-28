@@ -59,7 +59,12 @@ public:
 
 	void set_paused(const bool paused)
 	{
+		if (paused == this->is_paused()) {
+			return;
+		}
+
 		this->paused = paused;
+		emit paused_changed();
 	}
 
 	void set_tick_period(const tick_period tick_period)
@@ -122,6 +127,7 @@ private:
 
 signals:
 	void running_changed();
+	void paused_changed();
 	void current_date_changed();
 	void player_character_changed();
 	void tick_period_changed();
