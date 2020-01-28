@@ -182,6 +182,7 @@ HEADERS += \
     script/condition/tier_de_jure_title_condition.h \
     script/condition/trait_condition.h \
     script/condition/world_condition.h \
+    script/effect/combat_effect.h \
     script/effect/effect.h \
     script/effect/event_effect.h \
     script/effect/flags_effect.h \
