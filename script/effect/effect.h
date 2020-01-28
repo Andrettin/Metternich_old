@@ -25,6 +25,9 @@ public:
 
 	virtual const std::string &get_identifier() const = 0;
 
+	virtual void process_gsml_property(const gsml_property &property);
+	virtual void process_gsml_scope(const gsml_data &scope);
+
 	void do_effect(T *scope) const;
 
 	virtual void do_assignment_effect(T *scope) const

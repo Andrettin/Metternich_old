@@ -67,18 +67,19 @@ template <typename T>
 class random_list_effect : public effect<T>
 {
 public:
-	random_list_effect(const std::vector<gsml_data> &child_scopes, const gsml_operator effect_operator)
-		: effect<T>(effect_operator)
+	random_list_effect(const gsml_operator effect_operator) : effect<T>(effect_operator)
 	{
-		for (const gsml_data &scope : child_scopes) {
-			this->entries.emplace_back(scope);
-		}
 	}
 
 	virtual const std::string &get_identifier() const override
 	{
 		static const std::string identifier = "random_list";
 		return identifier;
+	}
+
+	virtual void process_gsml_scope(const gsml_data &scope) override
+	{
+		this->entries.emplace_back(scope);
 	}
 
 	virtual void do_assignment_effect(T *scope) const override

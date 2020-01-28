@@ -1,6 +1,7 @@
 #include "script/effect/effect.h"
 
 #include "character/character.h"
+#include "database/database.h"
 #include "database/gsml_data.h"
 #include "database/gsml_operator.h"
 #include "database/gsml_property.h"
@@ -42,17 +43,36 @@ template <typename T>
 std::unique_ptr<effect<T>> effect<T>::from_gsml_scope(const gsml_data &scope)
 {
 	const std::string &effect_identifier = scope.get_tag();
+	std::unique_ptr<effect<T>> effect;
 
 	if (effect_identifier == "random_list") {
-		return std::make_unique<random_list_effect<T>>(scope.get_children(), scope.get_operator());
+		effect = std::make_unique<random_list_effect<T>>(scope.get_operator());
 	}
 
-	throw std::runtime_error("Invalid scope effect: \"" + effect_identifier + "\".");
+	if (effect == nullptr) {
+		throw std::runtime_error("Invalid scope effect: \"" + effect_identifier + "\".");
+	}
+
+	database::process_gsml_data(effect, scope);
+
+	return effect;
 }
 
 template <typename T>
 effect<T>::effect(const gsml_operator effect_operator) : effect_operator(effect_operator)
 {
+}
+
+template <typename T>
+void effect<T>::process_gsml_property(const gsml_property &property)
+{
+	throw std::runtime_error("Invalid property for \"" + this->get_identifier() + "\" effect: \"" + property.get_key() + "\".");
+}
+
+template <typename T>
+void effect<T>::process_gsml_scope(const gsml_data &scope)
+{
+	throw std::runtime_error("Invalid scope for \"" + this->get_identifier() + "\" effect: \"" + scope.get_tag() + "\".");
 }
 
 template <typename T>
