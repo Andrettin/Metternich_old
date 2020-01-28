@@ -37,8 +37,12 @@ class engine_interface : public QObject, public singleton<engine_interface>
 	Q_PROPERTY(bool paused READ is_paused WRITE set_paused NOTIFY paused_changed)
 	Q_PROPERTY(int map_mode READ get_map_mode WRITE set_map_mode NOTIFY map_mode_changed)
 	Q_PROPERTY(QVariantList event_instances READ get_event_instances NOTIFY event_instances_changed)
+	Q_PROPERTY(QStringList notifications READ get_notifications NOTIFY notifications_changed)
+	Q_PROPERTY(QString current_notification READ get_current_notification NOTIFY current_notification_changed)
 
 public:
+	static constexpr int max_notifications = 10;
+
 	engine_interface();
 	~engine_interface();
 
@@ -94,6 +98,39 @@ public:
 	void add_event_instance(qunique_ptr<event_instance> &&event_instance);
 	Q_INVOKABLE void remove_event_instance(const QVariant &event_instance_variant);
 
+	const QStringList &get_notifications() const
+	{
+		return this->notifications;
+	}
+
+	void add_notification(const QString &notification)
+	{
+		this->notifications.push_back(notification);
+
+		if (this->notifications.size() > engine_interface::max_notifications) {
+			this->notifications.pop_front();
+		}
+
+		emit notifications_changed();
+
+		this->set_current_notification(notification);
+	}
+
+	const QString &get_current_notification() const
+	{
+		return this->current_notification;
+	}
+
+	void set_current_notification(const QString &notification)
+	{
+		if (notification == this->get_current_notification()) {
+			return;
+		}
+
+		this->current_notification = notification;
+		emit current_notification_changed();
+	}
+
 signals:
 	void current_world_changed();
 	void selected_province_changed();
@@ -103,11 +140,15 @@ signals:
 	void paused_changed();
 	void map_mode_changed();
 	void event_instances_changed();
+	void notifications_changed();
+	void current_notification_changed();
 
 private:
 	QString loading_message; //the loading message to be displayed
 	character *selected_character = nullptr;
 	std::vector<qunique_ptr<event_instance>> event_instances;
+	QStringList notifications;
+	QString current_notification;
 	mutable std::shared_mutex event_instances_mutex;
 	mutable std::shared_mutex loading_message_mutex;
 };
