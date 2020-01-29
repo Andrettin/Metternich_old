@@ -13,6 +13,8 @@ class population_unit;
 class province;
 enum class gsml_operator : int;
 
+static constexpr const char *no_effect_string = "No effect";
+
 template <typename T>
 class effect
 {

@@ -64,7 +64,7 @@ public:
 			return effects_string;
 		}
 
-		return "No effect";
+		return no_effect_string;
 	}
 
 private:

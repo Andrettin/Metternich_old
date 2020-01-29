@@ -67,11 +67,14 @@ void event_option<T>::do_effects(T *scope) const
 template <typename T>
 std::string event_option<T>::get_effects_string(const T *scope) const
 {
-	if (this->effects == nullptr) {
-		return std::string();
+	if (this->effects != nullptr) {
+		std::string effects_string = this->effects->get_effects_string(scope);
+		if (!effects_string.empty()) {
+			return effects_string;
+		}
 	}
 
-	return this->effects->get_effects_string(scope);
+	return no_effect_string;
 }
 
 template class event_option<character>;
