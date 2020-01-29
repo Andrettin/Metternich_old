@@ -67,7 +67,7 @@ public:
 			enemy_amount--;
 		}
 
-		if (!scope->is_ai()) {
+		if (!scope->is_ai() && scope->is_alive()) {
 			if (success) {
 				engine_interface::get()->add_notification("You won a combat.");
 			} else {
@@ -83,6 +83,7 @@ public:
 			if (this->defeat_effects != nullptr) {
 				this->defeat_effects->do_effects(scope);
 			}
+			scope->set_alive(false);
 		}
 	}
 
@@ -122,6 +123,10 @@ private:
 
 	bool do_combat(const T *scope) const
 	{
+		if (!scope->is_alive()) {
+			return false; //the character has already been killed in a previous combat
+		}
+
 		int temp_prowess = scope->get_prowess();
 		int temp_enemy_prowess = this->get_enemy_prowess();
 

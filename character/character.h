@@ -2,6 +2,7 @@
 
 #include "database/data_entry.h"
 #include "database/data_type.h"
+#include "engine_interface.h"
 
 #include <QDateTime>
 #include <QVariant>
@@ -157,6 +158,10 @@ public:
 			*find_iterator = nullptr;
 		}
 		emit alive_changed();
+
+		if (!this->is_ai()) {
+			engine_interface::get()->add_notification("You died.");
+		}
 	}
 
 	bool is_female() const
