@@ -7,7 +7,7 @@ namespace metternich {
 
 std::string species::get_name_plural() const
 {
-	return translator::get()->translate(this->get_identifier_with_aliases(), {{"_plural"}});
+	return translator::get()->translate(this->get_identifier_with_aliases(), {{"plural"}});
 }
 
 QVariantList species::get_evolutions_qvariant_list() const

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "character/enemy.h"
 #include "database/database.h"
 #include "database/gsml_data.h"
 #include "database/gsml_property.h"
@@ -28,7 +29,9 @@ public:
 	{
 		const std::string &key = property.get_key();
 
-		if (key == "enemy_prowess") {
+		if (key == "enemy") {
+			this->enemy = enemy::get(property.get_value());
+		} else if (key == "enemy_prowess") {
 			this->enemy_prowess = std::stoi(property.get_value());
 		} else if (key == "enemy_amount") {
 			this->enemy_amount = std::stoi(property.get_value());
@@ -86,8 +89,12 @@ public:
 	virtual std::string get_assignment_string(const T *scope, const size_t indent) const override
 	{
 		std::string str = "Combat against " + std::to_string(this->enemy_amount) + " ";
-		str += (this->enemy_amount > 1 ? "enemies" : "enemy");
-		str += " of Prowess " + std::to_string(this->enemy_prowess);
+		if (this->enemy != nullptr) {
+			str += this->enemy_amount > 1 ? this->enemy->get_name_plural() : this->enemy->get_name();
+		} else {
+			str += this->enemy_amount > 1 ? "enemies" : "enemy";
+		}
+		str += " (Prowess " + std::to_string(this->get_enemy_prowess()) + ")";
 		if (this->victory_effects != nullptr) {
 			const std::string effects_string = this->victory_effects->get_effects_string(scope, indent + 1);
 			if (!effects_string.empty()) {
@@ -104,10 +111,19 @@ public:
 	}
 
 private:
+	int get_enemy_prowess() const
+	{
+		if (this->enemy != nullptr) {
+			return this->enemy->get_prowess();
+		}
+
+		return this->enemy_prowess;
+	}
+
 	bool do_combat(const T *scope) const
 	{
 		int temp_prowess = scope->get_prowess();
-		int temp_enemy_prowess = this->enemy_prowess;
+		int temp_enemy_prowess = this->get_enemy_prowess();
 
 		while (temp_prowess > 0 && temp_enemy_prowess > 0) {
 			const int roll_result = this->do_combat_roll(temp_prowess, temp_enemy_prowess);
@@ -130,6 +146,7 @@ private:
 private:
 	int enemy_prowess = 0;
 	int enemy_amount = 1;
+	const enemy *enemy = nullptr;
 	std::unique_ptr<effect_list<T>> victory_effects;
 	std::unique_ptr<effect_list<T>> defeat_effects;
 };
