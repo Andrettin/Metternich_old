@@ -30,6 +30,8 @@ public:
 
 		if (key == "enemy_prowess") {
 			this->enemy_prowess = std::stoi(property.get_value());
+		} else if (key == "enemy_amount") {
+			this->enemy_amount = std::stoi(property.get_value());
 		} else {
 			effect<T>::process_gsml_property(property);
 		}
@@ -52,19 +54,16 @@ public:
 
 	virtual void do_assignment_effect(T *scope) const override
 	{
-		int temp_prowess = scope->get_prowess();
-		int temp_enemy_prowess = this->enemy_prowess;
-
-		while (temp_prowess > 0 && temp_enemy_prowess > 0) {
-			const int roll_result = this->do_combat_roll(temp_prowess, temp_enemy_prowess);
-			if (roll_result < 0) {
-				temp_prowess += roll_result;
-			} else {
-				temp_enemy_prowess -= roll_result;
+		bool success = true;
+		int enemy_amount = this->enemy_amount;
+		while (enemy_amount > 0) {
+			success = this->do_combat(scope);
+			if (!success) {
+				break;
 			}
+			enemy_amount--;
 		}
 
-		const bool success = temp_prowess > 0;
 		if (!scope->is_ai()) {
 			if (success) {
 				engine_interface::get()->add_notification("You won a combat.");
@@ -86,7 +85,9 @@ public:
 
 	virtual std::string get_assignment_string(const T *scope, const size_t indent) const override
 	{
-		std::string str = "Combat against an enemy Prowess of " + std::to_string(this->enemy_prowess);
+		std::string str = "Combat against " + std::to_string(this->enemy_amount) + " ";
+		str += (this->enemy_amount > 1 ? "enemies" : "enemy");
+		str += " of Prowess " + std::to_string(this->enemy_prowess);
 		if (this->victory_effects != nullptr) {
 			const std::string effects_string = this->victory_effects->get_effects_string(scope, indent + 1);
 			if (!effects_string.empty()) {
@@ -102,6 +103,25 @@ public:
 		return str;
 	}
 
+private:
+	bool do_combat(const T *scope) const
+	{
+		int temp_prowess = scope->get_prowess();
+		int temp_enemy_prowess = this->enemy_prowess;
+
+		while (temp_prowess > 0 && temp_enemy_prowess > 0) {
+			const int roll_result = this->do_combat_roll(temp_prowess, temp_enemy_prowess);
+			if (roll_result < 0) {
+				temp_prowess += roll_result;
+			} else {
+				temp_enemy_prowess -= roll_result;
+			}
+		}
+
+		//return true on success, and false on failure
+		return temp_prowess > 0;
+	}
+
 	int do_combat_roll(const int temp_prowess, const int temp_enemy_prowess) const
 	{
 		return random::generate(temp_prowess) - random::generate(temp_enemy_prowess);
@@ -109,6 +129,7 @@ public:
 
 private:
 	int enemy_prowess = 0;
+	int enemy_amount = 1;
 	std::unique_ptr<effect_list<T>> victory_effects;
 	std::unique_ptr<effect_list<T>> defeat_effects;
 };
