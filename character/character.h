@@ -287,6 +287,9 @@ public:
 			return;
 		}
 
+		const province *old_capital_province = this->get_capital_province();
+		const province *old_location = this->get_location();
+
 		if (this->get_liege() != nullptr) {
 			this->get_liege()->vassals.erase(std::remove(this->get_liege()->vassals.begin(), this->get_liege()->vassals.end(), this), this->get_liege()->vassals.end());
 		}
@@ -294,6 +297,13 @@ public:
 		this->liege = liege;
 		liege->vassals.push_back(this);
 		emit liege_changed();
+
+		if (old_capital_province != this->get_capital_province()) {
+			emit capital_province_changed();
+		}
+		if (old_location != this->get_location()) {
+			emit location_changed();
+		}
 	}
 
 	character *get_top_liege() const
@@ -453,6 +463,8 @@ signals:
 	void wealth_changed();
 	void laws_changed();
 	void flags_changed();
+	void capital_province_changed();
+	void location_changed();
 
 private:
 	std::string name;

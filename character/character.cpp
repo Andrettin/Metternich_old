@@ -260,6 +260,8 @@ void character::set_primary_title(landed_title *title)
 	}
 
 	landed_title *old_title = this->get_primary_title();
+	const province *old_capital_province = this->get_capital_province();
+	const province *old_location = this->get_location();
 
 	this->primary_title = title;
 
@@ -279,6 +281,25 @@ void character::set_primary_title(landed_title *title)
 	if (!history::get()->is_loading()) {
 		if (title == nullptr || old_title == nullptr) {
 			this->calculate_government_type();
+		}
+	}
+
+	if (old_capital_province != this->get_capital_province()) {
+		emit capital_province_changed();
+
+		for (character *vassal : this->vassals) {
+			if (vassal->get_primary_title() == nullptr) {
+				emit vassal->capital_province_changed();
+			}
+		}
+	}
+	if (old_location != this->get_location()) {
+		emit location_changed();
+
+		for (character *vassal : this->vassals) {
+			if (vassal->get_primary_title() == nullptr) {
+				emit vassal->location_changed();
+			}
 		}
 	}
 }
@@ -325,7 +346,7 @@ province *character::get_capital_province() const
 		return this->get_liege()->get_capital_province();
 	}
 
-	throw std::runtime_error("Character \"" + this->get_identifier() + "\" has no capital province.");
+	return nullptr;
 }
 
 QVariantList character::get_traits_qvariant_list() const
