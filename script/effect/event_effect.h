@@ -2,6 +2,7 @@
 
 #include "script/effect/effect.h"
 #include "script/event/character_event.h"
+#include "util/string_util.h"
 
 #include <type_traits>
 
@@ -37,9 +38,9 @@ public:
 		}
 	}
 
-	virtual bool is_hidden() const override
+	virtual std::string get_assignment_string() const override
 	{
-		return true;
+		return "Receive the " + string::highlight(this->event->get_name()) + " event";
 	}
 
 private:

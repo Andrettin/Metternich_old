@@ -37,7 +37,7 @@ public:
 		}
 	}
 
-	int get_weight(T *scope) const
+	int get_weight(const T *scope) const
 	{
 		int weight = this->base_weight;
 
@@ -54,6 +54,17 @@ public:
 	void do_effects(T *scope) const
 	{
 		this->effects.do_effects(scope);
+	}
+
+	std::string get_effects_string(const T *scope, const size_t indent) const
+	{
+		std::string effects_string = this->effects.get_effects_string(scope, indent);
+
+		if (!effects_string.empty()) {
+			return effects_string;
+		}
+
+		return "No effect";
 	}
 
 private:
@@ -83,6 +94,50 @@ public:
 
 	virtual void do_assignment_effect(T *scope) const override
 	{
+		const std::vector<const random_list_entry<T> *> weighted_entries = this->get_weighted_entries(scope);
+
+		if (!weighted_entries.empty()) {
+			const random_list_entry<T> *chosen_entry = weighted_entries[random::generate(weighted_entries.size())];
+			chosen_entry->do_effects(scope);
+		}
+	}
+
+	virtual std::string get_assignment_string(const T *scope, const size_t indent) const override
+	{
+		std::string str;
+
+		int total_weight = 0;
+		std::vector<std::pair<const random_list_entry<T> *, int>> entry_weights;
+		for (const random_list_entry<T> &entry : this->entries) {
+			const int weight = entry.get_weight(scope);
+			if (weight > 0) {
+				total_weight += weight;
+				entry_weights.emplace_back(&entry, weight);
+			}
+		}
+
+		bool first = true;
+		for (const auto &entry_weight_pair : entry_weights) {
+			const random_list_entry<T> *entry = entry_weight_pair.first;
+			const int weight = entry_weight_pair.second;
+
+			if (first) {
+				first = false;
+			} else {
+				str += "\n" + std::string(indent, '\t');
+			}
+
+			const int chance = weight * 100 / total_weight;
+			const std::string effects_string = entry->get_effects_string(scope, indent + 1);
+			str += std::to_string(chance) + "% chance of:\n" + effects_string;
+		}
+
+		return str;
+	}
+
+private:
+	std::vector<const random_list_entry<T> *> get_weighted_entries(T *scope) const
+	{
 		std::vector<const random_list_entry<T> *> weighted_entries;
 
 		for (const random_list_entry<T> &entry : this->entries) {
@@ -93,15 +148,7 @@ public:
 			}
 		}
 
-		if (!weighted_entries.empty()) {
-			const random_list_entry<T> *chosen_entry = weighted_entries[random::generate(weighted_entries.size())];
-			chosen_entry->do_effects(scope);
-		}
-	}
-
-	virtual bool is_hidden() const override
-	{
-		return true;
+		return weighted_entries;
 	}
 
 private:
