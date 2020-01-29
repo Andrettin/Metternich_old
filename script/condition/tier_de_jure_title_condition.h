@@ -6,6 +6,7 @@
 #include "map/province.h"
 #include "map/world.h"
 #include "script/condition/condition.h"
+#include "script/condition/condition_check_base.h"
 #include "script/scope_util.h"
 
 namespace metternich {
@@ -38,7 +39,7 @@ public:
 		return title != nullptr && title->get_tier_de_jure_title(TIER) == this->tier_de_jure_title;
 	}
 
-	virtual void bind_condition_check(condition_check<T> &check, const T *scope) const override
+	virtual void bind_condition_check(condition_check_base &check, const T *scope) const override
 	{
 		const landed_title *title = get_scope_landed_title(scope);
 

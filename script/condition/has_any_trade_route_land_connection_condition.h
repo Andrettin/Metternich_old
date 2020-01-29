@@ -2,6 +2,7 @@
 
 #include "map/province.h"
 #include "script/condition/condition.h"
+#include "script/condition/condition_check_base.h"
 #include "script/scope_util.h"
 
 namespace metternich {
@@ -26,7 +27,7 @@ public:
 		return scope->has_any_trade_route_land_connection();
 	}
 
-	virtual void bind_condition_check(condition_check<T> &check, const T *scope) const override
+	virtual void bind_condition_check(condition_check_base &check, const T *scope) const override
 	{
 		scope->connect(scope, &T::active_trade_routes_changed, scope, [&check](){ check.set_result_recalculation_needed(); }, Qt::ConnectionType::DirectConnection);
 	}

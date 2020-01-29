@@ -23,7 +23,7 @@ public:
 	}
 
 	virtual bool check(const T *scope) const override;
-	virtual void bind_condition_check(condition_check<T> &check, const T *scope) const override;
+	virtual void bind_condition_check(condition_check_base &check, const T *scope) const override;
 
 private:
 	technology *technology = nullptr;

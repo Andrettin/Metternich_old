@@ -4,7 +4,7 @@
 #include "holding/holding_slot.h"
 #include "map/province.h"
 #include "population/population_unit.h"
-#include "script/condition/condition_check.h"
+#include "script/condition/condition_check_base.h"
 #include "script/scope_util.h"
 #include "technology/technology.h"
 
@@ -24,7 +24,7 @@ bool has_technology_condition<T>::check(const T *scope) const
 }
 
 template <typename T>
-void has_technology_condition<T>::bind_condition_check(condition_check<T> &check, const T *scope) const {
+void has_technology_condition<T>::bind_condition_check(condition_check_base &check, const T *scope) const {
 	const province *province = get_scope_province(scope);
 	scope->connect(province, &province::technologies_changed, scope, [&check](){ check.set_result_recalculation_needed(); }, Qt::ConnectionType::DirectConnection);
 }

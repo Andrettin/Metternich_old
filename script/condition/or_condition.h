@@ -40,7 +40,7 @@ public:
 		return false;
 	}
 
-	virtual void bind_condition_check(condition_check<T> &check, const T *scope) const override
+	virtual void bind_condition_check(condition_check_base &check, const T *scope) const override
 	{
 		for (const std::unique_ptr<condition<T>> &condition : this->conditions) {
 			condition->bind_condition_check(check, scope);

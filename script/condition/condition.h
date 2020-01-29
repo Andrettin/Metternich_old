@@ -3,15 +3,13 @@
 namespace metternich {
 
 class character;
+class condition_check_base;
 class gsml_data;
 class gsml_property;
 class holding;
 class holding_slot;
 class population_unit;
 class province;
-
-template <typename T>
-class condition_check;
 
 template <typename T>
 class condition
@@ -29,7 +27,7 @@ public:
 
 	virtual bool check(const T *scope) const = 0;
 
-	virtual void bind_condition_check(condition_check<T> &check, const T *scope) const
+	virtual void bind_condition_check(condition_check_base &check, const T *scope) const
 	{
 		Q_UNUSED(check)
 		Q_UNUSED(scope)
