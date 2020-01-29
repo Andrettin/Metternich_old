@@ -166,7 +166,9 @@ inline std::string highlight(const std::string &str)
 
 inline QString to_tooltip(const std::string &str)
 {
-	return QString::fromStdString(string::replace(str, "\n", "<br>"));
+	std::string tooltip_str = string::replace(str, "\n", "<br>");
+	tooltip_str = string::replace(tooltip_str, "\t", "<font color=\"transparent\">aa</font>"); //whitespaces are ignored after a <br>
+	return QString::fromStdString(tooltip_str);
 }
 
 }

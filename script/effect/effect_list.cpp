@@ -29,7 +29,7 @@ void effect_list<T>::do_effects(T *scope) const
 }
 
 template <typename T>
-std::string effect_list<T>::get_effects_string(const T *scope) const
+std::string effect_list<T>::get_effects_string(const T *scope, const size_t indent) const
 {
 	std::string effects_string;
 	bool first = true;
@@ -43,7 +43,12 @@ std::string effect_list<T>::get_effects_string(const T *scope) const
 		} else {
 			effects_string += "\n";
 		}
-		effects_string += effect->get_string(scope);
+
+		if (indent > 0) {
+			effects_string += std::string(indent, '\t');
+		}
+
+		effects_string += effect->get_string(scope, indent);
 	}
 	return effects_string;
 }

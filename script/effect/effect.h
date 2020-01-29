@@ -56,11 +56,18 @@ public:
 		return this->effect_operator;
 	}
 
-	std::string get_string(const T *scope) const;
+	std::string get_string(const T *scope, const size_t indent) const;
 
 	virtual std::string get_assignment_string() const
 	{
 		throw std::runtime_error("The assignment operator is not supported for \"" + this->get_identifier() + "\" effects.");
+	}
+
+	virtual std::string get_assignment_string(const T *scope, const size_t indent) const
+	{
+		Q_UNUSED(scope)
+		Q_UNUSED(indent)
+		return this->get_assignment_string();
 	}
 
 	virtual std::string get_addition_string() const

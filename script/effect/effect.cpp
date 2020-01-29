@@ -101,8 +101,9 @@ void effect<T>::do_effect(T *scope) const
 }
 
 template <typename T>
-std::string effect<T>::get_string(const T *scope) const
+std::string effect<T>::get_string(const T *scope, const size_t indent) const
 {
+	/*
 	std::string scope_name;
 	if constexpr (std::is_same_v<T, character> || std::is_same_v<T, holding>) {
 		scope_name = scope->get_titled_name();
@@ -111,22 +112,21 @@ std::string effect<T>::get_string(const T *scope) const
 	}
 
 	std::string str = string::highlight(scope_name) + ": ";
+	*/
 
 	switch (this->get_operator()) {
 		case gsml_operator::assignment:
-			str += this->get_assignment_string();
+			return this->get_assignment_string(scope, indent);
 			break;
 		case gsml_operator::addition:
-			str += this->get_addition_string();
+			return this->get_addition_string();
 			break;
 		case gsml_operator::subtraction:
-			str += this->get_subtraction_string();
+			return this->get_subtraction_string();
 			break;
 		default:
 			throw std::runtime_error("Invalid operator (\"" + std::to_string(static_cast<int>(this->get_operator())) + "\") for effect.");
 	}
-
-	return str;
 }
 
 template class effect<character>;

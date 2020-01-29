@@ -1,13 +1,14 @@
 #pragma once
 
+#include "database/database.h"
+#include "database/gsml_data.h"
 #include "database/gsml_property.h"
+#include "effect_list.h"
 #include "engine_interface.h"
 #include "random.h"
 #include "script/effect/effect.h"
 
 namespace metternich {
-
-class gsml_data;
 
 template <typename T>
 class combat_effect : public effect<T>
@@ -34,6 +35,21 @@ public:
 		}
 	}
 
+	virtual void process_gsml_scope(const gsml_data &scope) override
+	{
+		const std::string &tag = scope.get_tag();
+
+		if (tag == "victory") {
+			this->victory_effects = std::make_unique<effect_list<T>>();
+			database::process_gsml_data(this->victory_effects, scope);
+		} else if (tag == "defeat") {
+			this->defeat_effects = std::make_unique<effect_list<T>>();
+			database::process_gsml_data(this->defeat_effects, scope);
+		} else {
+			effect<T>::process_gsml_scope(scope);
+		}
+	}
+
 	virtual void do_assignment_effect(T *scope) const override
 	{
 		int temp_prowess = scope->get_prowess();
@@ -56,11 +72,34 @@ public:
 				engine_interface::get()->add_notification("You lost a combat.");
 			}
 		}
+
+		if (success) {
+			if (this->victory_effects != nullptr) {
+				this->victory_effects->do_effects(scope);
+			}
+		} else {
+			if (this->defeat_effects != nullptr) {
+				this->defeat_effects->do_effects(scope);
+			}
+		}
 	}
 
-	virtual std::string get_assignment_string() const override
+	virtual std::string get_assignment_string(const T *scope, const size_t indent) const override
 	{
-		return "Combat against an enemy Prowess of " + std::to_string(this->enemy_prowess);
+		std::string str = "Combat against an enemy Prowess of " + std::to_string(this->enemy_prowess);
+		if (this->victory_effects != nullptr) {
+			const std::string effects_string = this->victory_effects->get_effects_string(scope, indent + 1);
+			if (!effects_string.empty()) {
+				str += "\n" + std::string(indent, '\t') + "If victorious:\n" + effects_string;
+			}
+		}
+		if (this->defeat_effects != nullptr) {
+			const std::string effects_string = this->defeat_effects->get_effects_string(scope, indent + 1);
+			if (!effects_string.empty()) {
+				str += "\n" + std::string(indent, '\t') + "If defeated:\n" + effects_string;
+			}
+		}
+		return str;
 	}
 
 	int do_combat_roll(const int temp_prowess, const int temp_enemy_prowess) const
@@ -70,6 +109,8 @@ public:
 
 private:
 	int enemy_prowess = 0;
+	std::unique_ptr<effect_list<T>> victory_effects;
+	std::unique_ptr<effect_list<T>> defeat_effects;
 };
 
 }
