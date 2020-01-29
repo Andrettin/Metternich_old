@@ -192,6 +192,7 @@ HEADERS += \
     script/effect/event_effect.h \
     script/effect/flags_effect.h \
     script/effect/if_effect.h \
+    script/effect/location_effect.h \
     script/effect/random_list_effect.h \
     script/effect/traits_effect.h \
     script/effect/wealth_effect.h \
