@@ -22,6 +22,7 @@
 #include "script/condition/has_law_condition.h"
 #include "script/condition/has_technology_condition.h"
 #include "script/condition/holding_type_condition.h"
+#include "script/condition/location_condition.h"
 #include "script/condition/not_condition.h"
 #include "script/condition/or_condition.h"
 #include "script/condition/region_condition.h"
@@ -120,6 +121,14 @@ std::unique_ptr<condition<T>> condition<T>::from_gsml_scope(const gsml_data &sco
 		condition = std::make_unique<not_condition<T>>(std::move(and_condition));
 		return condition;
 	} else {
+		if constexpr (std::is_same_v<T, character>) {
+			if (condition_identifier == "location") {
+				condition = std::make_unique<location_condition<T>>();
+			}
+		}
+	}
+
+	if (condition == nullptr) {
 		throw std::runtime_error("Invalid scope condition: \"" + condition_identifier + "\".");
 	}
 
