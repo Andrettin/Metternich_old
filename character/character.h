@@ -2,7 +2,6 @@
 
 #include "database/data_entry.h"
 #include "database/data_type.h"
-#include "engine_interface.h"
 
 #include <QDateTime>
 #include <QVariant>
@@ -144,25 +143,7 @@ public:
 		return this->alive;
 	}
 
-	void set_alive(const bool alive)
-	{
-		if (alive == this->alive) {
-			return;
-		}
-
-		this->alive = alive;
-		if (this->alive) {
-			character::living_characters.push_back(this);
-		} else {
-			auto find_iterator = std::find(character::living_characters.begin(), character::living_characters.end(), this);
-			*find_iterator = nullptr;
-		}
-		emit alive_changed();
-
-		if (!this->is_ai()) {
-			engine_interface::get()->add_notification("You died.");
-		}
-	}
+	void set_alive(const bool alive);
 
 	bool is_female() const
 	{

@@ -6,6 +6,7 @@
 #include "culture/culture_group.h"
 #include "database/gsml_operator.h"
 #include "database/gsml_property.h"
+#include "engine_interface.h"
 #include "game/game.h"
 #include "history/history.h"
 #include "holding/holding.h"
@@ -218,6 +219,28 @@ std::string character::get_titled_name() const
 	}
 
 	return titled_name;
+}
+
+void character::set_alive(const bool alive)
+{
+	if (alive == this->is_alive()) {
+		return;
+	}
+
+	this->alive = alive;
+
+	if (this->alive) {
+		character::living_characters.push_back(this);
+	} else {
+		auto find_iterator = std::find(character::living_characters.begin(), character::living_characters.end(), this);
+		*find_iterator = nullptr;
+	}
+
+	emit alive_changed();
+
+	if (!this->is_ai()) {
+		engine_interface::get()->add_notification("You died.");
+	}
 }
 
 void character::set_culture(metternich::culture *culture)
