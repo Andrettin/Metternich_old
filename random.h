@@ -4,9 +4,6 @@
 
 namespace metternich {
 
-/**
-**	@brief	Random number generator
-*/
 class random
 {
 public:
@@ -20,11 +17,12 @@ public:
 	static T generate_in_range(const T min_value, const T max_value)
 	{
 		std::uniform_int_distribution<T> distribution(min_value, max_value);
-		return distribution(random::random_device);
+		return distribution(random::engine);
 	}
 
 private:
 	static inline std::random_device random_device = std::random_device();
+	static inline std::mt19937 engine = std::mt19937(random::random_device());
 };
 
 }
