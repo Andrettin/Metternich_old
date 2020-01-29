@@ -60,6 +60,7 @@ SOURCES += \
         script/condition/condition.cpp \
         script/condition/has_technology_condition.cpp \
         script/effect/effect.cpp \
+        script/effect/effect_list.cpp \
         script/event/event_instance.cpp \
         script/event/event_option.cpp \
         script/event/scoped_event_base.cpp \
@@ -184,6 +185,7 @@ HEADERS += \
     script/condition/world_condition.h \
     script/effect/combat_effect.h \
     script/effect/effect.h \
+    script/effect/effect_list.h \
     script/effect/event_effect.h \
     script/effect/flags_effect.h \
     script/effect/random_list_effect.h \

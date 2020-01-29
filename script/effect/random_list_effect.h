@@ -4,6 +4,7 @@
 #include "database/gsml_data.h"
 #include "random.h"
 #include "script/effect/effect.h"
+#include "script/effect/effect_list.h"
 #include "script/factor_modifier.h"
 
 #include <memory>
@@ -22,7 +23,7 @@ public:
 		this->base_weight = std::stoi(scope.get_tag());
 
 		for (const gsml_property &property : scope.get_properties()) {
-			this->effects.push_back(effect<T>::from_gsml_property(property));
+			this->effects.process_gsml_property(property);
 		}
 
 		for (const gsml_data &child_scope : scope.get_children()) {
@@ -31,7 +32,7 @@ public:
 				database::process_gsml_data(modifier, scope);
 				this->weight_modifiers.push_back(std::move(modifier));
 			} else {
-				this->effects.push_back(effect<T>::from_gsml_scope(child_scope));
+				this->effects.process_gsml_scope(child_scope);
 			}
 		}
 	}
@@ -52,15 +53,13 @@ public:
 
 	void do_effects(T *scope) const
 	{
-		for (const std::unique_ptr<effect<T>> &effect : this->effects) {
-			effect->do_effect(scope);
-		}
+		this->effects.do_effects(scope);
 	}
 
 private:
 	int base_weight = 0;
 	std::vector<std::unique_ptr<factor_modifier<T>>> weight_modifiers;
-	std::vector<std::unique_ptr<effect<T>>> effects;
+	effect_list<T> effects;
 };
 
 template <typename T>

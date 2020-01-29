@@ -5,6 +5,7 @@
 #include "database/gsml_property.h"
 #include "script/chance_factor.h"
 #include "script/effect/effect.h"
+#include "script/effect/effect_list.h"
 #include "translator.h"
 
 namespace metternich {
@@ -28,26 +29,6 @@ std::string event_option<T>::get_name() const
 }
 
 template <typename T>
-std::string event_option<T>::get_effects_string(const T *scope) const
-{
-	std::string effects_string;
-	bool first = true;
-	for (const std::unique_ptr<effect<T>> &effect : this->effects) {
-		if (effect->is_hidden()) {
-			continue;
-		}
-
-		if (first) {
-			first = false;
-		} else {
-			effects_string += "\n";
-		}
-		effects_string += effect->get_string(scope);
-	}
-	return effects_string;
-}
-
-template <typename T>
 void event_option<T>::process_gsml_property(const gsml_property &property)
 {
 	if (property.get_key() == "name") {
@@ -66,13 +47,8 @@ void event_option<T>::process_gsml_scope(const gsml_data &scope)
 		this->ai_chance = std::make_unique<chance_factor<T>>();
 		database::process_gsml_data(this->ai_chance, scope);
 	} else if (tag == "effects") {
-		for (const gsml_property &property : scope.get_properties()) {
-			this->effects.push_back(effect<T>::from_gsml_property(property));
-		}
-
-		for (const gsml_data &scope : scope.get_children()) {
-			this->effects.push_back(effect<T>::from_gsml_scope(scope));
-		}
+		this->effects = std::make_unique<effect_list<T>>();
+		database::process_gsml_data(this->effects, scope);
 	} else {
 		throw std::runtime_error("Invalid event option scope: \"" + scope.get_tag() + "\".");
 	}
@@ -81,9 +57,21 @@ void event_option<T>::process_gsml_scope(const gsml_data &scope)
 template <typename T>
 void event_option<T>::do_effects(T *scope) const
 {
-	for (const std::unique_ptr<effect<T>> &effect : this->effects) {
-		effect->do_effect(scope);
+	if (this->effects == nullptr) {
+		return;
 	}
+
+	this->effects->do_effects(scope);
+}
+
+template <typename T>
+std::string event_option<T>::get_effects_string(const T *scope) const
+{
+	if (this->effects == nullptr) {
+		return std::string();
+	}
+
+	return this->effects->get_effects_string(scope);
 }
 
 template class event_option<character>;

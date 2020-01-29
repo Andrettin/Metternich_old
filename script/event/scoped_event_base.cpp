@@ -8,6 +8,7 @@
 #include "script/chance_util.h"
 #include "script/condition/and_condition.h"
 #include "script/effect/effect.h"
+#include "script/effect/effect_list.h"
 #include "script/event/event_instance.h"
 #include "script/event/event_option.h"
 #include "script/event/event_trigger.h"
@@ -53,13 +54,8 @@ void scoped_event_base<T>::process_gsml_scope(const gsml_data &scope)
 		this->conditions = std::make_unique<and_condition<character>>();
 		database::process_gsml_data(this->conditions.get(), scope);
 	} else if (scope.get_tag() == "immediate_effects") {
-		for (const gsml_property &property : scope.get_properties()) {
-			this->immediate_effects.push_back(effect<T>::from_gsml_property(property));
-		}
-
-		for (const gsml_data &scope : scope.get_children()) {
-			this->immediate_effects.push_back(effect<T>::from_gsml_scope(scope));
-		}
+		this->immediate_effects = std::make_unique<effect_list<T>>();
+		database::process_gsml_data(this->immediate_effects, scope);
 	} else if (scope.get_tag() == "option") {
 		auto option = std::make_unique<event_option<character>>();
 		database::process_gsml_data(option.get(), scope);
@@ -94,8 +90,8 @@ bool scoped_event_base<T>::check_conditions(const T *scope) const
 template <typename T>
 void scoped_event_base<T>::do_event(T *scope) const
 {
-	for (const std::unique_ptr<effect<T>> &immediate_effect : this->immediate_effects) {
-		immediate_effect->do_effect(scope);
+	if (this->immediate_effects != nullptr) {
+		this->immediate_effects->do_effects(scope);
 	}
 
 	if (scope->is_ai()) {
