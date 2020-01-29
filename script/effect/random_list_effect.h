@@ -29,7 +29,7 @@ public:
 		for (const gsml_data &child_scope : scope.get_children()) {
 			if (child_scope.get_tag() == "modifier") {
 				auto modifier = std::make_unique<factor_modifier<T>>();
-				database::process_gsml_data(modifier, scope);
+				database::process_gsml_data(modifier, child_scope);
 				this->weight_modifiers.push_back(std::move(modifier));
 			} else {
 				this->effects.process_gsml_scope(child_scope);
