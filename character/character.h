@@ -324,6 +324,11 @@ public:
 
 	province *get_capital_province() const;
 
+	province *get_location() const
+	{
+		return this->get_capital_province();
+	}
+
 	const std::vector<trait *> &get_traits() const
 	{
 		return this->traits;
