@@ -104,8 +104,6 @@ public:
 
 	virtual std::string get_assignment_string(const T *scope, const size_t indent) const override
 	{
-		std::string str;
-
 		int total_weight = 0;
 		std::vector<std::pair<const random_list_entry<T> *, int>> entry_weights;
 		for (const random_list_entry<T> &entry : this->entries) {
@@ -116,6 +114,12 @@ public:
 			}
 		}
 
+		if (total_weight == 0) {
+			return std::string();
+		}
+
+		std::string str = "One of these will occur:\n";
+
 		bool first = true;
 		for (const auto &entry_weight_pair : entry_weights) {
 			const random_list_entry<T> *entry = entry_weight_pair.first;
@@ -124,11 +128,13 @@ public:
 			if (first) {
 				first = false;
 			} else {
-				str += "\n" + std::string(indent, '\t');
+				str += "\n";
 			}
 
+			str += std::string(indent + 1, '\t');
+
 			const int chance = weight * 100 / total_weight;
-			const std::string effects_string = entry->get_effects_string(scope, indent + 1);
+			const std::string effects_string = entry->get_effects_string(scope, indent + 2);
 			str += std::to_string(chance) + "% chance of:\n" + effects_string;
 		}
 
