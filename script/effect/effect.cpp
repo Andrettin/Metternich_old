@@ -10,6 +10,7 @@
 #include "script/effect/combat_effect.h"
 #include "script/effect/event_effect.h"
 #include "script/effect/flags_effect.h"
+#include "script/effect/for_effect.h"
 #include "script/effect/if_effect.h"
 #include "script/effect/location_effect.h"
 #include "script/effect/random_list_effect.h"
@@ -48,7 +49,9 @@ std::unique_ptr<effect<T>> effect<T>::from_gsml_scope(const gsml_data &scope)
 	const std::string &effect_identifier = scope.get_tag();
 	std::unique_ptr<effect<T>> effect;
 
-	if (effect_identifier == "if") {
+	if (effect_identifier == "for") {
+		effect = std::make_unique<for_effect<T>>(scope.get_operator());
+	} else if (effect_identifier == "if") {
 		effect = std::make_unique<if_effect<T>>(scope.get_operator());
 	} else if (effect_identifier == "random_list") {
 		effect = std::make_unique<random_list_effect<T>>(scope.get_operator());
