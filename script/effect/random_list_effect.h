@@ -64,7 +64,7 @@ public:
 			return effects_string;
 		}
 
-		return no_effect_string;
+		return std::string(indent, '\t') + no_effect_string;
 	}
 
 private:
