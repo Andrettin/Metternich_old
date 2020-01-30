@@ -8,6 +8,7 @@
 #include "engine_interface.h"
 #include "random.h"
 #include "script/effect/effect.h"
+#include "util/string_util.h"
 
 namespace metternich {
 
@@ -91,7 +92,7 @@ public:
 	{
 		std::string str = "Combat against " + std::to_string(this->enemy_amount) + " ";
 		if (this->enemy != nullptr) {
-			str += this->enemy_amount > 1 ? this->enemy->get_name_plural() : this->enemy->get_name();
+			str += string::highlight(this->enemy_amount > 1 ? this->enemy->get_name_plural() : this->enemy->get_name());
 		} else {
 			str += this->enemy_amount > 1 ? "enemies" : "enemy";
 		}
