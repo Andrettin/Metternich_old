@@ -17,6 +17,7 @@ class item : public data_entry, public data_type<item>
 {
 	Q_OBJECT
 
+	Q_PROPERTY(QString description READ get_description_qstring CONSTANT)
 	Q_PROPERTY(QString icon_tag READ get_icon_tag_qstring WRITE set_icon_tag_qstring)
 	Q_PROPERTY(QString icon_path READ get_icon_path_qstring CONSTANT)
 	Q_PROPERTY(QString modifier_effects_string READ get_modifier_effects_string CONSTANT)
@@ -34,6 +35,13 @@ public:
 	virtual void check() const override
 	{
 		this->get_icon_path(); //throws an exception if the icon isn't found
+	}
+
+	std::string get_description() const;
+
+	QString get_description_qstring() const
+	{
+		return QString::fromStdString(this->get_description());
 	}
 
 	const std::string &get_icon_tag() const

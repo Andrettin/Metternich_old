@@ -1,6 +1,7 @@
 #include "character/item.h"
 
 #include "script/modifier.h"
+#include "translator.h"
 #include "util/string_util.h"
 
 namespace metternich {
@@ -23,6 +24,11 @@ void item::process_gsml_scope(const gsml_data &scope)
 	} else {
 		data_entry_base::process_gsml_scope(scope);
 	}
+}
+
+std::string item::get_description() const
+{
+	return translator::get()->translate(this->get_identifier() + "_desc");
 }
 
 const std::filesystem::path &item::get_icon_path() const
