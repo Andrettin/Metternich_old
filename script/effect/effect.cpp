@@ -16,6 +16,7 @@
 #include "script/effect/location_effect.h"
 #include "script/effect/random_list_effect.h"
 #include "script/effect/scripted_effect_effect.h"
+#include "script/effect/tooltip_effect.h"
 #include "script/effect/traits_effect.h"
 #include "script/effect/wealth_effect.h"
 
@@ -61,6 +62,8 @@ std::unique_ptr<effect<T>> effect<T>::from_gsml_scope(const gsml_data &scope)
 		effect = std::make_unique<if_effect<T>>(scope.get_operator());
 	} else if (effect_identifier == "random_list") {
 		effect = std::make_unique<random_list_effect<T>>(scope.get_operator());
+	} else if (effect_identifier == "tooltip") {
+		effect = std::make_unique<tooltip_effect<T>>(scope.get_operator());
 	} else {
 		if constexpr (std::is_same_v<T, character>) {
 			if (effect_identifier == "combat") {
