@@ -48,6 +48,11 @@ std::string effect_list<T>::get_effects_string(const T *scope, const size_t inde
 			continue;
 		}
 
+		const std::string effect_string = effect->get_string(scope, indent);
+		if (effect_string.empty()) {
+			continue;
+		}
+
 		if (first) {
 			first = false;
 		} else {
@@ -58,7 +63,7 @@ std::string effect_list<T>::get_effects_string(const T *scope, const size_t inde
 			effects_string += std::string(indent, '\t');
 		}
 
-		effects_string += effect->get_string(scope, indent);
+		effects_string += effect_string;
 	}
 	return effects_string;
 }
