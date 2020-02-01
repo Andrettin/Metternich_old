@@ -115,6 +115,8 @@ public:
 
 		if (total_weight == 0) {
 			return std::string();
+		} else if (entry_weights.size() == 1) {
+			return (*entry_weights.begin()).first->get_effects_string(scope, indent);
 		}
 
 		std::string str = "One of these will occur:\n";
