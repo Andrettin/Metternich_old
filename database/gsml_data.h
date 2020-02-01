@@ -113,7 +113,7 @@ public:
 
 	void add_child(gsml_data &&child)
 	{
-		this->children.push_back(child);
+		this->children.push_back(std::move(child));
 	}
 
 	const std::vector<gsml_property> &get_properties() const
