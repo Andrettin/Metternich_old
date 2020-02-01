@@ -447,7 +447,7 @@ void character::add_item(item *item)
 	emit items_changed();
 
 	if (!this->is_ai()) {
-		engine_interface::get()->add_notification("You gained one " + string::highlight(item->get_name()) + " item.");
+		engine_interface::get()->add_notification("You gained one " + string::highlight(item->get_name()) + ".");
 	}
 }
 
@@ -461,7 +461,7 @@ void character::remove_item(item *item)
 	emit items_changed();
 
 	if (!this->is_ai()) {
-		engine_interface::get()->add_notification("You lost one " + string::highlight(item->get_name()) + " item.");
+		engine_interface::get()->add_notification("You lost one " + string::highlight(item->get_name()) + ".");
 	}
 }
 
