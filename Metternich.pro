@@ -16,6 +16,7 @@ SOURCES += \
         character/character.cpp \
         character/dynasty.cpp \
         character/enemy.cpp \
+        character/item.cpp \
         character/trait.cpp \
         culture/culture.cpp \
         culture/culture_base.cpp \
@@ -98,6 +99,7 @@ HEADERS += \
     character/character.h \
     character/dynasty.h \
     character/enemy.h \
+    character/item.h \
     character/trait.h \
     culture/culture.h \
     culture/culture_base.h \

@@ -2,6 +2,7 @@
 
 #include "character/character.h"
 #include "character/dynasty.h"
+#include "character/item.h"
 #include "character/trait.h"
 #include "culture/culture.h"
 #include "culture/culture_group.h"
@@ -112,6 +113,9 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 			} else if (property.get_key() == "discount_types") {
 				population_type *population_type_value = population_type::get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(population_type *, population_type_value));
+			} else if (property.get_key() == "items") {
+				item *item_value = item::get(property.get_value());
+				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(item *, item_value));
 			} else if (property.get_key() == "provinces") {
 				province *province_value = province::get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(province *, province_value));
@@ -237,6 +241,8 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 			new_property_value = QVariant::fromValue(string_to_holding_slot_type(property.get_value()));
 		} else if (property_class_name == "metternich::holding_type*") {
 			new_property_value = QVariant::fromValue(holding_type::get(property.get_value()));
+		} else if (property_class_name == "metternich::item*") {
+			new_property_value = QVariant::fromValue(item::get(property.get_value()));
 		} else if (property_class_name == "metternich::landed_title*") {
 			new_property_value = QVariant::fromValue(landed_title::get(property.get_value()));
 		} else if (property_class_name == "metternich::law*") {
