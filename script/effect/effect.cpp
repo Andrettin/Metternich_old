@@ -15,6 +15,7 @@
 #include "script/effect/items_effect.h"
 #include "script/effect/location_effect.h"
 #include "script/effect/random_list_effect.h"
+#include "script/effect/scripted_effect_effect.h"
 #include "script/effect/traits_effect.h"
 #include "script/effect/wealth_effect.h"
 
@@ -40,6 +41,8 @@ std::unique_ptr<effect<T>> effect<T>::from_gsml_property(const gsml_property &pr
 			return std::make_unique<event_effect<T>>(property.get_value(), property.get_operator());
 		} else if (effect_identifier == "flags") {
 			return std::make_unique<flags_effect<T>>(property.get_value(), property.get_operator());
+		} else if (effect_identifier == "scripted_effect") {
+			return std::make_unique<scripted_effect_effect<T>>(property.get_value(), property.get_operator());
 		}
 	}
 

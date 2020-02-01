@@ -19,6 +19,9 @@ template <typename T>
 class effect_list
 {
 public:
+	effect_list();
+	~effect_list();
+
 	void process_gsml_property(const gsml_property &property);
 	void process_gsml_scope(const gsml_data &scope);
 	void do_effects(T *scope) const;

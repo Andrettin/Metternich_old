@@ -21,9 +21,10 @@ public:
 	random_list_entry(const gsml_data &scope)
 	{
 		this->base_weight = std::stoi(scope.get_tag());
+		this->effects = std::make_unique<effect_list<T>>();
 
 		for (const gsml_property &property : scope.get_properties()) {
-			this->effects.process_gsml_property(property);
+			this->effects->process_gsml_property(property);
 		}
 
 		for (const gsml_data &child_scope : scope.get_children()) {
@@ -32,7 +33,7 @@ public:
 				database::process_gsml_data(modifier, child_scope);
 				this->weight_modifiers.push_back(std::move(modifier));
 			} else {
-				this->effects.process_gsml_scope(child_scope);
+				this->effects->process_gsml_scope(child_scope);
 			}
 		}
 	}
@@ -53,12 +54,12 @@ public:
 
 	void do_effects(T *scope) const
 	{
-		this->effects.do_effects(scope);
+		this->effects->do_effects(scope);
 	}
 
 	std::string get_effects_string(const T *scope, const size_t indent) const
 	{
-		std::string effects_string = this->effects.get_effects_string(scope, indent);
+		std::string effects_string = this->effects->get_effects_string(scope, indent);
 
 		if (!effects_string.empty()) {
 			return effects_string;
@@ -70,7 +71,7 @@ public:
 private:
 	int base_weight = 0;
 	std::vector<std::unique_ptr<factor_modifier<T>>> weight_modifiers;
-	effect_list<T> effects;
+	std::unique_ptr<effect_list<T>> effects;
 };
 
 template <typename T>

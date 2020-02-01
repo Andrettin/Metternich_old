@@ -9,6 +9,16 @@
 namespace metternich {
 
 template <typename T>
+effect_list<T>::effect_list()
+{
+}
+
+template <typename T>
+effect_list<T>::~effect_list()
+{
+}
+
+template <typename T>
 void effect_list<T>::process_gsml_property(const gsml_property &property)
 {
 	this->effects.push_back(effect<T>::from_gsml_property(property));

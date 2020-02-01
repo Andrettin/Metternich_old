@@ -200,6 +200,8 @@ HEADERS += \
     script/effect/items_effect.h \
     script/effect/location_effect.h \
     script/effect/random_list_effect.h \
+    script/effect/scripted_effect.h \
+    script/effect/scripted_effect_effect.h \
     script/effect/traits_effect.h \
     script/effect/wealth_effect.h \
     script/event/character_event.h \
