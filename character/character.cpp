@@ -35,6 +35,21 @@ std::set<std::string> character::get_database_dependencies()
 	};
 }
 
+void character::remove(character *character)
+{
+	if (character->is_alive()) {
+		vector::remove(character::living_characters, character);
+	}
+
+	data_type<metternich::character>::remove(character);
+}
+
+void character::purge_null_characters()
+{
+	vector::remove(character::living_characters, nullptr);
+}
+
+
 character *character::generate(metternich::culture *culture, metternich::religion *religion, metternich::phenotype *phenotype)
 {
 	if (culture == nullptr) {
@@ -171,19 +186,19 @@ void character::initialize_history()
 void character::do_month()
 {
 	//do character events
-	for (const auto *event : character_event_trigger::monthly_pulse->get_events()) {
-		if (event->check_conditions(this)) {
-			event->do_event(this);
-		}
+	character_event_trigger::monthly_pulse->do_events(this);
+
+	if (this->is_landed()) {
+		character_event_trigger::landed_monthly_pulse->do_events(this);
 	}
 }
 
 void character::do_year()
 {
-	for (const auto *event : character_event_trigger::yearly_pulse->get_events()) {
-		if (event->check_conditions(this)) {
-			event->do_event(this);
-		}
+	character_event_trigger::yearly_pulse->do_events(this);
+
+	if (this->is_landed()) {
+		character_event_trigger::landed_yearly_pulse->do_events(this);
 	}
 }
 

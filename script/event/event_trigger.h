@@ -45,6 +45,15 @@ public:
 		this->events.push_back(event);
 	}
 
+	void do_events(T *scope) const
+	{
+		for (const auto *event : this->get_events()) {
+			if (event->check_conditions(scope)) {
+				event->do_event(scope);
+			}
+		}
+	}
+
 private:
 	std::vector<const scoped_event_base<T> *> events;
 };
@@ -54,6 +63,8 @@ class character_event_trigger : public event_trigger<character>
 public:
 	static inline const event_trigger<character> *monthly_pulse = event_trigger::add("monthly_pulse");
 	static inline const event_trigger<character> *yearly_pulse = event_trigger::add("yearly_pulse");
+	static inline const event_trigger<character> *landed_monthly_pulse = event_trigger::add("landed_monthly_pulse");
+	static inline const event_trigger<character> *landed_yearly_pulse = event_trigger::add("landed_yearly_pulse");
 };
 
 }

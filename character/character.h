@@ -61,24 +61,14 @@ public:
 
 	static std::set<std::string> get_database_dependencies();
 
-	static void remove(character *character)
-	{
-		if (character->is_alive()) {
-			character::living_characters.erase(std::remove(character::living_characters.begin(), character::living_characters.end(), character), character::living_characters.end());
-		}
-
-		data_type<metternich::character>::remove(character);
-	}
+	static void remove(character *character);
 
 	static const std::vector<character *> &get_all_living()
 	{
 		return character::living_characters;
 	}
 
-	static void purge_null_characters()
-	{
-		character::living_characters.erase(std::remove(character::living_characters.begin(), character::living_characters.end(), nullptr), character::living_characters.end());
-	}
+	static void purge_null_characters();
 
 	static character *generate(culture *culture, religion *religion, phenotype *phenotype = nullptr);
 
