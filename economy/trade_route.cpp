@@ -140,7 +140,7 @@ void trade_route::process_gsml_scope(const gsml_data &scope)
 	} else if (tag == "path_branches") {
 		this->clear_path();
 
-		for (const gsml_data &path_branch_data : scope.get_children()) {
+		scope.for_each_child([&](const gsml_data &path_branch_data) {
 			std::vector<province *> path_branch;
 
 			for (const std::string &province_identifier : path_branch_data.get_values()) {
@@ -149,7 +149,7 @@ void trade_route::process_gsml_scope(const gsml_data &scope)
 			}
 
 			this->add_path_branch(path_branch);
-		}
+		});
 	} else {
 		data_entry_base::process_gsml_scope(scope);
 	}

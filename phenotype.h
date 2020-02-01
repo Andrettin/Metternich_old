@@ -25,7 +25,7 @@ public:
 		const std::string &tag = scope.get_tag();
 
 		if (tag == "mixing_results") {
-			for (const gsml_property &property : scope.get_properties()) {
+			scope.for_each_property([&](const gsml_property &property) {
 				const std::string &key = property.get_key();
 				const std::string &value = property.get_value();
 
@@ -33,7 +33,7 @@ public:
 				phenotype *result_phenotype = phenotype::get(value);
 				this->mixing_results[mixing_phenotype] = result_phenotype;
 				mixing_phenotype->mixing_results[this] = result_phenotype;
-			}
+			});
 		} else {
 			data_entry_base::process_gsml_scope(scope);
 		}

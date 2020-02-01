@@ -1,6 +1,7 @@
 #include "database/gsml_data.h"
 
 #include "database/gsml_operator.h"
+#include "database/gsml_property_visitor.h"
 
 namespace metternich {
 
@@ -11,7 +12,12 @@ gsml_data::gsml_data(std::string &&tag)
 
 void gsml_data::add_property(const std::string &key, const std::string &value)
 {
-	this->properties.emplace_back(key, gsml_operator::assignment, value);
+	this->elements.push_back(gsml_property(key, gsml_operator::assignment, value));
+}
+
+void gsml_data::add_property(std::string &&key, const gsml_operator gsml_operator, std::string &&value)
+{
+	this->elements.push_back(gsml_property(std::move(key), gsml_operator, std::move(value)));
 }
 
 void gsml_data::print(std::ofstream &ofstream, const size_t indentation, const bool new_line) const

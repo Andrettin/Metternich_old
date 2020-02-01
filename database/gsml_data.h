@@ -1,6 +1,9 @@
 #pragma once
 
+#include "database/gsml_data_visitor.h"
+#include "database/gsml_element_visitor.h"
 #include "database/gsml_property.h"
+#include "database/gsml_property_visitor.h"
 
 #include <QGeoCoordinate>
 #include <QGeoPath>
@@ -11,6 +14,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <variant>
 #include <vector>
 
 namespace metternich {
@@ -84,14 +88,14 @@ public:
 		return this->parent;
 	}
 
-	const std::vector<gsml_data> &get_children() const
-	{
-		return this->children;
-	}
-
 	const gsml_data &get_child(const std::string &tag) const
 	{
-		for (const gsml_data &child : this->get_children()) {
+		for (const auto &element : this->get_elements()) {
+			if (!std::holds_alternative<gsml_data>(element)) {
+				continue;
+			}
+
+			const gsml_data &child = std::get<gsml_data>(element);
 			if (child.get_tag() == tag) {
 				return child;
 			}
@@ -102,8 +106,12 @@ public:
 
 	bool has_child(const std::string &tag) const
 	{
-		for (const gsml_data &child : this->get_children()) {
-			if (child.get_tag() == tag) {
+		for (const auto &element : this->get_elements()) {
+			if (!std::holds_alternative<gsml_data>(element)) {
+				continue;
+			}
+
+			if (std::get<gsml_data>(element).get_tag() == tag) {
 				return true;
 			}
 		}
@@ -111,32 +119,53 @@ public:
 		return false;
 	}
 
-	void add_child(gsml_data &&child)
+	gsml_data &add_child()
 	{
-		this->children.push_back(std::move(child));
+		this->elements.push_back(gsml_data());
+		return std::get<gsml_data>(this->elements.back());
 	}
 
-	const std::vector<gsml_property> &get_properties() const
+	void add_child(gsml_data &&child)
 	{
-		return this->properties;
+		this->elements.emplace_back(std::move(child));
+	}
+
+	gsml_data &add_child(std::string &&tag, const gsml_operator gsml_operator)
+	{
+		this->elements.push_back(gsml_data(std::move(tag), gsml_operator));
+		return std::get<gsml_data>(this->elements.back());
+	}
+
+	template <typename function_type>
+	void for_each_child(const function_type &function) const
+	{
+		const gsml_data_visitor visitor(function);
+		for (const auto &element : this->get_elements()) {
+			std::visit(visitor, element);
+		}
 	}
 
 	std::vector<const gsml_property *> try_get_properties(const std::string &key) const
 	{
 		std::vector<const gsml_property *> properties;
 
-		for (const gsml_property &property : this->get_properties()) {
+		this->for_each_property([&](const gsml_property &property) {
 			if (property.get_key() == key) {
 				properties.push_back(&property);
 			}
-		}
+		});
 
 		return properties;
 	}
 
 	const std::string &get_property_value(const std::string &key) const
 	{
-		for (const gsml_property &property : this->get_properties()) {
+		for (const auto &element : this->get_elements()) {
+			if (!std::holds_alternative<gsml_property>(element)) {
+				continue;
+			}
+
+			const gsml_property &property = std::get<gsml_property>(element);
 			if (property.get_key() == key) {
 				return property.get_value();
 			}
@@ -146,6 +175,16 @@ public:
 	}
 
 	void add_property(const std::string &key, const std::string &value);
+	void add_property(std::string &&key, const gsml_operator gsml_operator, std::string &&value);
+
+	template <typename function_type>
+	void for_each_property(const function_type &function) const
+	{
+		const gsml_property_visitor visitor(function);
+		for (const auto &element : this->get_elements()) {
+			std::visit(visitor, element);
+		}
+	}
 
 	const std::vector<std::string> &get_values() const
 	{
@@ -157,17 +196,28 @@ public:
 		this->values.push_back(value);
 	}
 
-	void sort_children()
+	void add_value(std::string &&value)
 	{
-		//sort children by tag, alphabetically
-		std::sort(this->children.begin(), this->children.end(), [](gsml_data &a, gsml_data &b) {
-			return a.get_tag() < b.get_tag();
-		});
+		this->values.push_back(std::move(value));
 	}
 
 	bool is_empty() const
 	{
-		return this->get_children().empty() && this->get_properties().empty() && this->get_values().empty();
+		return this->get_elements().empty() && this->get_values().empty();
+	}
+
+	const std::vector<std::variant<gsml_property, gsml_data>> &get_elements() const
+	{
+		return this->elements;
+	}
+
+	template <typename property_function_type, typename data_function_type>
+	void for_each_element(const property_function_type &property_function, const data_function_type &data_function) const
+	{
+		const gsml_element_visitor visitor(property_function, data_function);
+		for (const auto &element : this->get_elements()) {
+			std::visit(visitor, element);
+		}
 	}
 
 	QColor to_color() const
@@ -209,15 +259,15 @@ public:
 	{
 		QList<QGeoCoordinate> coordinates;
 
-		for (const gsml_data &coordinate_data : this->get_children()) {
+		this->for_each_child([&](const gsml_data &coordinate_data) {
 			QGeoCoordinate coordinate = coordinate_data.to_geocoordinate();
 
 			if (!coordinates.empty() && coordinate == coordinates.back()) {
-				continue; //don't add the coordinate if it is the same as the previous one
+				return; //don't add the coordinate if it is the same as the previous one
 			}
 
 			coordinates.append(std::move(coordinate));
-		}
+		});
 
 		return coordinates;
 	}
@@ -228,10 +278,10 @@ public:
 		QGeoPolygon geopolygon(coordinates);
 
 		if (this->has_child("hole_coordinates")) {
-			for (const gsml_data &hole_coordinate_data : this->get_child("hole_coordinates").get_children()) {
+			this->get_child("hole_coordinates").for_each_child([&](const gsml_data &hole_coordinate_data) {
 				QList<QGeoCoordinate> hole_coordinates = hole_coordinate_data.to_geocoordinate_list();
 				geopolygon.addHole(hole_coordinates);
-			}
+			});
 		}
 
 		return geopolygon;
@@ -272,17 +322,17 @@ public:
 			}
 		}
 
-		for (const gsml_property &property : this->get_properties()) {
+		this->for_each_property([&](const gsml_property &property) {
 			property.print(ofstream, indentation);
-		}
+		});
 
 		bool new_line = true;
-		for (const gsml_data &child_data : this->get_children()) {
+		this->for_each_child([&](const gsml_data &child_data) {
 			child_data.print(ofstream, indentation, new_line);
 			if (new_line && child_data.is_minor()) {
 				new_line = false;
 			}
-		}
+		});
 
 		//if the last child data was minor and did not print a new line, print one now
 		if (!new_line) {
@@ -294,16 +344,15 @@ private:
 	bool is_minor() const
 	{
 		//get whether this is minor GSML data, e.g. just containing a few simple values
-		return this->get_tag().empty() && this->get_properties().empty() && this->get_children().empty() && this->get_values().size() < 5;
+		return this->get_tag().empty() && this->get_elements().empty() && this->get_values().size() < 5;
 	}
 
 private:
 	std::string tag;
 	gsml_operator scope_operator;
 	gsml_data *parent = nullptr;
-	std::vector<gsml_data> children;
-	std::vector<gsml_property> properties;
 	std::vector<std::string> values; //values directly attached to the GSML data scope, used for e.g. name arrays
+	std::vector<std::variant<gsml_property, gsml_data>> elements;
 
 	friend gsml_parser;
 };

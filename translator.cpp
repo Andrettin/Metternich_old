@@ -54,15 +54,15 @@ void translator::load_locale(const std::string &language)
 			}
 
 			gsml_parser parser(dir_entry.path());
-			gsml_data gsml_data = parser.parse();
+			const gsml_data gsml_data = parser.parse();
 
-			for (const gsml_property &property : gsml_data.get_properties()) {
+			gsml_data.for_each_property([&](const gsml_property &property) {
 				if (property.get_operator() != gsml_operator::assignment) {
 					throw std::runtime_error("Only the assignment operator is allowed for translation files.");
 				}
 
 				this->add_translation(property.get_key(), property.get_value());
-			}
+			});
 		}
 	}
 }

@@ -111,9 +111,12 @@ HEADERS += \
     database/data_type_metadata.h \
     database/database.h \
     database/gsml_data.h \
+    database/gsml_data_visitor.h \
+    database/gsml_element_visitor.h \
     database/gsml_operator.h \
     database/gsml_parser.h \
     database/gsml_property.h \
+    database/gsml_property_visitor.h \
     database/identifiable_type.h \
     database/module.h \
     database/simple_data_type.h \

@@ -23,11 +23,9 @@ public:
 		this->base_weight = std::stoi(scope.get_tag());
 		this->effects = std::make_unique<effect_list<T>>();
 
-		for (const gsml_property &property : scope.get_properties()) {
+		scope.for_each_element([&](const gsml_property &property) {
 			this->effects->process_gsml_property(property);
-		}
-
-		for (const gsml_data &child_scope : scope.get_children()) {
+		}, [&](const gsml_data &child_scope) {
 			if (child_scope.get_tag() == "modifier") {
 				auto modifier = std::make_unique<factor_modifier<T>>();
 				database::process_gsml_data(modifier, child_scope);
@@ -35,7 +33,7 @@ public:
 			} else {
 				this->effects->process_gsml_scope(child_scope);
 			}
-		}
+		});
 	}
 
 	int get_weight(const T *scope) const

@@ -12,7 +12,7 @@ void wildlife_unit::process_history_database()
 {
 	//simple data types are only loaded in history, instanced directly based on their GSML data
 	for (const gsml_data &data : wildlife_unit::gsml_history_data_to_process) {
-		for (const gsml_data &data_entry : data.get_children()) {
+		data.for_each_child([&](const gsml_data &data_entry) {
 			const std::string &species_identifier = data_entry.get_tag();
 			metternich::species *species = species::get(species_identifier);
 			auto wildlife_unit = make_qunique<metternich::wildlife_unit>(species);
@@ -26,7 +26,7 @@ void wildlife_unit::process_history_database()
 			}
 
 			if (wildlife_unit->get_size() <= 0) {
-				continue; //don't add empty wildlife units
+				return; //don't add empty wildlife units
 			}
 
 			if (wildlife_unit->get_province() != nullptr) {
@@ -36,7 +36,7 @@ void wildlife_unit::process_history_database()
 			} else {
 				throw std::runtime_error("Wildlife unit of species \"" + species_identifier + "\" belongs to neither a province, nor a region.");
 			}
-		}
+		});
 	}
 
 	wildlife_unit::gsml_history_data_to_process.clear();

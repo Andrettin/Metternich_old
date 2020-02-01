@@ -27,7 +27,7 @@ void population_unit::process_history_database()
 {
 	//simple data types are only loaded in history, instanced directly based on their GSML data
 	for (const gsml_data &data : population_unit::gsml_history_data_to_process) {
-		for (const gsml_data &data_entry : data.get_children()) {
+		data.for_each_child([&](const gsml_data &data_entry) {
 			const std::string &type_identifier = data_entry.get_tag();
 			population_type *type = population_type::get(type_identifier);
 			auto population_unit = make_qunique<metternich::population_unit>(type);
@@ -41,7 +41,7 @@ void population_unit::process_history_database()
 			}
 
 			if (population_unit->get_size() <= 0) {
-				continue; //don't add empty population units
+				return; //don't add empty population units
 			}
 
 			if (population_unit->get_holding() != nullptr) {
@@ -53,7 +53,7 @@ void population_unit::process_history_database()
 			} else {
 				throw std::runtime_error("Population unit of type \"" + type_identifier + "\" belongs to neither a holding, nor a province, nor a region.");
 			}
-		}
+		});
 	}
 
 	population_unit::gsml_history_data_to_process.clear();

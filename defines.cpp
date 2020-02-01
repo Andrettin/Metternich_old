@@ -21,11 +21,11 @@ void defines::load(const std::filesystem::path &data_path)
 	}
 
 	gsml_parser parser(defines_path);
-	gsml_data gsml_data = parser.parse();
+	const gsml_data gsml_data = parser.parse();
 
-	for (const gsml_property &property : gsml_data.get_properties()) {
+	gsml_data.for_each_property([&](const gsml_property &property) {
 		this->process_gsml_property(property);
-	}
+	});
 }
 
 void defines::process_gsml_property(const gsml_property &property)

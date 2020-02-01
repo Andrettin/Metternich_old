@@ -142,7 +142,7 @@ public:
 		}
 
 		for (const gsml_data &data : T::gsml_data_to_process) {
-			for (const gsml_data &data_entry : data.get_children()) {
+			data.for_each_child([&](const gsml_data &data_entry) {
 				const std::string &identifier = data_entry.get_tag();
 
 				T *instance = nullptr;
@@ -169,7 +169,7 @@ public:
 						std::throw_with_nested(std::runtime_error("Error processing or loading data for " + std::string(T::class_identifier) + " instance \"" + identifier + "\"."));
 					}
 				}
-			}
+			});
 		}
 
 		if (!definition) {
@@ -240,7 +240,7 @@ public:
 			}
 		} else {
 			for (const gsml_data &data : T::gsml_history_data_to_process) {
-				for (const gsml_data &data_entry : data.get_children()) {
+				data.for_each_child([&](const gsml_data &data_entry) {
 					//for history only data types, a new instance is created for history
 					const std::string &identifier = data_entry.get_tag();
 
@@ -249,7 +249,7 @@ public:
 					try {
 						if (definition) {
 							if (data_entry.get_operator() == gsml_operator::addition) {
-								continue; //addition operators for data entry scopes mean modifying already-defined entries
+								return; //addition operators for data entry scopes mean modifying already-defined entries
 							}
 
 							instance = T::add(identifier);
@@ -260,7 +260,7 @@ public:
 					} catch (...) {
 						std::throw_with_nested(std::runtime_error("Error processing history data for " + std::string(T::class_identifier) + " instance \"" + identifier + "\"."));
 					}
-				}
+				});
 			}
 		}
 

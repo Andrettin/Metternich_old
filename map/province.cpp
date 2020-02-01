@@ -108,17 +108,17 @@ void province::process_gsml_scope(const gsml_data &scope)
 
 		province::instances_by_rgb[this->color.rgb()] = this;
 	} else if (tag == "geopolygons") {
-		for (const gsml_data &polygon_data : scope.get_children()) {
+		scope.for_each_child([&](const gsml_data &polygon_data) {
 			this->geopolygons.push_back(polygon_data.to_geopolygon());
-		}
+		});
 	} else if (tag == "geopaths") {
-		for (const gsml_data &path_data : scope.get_children()) {
+		scope.for_each_child([&](const gsml_data &path_data) {
 			QGeoPath geopath = path_data.to_geopath();
 			if (this->get_terrain() != nullptr) {
 				geopath.setWidth(this->get_terrain()->get_path_width());
 			}
 			this->geopaths.push_back(std::move(geopath));
-		}
+		});
 	} else if (tag == "border_provinces") {
 		for (const std::string &border_province_identifier : scope.get_values()) {
 			province *border_province = province::get(border_province_identifier);
@@ -130,14 +130,14 @@ void province::process_gsml_scope(const gsml_data &scope)
 			this->river_crossings.insert(border_province);
 		}
 	} else if (tag == "path_pos_map") {
-		for (const gsml_data &pos_list_data : scope.get_children()) {
+		scope.for_each_child([&](const gsml_data &pos_list_data) {
 			const province *other_province = province::get(pos_list_data.get_tag());
 			std::vector<QPoint> pos_list;
-			for (const gsml_data &pos_data : pos_list_data.get_children()) {
+			pos_list_data.for_each_child([&](const gsml_data &pos_data) {
 				pos_list.push_back(pos_data.to_point());
-			}
+			});
 			this->add_path_pos_list(other_province, std::move(pos_list));
-		}
+		});
 	} else if (tag.substr(0, 2) == holding_slot::prefix) {
 		holding_slot *holding_slot = nullptr;
 		if (scope.get_operator() == gsml_operator::assignment) {
@@ -219,9 +219,9 @@ void province::process_gsml_dated_scope(const gsml_data &scope, const QDateTime 
 		holding_slot *holding_slot = this->get_holding_slot(tag);
 		holding *holding = holding_slot->get_holding();
 		if (holding != nullptr) {
-			for (const gsml_property &property : scope.get_properties()) {
+			scope.for_each_property([&](const gsml_property &property) {
 				holding->process_gsml_dated_property(property, date);
-			}
+			});
 		} else {
 			throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no constructed holding for holding slot \"" + holding_slot->get_identifier() + "\", while having history to change the holding's data.");
 		}

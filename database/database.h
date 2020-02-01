@@ -10,6 +10,7 @@
 #include <functional>
 #include <memory>
 #include <mutex>
+#include <variant>
 #include <vector>
 
 namespace metternich {
@@ -24,13 +25,11 @@ public:
 	template <typename T>
 	static void process_gsml_data(T *instance, const gsml_data &data)
 	{
-		for (const gsml_property &property : data.get_properties()) {
+		data.for_each_element([&](const gsml_property &property) {
 			instance->process_gsml_property(property);
-		}
-
-		for (const gsml_data &child_data : data.get_children()) {
-			instance->process_gsml_scope(child_data);
-		}
+		}, [&](const gsml_data &scope) {
+			instance->process_gsml_scope(scope);
+		});
 	}
 
 	template <typename T>

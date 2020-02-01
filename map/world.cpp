@@ -182,9 +182,9 @@ void world::process_terrain_map_database()
 
 void world::process_terrain_gsml_data(const terrain_type *terrain, const gsml_data &data)
 {
-	for (const gsml_data &child_data : data.get_children()) {
+	data.for_each_child([&](const gsml_data &child_data) {
 		this->process_terrain_gsml_scope(terrain, child_data);
-	}
+	});
 }
 
 void world::process_terrain_gsml_scope(const terrain_type *terrain, const gsml_data &scope)
@@ -192,15 +192,15 @@ void world::process_terrain_gsml_scope(const terrain_type *terrain, const gsml_d
 	const std::string &tag = scope.get_tag();
 
 	if (tag == "geopolygons") {
-		for (const gsml_data &polygon_data : scope.get_children()) {
+		scope.for_each_child([&](const gsml_data &polygon_data) {
 			this->terrain_geopolygons[terrain].push_back(polygon_data.to_geopolygon());
-		}
+		});
 	} else if (tag == "geopaths") {
-		for (const gsml_data &path_data : scope.get_children()) {
+		scope.for_each_child([&](const gsml_data &path_data) {
 			QGeoPath geopath = path_data.to_geopath();
 			geopath.setWidth(terrain->get_path_width());
 			this->terrain_geopaths[terrain].push_back(geopath);
-		}
+		});
 	} else {
 		throw std::runtime_error("Invalid scope for terrain map data: \"" + tag + "\".");
 	}

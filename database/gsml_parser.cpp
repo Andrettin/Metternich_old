@@ -142,14 +142,13 @@ void gsml_parser::parse_tokens()
 	for (std::string &token : this->tokens) {
 		if (!this->current_key.empty() && this->current_property_operator == gsml_operator::none && token != "=" && token != "+=" && token != "-=" && token != "{") {
 			//if the previously-given key isn't empty and no operator has been provided before or now, then the key was actually a value, part of a simple collection of values
-			this->current_gsml_data->values.push_back(std::move(this->current_key));
+			this->current_gsml_data->add_value(std::move(this->current_key));
 			this->current_key = std::string();
 		}
 
 		if (this->current_key.empty()) {
 			if (token == "{") { //opens a new, untagged scope
-				this->current_gsml_data->children.emplace_back();
-				gsml_data &new_gsml_data = this->current_gsml_data->children.back();
+				gsml_data &new_gsml_data = this->current_gsml_data->add_child();
 				new_gsml_data.parent = this->current_gsml_data;
 				this->current_gsml_data = &new_gsml_data;
 			} else if (token == "}") { //closes current tag
@@ -157,7 +156,7 @@ void gsml_parser::parse_tokens()
 					throw std::runtime_error("Tried closing tag before any tag had been opened.");
 				}
 
-				if (this->current_gsml_data->parent == nullptr) {
+				if (this->current_gsml_data->get_parent() == nullptr) {
 					throw std::runtime_error("Extra tag closing token!");
 				}
 
@@ -190,12 +189,11 @@ void gsml_parser::parse_tokens()
 			}
 
 			std::string &tag_name = this->current_key;
-			this->current_gsml_data->children.emplace_back(std::move(tag_name), this->current_property_operator);
-			gsml_data &new_gsml_data = this->current_gsml_data->children.back();
+			gsml_data &new_gsml_data = this->current_gsml_data->add_child(std::move(tag_name), this->current_property_operator);
 			new_gsml_data.parent = this->current_gsml_data;
 			this->current_gsml_data = &new_gsml_data;
 		} else {
-			this->current_gsml_data->properties.emplace_back(std::move(this->current_key), this->current_property_operator, std::move(token));
+			this->current_gsml_data->add_property(std::move(this->current_key), this->current_property_operator, std::move(token));
 		}
 
 		this->current_key = std::string();

@@ -34,7 +34,7 @@ void employment_type::process_gsml_scope(const gsml_data &scope)
 	const std::string &tag = scope.get_tag();
 
 	if (tag == "input_commodities") {
-		for (const gsml_property &property : scope.get_properties()) {
+		scope.for_each_property([&](const gsml_property &property) {
 			if (property.get_operator() != gsml_operator::assignment) {
 				throw std::runtime_error("Only the assignment operator may be used for properties in the \"" + tag + "\" scope.");
 			}
@@ -42,17 +42,17 @@ void employment_type::process_gsml_scope(const gsml_data &scope)
 			commodity *commodity = commodity::get(property.get_key());
 			const int input_quantity = std::stoi(property.get_value());
 			this->input_commodities[commodity] = input_quantity;
-		}
+		});
 	} else if (tag == "employees") {
-		for (const gsml_data &employee_scope : scope.get_children()) {
+		scope.for_each_child([&](const gsml_data &employee_scope) {
 			std::unique_ptr<employee> employee = employee::from_gsml_scope(employee_scope);
 			this->employees.push_back(std::move(employee));
-		}
+		});
 	} else if (tag == "owners") {
-		for (const gsml_data &owner_scope : scope.get_children()) {
+		scope.for_each_child([&](const gsml_data &owner_scope) {
 			std::unique_ptr<employment_owner> owner = employment_owner::from_gsml_scope(owner_scope);
 			this->owners.push_back(std::move(owner));
-		}
+		});
 	} else {
 		data_entry_base::process_gsml_scope(scope);
 	}
