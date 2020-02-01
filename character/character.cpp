@@ -382,6 +382,10 @@ void character::add_trait(trait *trait)
 		trait->get_modifier()->apply(this);
 	}
 	emit traits_changed();
+
+	if (!this->is_ai()) {
+		engine_interface::get()->add_notification("You gained the " + string::highlight(trait->get_name()) + " trait.");
+	}
 }
 
 void character::remove_trait(trait *trait)
@@ -395,6 +399,10 @@ void character::remove_trait(trait *trait)
 		trait->get_modifier()->remove(this);
 	}
 	emit traits_changed();
+
+	if (!this->is_ai()) {
+		engine_interface::get()->add_notification("You lost the " + string::highlight(trait->get_name()) + " trait.");
+	}
 }
 
 bool character::has_personality_trait() const
@@ -437,6 +445,10 @@ void character::add_item(item *item)
 
 	this->items.push_back(item);
 	emit items_changed();
+
+	if (!this->is_ai()) {
+		engine_interface::get()->add_notification("You gained one " + string::highlight(item->get_name()) + " item.");
+	}
 }
 
 void character::remove_item(item *item)
@@ -447,6 +459,10 @@ void character::remove_item(item *item)
 
 	vector::remove_one(this->items, item);
 	emit items_changed();
+
+	if (!this->is_ai()) {
+		engine_interface::get()->add_notification("You lost one " + string::highlight(item->get_name()) + " item.");
+	}
 }
 
 void character::set_government_type(metternich::government_type *government_type)

@@ -116,6 +116,16 @@ public:
 		this->set_current_notification(notification);
 	}
 
+	void add_notification(const std::string &notification)
+	{
+		this->add_notification(QString::fromStdString(notification));
+	}
+
+	void add_notification(const char *notification)
+	{
+		this->add_notification(QString(notification));
+	}
+
 	const QString &get_current_notification() const
 	{
 		return this->current_notification;
