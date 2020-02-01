@@ -19,8 +19,10 @@
 #include "script/condition/has_any_trade_route_land_connection_condition.h"
 #include "script/condition/has_building_condition.h"
 #include "script/condition/has_flag_condition.h"
+#include "script/condition/has_item_condition.h"
 #include "script/condition/has_law_condition.h"
 #include "script/condition/has_technology_condition.h"
+#include "script/condition/has_trait_condition.h"
 #include "script/condition/holding_type_condition.h"
 #include "script/condition/location_condition.h"
 #include "script/condition/not_condition.h"
@@ -28,7 +30,6 @@
 #include "script/condition/region_condition.h"
 #include "script/condition/terrain_condition.h"
 #include "script/condition/tier_de_jure_title_condition.h"
-#include "script/condition/trait_condition.h"
 #include "script/condition/world_condition.h"
 #include "util/parse_util.h"
 #include "util/string_util.h"
@@ -43,10 +44,12 @@ std::unique_ptr<condition<T>> condition<T>::from_gsml_property(const gsml_proper
 	if constexpr (std::is_same_v<T, character>) {
 		if (condition_identifier == "alive") {
 			return std::make_unique<alive_condition<T>>(string::to_bool(property.get_value()));
+		} else if (condition_identifier == "has_item") {
+			return std::make_unique<has_item_condition<T>>(property.get_value());
 		} else if (condition_identifier == "has_law") {
 			return std::make_unique<has_law_condition<T>>(property.get_value());
-		} else if (condition_identifier == "trait") {
-			return std::make_unique<trait_condition<T>>(property.get_value());
+		} else if (condition_identifier == "has_trait") {
+			return std::make_unique<has_trait_condition<T>>(property.get_value());
 		}
 	} else {
 		if (condition_identifier == "borders_water") {

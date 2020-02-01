@@ -4,17 +4,15 @@
 #include "script/condition/condition.h"
 #include "script/condition/condition_check_base.h"
 
-#include <type_traits>
-
 namespace metternich {
 
 class trait;
 
 template <typename T>
-class trait_condition : public condition<T>
+class has_trait_condition : public condition<T>
 {
 public:
-	trait_condition(const std::string &trait_identifier)
+	has_trait_condition(const std::string &trait_identifier)
 	{
 		this->trait = trait::get(trait_identifier);
 	}

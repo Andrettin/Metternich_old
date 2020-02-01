@@ -4,8 +4,6 @@
 #include "script/condition/condition.h"
 #include "script/condition/condition_check_base.h"
 
-#include <type_traits>
-
 namespace metternich {
 
 class culture;

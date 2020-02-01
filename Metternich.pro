@@ -178,8 +178,10 @@ HEADERS += \
     script/condition/has_any_trade_route_land_connection_condition.h \
     script/condition/has_building_condition.h \
     script/condition/has_flag_condition.h \
+    script/condition/has_item_condition.h \
     script/condition/has_law_condition.h \
     script/condition/has_technology_condition.h \
+    script/condition/has_trait_condition.h \
     script/condition/holding_type_condition.h \
     script/condition/location_condition.h \
     script/condition/not_condition.h \
@@ -187,7 +189,6 @@ HEADERS += \
     script/condition/region_condition.h \
     script/condition/terrain_condition.h \
     script/condition/tier_de_jure_title_condition.h \
-    script/condition/trait_condition.h \
     script/condition/world_condition.h \
     script/effect/combat_effect.h \
     script/effect/effect.h \
