@@ -1,6 +1,7 @@
 #include "character/character.h"
 
 #include "character/dynasty.h"
+#include "character/item.h"
 #include "character/trait.h"
 #include "culture/culture.h"
 #include "culture/culture_group.h"
@@ -20,6 +21,7 @@
 #include "script/modifier.h"
 #include "util/container_util.h"
 #include "util/string_util.h"
+#include "util/vector_util.h"
 
 #include <QVariant>
 
@@ -373,7 +375,7 @@ void character::remove_trait(trait *trait)
 		return;
 	}
 
-	this->traits.erase(std::remove(this->traits.begin(), this->traits.end(), trait), this->traits.end());
+	vector::remove(this->traits, trait);
 	if (trait->get_modifier() != nullptr) {
 		trait->get_modifier()->remove(this);
 	}
@@ -405,6 +407,31 @@ void character::generate_personality_trait()
 
 	trait *chosen_trait = potential_traits[random::generate(potential_traits.size())];
 	this->add_trait(chosen_trait);
+}
+
+QVariantList character::get_items_qvariant_list() const
+{
+	return container::to_qvariant_list(this->get_items());
+}
+
+void character::add_item(item *item)
+{
+	if (this->has_item(item)) {
+		return;
+	}
+
+	this->items.push_back(item);
+	emit items_changed();
+}
+
+void character::remove_item(item *item)
+{
+	if (!this->has_item(item)) {
+		return;
+	}
+
+	vector::remove_one(this->items, item);
+	emit items_changed();
 }
 
 void character::set_government_type(metternich::government_type *government_type)

@@ -17,6 +17,7 @@ class dynasty;
 class government_type;
 class gsml_property;
 class holding;
+class item;
 class landed_title;
 class law;
 class phenotype;
@@ -49,6 +50,7 @@ class character : public data_entry, public data_type<character>
 	Q_PROPERTY(metternich::character* liege READ get_liege WRITE set_liege NOTIFY liege_changed)
 	Q_PROPERTY(metternich::character* employer READ get_liege WRITE set_liege NOTIFY liege_changed)
 	Q_PROPERTY(QVariantList traits READ get_traits_qvariant_list NOTIFY traits_changed)
+	Q_PROPERTY(QVariantList items READ get_items_qvariant_list NOTIFY items_changed)
 	Q_PROPERTY(int prowess READ get_prowess NOTIFY prowess_changed)
 	Q_PROPERTY(int wealth READ get_wealth WRITE set_wealth NOTIFY wealth_changed)
 
@@ -357,6 +359,21 @@ public:
 	bool has_personality_trait() const;
 	void generate_personality_trait();
 
+	const std::vector<item *> &get_items() const
+	{
+		return this->items;
+	}
+
+	QVariantList get_items_qvariant_list() const;
+
+	Q_INVOKABLE void add_item(item *item);
+	Q_INVOKABLE void remove_item(item *item);
+
+	bool has_item(const item *item) const
+	{
+		return std::find(this->items.begin(), this->items.end(), item) != this->items.end();
+	}
+
 	government_type *get_government_type() const
 	{
 		return this->government_type;
@@ -458,6 +475,7 @@ signals:
 	void primary_title_changed();
 	void liege_changed();
 	void traits_changed();
+	void items_changed();
 	void government_type_changed();
 	void prowess_changed();
 	void wealth_changed();
@@ -485,6 +503,7 @@ private:
 	character *liege = nullptr;
 	std::vector<character *> vassals;
 	std::vector<trait *> traits;
+	std::vector<item *> items;
 	government_type *government_type = nullptr;
 	int prowess = 0; //the character's skill in personal combat
 	int wealth = 0;
