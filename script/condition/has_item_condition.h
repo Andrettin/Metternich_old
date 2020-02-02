@@ -12,7 +12,8 @@ template <typename T>
 class has_item_condition : public condition<T>
 {
 public:
-	has_item_condition(const std::string &item_identifier)
+	has_item_condition(const std::string &item_identifier, const gsml_operator effect_operator)
+		: condition<T>(effect_operator)
 	{
 		this->item = item::get(item_identifier);
 	}
@@ -23,7 +24,7 @@ public:
 		return identifier;
 	}
 
-	virtual bool check(const T *scope) const override
+	virtual bool check_assignment(const T *scope) const override
 	{
 		return scope->has_item(this->item);
 	}

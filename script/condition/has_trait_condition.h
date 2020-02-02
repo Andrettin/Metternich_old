@@ -12,7 +12,8 @@ template <typename T>
 class has_trait_condition : public condition<T>
 {
 public:
-	has_trait_condition(const std::string &trait_identifier)
+	has_trait_condition(const std::string &trait_identifier, const gsml_operator effect_operator)
+		: condition<T>(effect_operator)
 	{
 		this->trait = trait::get(trait_identifier);
 	}
@@ -23,7 +24,7 @@ public:
 		return identifier;
 	}
 
-	virtual bool check(const T *scope) const override
+	virtual bool check_assignment(const T *scope) const override
 	{
 		return scope->has_trait(this->trait);
 	}

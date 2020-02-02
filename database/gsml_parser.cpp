@@ -69,19 +69,7 @@ void gsml_parser::parse_line(const std::string &line)
 			}
 
 			//whitespace, carriage returns and etc. separate tokens, if they occur outside of quotes
-			if (c == ' ' || c == '\t' || c == '\r' || c == '\n' || c == '=') {
-				if (c == '=') { //the assignment operator separates tokens, but is also a token in and of itself
-					std::string operator_token;
-					if (!current_string.empty()) {
-						if (current_string.back() == '+' || current_string.back() == '-') {
-							operator_token = std::string(1, current_string.back());
-							current_string.pop_back();
-						}
-					}
-					operator_token += std::string(1, c);
-					this->tokens.push_back(std::move(operator_token));
-				}
-
+			if (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
 				if (!current_string.empty()) {
 					this->tokens.push_back(std::move(current_string));
 					current_string = std::string();
@@ -140,7 +128,7 @@ bool gsml_parser::parse_escaped_character(std::string &current_string, const cha
 void gsml_parser::parse_tokens()
 {
 	for (std::string &token : this->tokens) {
-		if (!this->current_key.empty() && this->current_property_operator == gsml_operator::none && token != "=" && token != "+=" && token != "-=" && token != "{") {
+		if (!this->current_key.empty() && this->current_property_operator == gsml_operator::none && token != "=" && token != "+=" && token != "-=" && token != "==" && token != "!=" && token != "<" && token != "<=" && token != ">" && token != ">=" && token != "{") {
 			//if the previously-given key isn't empty and no operator has been provided before or now, then the key was actually a value, part of a simple collection of values
 			this->current_gsml_data->add_value(std::move(this->current_key));
 			this->current_key = std::string();
@@ -175,6 +163,18 @@ void gsml_parser::parse_tokens()
 				this->current_property_operator = gsml_operator::addition;
 			} else if (token == "-=") {
 				this->current_property_operator = gsml_operator::subtraction;
+			} else if (token == "==") {
+				this->current_property_operator = gsml_operator::equality;
+			} else if (token == "!=") {
+				this->current_property_operator = gsml_operator::inequality;
+			} else if (token == "<") {
+				this->current_property_operator = gsml_operator::less_than;
+			} else if (token == "<=") {
+				this->current_property_operator = gsml_operator::less_than_or_equality;
+			} else if (token == ">") {
+				this->current_property_operator = gsml_operator::greater_than;
+			} else if (token == ">=") {
+				this->current_property_operator = gsml_operator::greater_than_or_equality;
 			} else {
 				throw std::runtime_error("Tried using operator \"" + token + "\" for key \"" + this->current_key + "\", but it is not a valid operator.");
 			}

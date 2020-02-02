@@ -189,6 +189,7 @@ HEADERS += \
     script/condition/location_condition.h \
     script/condition/not_condition.h \
     script/condition/or_condition.h \
+    script/condition/prowess_condition.h \
     script/condition/region_condition.h \
     script/condition/terrain_condition.h \
     script/condition/tier_de_jure_title_condition.h \

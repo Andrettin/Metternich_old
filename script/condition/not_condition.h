@@ -11,11 +11,14 @@ template <typename T>
 class not_condition : public condition<T>
 {
 public:
-	not_condition() {}
-
-	not_condition(std::unique_ptr<condition<T>> &&condition)
+	not_condition(const gsml_operator effect_operator) : condition<T>(effect_operator)
 	{
-		this->conditions.push_back(std::move(condition));
+	}
+
+	not_condition(std::unique_ptr<condition<T>> &&enclosed_condition, const gsml_operator effect_operator)
+		: condition<T>(effect_operator)
+	{
+		this->conditions.push_back(std::move(enclosed_condition));
 	}
 
 	virtual void process_gsml_property(const gsml_property &property) override
@@ -36,7 +39,7 @@ public:
 		return identifier;
 	}
 
-	virtual bool check(const T *scope) const override
+	virtual bool check_assignment(const T *scope) const override
 	{
 		for (const std::unique_ptr<condition<T>> &condition : this->conditions) {
 			if (condition->check(scope)) {

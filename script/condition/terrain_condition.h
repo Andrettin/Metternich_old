@@ -13,7 +13,8 @@ template <typename T>
 class terrain_condition : public condition<T>
 {
 public:
-	terrain_condition(const std::string &terrain_identifier)
+	terrain_condition(const std::string &terrain_identifier, const gsml_operator effect_operator)
+		: condition<T>(effect_operator)
 	{
 		this->terrain = terrain_type::get(terrain_identifier);
 	}
@@ -24,7 +25,12 @@ public:
 		return identifier;
 	}
 
-	virtual bool check(const T *scope) const override
+	virtual bool check_assignment(const T *scope) const override
+	{
+		return this->check_equality(scope);
+	}
+
+	virtual bool check_equality(const T *scope) const override
 	{
 		const province *province = get_scope_province(scope);
 		return province->get_terrain() == this->terrain;

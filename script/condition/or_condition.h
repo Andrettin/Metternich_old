@@ -11,6 +11,10 @@ template <typename T>
 class or_condition : public condition<T>
 {
 public:
+	or_condition(const gsml_operator effect_operator) : condition<T>(effect_operator)
+	{
+	}
+
 	virtual void process_gsml_property(const gsml_property &property) override
 	{
 		std::unique_ptr<condition<T>> condition = metternich::condition<T>::from_gsml_property(property);
@@ -29,7 +33,7 @@ public:
 		return identifier;
 	}
 
-	virtual bool check(const T *scope) const override
+	virtual bool check_assignment(const T *scope) const override
 	{
 		for (const std::unique_ptr<condition<T>> &condition : this->conditions) {
 			if (condition->check(scope)) {

@@ -11,7 +11,8 @@ template <typename T>
 class has_building_condition : public condition<T>
 {
 public:
-	has_building_condition(const std::string &building_identifier)
+	has_building_condition(const std::string &building_identifier, const gsml_operator effect_operator)
+		: condition<T>(effect_operator)
 	{
 		this->building = building::get(building_identifier);
 	}
@@ -22,7 +23,7 @@ public:
 		return identifier;
 	}
 
-	virtual bool check(const T *scope) const override
+	virtual bool check_assignment(const T *scope) const override
 	{
 		return scope->has_building(this->building);
 	}

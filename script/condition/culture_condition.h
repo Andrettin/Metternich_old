@@ -12,7 +12,8 @@ template <typename T>
 class culture_condition : public condition<T>
 {
 public:
-	culture_condition(const std::string &culture_identifier)
+	culture_condition(const std::string &culture_identifier, const gsml_operator effect_operator)
+		: condition<T>(effect_operator)
 	{
 		this->culture = culture::get(culture_identifier);
 	}
@@ -23,7 +24,12 @@ public:
 		return identifier;
 	}
 
-	virtual bool check(const T *scope) const override
+	virtual bool check_assignment(const T *scope) const override
+	{
+		return this->check_equality(scope);
+	}
+
+	virtual bool check_equality(const T *scope) const override
 	{
 		return scope->get_culture() == this->culture;
 	}

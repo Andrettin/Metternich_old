@@ -18,7 +18,8 @@ template <typename T, landed_title_tier TIER>
 class tier_de_jure_title_condition : public condition<T>
 {
 public:
-	tier_de_jure_title_condition(const std::string &title_identifier)
+	tier_de_jure_title_condition(const std::string &title_identifier, const gsml_operator effect_operator)
+		: condition<T>(effect_operator)
 	{
 		this->tier_de_jure_title = landed_title::get(title_identifier);
 
@@ -33,7 +34,12 @@ public:
 		return identifier;
 	}
 
-	virtual bool check(const T *scope) const override
+	virtual bool check_assignment(const T *scope) const override
+	{
+		return this->check_equality(scope);
+	}
+
+	virtual bool check_equality(const T *scope) const override
 	{
 		const landed_title *title = get_scope_landed_title(scope);
 		return title != nullptr && title->get_tier_de_jure_title(TIER) == this->tier_de_jure_title;

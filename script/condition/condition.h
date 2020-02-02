@@ -10,6 +10,7 @@ class holding;
 class holding_slot;
 class population_unit;
 class province;
+enum class gsml_operator;
 
 template <typename T>
 class condition
@@ -18,20 +19,77 @@ public:
 	static std::unique_ptr<condition> from_gsml_property(const gsml_property &property);
 	static std::unique_ptr<condition> from_gsml_scope(const gsml_data &scope);
 
-	virtual ~condition() {}
+	condition(const gsml_operator condition_operator) : condition_operator(condition_operator)
+	{
+	}
+
+	virtual ~condition()
+	{
+	}
 
 	virtual void process_gsml_property(const gsml_property &property);
 	virtual void process_gsml_scope(const gsml_data &scope);
 
 	virtual const std::string &get_identifier() const = 0;
 
-	virtual bool check(const T *scope) const = 0;
+	bool check(const T *scope) const;
+
+	virtual bool check_assignment(const T *scope) const
+	{
+		Q_UNUSED(scope)
+
+		throw std::runtime_error("The assignment operator is not supported for \"" + this->get_identifier() + "\" conditions.");
+	}
+
+	virtual bool check_equality(const T *scope) const
+	{
+		Q_UNUSED(scope)
+
+		throw std::runtime_error("The equality operator is not supported for \"" + this->get_identifier() + "\" conditions.");
+	}
+
+	virtual bool check_inequality(const T *scope) const
+	{
+		return !this->check_equality(scope);
+	}
+
+	virtual bool check_less_than(const T *scope) const
+	{
+		Q_UNUSED(scope)
+
+		throw std::runtime_error("The less than operator is not supported for \"" + this->get_identifier() + "\" conditions.");
+	}
+
+	virtual bool check_less_than_or_equality(const T *scope) const
+	{
+		return this->check_equality(scope) || this->check_less_than(scope);
+	}
+
+	virtual bool check_greater_than(const T *scope) const
+	{
+		Q_UNUSED(scope)
+
+		throw std::runtime_error("The greater than operator is not supported for \"" + this->get_identifier() + "\" conditions.");
+	}
+
+	virtual bool check_greater_than_or_equality(const T *scope) const
+	{
+		return this->check_equality(scope) || this->check_greater_than(scope);
+	}
 
 	virtual void bind_condition_check(condition_check_base &check, const T *scope) const
 	{
 		Q_UNUSED(check)
 		Q_UNUSED(scope)
 	}
+
+	gsml_operator get_operator() const
+	{
+		return this->condition_operator;
+	}
+
+private:
+	gsml_operator condition_operator;
 };
 
 extern template class condition<character>;

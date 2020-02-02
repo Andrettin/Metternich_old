@@ -7,7 +7,13 @@ enum class gsml_operator : int
 	none,
 	assignment,
 	addition,
-	subtraction
+	subtraction,
+	equality,
+	inequality,
+	less_than,
+	less_than_or_equality,
+	greater_than,
+	greater_than_or_equality
 };
 
 }

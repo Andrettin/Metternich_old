@@ -10,7 +10,8 @@ template <typename T>
 class has_law_condition : public condition<T>
 {
 public:
-	has_law_condition(const std::string &law_identifier)
+	has_law_condition(const std::string &law_identifier, const gsml_operator effect_operator)
+		: condition<T>(effect_operator)
 	{
 		this->law = law::get(law_identifier);
 	}
@@ -21,7 +22,7 @@ public:
 		return identifier;
 	}
 
-	virtual bool check(const T *scope) const override
+	virtual bool check_assignment(const T *scope) const override
 	{
 		return scope->has_law(this->law);
 	}

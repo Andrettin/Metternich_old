@@ -1,5 +1,6 @@
 #pragma once
 
+#include "database/gsml_operator.h"
 #include "script/condition/condition.h"
 
 namespace metternich {
@@ -10,9 +11,9 @@ template <typename T>
 class has_technology_condition : public condition<T>
 {
 public:
-	has_technology_condition(const std::string &technology_identifier);
+	has_technology_condition(const std::string &technology_identifier, const gsml_operator effect_operator);
 
-	has_technology_condition(technology *technology) : technology(technology)
+	has_technology_condition(technology *technology, const gsml_operator effect_operator = gsml_operator::assignment) : condition<T>(effect_operator), technology(technology)
 	{
 	}
 
@@ -22,7 +23,7 @@ public:
 		return identifier;
 	}
 
-	virtual bool check(const T *scope) const override;
+	virtual bool check_assignment(const T *scope) const override;
 	virtual void bind_condition_check(condition_check_base &check, const T *scope) const override;
 
 private:

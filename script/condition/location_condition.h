@@ -12,6 +12,10 @@ template <typename T>
 class location_condition : public condition<T>
 {
 public:
+	location_condition(const gsml_operator effect_operator) : condition<T>(effect_operator)
+	{
+	}
+
 	virtual void process_gsml_property(const gsml_property &property) override
 	{
 		this->conditions.process_gsml_property(property);
@@ -28,7 +32,7 @@ public:
 		return identifier;
 	}
 
-	virtual bool check(const T *scope) const override
+	virtual bool check_assignment(const T *scope) const override
 	{
 		const province *location = scope->get_location();
 		if (location == nullptr) {

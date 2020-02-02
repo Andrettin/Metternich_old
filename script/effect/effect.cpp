@@ -114,7 +114,7 @@ void effect<T>::do_effect(T *scope) const
 			this->do_subtraction_effect(scope);
 			break;
 		default:
-			throw std::runtime_error("Invalid operator (\"" + std::to_string(static_cast<int>(this->get_operator())) + "\") for effect.");
+			throw std::runtime_error("Invalid effect operator: \"" + std::to_string(static_cast<int>(this->get_operator())) + "\".");
 	}
 }
 

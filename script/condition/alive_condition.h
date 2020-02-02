@@ -9,9 +9,8 @@ template <typename T>
 class alive_condition : public condition<T>
 {
 public:
-	alive_condition(const bool alive)
+	alive_condition(const bool alive, const gsml_operator effect_operator) : condition<T>(effect_operator), alive(alive)
 	{
-		this->alive = alive;
 	}
 
 	virtual const std::string &get_identifier() const override
@@ -20,7 +19,12 @@ public:
 		return identifier;
 	}
 
-	virtual bool check(const T *scope) const override
+	virtual bool check_assignment(const T *scope) const override
+	{
+		return this->check_equality(scope);
+	}
+
+	virtual bool check_equality(const T *scope) const override
 	{
 		return scope->is_alive() == this->alive;
 	}

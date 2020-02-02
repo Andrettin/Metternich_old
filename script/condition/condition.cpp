@@ -3,6 +3,7 @@
 #include "character/character.h"
 #include "database/database.h"
 #include "database/gsml_data.h"
+#include "database/gsml_operator.h"
 #include "database/gsml_property.h"
 #include "holding/holding.h"
 #include "holding/holding_slot.h"
@@ -43,63 +44,63 @@ std::unique_ptr<condition<T>> condition<T>::from_gsml_property(const gsml_proper
 
 	if constexpr (std::is_same_v<T, character>) {
 		if (condition_identifier == "alive") {
-			return std::make_unique<alive_condition<T>>(string::to_bool(property.get_value()));
+			return std::make_unique<alive_condition<T>>(string::to_bool(property.get_value()), property.get_operator());
 		} else if (condition_identifier == "has_item") {
-			return std::make_unique<has_item_condition<T>>(property.get_value());
+			return std::make_unique<has_item_condition<T>>(property.get_value(), property.get_operator());
 		} else if (condition_identifier == "has_law") {
-			return std::make_unique<has_law_condition<T>>(property.get_value());
+			return std::make_unique<has_law_condition<T>>(property.get_value(), property.get_operator());
 		} else if (condition_identifier == "has_trait") {
-			return std::make_unique<has_trait_condition<T>>(property.get_value());
+			return std::make_unique<has_trait_condition<T>>(property.get_value(), property.get_operator());
 		}
 	} else {
 		if (condition_identifier == "borders_water") {
-			return std::make_unique<borders_water_condition<T>>(string::to_bool(property.get_value()));
+			return std::make_unique<borders_water_condition<T>>(string::to_bool(property.get_value()), property.get_operator());
 		} else if (condition_identifier == "de_jure_duchy") {
-			return std::make_unique<tier_de_jure_title_condition<T, landed_title_tier::duchy>>(property.get_value());
+			return std::make_unique<tier_de_jure_title_condition<T, landed_title_tier::duchy>>(property.get_value(), property.get_operator());
 		} else if (condition_identifier == "de_jure_kingdom") {
-			return std::make_unique<tier_de_jure_title_condition<T, landed_title_tier::kingdom>>(property.get_value());
+			return std::make_unique<tier_de_jure_title_condition<T, landed_title_tier::kingdom>>(property.get_value(), property.get_operator());
 		} else if (condition_identifier == "de_jure_empire") {
-			return std::make_unique<tier_de_jure_title_condition<T, landed_title_tier::empire>>(property.get_value());
+			return std::make_unique<tier_de_jure_title_condition<T, landed_title_tier::empire>>(property.get_value(), property.get_operator());
 		} else if (condition_identifier == "has_technology") {
-			return std::make_unique<has_technology_condition<T>>(property.get_value());
+			return std::make_unique<has_technology_condition<T>>(property.get_value(), property.get_operator());
 		} else if (condition_identifier == "region") {
-			return std::make_unique<region_condition<T>>(property.get_value());
+			return std::make_unique<region_condition<T>>(property.get_value(), property.get_operator());
 		} else if (condition_identifier == "terrain") {
-			return std::make_unique<terrain_condition<T>>(property.get_value());
+			return std::make_unique<terrain_condition<T>>(property.get_value(), property.get_operator());
 		} else if (condition_identifier == "world") {
-			return std::make_unique<world_condition<T>>(property.get_value());
+			return std::make_unique<world_condition<T>>(property.get_value(), property.get_operator());
 		}
 	}
 
 	if constexpr (std::is_same_v<T, holding>) {
 		if (condition_identifier == "commodity") {
-			return std::make_unique<commodity_condition<T>>(property.get_value());
+			return std::make_unique<commodity_condition<T>>(property.get_value(), property.get_operator());
 		} else if (condition_identifier == "has_building") {
-			return std::make_unique<has_building_condition<T>>(property.get_value());
+			return std::make_unique<has_building_condition<T>>(property.get_value(), property.get_operator());
 		} else if (condition_identifier == "holding_type") {
-			return std::make_unique<holding_type_condition<T>>(property.get_value());
+			return std::make_unique<holding_type_condition<T>>(property.get_value(), property.get_operator());
 		}
 	}
 
 	if constexpr (!std::is_same_v<T, holding_slot>) {
 		if (condition_identifier == "culture") {
-			return std::make_unique<culture_condition<T>>(property.get_value());
+			return std::make_unique<culture_condition<T>>(property.get_value(), property.get_operator());
 		}
 	}
 
 	if constexpr (std::is_same_v<T, holding> || std::is_same_v<T, holding_slot> || std::is_same_v<T, province>) {
 		if (condition_identifier == "has_any_active_trade_route") {
-			return std::make_unique<has_any_active_trade_route_condition<T>>(string::to_bool(property.get_value()));
+			return std::make_unique<has_any_active_trade_route_condition<T>>(string::to_bool(property.get_value()), property.get_operator());
 		} else if (condition_identifier == "has_any_trade_route") {
-			return std::make_unique<has_any_trade_route_condition<T>>(string::to_bool(property.get_value()));
+			return std::make_unique<has_any_trade_route_condition<T>>(string::to_bool(property.get_value()), property.get_operator());
 		} else if (condition_identifier == "has_any_trade_route_land_connection") {
-			return std::make_unique<has_any_trade_route_land_connection_condition<T>>(string::to_bool(property.get_value()));
+			return std::make_unique<has_any_trade_route_land_connection_condition<T>>(string::to_bool(property.get_value()), property.get_operator());
 		}
 	}
 
 	if constexpr (std::is_same_v<T, character>) {
 		if (condition_identifier == "has_flag") {
-			return std::make_unique<has_flag_condition<T>>(property.get_value());
+			return std::make_unique<has_flag_condition<T>>(property.get_value(), property.get_operator());
 		}
 	}
 
@@ -113,20 +114,20 @@ std::unique_ptr<condition<T>> condition<T>::from_gsml_scope(const gsml_data &sco
 	std::unique_ptr<condition> condition;
 
 	if (condition_identifier == "and") {
-		condition = std::make_unique<and_condition<T>>();
+		condition = std::make_unique<and_condition<T>>(scope.get_operator());
 	} else if (condition_identifier == "or") {
-		condition = std::make_unique<or_condition<T>>();
+		condition = std::make_unique<or_condition<T>>(scope.get_operator());
 	} else if (condition_identifier == "not" || condition_identifier == "nor") {
-		condition = std::make_unique<not_condition<T>>();
+		condition = std::make_unique<not_condition<T>>(scope.get_operator());
 	} else if (condition_identifier == "nand") {
 		auto and_condition = std::make_unique<metternich::and_condition<T>>();
 		database::process_gsml_data(and_condition, scope);
-		condition = std::make_unique<not_condition<T>>(std::move(and_condition));
+		condition = std::make_unique<not_condition<T>>(std::move(and_condition), scope.get_operator());
 		return condition;
 	} else {
 		if constexpr (std::is_same_v<T, character>) {
 			if (condition_identifier == "location") {
-				condition = std::make_unique<location_condition<T>>();
+				condition = std::make_unique<location_condition<T>>(scope.get_operator());
 			}
 		}
 	}
@@ -150,6 +151,29 @@ template <typename T>
 void condition<T>::process_gsml_scope(const gsml_data &scope)
 {
 	throw std::runtime_error("Invalid " + this->get_identifier() + " condition scope: " + scope.get_tag() + ".");
+}
+
+template <typename T>
+bool condition<T>::check(const T *scope) const
+{
+	switch (this->get_operator()) {
+		case gsml_operator::assignment:
+			return this->check_assignment(scope);
+		case gsml_operator::equality:
+			return this->check_equality(scope);
+		case gsml_operator::inequality:
+			return this->check_inequality(scope);
+		case gsml_operator::less_than:
+			return this->check_less_than(scope);
+		case gsml_operator::less_than_or_equality:
+			return this->check_less_than_or_equality(scope);
+		case gsml_operator::greater_than:
+			return this->check_greater_than(scope);
+		case gsml_operator::greater_than_or_equality:
+			return this->check_greater_than_or_equality(scope);
+		default:
+			throw std::runtime_error("Invalid condition operator: \"" + std::to_string(static_cast<int>(this->get_operator())) + "\".");
+	}
 }
 
 template class condition<character>;

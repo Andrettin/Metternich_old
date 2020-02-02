@@ -11,7 +11,8 @@ template <typename T>
 class holding_type_condition : public condition<T>
 {
 public:
-	holding_type_condition(const std::string &holding_type_identifier)
+	holding_type_condition(const std::string &holding_type_identifier, const gsml_operator effect_operator)
+		: condition<T>(effect_operator)
 	{
 		this->holding_type = holding_type::get(holding_type_identifier);
 	}
@@ -22,7 +23,12 @@ public:
 		return identifier;
 	}
 
-	virtual bool check(const T *scope) const override
+	virtual bool check_assignment(const T *scope) const override
+	{
+		return this->check_equality(scope);
+	}
+
+	virtual bool check_equality(const T *scope) const override
 	{
 		return scope->get_type() == this->holding_type;
 	}

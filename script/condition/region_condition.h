@@ -13,7 +13,8 @@ template <typename T>
 class region_condition : public condition<T>
 {
 public:
-	region_condition(const std::string &region_identifier)
+	region_condition(const std::string &region_identifier, const gsml_operator effect_operator)
+		: condition<T>(effect_operator)
 	{
 		this->region = region::get(region_identifier);
 	}
@@ -24,7 +25,7 @@ public:
 		return identifier;
 	}
 
-	virtual bool check(const T *scope) const override
+	virtual bool check_assignment(const T *scope) const override
 	{
 		const province *province = get_scope_province(scope);
 		return province->is_in_region(this->region);

@@ -11,8 +11,8 @@ template <typename T>
 class has_any_trade_route_land_connection_condition : public condition<T>
 {
 public:
-	has_any_trade_route_land_connection_condition(const bool has_any_trade_route_land_connection)
-		: has_any_trade_route_land_connection(has_any_trade_route_land_connection)
+	has_any_trade_route_land_connection_condition(const bool has_any_trade_route_land_connection, const gsml_operator effect_operator)
+		: condition<T>(effect_operator), has_any_trade_route_land_connection(has_any_trade_route_land_connection)
 	{
 	}
 
@@ -22,9 +22,14 @@ public:
 		return identifier;
 	}
 
-	virtual bool check(const T *scope) const override
+	virtual bool check_assignment(const T *scope) const override
 	{
-		return scope->has_any_trade_route_land_connection();
+		return this->check_equality(scope);
+	}
+
+	virtual bool check_equality(const T *scope) const override
+	{
+		return scope->has_any_trade_route_land_connection() == this->has_any_trade_route_land_connection;
 	}
 
 	virtual void bind_condition_check(condition_check_base &check, const T *scope) const override

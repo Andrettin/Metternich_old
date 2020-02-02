@@ -12,7 +12,8 @@ template <typename T>
 class commodity_condition : public condition<T>
 {
 public:
-	commodity_condition(const std::string &commodity_identifier)
+	commodity_condition(const std::string &commodity_identifier, const gsml_operator effect_operator)
+		: condition<T>(effect_operator)
 	{
 		this->commodity = commodity::get(commodity_identifier);
 	}
@@ -23,7 +24,12 @@ public:
 		return identifier;
 	}
 
-	virtual bool check(const T *scope) const override
+	virtual bool check_assignment(const T *scope) const override
+	{
+		return this->check_equality(scope);
+	}
+
+	virtual bool check_equality(const T *scope) const override
 	{
 		//check whether the scope's commodity is the same as that for this condition
 		return scope->get_commodity() == this->commodity;

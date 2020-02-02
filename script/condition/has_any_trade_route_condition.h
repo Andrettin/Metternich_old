@@ -10,7 +10,8 @@ template <typename T>
 class has_any_trade_route_condition : public condition<T>
 {
 public:
-	has_any_trade_route_condition(const bool has_any_trade_route) : has_any_trade_route(has_any_trade_route)
+	has_any_trade_route_condition(const bool has_any_trade_route, const gsml_operator effect_operator)
+		: condition<T>(effect_operator), has_any_trade_route(has_any_trade_route)
 	{
 	}
 
@@ -20,9 +21,14 @@ public:
 		return identifier;
 	}
 
-	virtual bool check(const T *scope) const override
+	virtual bool check_assignment(const T *scope) const override
 	{
-		return scope->has_any_trade_route();
+		return this->check_equality(scope);
+	}
+
+	virtual bool check_equality(const T *scope) const override
+	{
+		return scope->has_any_trade_route() == this->has_any_trade_route;
 	}
 
 private:
