@@ -35,28 +35,24 @@ public:
 	{
 	}
 
-	const std::vector<const scoped_event_base<T> *> &get_events() const
-	{
-		return this->events;
-	}
-
 	void add_event(const scoped_event_base<T> *event)
 	{
 		this->events.push_back(event);
 	}
 
-	void do_events(T *scope) const
+	void add_random_event(const scoped_event_base<T> *event)
 	{
-		for (const auto *event : this->get_events()) {
-			if (event->check_conditions(scope)) {
-				event->do_event(scope);
-			}
-		}
+		this->random_events.push_back(event);
 	}
+
+	void do_events(T *scope) const;
 
 private:
 	std::vector<const scoped_event_base<T> *> events;
+	std::vector<const scoped_event_base<T> *> random_events;
 };
+
+extern template class event_trigger<character>;
 
 class character_event_trigger : public event_trigger<character>
 {

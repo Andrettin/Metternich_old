@@ -19,11 +19,16 @@ public:
 
 	character_event(const std::string &identifier) : event(identifier) {}
 
+	virtual void initialize() override
+	{
+		scoped_event_base::initialize();
+	}
+
 	virtual void process_gsml_property(const gsml_property &property) override
 	{
 		const std::string &key = property.get_key();
 
-		if (key == "triggers") {
+		if (key == "triggers" || key == "random") {
 			scoped_event_base::process_gsml_property(property);
 		} else {
 			data_entry_base::process_gsml_property(property);

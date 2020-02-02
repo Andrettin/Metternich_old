@@ -32,12 +32,36 @@ scoped_event_base<T>::~scoped_event_base()
 }
 
 template <typename T>
+void scoped_event_base<T>::initialize()
+{
+	for (event_trigger<T> *trigger : this->triggers) {
+		if (this->random) {
+			trigger->add_random_event(this);
+		} else {
+			trigger->add_event(this);
+		}
+	}
+}
+
+template <typename T>
 void scoped_event_base<T>::process_gsml_property(const gsml_property &property)
 {
 	if (property.get_key() == "triggers") {
+		event_trigger<T> *trigger = event_trigger<T>::get(property.get_value());
 		switch (property.get_operator()) {
 			case gsml_operator::addition:
-				event_trigger<T>::get(property.get_value())->add_event(this);
+				this->triggers.insert(trigger);
+				break;
+			case gsml_operator::subtraction:
+				this->triggers.erase(trigger);
+				break;
+			default:
+				throw std::runtime_error("Invalid operator for \"" + property.get_key() + "\" event property.");
+		}
+	} else if (property.get_key() == "random") {
+		switch (property.get_operator()) {
+			case gsml_operator::assignment:
+				this->random = string::to_bool(property.get_value());
 				break;
 			default:
 				throw std::runtime_error("Invalid operator for \"" + property.get_key() + "\" event property.");

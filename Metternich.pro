@@ -65,6 +65,7 @@ SOURCES += \
         script/effect/effect_list.cpp \
         script/event/event_instance.cpp \
         script/event/event_option.cpp \
+        script/event/event_trigger.cpp \
         script/event/scoped_event_base.cpp \
         script/factor_modifier.cpp \
         script/modifier.cpp \
@@ -248,6 +249,7 @@ HEADERS += \
     util/rect_util.h \
     util/set_util.h \
     util/string_util.h \
+    util/vector_random_util.h \
     util/vector_util.h
 
 win32 {
