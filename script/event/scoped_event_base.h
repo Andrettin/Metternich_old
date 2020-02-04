@@ -48,6 +48,7 @@ public:
 private:
 	std::set<event_trigger<T> *> triggers;
 	bool random = false;
+	bool hidden = false;
 	std::unique_ptr<condition<T>> conditions;
 	std::unique_ptr<effect_list<T>> immediate_effects;
 	std::vector<std::unique_ptr<event_option<T>>> options;

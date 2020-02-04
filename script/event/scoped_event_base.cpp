@@ -66,6 +66,14 @@ void scoped_event_base<T>::process_gsml_property(const gsml_property &property)
 			default:
 				throw std::runtime_error("Invalid operator for \"" + property.get_key() + "\" event property.");
 		}
+	} else if (property.get_key() == "hidden") {
+		switch (property.get_operator()) {
+			case gsml_operator::assignment:
+				this->hidden = string::to_bool(property.get_value());
+				break;
+			default:
+				throw std::runtime_error("Invalid operator for \"" + property.get_key() + "\" event property.");
+		}
 	} else {
 		throw std::runtime_error("Invalid event property: \"" + property.get_key() + "\".");
 	}
@@ -118,7 +126,7 @@ void scoped_event_base<T>::do_event(T *scope) const
 		this->immediate_effects->do_effects(scope);
 	}
 
-	if (scope->is_ai()) {
+	if (scope->is_ai() || this->hidden) {
 		this->pick_option(scope);
 	} else {
 		//add event to the list of events to be shown to the player
@@ -145,7 +153,7 @@ template <typename T>
 void scoped_event_base<T>::pick_option(T *scope) const
 {
 	if (this->options.empty()) {
-		throw std::runtime_error("Event has no options.");
+		return;
 	}
 
 	std::map<const event_option<T> *, const chance_factor<T> *> option_ai_chances;
