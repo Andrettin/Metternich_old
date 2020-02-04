@@ -28,7 +28,7 @@ public:
 	{
 		const std::string &key = property.get_key();
 
-		if (key == "triggers" || key == "random") {
+		if (key == "triggers" || key == "random" || key == "hidden") {
 			scoped_event_base::process_gsml_property(property);
 		} else {
 			data_entry_base::process_gsml_property(property);
