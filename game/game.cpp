@@ -12,6 +12,7 @@
 #include "map/map_mode.h"
 #include "map/province.h"
 #include "script/condition/condition_check_base.h"
+#include "script/event/event_trigger.h"
 
 #include <chrono>
 
@@ -50,6 +51,10 @@ void game::start(const timeline *timeline, const QDateTime &start_date)
 	this->running = true;
 	emit running_changed();
 	this->set_paused(true);
+
+	for (character *character : character::get_all_living()) {
+		character_event_trigger::game_start->do_events(character);
+	}
 
 	std::thread game_loop_thread(&game::run, this);
 	game_loop_thread.detach();

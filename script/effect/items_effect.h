@@ -36,12 +36,12 @@ public:
 
 	virtual std::string get_addition_string() const override
 	{
-		return "Gain the " + string::highlight(this->item->get_name()) + " Item";
+		return "Gain the " + string::highlight(this->item->get_name()) + " item";
 	}
 
 	virtual std::string get_subtraction_string() const override
 	{
-		return "Lose the " + string::highlight(this->item->get_name()) + " Item";
+		return "Lose the " + string::highlight(this->item->get_name()) + " item";
 	}
 
 private:
