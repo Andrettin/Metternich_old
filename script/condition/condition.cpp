@@ -32,6 +32,7 @@
 #include "script/condition/region_condition.h"
 #include "script/condition/terrain_condition.h"
 #include "script/condition/tier_de_jure_title_condition.h"
+#include "script/condition/wealth_condition.h"
 #include "script/condition/world_condition.h"
 #include "util/parse_util.h"
 #include "util/string_util.h"
@@ -54,6 +55,8 @@ std::unique_ptr<condition<T>> condition<T>::from_gsml_property(const gsml_proper
 			return std::make_unique<has_trait_condition<T>>(property.get_value(), property.get_operator());
 		} else if (condition_identifier == "prowess") {
 			return std::make_unique<prowess_condition<T>>(std::stoi(property.get_value()), property.get_operator());
+		} else if (condition_identifier == "wealth") {
+			return std::make_unique<wealth_condition<T>>(std::stoi(property.get_value()), property.get_operator());
 		}
 	} else {
 		if (condition_identifier == "borders_water") {

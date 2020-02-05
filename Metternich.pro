@@ -197,6 +197,7 @@ HEADERS += \
     script/condition/region_condition.h \
     script/condition/terrain_condition.h \
     script/condition/tier_de_jure_title_condition.h \
+    script/condition/wealth_condition.h \
     script/condition/world_condition.h \
     script/decision/decision.h \
     script/decision/holding_decision.h \
