@@ -27,6 +27,12 @@ void scoped_decision<T>::process_gsml_scope(const gsml_data &scope)
 	} else if (scope.get_tag() == "conditions") {
 		this->conditions = std::make_unique<and_condition<T>>();
 		database::process_gsml_data(this->conditions.get(), scope);
+	} else if (scope.get_tag() == "source_preconditions") {
+		this->source_preconditions = std::make_unique<and_condition<character>>();
+		database::process_gsml_data(this->source_preconditions.get(), scope);
+	} else if (scope.get_tag() == "source_conditions") {
+		this->source_conditions = std::make_unique<and_condition<character>>();
+		database::process_gsml_data(this->source_conditions.get(), scope);
 	} else if (scope.get_tag() == "effects") {
 		this->effects = std::make_unique<effect_list<T>>();
 		database::process_gsml_data(this->effects, scope);
@@ -46,6 +52,12 @@ bool scoped_decision<T>::check_preconditions(const T *scope) const
 }
 
 template <typename T>
+bool scoped_decision<T>::check_preconditions(const T *scope, const character *source) const
+{
+	return this->check_preconditions(scope) && this->check_source_preconditions(source);
+}
+
+template <typename T>
 bool scoped_decision<T>::check_conditions(const T *scope) const
 {
 	if (!this->check_preconditions(scope)) {
@@ -60,13 +72,39 @@ bool scoped_decision<T>::check_conditions(const T *scope) const
 }
 
 template <typename T>
+bool scoped_decision<T>::check_conditions(const T *scope, const character *source) const
+{
+	return this->check_conditions(scope) && this->check_source_conditions(source);
+}
+
+template <typename T>
+bool scoped_decision<T>::check_source_preconditions(const character *source) const
+{
+	if (this->source_preconditions == nullptr) {
+		return true;
+	}
+
+	return this->source_preconditions->check(source);
+}
+
+template <typename T>
+bool scoped_decision<T>::check_source_conditions(const character *source) const
+{
+	if (!this->check_source_preconditions(source)) {
+		return false;
+	}
+
+	if (this->source_conditions == nullptr) {
+		return true;
+	}
+
+	return this->source_conditions->check(source);
+}
+
+template <typename T>
 void scoped_decision<T>::do_effects(T *scope, character *source) const
 {
 	Q_UNUSED(source)
-
-	if (!this->check_conditions(scope)) {
-		return;
-	}
 
 	if (this->effects != nullptr) {
 		this->effects->do_effects(scope);

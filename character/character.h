@@ -464,7 +464,7 @@ private:
 		QVariantList disabled_decision_list;
 
 		for (decision_type *decision : decision_type::get_all()) {
-			if (!decision->check_preconditions(scope)) {
+			if (!decision->check_preconditions(scope, this)) {
 				continue;
 			}
 

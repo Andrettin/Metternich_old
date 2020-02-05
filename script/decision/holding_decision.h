@@ -23,7 +23,7 @@ public:
 	{
 		const std::string &tag = scope.get_tag();
 
-		if (tag == "preconditions" || tag == "conditions" || tag == "effects") {
+		if (tag == "preconditions" || tag == "conditions" || tag == "source_preconditions" || tag == "source_conditions" || tag == "effects") {
 			scoped_decision::process_gsml_scope(scope);
 		} else {
 			data_entry_base::process_gsml_scope(scope);
