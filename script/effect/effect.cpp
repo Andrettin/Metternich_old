@@ -11,6 +11,7 @@
 #include "script/effect/event_effect.h"
 #include "script/effect/flags_effect.h"
 #include "script/effect/for_effect.h"
+#include "script/effect/holding_type_effect.h"
 #include "script/effect/if_effect.h"
 #include "script/effect/items_effect.h"
 #include "script/effect/location_effect.h"
@@ -34,6 +35,10 @@ std::unique_ptr<effect<T>> effect<T>::from_gsml_property(const gsml_property &pr
 			return std::make_unique<traits_effect<T>>(property.get_value(), property.get_operator());
 		} else if (effect_identifier == "wealth") {
 			return std::make_unique<wealth_effect<T>>(property.get_value(), property.get_operator());
+		}
+	} else if constexpr (std::is_same_v<T, holding>) {
+		if (effect_identifier == "holding_type") {
+			return std::make_unique<holding_type_effect<T>>(property.get_value(), property.get_operator());
 		}
 	}
 

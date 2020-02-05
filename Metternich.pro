@@ -201,6 +201,7 @@ HEADERS += \
     script/effect/event_effect.h \
     script/effect/flags_effect.h \
     script/effect/for_effect.h \
+    script/effect/holding_type_effect.h \
     script/effect/if_effect.h \
     script/effect/items_effect.h \
     script/effect/location_effect.h \
