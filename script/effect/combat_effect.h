@@ -56,7 +56,7 @@ public:
 		}
 	}
 
-	virtual void do_assignment_effect(T *scope) const override
+	virtual void do_assignment_effect(T *scope, const context &ctx) const override
 	{
 		bool success = true;
 		int enemy_amount = this->enemy_amount;
@@ -78,17 +78,17 @@ public:
 
 		if (success) {
 			if (this->victory_effects != nullptr) {
-				this->victory_effects->do_effects(scope);
+				this->victory_effects->do_effects(scope, ctx);
 			}
 		} else {
 			if (this->defeat_effects != nullptr) {
-				this->defeat_effects->do_effects(scope);
+				this->defeat_effects->do_effects(scope, ctx);
 			}
 			scope->set_alive(false);
 		}
 	}
 
-	virtual std::string get_assignment_string(const T *scope, const size_t indent) const override
+	virtual std::string get_assignment_string(const T *scope, const context &ctx, const size_t indent) const override
 	{
 		std::string str = "Combat against " + std::to_string(this->enemy_amount) + " ";
 		if (this->enemy != nullptr) {
@@ -98,13 +98,13 @@ public:
 		}
 		str += " (Prowess " + std::to_string(this->get_enemy_prowess()) + ")";
 		if (this->victory_effects != nullptr) {
-			const std::string effects_string = this->victory_effects->get_effects_string(scope, indent + 1);
+			const std::string effects_string = this->victory_effects->get_effects_string(scope, ctx, indent + 1);
 			if (!effects_string.empty()) {
 				str += "\n" + std::string(indent, '\t') + "If victorious:\n" + effects_string;
 			}
 		}
 		if (this->defeat_effects != nullptr) {
-			const std::string effects_string = this->defeat_effects->get_effects_string(scope, indent + 1);
+			const std::string effects_string = this->defeat_effects->get_effects_string(scope, ctx, indent + 1);
 			if (!effects_string.empty()) {
 				str += "\n" + std::string(indent, '\t') + "If defeated:\n" + effects_string;
 			}

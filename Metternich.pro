@@ -199,6 +199,7 @@ HEADERS += \
     script/condition/tier_de_jure_title_condition.h \
     script/condition/wealth_condition.h \
     script/condition/world_condition.h \
+    script/context.h \
     script/decision/decision.h \
     script/decision/holding_decision.h \
     script/decision/scoped_decision.h \
@@ -213,8 +214,10 @@ HEADERS += \
     script/effect/items_effect.h \
     script/effect/location_effect.h \
     script/effect/random_list_effect.h \
+    script/effect/scope_effect.h \
     script/effect/scripted_effect.h \
     script/effect/scripted_effect_effect.h \
+    script/effect/source_effect.h \
     script/effect/tooltip_effect.h \
     script/effect/traits_effect.h \
     script/effect/wealth_effect.h \

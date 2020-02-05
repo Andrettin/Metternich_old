@@ -6,7 +6,7 @@
 namespace metternich {
 
 class gsml_data;
-enum class gsml_operator : int;
+enum class gsml_operator;
 
 class gsml_parser
 {

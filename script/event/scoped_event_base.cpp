@@ -7,6 +7,7 @@
 #include "random.h"
 #include "script/chance_util.h"
 #include "script/condition/and_condition.h"
+#include "script/context.h"
 #include "script/effect/effect.h"
 #include "script/effect/effect_list.h"
 #include "script/event/event_instance.h"
@@ -120,24 +121,24 @@ bool scoped_event_base<T>::check_conditions(const T *scope) const
 }
 
 template <typename T>
-void scoped_event_base<T>::do_event(T *scope) const
+void scoped_event_base<T>::do_event(T *scope, const context &ctx) const
 {
 	if (this->immediate_effects != nullptr) {
-		this->immediate_effects->do_effects(scope);
+		this->immediate_effects->do_effects(scope, ctx);
 	}
 
 	if (scope->is_ai() || this->hidden) {
-		this->pick_option(scope);
+		this->pick_option(scope, ctx);
 	} else {
 		//add event to the list of events to be shown to the player
 		std::vector<qunique_ptr<event_option_instance>> option_instances;
 		for (const std::unique_ptr<event_option<T>> &option : this->options) {
 			const event_option<T> *option_ptr = option.get();
-			std::function<void()> option_effects = [option_ptr, scope]() {
-				option_ptr->do_effects(scope);
+			std::function<void()> option_effects = [option_ptr, scope, ctx]() {
+				option_ptr->do_effects(scope, ctx);
 			};
 
-			const std::string effects_string = option->get_effects_string(scope);
+			const std::string effects_string = option->get_effects_string(scope, ctx);
 			auto option_instance = make_qunique<event_option_instance>(QString::fromStdString(option->get_name()), string::to_tooltip(effects_string), option_effects);
 			option_instance->moveToThread(QApplication::instance()->thread());
 			option_instances.push_back(std::move(option_instance));
@@ -150,7 +151,7 @@ void scoped_event_base<T>::do_event(T *scope) const
 }
 
 template <typename T>
-void scoped_event_base<T>::pick_option(T *scope) const
+void scoped_event_base<T>::pick_option(T *scope, const context &ctx) const
 {
 	if (this->options.empty()) {
 		return;
@@ -166,7 +167,7 @@ void scoped_event_base<T>::pick_option(T *scope) const
 	}
 
 	const event_option<T> *option = calculate_chance_list_result(option_ai_chances, scope);
-	option->do_effects(scope);
+	option->do_effects(scope, ctx);
 }
 
 template class scoped_event_base<character>;

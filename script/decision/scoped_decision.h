@@ -30,7 +30,7 @@ public:
 	bool check_source_preconditions(const character *source) const;
 	bool check_source_conditions(const character *source) const;
 	void do_effects(T *scope, character *source) const;
-	std::string get_effects_string(const T *scope) const;
+	QString get_effects_string(const T *scope, character *source) const;
 
 private:
 	std::unique_ptr<condition<T>> preconditions;

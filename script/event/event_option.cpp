@@ -55,20 +55,20 @@ void event_option<T>::process_gsml_scope(const gsml_data &scope)
 }
 
 template <typename T>
-void event_option<T>::do_effects(T *scope) const
+void event_option<T>::do_effects(T *scope, const context &ctx) const
 {
 	if (this->effects == nullptr) {
 		return;
 	}
 
-	this->effects->do_effects(scope);
+	this->effects->do_effects(scope, ctx);
 }
 
 template <typename T>
-std::string event_option<T>::get_effects_string(const T *scope) const
+std::string event_option<T>::get_effects_string(const T *scope, const context &ctx) const
 {
 	if (this->effects != nullptr) {
-		std::string effects_string = this->effects->get_effects_string(scope);
+		std::string effects_string = this->effects->get_effects_string(scope, ctx);
 		if (!effects_string.empty()) {
 			return effects_string;
 		}

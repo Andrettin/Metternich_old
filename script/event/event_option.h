@@ -8,6 +8,7 @@ namespace metternich {
 class character;
 class gsml_data;
 class gsml_property;
+struct context;
 
 template <typename T>
 class chance_factor;
@@ -35,8 +36,8 @@ public:
 		return this->ai_chance.get();
 	}
 
-	void do_effects(T *scope) const;
-	std::string get_effects_string(const T *scope) const;
+	void do_effects(T *scope, const context &ctx) const;
+	std::string get_effects_string(const T *scope, const context &ctx) const;
 
 private:
 	std::string name_tag;

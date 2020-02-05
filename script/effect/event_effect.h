@@ -1,5 +1,6 @@
 #pragma once
 
+#include "script/context.h"
 #include "script/effect/effect.h"
 #include "script/event/character_event.h"
 #include "util/string_util.h"
@@ -29,11 +30,16 @@ public:
 		return identifier;
 	}
 
-	virtual void do_assignment_effect(T *scope) const override
+	virtual void do_assignment_effect(T *scope, const context &ctx) const override
 	{
+		context new_ctx;
+		new_ctx.source_character = ctx.current_character;
+
 		if constexpr (std::is_same_v<T, character>) {
-			if (static_cast<const character_event *>(this->event)->check_conditions(scope)) {
-				static_cast<const character_event *>(this->event)->do_event(scope);
+			new_ctx.current_character = scope;
+			const character_event *event = static_cast<const character_event *>(this->event);
+			if (event->check_conditions(scope)) {
+				event->do_event(scope, new_ctx);
 			}
 		}
 	}

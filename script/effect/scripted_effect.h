@@ -9,6 +9,7 @@
 namespace metternich {
 
 class character;
+struct context;
 
 //the class for a predefined, reusable scripted effect
 template <typename T>
@@ -25,14 +26,14 @@ public:
 		this->effects.process_gsml_scope(scope);
 	}
 
-	void do_effects(T *scope) const
+	void do_effects(T *scope, const context &ctx) const
 	{
-		this->effects.do_effects(scope);
+		this->effects.do_effects(scope, ctx);
 	}
 
-	std::string get_effects_string(const T *scope, const size_t indent) const
+	std::string get_effects_string(const T *scope, const context &ctx, const size_t indent) const
 	{
-		return this->effects.get_effects_string(scope, indent);
+		return this->effects.get_effects_string(scope, ctx, indent);
 	}
 
 private:

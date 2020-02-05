@@ -3,8 +3,10 @@
 #include "database/database.h"
 #include "database/gsml_data.h"
 #include "script/condition/and_condition.h"
+#include "script/context.h"
 #include "script/effect/effect.h"
 #include "script/effect/effect_list.h"
+#include "util/string_util.h"
 
 namespace metternich {
 
@@ -104,18 +106,20 @@ bool scoped_decision<T>::check_source_conditions(const character *source) const
 template <typename T>
 void scoped_decision<T>::do_effects(T *scope, character *source) const
 {
-	Q_UNUSED(source)
-
 	if (this->effects != nullptr) {
-		this->effects->do_effects(scope);
+		context ctx;
+		ctx.source_character = source;
+		this->effects->do_effects(scope, ctx);
 	}
 }
 
 template <typename T>
-std::string scoped_decision<T>::get_effects_string(const T *scope) const
+QString scoped_decision<T>::get_effects_string(const T *scope, character *source) const
 {
 	if (this->effects != nullptr) {
-		return this->effects->get_effects_string(scope);
+		context ctx;
+		ctx.source_character = source;
+		return string::to_tooltip(this->effects->get_effects_string(scope, ctx));
 	}
 
 	return no_effect_string;

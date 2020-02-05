@@ -1,16 +1,17 @@
 #include "script/event/event_trigger.h"
 
+#include "script/context.h"
 #include "script/event/scoped_event_base.h"
 #include "util/vector_random_util.h"
 
 namespace metternich {
 
 template <typename T>
-void event_trigger<T>::do_events(T *scope) const
+void event_trigger<T>::do_events(T *scope, const context &ctx) const
 {
 	for (const auto *event : this->events) {
 		if (event->check_conditions(scope)) {
-			event->do_event(scope);
+			event->do_event(scope, ctx);
 		}
 	}
 
@@ -22,8 +23,18 @@ void event_trigger<T>::do_events(T *scope) const
 		}
 	}
 	if (!random_events.empty()) {
-		vector::get_random(random_events)->do_event(scope);
+		vector::get_random(random_events)->do_event(scope, ctx);
 	}
+}
+
+template <typename T>
+void event_trigger<T>::do_events(T *scope) const
+{
+	context ctx;
+	if constexpr (std::is_same_v<T, character>) {
+		ctx.current_character = scope;
+	}
+	this->do_events(scope, ctx);
 }
 
 template class event_trigger<character>;

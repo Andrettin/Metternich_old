@@ -31,15 +31,15 @@ void effect_list<T>::process_gsml_scope(const gsml_data &scope)
 }
 
 template <typename T>
-void effect_list<T>::do_effects(T *scope) const
+void effect_list<T>::do_effects(T *scope, const context &ctx) const
 {
 	for (const std::unique_ptr<effect<T>> &effect : this->effects) {
-		effect->do_effect(scope);
+		effect->do_effect(scope, ctx);
 	}
 }
 
 template <typename T>
-std::string effect_list<T>::get_effects_string(const T *scope, const size_t indent) const
+std::string effect_list<T>::get_effects_string(const T *scope, const context &ctx, const size_t indent) const
 {
 	std::string effects_string;
 	bool first = true;
@@ -48,7 +48,7 @@ std::string effect_list<T>::get_effects_string(const T *scope, const size_t inde
 			continue;
 		}
 
-		const std::string effect_string = effect->get_string(scope, indent);
+		const std::string effect_string = effect->get_string(scope, ctx, indent);
 		if (effect_string.empty()) {
 			continue;
 		}

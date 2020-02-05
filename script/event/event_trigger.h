@@ -5,6 +5,7 @@
 namespace metternich {
 
 class character;
+struct context;
 
 template <typename T>
 class scoped_event_base;
@@ -45,6 +46,7 @@ public:
 		this->random_events.push_back(event);
 	}
 
+	void do_events(T *scope, const context &ctx) const;
 	void do_events(T *scope) const;
 
 private:

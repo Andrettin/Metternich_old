@@ -5,7 +5,7 @@
 
 namespace metternich {
 
-enum class gsml_operator : int;
+enum class gsml_operator;
 
 class gsml_property
 {

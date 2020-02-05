@@ -38,9 +38,9 @@ public:
 		this->effects.process_gsml_scope(scope);
 	}
 
-	virtual void do_assignment_effect(T *scope) const override
+	virtual void do_assignment_effect(T *scope, const context &ctx) const override
 	{
-		this->effects.do_effects(scope);
+		this->effects.do_effects(scope, ctx);
 	}
 
 	virtual std::string get_assignment_string() const override

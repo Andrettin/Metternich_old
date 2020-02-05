@@ -33,7 +33,7 @@ public:
 	bool check_conditions(const holding *holding, const character *source) const;
 	Q_INVOKABLE bool check_conditions(const QVariant &holding_variant, const QVariant &source_variant) const;
 	Q_INVOKABLE void do_effects(const QVariant &holding_variant, const QVariant &source_variant) const;
-	Q_INVOKABLE QString get_effects_string(const QVariant &holding_variant) const;
+	Q_INVOKABLE QString get_effects_string(const QVariant &holding_variant, const QVariant &source_variant) const;
 };
 
 }

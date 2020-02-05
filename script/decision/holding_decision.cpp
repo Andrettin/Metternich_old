@@ -38,11 +38,15 @@ Q_INVOKABLE void holding_decision::do_effects(const QVariant &holding_variant, c
 	});
 }
 
-Q_INVOKABLE QString holding_decision::get_effects_string(const QVariant &holding_variant) const
+Q_INVOKABLE QString holding_decision::get_effects_string(const QVariant &holding_variant, const QVariant &source_variant) const
 {
 	QObject *holding_object = qvariant_cast<QObject *>(holding_variant);
 	const holding *holding = static_cast<metternich::holding *>(holding_object);
-	return QString::fromStdString(scoped_decision::get_effects_string(holding));
+
+	QObject *source_object = qvariant_cast<QObject *>(source_variant);
+	character *source = static_cast<metternich::character *>(source_object);
+
+	return scoped_decision::get_effects_string(holding, source);
 }
 
 }

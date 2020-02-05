@@ -9,6 +9,7 @@ namespace metternich {
 class character;
 class gsml_data;
 class gsml_property;
+struct context;
 
 template <typename T>
 class condition;
@@ -42,8 +43,8 @@ public:
 	std::string get_description() const;
 
 	bool check_conditions(const T *scope) const;
-	void do_event(T *scope) const;
-	void pick_option(T *scope) const;
+	void do_event(T *scope, const context &ctx) const;
+	void pick_option(T *scope, const context &ctx) const;
 
 private:
 	std::set<event_trigger<T> *> triggers;

@@ -35,17 +35,17 @@ public:
 		this->effects.process_gsml_scope(scope);
 	}
 
-	virtual void do_assignment_effect(T *scope) const override
+	virtual void do_assignment_effect(T *scope, const context &ctx) const override
 	{
 		for (int i = 0; i < this->count; ++i) {
-			this->effects.do_effects(scope);
+			this->effects.do_effects(scope, ctx);
 		}
 	}
 
-	virtual std::string get_assignment_string(const T *scope, const size_t indent) const override
+	virtual std::string get_assignment_string(const T *scope, const context &ctx, const size_t indent) const override
 	{
 		std::string str = "This will occur " + std::to_string(this->count) + " times:\n";
-		str += this->effects.get_effects_string(scope, indent + 1);
+		str += this->effects.get_effects_string(scope, ctx, indent + 1);
 		return str;
 	}
 

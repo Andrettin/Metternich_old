@@ -17,6 +17,7 @@
 #include "script/effect/location_effect.h"
 #include "script/effect/random_list_effect.h"
 #include "script/effect/scripted_effect_effect.h"
+#include "script/effect/source_effect.h"
 #include "script/effect/tooltip_effect.h"
 #include "script/effect/traits_effect.h"
 #include "script/effect/wealth_effect.h"
@@ -67,6 +68,8 @@ std::unique_ptr<effect<T>> effect<T>::from_gsml_scope(const gsml_data &scope)
 		effect = std::make_unique<if_effect<T>>(scope.get_operator());
 	} else if (effect_identifier == "random_list") {
 		effect = std::make_unique<random_list_effect<T>>(scope.get_operator());
+	} else if (effect_identifier == "source") {
+		effect = std::make_unique<source_effect<T>>(scope.get_operator());
 	} else if (effect_identifier == "tooltip") {
 		effect = std::make_unique<tooltip_effect<T>>(scope.get_operator());
 	} else {
@@ -106,17 +109,17 @@ void effect<T>::process_gsml_scope(const gsml_data &scope)
 }
 
 template <typename T>
-void effect<T>::do_effect(T *scope) const
+void effect<T>::do_effect(T *scope, const context &ctx) const
 {
 	switch (this->get_operator()) {
 		case gsml_operator::assignment:
-			this->do_assignment_effect(scope);
+			this->do_assignment_effect(scope, ctx);
 			break;
 		case gsml_operator::addition:
-			this->do_addition_effect(scope);
+			this->do_addition_effect(scope, ctx);
 			break;
 		case gsml_operator::subtraction:
-			this->do_subtraction_effect(scope);
+			this->do_subtraction_effect(scope, ctx);
 			break;
 		default:
 			throw std::runtime_error("Invalid effect operator: \"" + std::to_string(static_cast<int>(this->get_operator())) + "\".");
@@ -124,22 +127,11 @@ void effect<T>::do_effect(T *scope) const
 }
 
 template <typename T>
-std::string effect<T>::get_string(const T *scope, const size_t indent) const
+std::string effect<T>::get_string(const T *scope, const context &ctx, const size_t indent) const
 {
-	/*
-	std::string scope_name;
-	if constexpr (std::is_same_v<T, character> || std::is_same_v<T, holding>) {
-		scope_name = scope->get_titled_name();
-	} else {
-		scope_name = scope->get_name();
-	}
-
-	std::string str = string::highlight(scope_name) + ": ";
-	*/
-
 	switch (this->get_operator()) {
 		case gsml_operator::assignment:
-			return this->get_assignment_string(scope, indent);
+			return this->get_assignment_string(scope, ctx, indent);
 			break;
 		case gsml_operator::addition:
 			return this->get_addition_string();
