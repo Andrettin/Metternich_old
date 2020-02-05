@@ -83,13 +83,13 @@ template <typename T>
 void scoped_event_base<T>::process_gsml_scope(const gsml_data &scope)
 {
 	if (scope.get_tag() == "conditions") {
-		this->conditions = std::make_unique<and_condition<character>>();
+		this->conditions = std::make_unique<and_condition<T>>();
 		database::process_gsml_data(this->conditions.get(), scope);
 	} else if (scope.get_tag() == "immediate_effects") {
 		this->immediate_effects = std::make_unique<effect_list<T>>();
 		database::process_gsml_data(this->immediate_effects, scope);
 	} else if (scope.get_tag() == "option") {
-		auto option = std::make_unique<event_option<character>>();
+		auto option = std::make_unique<event_option<T>>();
 		database::process_gsml_data(option.get(), scope);
 		this->options.push_back(std::move(option));
 	} else {

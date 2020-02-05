@@ -454,6 +454,35 @@ public:
 		emit flags_changed();
 	}
 
+	Q_INVOKABLE QVariantList get_targeted_decisions(const QVariant &target_variant);
+
+private:
+	template <typename decision_type, typename T>
+	QVariantList get_targeted_decisions(const T *scope)
+	{
+		QVariantList decision_list;
+		QVariantList disabled_decision_list;
+
+		for (decision_type *decision : decision_type::get_all()) {
+			if (!decision->check_preconditions(scope)) {
+				continue;
+			}
+
+			if (!decision->check_conditions(scope, this)) {
+				disabled_decision_list.append(QVariant::fromValue(decision));
+				continue;
+			}
+
+			decision_list.append(QVariant::fromValue(decision));
+		}
+
+		for (const QVariant &variant : disabled_decision_list) {
+			decision_list.append(variant);
+		}
+
+		return decision_list;
+	}
+
 signals:
 	void name_changed();
 	void full_name_changed();

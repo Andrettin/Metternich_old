@@ -16,6 +16,7 @@
 #include "random.h"
 #include "politics/government_type.h"
 #include "script/condition/condition_check.h"
+#include "script/decision/holding_decision.h"
 #include "script/event/character_event.h"
 #include "script/event/event_trigger.h"
 #include "script/modifier.h"
@@ -544,6 +545,21 @@ bool character::can_build_in_holding(const QVariant &holding_variant)
 	QObject *holding_object = qvariant_cast<QObject *>(holding_variant);
 	const holding *holding = static_cast<metternich::holding *>(holding_object);
 	return this->can_build_in_holding(holding);
+}
+
+QVariantList character::get_targeted_decisions(const QVariant &target_variant)
+{
+	QObject *target_object = qvariant_cast<QObject *>(target_variant);
+	const std::string class_name = target_object->metaObject()->className();
+
+	if (class_name == "metternich::holding") {
+		const holding *holding = static_cast<metternich::holding *>(target_object);
+		return this->get_targeted_decisions<holding_decision>(holding);
+	} else {
+		qCritical() << QString::fromStdString("Invalid targeted decision scope class: \"" + class_name + "\".");
+	}
+
+	return QVariantList();
 }
 
 }

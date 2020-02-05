@@ -61,6 +61,9 @@ SOURCES += \
         script/chance_factor.cpp \
         script/condition/condition.cpp \
         script/condition/has_technology_condition.cpp \
+        script/decision/decision.cpp \
+        script/decision/holding_decision.cpp \
+        script/decision/scoped_decision.cpp \
         script/effect/effect.cpp \
         script/effect/effect_list.cpp \
         script/event/event_instance.cpp \
@@ -195,6 +198,9 @@ HEADERS += \
     script/condition/terrain_condition.h \
     script/condition/tier_de_jure_title_condition.h \
     script/condition/world_condition.h \
+    script/decision/decision.h \
+    script/decision/holding_decision.h \
+    script/decision/scoped_decision.h \
     script/effect/combat_effect.h \
     script/effect/effect.h \
     script/effect/effect_list.h \
