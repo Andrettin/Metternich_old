@@ -159,9 +159,14 @@ inline std::vector<std::string> get_suffix_combinations(const std::vector<std::v
 	return suffix_combinations;
 }
 
+inline std::string color(const std::string &str, const std::string &color_identifier)
+{
+	return "<font color=\"" + color_identifier + "\">" + str + "</font>";
+}
+
 inline std::string highlight(const std::string &str)
 {
-	return "<font color=\"gold\">" + str + "</font>";
+	return string::color(str, "gold");
 }
 
 inline QString to_tooltip(const std::string &str)
