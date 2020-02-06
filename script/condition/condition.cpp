@@ -182,6 +182,30 @@ bool condition<T>::check(const T *scope) const
 	}
 }
 
+
+template <typename T>
+std::string condition<T>::get_string(const T *scope, const context &ctx, const size_t indent) const
+{
+	switch (this->get_operator()) {
+		case gsml_operator::assignment:
+			return this->get_assignment_string(scope, ctx, indent);
+		case gsml_operator::equality:
+			return this->get_equality_string();
+		case gsml_operator::inequality:
+			return this->get_inequality_string();
+		case gsml_operator::less_than:
+			return this->get_less_than_string();
+		case gsml_operator::less_than_or_equality:
+			return this->get_less_than_or_equality_string();
+		case gsml_operator::greater_than:
+			return this->get_greater_than_string();
+		case gsml_operator::greater_than_or_equality:
+			return this->get_greater_than_or_equality_string();
+		default:
+			throw std::runtime_error("Invalid condition operator: \"" + std::to_string(static_cast<int>(this->get_operator())) + "\".");
+	}
+}
+
 template class condition<character>;
 template class condition<holding>;
 template class condition<holding_slot>;

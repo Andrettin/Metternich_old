@@ -1,5 +1,6 @@
 #include "script/decision/scoped_decision.h"
 
+#include "character/character.h"
 #include "database/database.h"
 #include "database/gsml_data.h"
 #include "script/condition/and_condition.h"
@@ -101,6 +102,28 @@ bool scoped_decision<T>::check_source_conditions(const character *source) const
 	}
 
 	return this->source_conditions->check(source);
+}
+
+template <typename T>
+QString scoped_decision<T>::get_conditions_string(const T *scope, character *source) const
+{
+	std::string conditions_string;
+
+	context ctx;
+
+	if (this->conditions != nullptr) {
+		conditions_string += this->conditions->get_conditions_string(scope, ctx);
+	}
+
+	if (this->source_conditions != nullptr) {
+		if (!conditions_string.empty()) {
+			conditions_string += "\n";
+		}
+		conditions_string += string::highlight(source->get_titled_name()) + ":\n";
+		conditions_string += this->source_conditions->get_conditions_string(source, ctx, 1);
+	}
+
+	return string::to_tooltip(conditions_string);
 }
 
 template <typename T>

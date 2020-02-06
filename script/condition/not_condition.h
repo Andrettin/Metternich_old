@@ -57,6 +57,40 @@ public:
 		}
 	}
 
+	virtual std::string get_assignment_string(const T *scope, const context &ctx, const size_t indent) const
+	{
+		if (this->conditions.empty()) {
+			return std::string();
+		}
+
+		std::string str = "None of these must be true:\n";
+		const size_t subcondition_indent = indent + 1;
+		bool first = true;
+		for (const std::unique_ptr<condition<T>> &condition : this->conditions) {
+			if (condition->is_hidden()) {
+				continue;
+			}
+
+			const std::string condition_string = condition->get_string(scope, ctx, subcondition_indent);
+			if (condition_string.empty()) {
+				continue;
+			}
+
+			if (first) {
+				first = false;
+			} else {
+				str += "\n";
+			}
+
+			if (subcondition_indent > 0) {
+				str += std::string(subcondition_indent, '\t');
+			}
+
+			str += condition_string;
+		}
+		return str;
+	}
+
 private:
 	std::vector<std::unique_ptr<condition<T>>> conditions;
 };

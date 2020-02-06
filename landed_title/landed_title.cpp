@@ -78,6 +78,11 @@ const char *landed_title::get_tier_holder_identifier(const landed_title_tier tie
 	throw std::runtime_error("Invalid landed title tier enumeration value: " + std::to_string(static_cast<int>(tier)) + ".");
 }
 
+std::string landed_title::get_tier_name(const landed_title_tier tier)
+{
+	return translator::get()->translate(landed_title::get_tier_identifier(tier));
+}
+
 void landed_title::process_gsml_dated_property(const gsml_property &property, const QDateTime &date)
 {
 	Q_UNUSED(date)

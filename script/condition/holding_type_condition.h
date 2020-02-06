@@ -38,6 +38,21 @@ public:
 		scope->connect(scope, &T::type_changed, scope, [&check](){ check.set_result_recalculation_needed(); }, Qt::ConnectionType::DirectConnection);
 	}
 
+	virtual std::string get_assignment_string() const override
+	{
+		return this->get_equality_string();
+	}
+
+	virtual std::string get_equality_string() const override
+	{
+		return "Holding type is " + this->holding_type->get_name();
+	}
+
+	virtual std::string get_inequality_string() const override
+	{
+		return "Holding type is not " + this->holding_type->get_name();
+	}
+
 private:
 	const holding_type *holding_type = nullptr;
 };

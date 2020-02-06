@@ -31,6 +31,21 @@ public:
 		return province->is_in_region(this->region);
 	}
 
+	virtual std::string get_assignment_string() const override
+	{
+		return this->get_equality_string();
+	}
+
+	virtual std::string get_equality_string() const override
+	{
+		return "Is in the " + this->region->get_name() + " region";
+	}
+
+	virtual std::string get_inequality_string() const override
+	{
+		return "Is not in the " + this->region->get_name() + " region";
+	}
+
 private:
 	region *region = nullptr;
 };

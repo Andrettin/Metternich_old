@@ -39,6 +39,21 @@ public:
 		scope->connect(scope, &T::culture_changed, scope, [&check](){ check.set_result_recalculation_needed(); }, Qt::ConnectionType::DirectConnection);
 	}
 
+	virtual std::string get_assignment_string() const override
+	{
+		return this->get_equality_string();
+	}
+
+	virtual std::string get_equality_string() const override
+	{
+		return "Culture is " + this->culture->get_name();
+	}
+
+	virtual std::string get_inequality_string() const override
+	{
+		return "Culture is not " + this->culture->get_name();
+	}
+
 private:
 	const culture *culture = nullptr;
 };

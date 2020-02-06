@@ -65,6 +65,7 @@ public:
 
 	static const char *get_tier_identifier(const landed_title_tier tier);
 	static const char *get_tier_holder_identifier(const landed_title_tier tier);
+	static std::string get_tier_name(const landed_title_tier tier);
 
 	landed_title(const std::string &identifier) : data_entry(identifier)
 	{

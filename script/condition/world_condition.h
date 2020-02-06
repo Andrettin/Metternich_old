@@ -38,6 +38,21 @@ public:
 		return province->get_world() == this->world;
 	}
 
+	virtual std::string get_assignment_string() const override
+	{
+		return this->get_equality_string();
+	}
+
+	virtual std::string get_equality_string() const override
+	{
+		return "World is " + this->world->get_name();
+	}
+
+	virtual std::string get_inequality_string() const override
+	{
+		return "World is not " + this->world->get_name();
+	}
+
 private:
 	const world *world = nullptr;
 };

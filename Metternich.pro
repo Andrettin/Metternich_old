@@ -195,6 +195,7 @@ HEADERS += \
     script/condition/or_condition.h \
     script/condition/prowess_condition.h \
     script/condition/region_condition.h \
+    script/condition/scope_condition.h \
     script/condition/terrain_condition.h \
     script/condition/tier_de_jure_title_condition.h \
     script/condition/wealth_condition.h \

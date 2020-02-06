@@ -31,6 +31,29 @@ public:
 		return scope->has_any_trade_route() == this->has_any_trade_route;
 	}
 
+	virtual std::string get_assignment_string() const override
+	{
+		return this->get_equality_string();
+	}
+
+	virtual std::string get_equality_string() const override
+	{
+		if (this->has_any_trade_route) {
+			return "Has any trade route";
+		} else {
+			return "Does have any trade route";
+		}
+	}
+
+	virtual std::string get_inequality_string() const override
+	{
+		if (!this->has_any_trade_route) {
+			return "Has any trade route";
+		} else {
+			return "Does have any trade route";
+		}
+	}
+
 private:
 	bool has_any_trade_route = false;
 };

@@ -32,6 +32,11 @@ public:
 		scope->connect(scope, &T::flags_changed, scope, [&check](){ check.set_result_recalculation_needed(); }, Qt::ConnectionType::DirectConnection);
 	}
 
+	virtual bool is_hidden() const override
+	{
+		return true;
+	}
+
 private:
 	const scoped_flag<T> *flag = nullptr;
 };

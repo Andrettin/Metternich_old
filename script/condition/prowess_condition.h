@@ -45,6 +45,41 @@ public:
 		scope->connect(scope, &T::prowess_changed, scope, [&check](){ check.set_result_recalculation_needed(); }, Qt::ConnectionType::DirectConnection);
 	}
 
+	virtual std::string get_assignment_string() const override
+	{
+		return this->get_greater_than_or_equality_string();
+	}
+
+	virtual std::string get_equality_string() const override
+	{
+		return "Prowess is equal to " + std::to_string(this->prowess);
+	}
+
+	virtual std::string get_inequality_string() const override
+	{
+		return "Prowess is not equal to " + std::to_string(this->prowess);
+	}
+
+	virtual std::string get_less_than_string() const override
+	{
+		return "Prowess is less than " + std::to_string(this->prowess);
+	}
+
+	virtual std::string get_less_than_or_equality_string() const override
+	{
+		return "Prowess is less than or equal to " + std::to_string(this->prowess);
+	}
+
+	virtual std::string get_greater_than_string() const override
+	{
+		return "Prowess is greater than " + std::to_string(this->prowess);
+	}
+
+	virtual std::string get_greater_than_or_equality_string() const override
+	{
+		return "Prowess is greater than or equal to " + std::to_string(this->prowess);
+	}
+
 private:
 	int prowess = 0;
 };

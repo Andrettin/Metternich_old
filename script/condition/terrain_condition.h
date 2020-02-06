@@ -36,6 +36,21 @@ public:
 		return province->get_terrain() == this->terrain;
 	}
 
+	virtual std::string get_assignment_string() const override
+	{
+		return this->get_equality_string();
+	}
+
+	virtual std::string get_equality_string() const override
+	{
+		return "Terrain is " + this->terrain->get_name();
+	}
+
+	virtual std::string get_inequality_string() const override
+	{
+		return "Terrain is not " + this->terrain->get_name();
+	}
+
 private:
 	const terrain_type *terrain = nullptr;
 };

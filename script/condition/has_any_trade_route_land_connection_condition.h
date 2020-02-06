@@ -37,6 +37,29 @@ public:
 		scope->connect(scope, &T::active_trade_routes_changed, scope, [&check](){ check.set_result_recalculation_needed(); }, Qt::ConnectionType::DirectConnection);
 	}
 
+	virtual std::string get_assignment_string() const override
+	{
+		return this->get_equality_string();
+	}
+
+	virtual std::string get_equality_string() const override
+	{
+		if (this->has_any_trade_route_land_connection) {
+			return "Has any trade route land connection";
+		} else {
+			return "Does have any trade route land connection";
+		}
+	}
+
+	virtual std::string get_inequality_string() const override
+	{
+		if (!this->has_any_trade_route_land_connection) {
+			return "Has any trade route land connection";
+		} else {
+			return "Does have any trade route land connection";
+		}
+	}
+
 private:
 	bool has_any_trade_route_land_connection = false;
 };

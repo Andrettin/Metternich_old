@@ -30,6 +30,18 @@ void has_technology_condition<T>::bind_condition_check(condition_check_base &che
 	scope->connect(province, &province::technologies_changed, scope, [&check](){ check.set_result_recalculation_needed(); }, Qt::ConnectionType::DirectConnection);
 }
 
+template <typename T>
+std::string has_technology_condition<T>::get_equality_string() const
+{
+	return "Has the " + this->technology->get_name() + " technology";
+}
+
+template <typename T>
+std::string has_technology_condition<T>::get_inequality_string() const
+{
+	return "Does not have the " + this->technology->get_name() + " technology";
+}
+
 template class has_technology_condition<holding>;
 template class has_technology_condition<holding_slot>;
 template class has_technology_condition<population_unit>;

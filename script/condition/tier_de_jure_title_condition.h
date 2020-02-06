@@ -8,6 +8,7 @@
 #include "script/condition/condition.h"
 #include "script/condition/condition_check_base.h"
 #include "script/scope_util.h"
+#include "util/string_util.h"
 
 namespace metternich {
 
@@ -52,6 +53,21 @@ public:
 		if (title != nullptr) {
 			title->connect(title, &landed_title::de_jure_liege_title_changed, scope, [&check](){ check.set_result_recalculation_needed(); }, Qt::ConnectionType::DirectConnection);
 		}
+	}
+
+	virtual std::string get_assignment_string() const override
+	{
+		return this->get_equality_string();
+	}
+
+	virtual std::string get_equality_string() const override
+	{
+		return "De jure " + string::to_lower(landed_title::get_tier_name(TIER)) + " is " + this->tier_de_jure_title->get_name();
+	}
+
+	virtual std::string get_inequality_string() const override
+	{
+		return "De jure " + string::to_lower(landed_title::get_tier_name(TIER)) + " is not " + this->tier_de_jure_title->get_name();
 	}
 
 private:

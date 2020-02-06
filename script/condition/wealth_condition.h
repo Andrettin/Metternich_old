@@ -45,6 +45,41 @@ public:
 		scope->connect(scope, &T::wealth_changed, scope, [&check](){ check.set_result_recalculation_needed(); }, Qt::ConnectionType::DirectConnection);
 	}
 
+	virtual std::string get_assignment_string() const override
+	{
+		return this->get_greater_than_or_equality_string();
+	}
+
+	virtual std::string get_equality_string() const override
+	{
+		return "Wealth is equal to " + std::to_string(this->wealth);
+	}
+
+	virtual std::string get_inequality_string() const override
+	{
+		return "Wealth is not equal to " + std::to_string(this->wealth);
+	}
+
+	virtual std::string get_less_than_string() const override
+	{
+		return "Wealth is less than " + std::to_string(this->wealth);
+	}
+
+	virtual std::string get_less_than_or_equality_string() const override
+	{
+		return "Wealth is less than or equal to " + std::to_string(this->wealth);
+	}
+
+	virtual std::string get_greater_than_string() const override
+	{
+		return "Wealth is greater than " + std::to_string(this->wealth);
+	}
+
+	virtual std::string get_greater_than_or_equality_string() const override
+	{
+		return "Wealth is greater than or equal to " + std::to_string(this->wealth);
+	}
+
 private:
 	int wealth = 0;
 };

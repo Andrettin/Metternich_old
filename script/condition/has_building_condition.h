@@ -33,6 +33,21 @@ public:
 		scope->connect(scope, &T::buildings_changed, scope, [&check](){ check.set_result_recalculation_needed(); }, Qt::ConnectionType::DirectConnection);
 	}
 
+	virtual std::string get_assignment_string() const override
+	{
+		return this->get_equality_string();
+	}
+
+	virtual std::string get_equality_string() const override
+	{
+		return "Has the " + this->building->get_name() + " building";
+	}
+
+	virtual std::string get_inequality_string() const override
+	{
+		return "Does not have the " + this->building->get_name() + " building";
+	}
+
 private:
 	building *building = nullptr;
 };

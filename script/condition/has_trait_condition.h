@@ -34,6 +34,21 @@ public:
 		scope->connect(scope, &T::traits_changed, scope, [&check](){ check.set_result_recalculation_needed(); }, Qt::ConnectionType::DirectConnection);
 	}
 
+	virtual std::string get_assignment_string() const override
+	{
+		return this->get_equality_string();
+	}
+
+	virtual std::string get_equality_string() const override
+	{
+		return "Has the " + this->trait->get_name() + " trait";
+	}
+
+	virtual std::string get_inequality_string() const override
+	{
+		return "Does not have the " + this->trait->get_name() + " trait";
+	}
+
 private:
 	const trait *trait = nullptr;
 };

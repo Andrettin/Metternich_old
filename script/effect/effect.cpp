@@ -132,15 +132,12 @@ std::string effect<T>::get_string(const T *scope, const context &ctx, const size
 	switch (this->get_operator()) {
 		case gsml_operator::assignment:
 			return this->get_assignment_string(scope, ctx, indent);
-			break;
 		case gsml_operator::addition:
 			return this->get_addition_string();
-			break;
 		case gsml_operator::subtraction:
 			return this->get_subtraction_string();
-			break;
 		default:
-			throw std::runtime_error("Invalid operator (\"" + std::to_string(static_cast<int>(this->get_operator())) + "\") for effect.");
+			throw std::runtime_error("Invalid effect operator: \"" + std::to_string(static_cast<int>(this->get_operator())) + "\".");
 	}
 }
 

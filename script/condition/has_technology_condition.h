@@ -26,6 +26,14 @@ public:
 	virtual bool check_assignment(const T *scope) const override;
 	virtual void bind_condition_check(condition_check_base &check, const T *scope) const override;
 
+	virtual std::string get_assignment_string() const override
+	{
+		return this->get_equality_string();
+	}
+
+	virtual std::string get_equality_string() const override;
+	virtual std::string get_inequality_string() const override;
+
 private:
 	technology *technology = nullptr;
 };
