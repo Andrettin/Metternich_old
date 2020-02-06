@@ -2,6 +2,8 @@
 
 #include "script/condition/condition.h"
 #include "script/condition/condition_check_base.h"
+#include "util/number_util.h"
+#include "util/parse_util.h"
 
 namespace metternich {
 
@@ -9,9 +11,10 @@ template <typename T>
 class wealth_condition : public condition<T>
 {
 public:
-	wealth_condition(const int wealth, const gsml_operator effect_operator)
-		: condition<T>(effect_operator), wealth(wealth)
+	wealth_condition(const std::string &value, const gsml_operator effect_operator)
+		: condition<T>(effect_operator)
 	{
+		this->wealth = parse::centesimal_number_string_to_int(value);
 	}
 
 	virtual const std::string &get_identifier() const override
@@ -52,32 +55,32 @@ public:
 
 	virtual std::string get_equality_string() const override
 	{
-		return "Wealth is equal to " + std::to_string(this->wealth);
+		return "Wealth is equal to " + number::to_centesimal_string(this->wealth);
 	}
 
 	virtual std::string get_inequality_string() const override
 	{
-		return "Wealth is not equal to " + std::to_string(this->wealth);
+		return "Wealth is not equal to " + number::to_centesimal_string(this->wealth);
 	}
 
 	virtual std::string get_less_than_string() const override
 	{
-		return "Wealth is less than " + std::to_string(this->wealth);
+		return "Wealth is less than " + number::to_centesimal_string(this->wealth);
 	}
 
 	virtual std::string get_less_than_or_equality_string() const override
 	{
-		return "Wealth is less than or equal to " + std::to_string(this->wealth);
+		return "Wealth is less than or equal to " + number::to_centesimal_string(this->wealth);
 	}
 
 	virtual std::string get_greater_than_string() const override
 	{
-		return "Wealth is greater than " + std::to_string(this->wealth);
+		return "Wealth is greater than " + number::to_centesimal_string(this->wealth);
 	}
 
 	virtual std::string get_greater_than_or_equality_string() const override
 	{
-		return "Wealth is greater than or equal to " + std::to_string(this->wealth);
+		return "Wealth is greater than or equal to " + number::to_centesimal_string(this->wealth);
 	}
 
 private:
