@@ -22,17 +22,6 @@ Q_INVOKABLE bool holding_decision::check_conditions(const QVariant &holding_vari
 	return this->check_conditions(holding, source);
 }
 
-Q_INVOKABLE QString holding_decision::get_conditions_string(const QVariant &holding_variant, const QVariant &source_variant) const
-{
-	QObject *holding_object = qvariant_cast<QObject *>(holding_variant);
-	const holding *holding = static_cast<metternich::holding *>(holding_object);
-
-	QObject *source_object = qvariant_cast<QObject *>(source_variant);
-	character *source = static_cast<metternich::character *>(source_object);
-
-	return scoped_decision::get_conditions_string(holding, source);
-}
-
 Q_INVOKABLE void holding_decision::do_effects(const QVariant &holding_variant, const QVariant &source_variant) const
 {
 	QObject *holding_object = qvariant_cast<QObject *>(holding_variant);
@@ -49,7 +38,7 @@ Q_INVOKABLE void holding_decision::do_effects(const QVariant &holding_variant, c
 	});
 }
 
-Q_INVOKABLE QString holding_decision::get_effects_string(const QVariant &holding_variant, const QVariant &source_variant) const
+Q_INVOKABLE QString holding_decision::get_string(const QVariant &holding_variant, const QVariant &source_variant) const
 {
 	QObject *holding_object = qvariant_cast<QObject *>(holding_variant);
 	const holding *holding = static_cast<metternich::holding *>(holding_object);
@@ -57,7 +46,7 @@ Q_INVOKABLE QString holding_decision::get_effects_string(const QVariant &holding
 	QObject *source_object = qvariant_cast<QObject *>(source_variant);
 	character *source = static_cast<metternich::character *>(source_object);
 
-	return scoped_decision::get_effects_string(holding, source);
+	return scoped_decision::get_string(holding, source);
 }
 
 }

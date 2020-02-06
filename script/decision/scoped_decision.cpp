@@ -105,28 +105,6 @@ bool scoped_decision<T>::check_source_conditions(const character *source) const
 }
 
 template <typename T>
-QString scoped_decision<T>::get_conditions_string(const T *scope, character *source) const
-{
-	std::string conditions_string;
-
-	context ctx;
-
-	if (this->conditions != nullptr) {
-		conditions_string += this->conditions->get_conditions_string(scope, ctx);
-	}
-
-	if (this->source_conditions != nullptr) {
-		if (!conditions_string.empty()) {
-			conditions_string += "\n";
-		}
-		conditions_string += string::highlight(source->get_titled_name()) + ":\n";
-		conditions_string += this->source_conditions->get_conditions_string(source, ctx, 1);
-	}
-
-	return string::to_tooltip(conditions_string);
-}
-
-template <typename T>
 void scoped_decision<T>::do_effects(T *scope, character *source) const
 {
 	if (this->effects != nullptr) {
@@ -137,15 +115,48 @@ void scoped_decision<T>::do_effects(T *scope, character *source) const
 }
 
 template <typename T>
-QString scoped_decision<T>::get_effects_string(const T *scope, character *source) const
+QString scoped_decision<T>::get_string(const T *scope, character *source) const
 {
+
+	context conditions_ctx;
+	std::string conditions_string;
+
+	if (this->conditions != nullptr) {
+		conditions_string += this->conditions->get_conditions_string(scope, conditions_ctx, 1);
+	}
+
+	if (this->source_conditions != nullptr) {
+		const std::string source_conditions_string = this->source_conditions->get_conditions_string(source, conditions_ctx, 2);
+		if (!source_conditions_string.empty()) {
+			if (!conditions_string.empty()) {
+				conditions_string += "\n";
+			}
+			conditions_string += std::string(1, '\t') + string::highlight(source->get_titled_name()) + ":\n";
+			conditions_string += source_conditions_string;
+		}
+	}
+
+	std::string str;
+	if (!conditions_string.empty()) {
+		str += "Conditions:\n" + conditions_string + "\n\n";
+	}
+
+	str += "Effects:\n";
+
+	std::string effects_string;
 	if (this->effects != nullptr) {
 		context ctx;
 		ctx.source_character = source;
-		return string::to_tooltip(this->effects->get_effects_string(scope, ctx));
+		effects_string = this->effects->get_effects_string(scope, ctx, 1);
 	}
 
-	return no_effect_string;
+	if (!effects_string.empty()) {
+		str += effects_string;
+	} else {
+		str += std::string(1, '\t') + no_effect_string;
+	}
+
+	return string::to_tooltip(str);
 }
 
 template class scoped_decision<holding>;

@@ -29,9 +29,8 @@ public:
 	bool check_conditions(const T *scope, const character *source) const;
 	bool check_source_preconditions(const character *source) const;
 	bool check_source_conditions(const character *source) const;
-	QString get_conditions_string(const T *scope, character *source) const;
 	void do_effects(T *scope, character *source) const;
-	QString get_effects_string(const T *scope, character *source) const;
+	QString get_string(const T *scope, character *source) const;
 
 private:
 	std::unique_ptr<and_condition<T>> preconditions;

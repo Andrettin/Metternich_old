@@ -1,8 +1,6 @@
 #pragma once
 
 #include "map/province.h"
-#include "script/condition/and_condition.h"
-#include "script/condition/condition.h"
 #include "script/condition/condition_check_base.h"
 #include "script/condition/scope_condition.h"
 #include "util/string_util.h"
