@@ -127,7 +127,7 @@ void effect<T>::do_effect(T *scope, const context &ctx) const
 }
 
 template <typename T>
-std::string effect<T>::get_string(const T *scope, const context &ctx, const size_t indent) const
+std::string effect<T>::get_string(const T *scope, const read_only_context &ctx, const size_t indent) const
 {
 	switch (this->get_operator()) {
 		case gsml_operator::assignment:

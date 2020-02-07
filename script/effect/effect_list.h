@@ -12,6 +12,7 @@ class gsml_property;
 class holding;
 class province;
 struct context;
+struct read_only_context;
 
 template <typename T>
 class effect;
@@ -26,7 +27,7 @@ public:
 	void process_gsml_property(const gsml_property &property);
 	void process_gsml_scope(const gsml_data &scope);
 	void do_effects(T *scope, const context &ctx) const;
-	std::string get_effects_string(const T *scope, const context &ctx, const size_t indent = 0) const;
+	std::string get_effects_string(const T *scope, const read_only_context &ctx, const size_t indent = 0) const;
 
 private:
 	std::vector<std::unique_ptr<effect<T>>> effects;

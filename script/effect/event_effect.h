@@ -38,7 +38,7 @@ public:
 		if constexpr (std::is_same_v<T, character>) {
 			new_ctx.current_character = scope;
 			const character_event *event = static_cast<const character_event *>(this->event);
-			if (event->check_conditions(scope)) {
+			if (event->check_conditions(scope, ctx)) {
 				event->do_event(scope, new_ctx);
 			}
 		}

@@ -33,21 +33,21 @@ public:
 		throw std::runtime_error("Scope condition type \"" + this->get_identifier() + "\" has no implementation for the function to get a scope.");
 	}
 
-	virtual U *get_scope(const T *scope, const context &ctx) const
+	virtual U *get_scope(const T *scope, const read_only_context &ctx) const
 	{
 		Q_UNUSED(ctx)
 
 		return this->get_scope(scope);
 	}
 
-	virtual bool check_assignment(const T *scope) const override
+	virtual bool check_assignment(const T *scope, const read_only_context &ctx) const override
 	{
 		const U *new_scope = this->get_scope(scope);
 		if (new_scope == nullptr) {
 			return false;
 		}
 
-		return this->conditions.check(new_scope);
+		return this->conditions.check(new_scope, ctx);
 	}
 
 	virtual void bind_condition_check(condition_check_base &check, const T *scope) const override
@@ -58,7 +58,7 @@ public:
 		}
 	}
 
-	virtual std::string get_assignment_string(const T *scope, const context &ctx, const size_t indent) const override
+	virtual std::string get_assignment_string(const T *scope, const read_only_context &ctx, const size_t indent) const override
 	{
 		const U *new_scope = this->get_scope(scope, ctx);
 

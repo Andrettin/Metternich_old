@@ -10,6 +10,7 @@ class character;
 class gsml_data;
 class gsml_property;
 struct context;
+struct read_only_context;
 
 template <typename T>
 class condition;
@@ -42,7 +43,7 @@ public:
 	std::string get_title() const;
 	std::string get_description() const;
 
-	bool check_conditions(const T *scope) const;
+	bool check_conditions(const T *scope, const read_only_context &ctx) const;
 	void do_event(T *scope, const context &ctx) const;
 	void pick_option(T *scope, const context &ctx) const;
 

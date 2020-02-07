@@ -13,6 +13,9 @@ template <typename T>
 class and_condition;
 
 template <typename T>
+class chance_factor;
+
+template <typename T>
 class decision_filter;
 
 template <typename T>
@@ -39,6 +42,7 @@ public:
 	bool check_source_conditions(const character *source) const;
 	void do_effects(T *scope, character *source) const;
 	QString get_string(const T *scope, character *source) const;
+	int calculate_ai_chance(const T *scope, character *source) const;
 
 private:
 	decision_filter<T> *filter = nullptr;
@@ -47,6 +51,7 @@ private:
 	std::unique_ptr<and_condition<character>> source_preconditions;
 	std::unique_ptr<and_condition<character>> source_conditions;
 	std::unique_ptr<effect_list<T>> effects;
+	std::unique_ptr<chance_factor<T>> ai_chance; //the chance of the AI doing the decision each time it is checked
 };
 
 extern template class scoped_decision<holding>;

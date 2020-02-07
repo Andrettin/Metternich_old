@@ -11,7 +11,7 @@ class holding_slot;
 class population_unit;
 class province;
 enum class gsml_operator;
-struct context;
+struct read_only_context;
 
 template <typename T>
 class condition
@@ -33,13 +33,19 @@ public:
 
 	virtual const std::string &get_identifier() const = 0;
 
-	bool check(const T *scope) const;
+	bool check(const T *scope, const read_only_context &ctx) const;
 
 	virtual bool check_assignment(const T *scope) const
 	{
 		Q_UNUSED(scope)
 
 		throw std::runtime_error("The assignment operator is not supported for \"" + this->get_identifier() + "\" conditions.");
+	}
+
+	virtual bool check_assignment(const T *scope, const read_only_context &ctx) const
+	{
+		Q_UNUSED(ctx)
+		return this->check_assignment(scope);
 	}
 
 	virtual bool check_equality(const T *scope) const
@@ -89,14 +95,14 @@ public:
 		return this->condition_operator;
 	}
 
-	std::string get_string(const T *scope, const context &ctx, const size_t indent) const;
+	std::string get_string(const T *scope, const read_only_context &ctx, const size_t indent) const;
 
 	virtual std::string get_assignment_string() const
 	{
 		throw std::runtime_error("The assignment operator is not supported for \"" + this->get_identifier() + "\" effects.");
 	}
 
-	virtual std::string get_assignment_string(const T *scope, const context &ctx, const size_t indent) const
+	virtual std::string get_assignment_string(const T *scope, const read_only_context &ctx, const size_t indent) const
 	{
 		Q_UNUSED(scope)
 		Q_UNUSED(ctx)

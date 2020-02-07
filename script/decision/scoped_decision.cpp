@@ -4,6 +4,7 @@
 #include "database/database.h"
 #include "database/gsml_data.h"
 #include "holding/holding.h"
+#include "script/chance_factor.h"
 #include "script/condition/and_condition.h"
 #include "script/context.h"
 #include "script/decision/filter/decision_filter.h"
@@ -66,6 +67,9 @@ void scoped_decision<T>::process_gsml_scope(const gsml_data &scope)
 	} else if (scope.get_tag() == "effects") {
 		this->effects = std::make_unique<effect_list<T>>();
 		database::process_gsml_data(this->effects, scope);
+	} else if (scope.get_tag() == "ai_chance") {
+		this->ai_chance = std::make_unique<chance_factor<T>>();
+		database::process_gsml_data(this->ai_chance, scope);
 	} else {
 		throw std::runtime_error("Invalid decision scope: \"" + scope.get_tag() + "\".");
 	}
@@ -90,7 +94,13 @@ bool scoped_decision<T>::check_preconditions(const T *scope) const
 		return true;
 	}
 
-	return this->preconditions->check(scope);
+	read_only_context ctx;
+
+	if constexpr (std::is_same_v<T, character>) {
+		ctx.current_character = scope;
+	}
+
+	return this->preconditions->check(scope, ctx);
 }
 
 template <typename T>
@@ -110,7 +120,13 @@ bool scoped_decision<T>::check_conditions(const T *scope) const
 		return true;
 	}
 
-	return this->conditions->check(scope);
+	read_only_context ctx;
+
+	if constexpr (std::is_same_v<T, character>) {
+		ctx.current_character = scope;
+	}
+
+	return this->conditions->check(scope, ctx);
 }
 
 template <typename T>
@@ -126,7 +142,10 @@ bool scoped_decision<T>::check_source_preconditions(const character *source) con
 		return true;
 	}
 
-	return this->source_preconditions->check(source);
+	read_only_context ctx;
+	ctx.current_character = source;
+
+	return this->source_preconditions->check(source, ctx);
 }
 
 template <typename T>
@@ -140,7 +159,10 @@ bool scoped_decision<T>::check_source_conditions(const character *source) const
 		return true;
 	}
 
-	return this->source_conditions->check(source);
+	read_only_context ctx;
+	ctx.current_character = source;
+
+	return this->source_conditions->check(source, ctx);
 }
 
 template <typename T>
@@ -149,6 +171,11 @@ void scoped_decision<T>::do_effects(T *scope, character *source) const
 	if (this->effects != nullptr) {
 		context ctx;
 		ctx.source_character = source;
+
+		if constexpr (std::is_same_v<T, character>) {
+			ctx.current_character = scope;
+		}
+
 		this->effects->do_effects(scope, ctx);
 	}
 }
@@ -157,15 +184,23 @@ template <typename T>
 QString scoped_decision<T>::get_string(const T *scope, character *source) const
 {
 
-	context conditions_ctx;
+	read_only_context ctx;
+	ctx.source_character = source;
+	if constexpr (std::is_same_v<T, character>) {
+		ctx.current_character = scope;
+	}
+
+	read_only_context source_ctx;
+	ctx.current_character = source;
+
 	std::string conditions_string;
 
 	if (this->conditions != nullptr) {
-		conditions_string += this->conditions->get_conditions_string(scope, conditions_ctx, 1);
+		conditions_string += this->conditions->get_conditions_string(scope, ctx, 1);
 	}
 
 	if (this->source_conditions != nullptr) {
-		const std::string source_conditions_string = this->source_conditions->get_conditions_string(source, conditions_ctx, 2);
+		const std::string source_conditions_string = this->source_conditions->get_conditions_string(source, source_ctx, 2);
 		if (!source_conditions_string.empty()) {
 			if (!conditions_string.empty()) {
 				conditions_string += "\n";
@@ -184,8 +219,6 @@ QString scoped_decision<T>::get_string(const T *scope, character *source) const
 
 	std::string effects_string;
 	if (this->effects != nullptr) {
-		context ctx;
-		ctx.source_character = source;
 		effects_string = this->effects->get_effects_string(scope, ctx, 1);
 	}
 
@@ -196,6 +229,19 @@ QString scoped_decision<T>::get_string(const T *scope, character *source) const
 	}
 
 	return string::to_tooltip(str);
+}
+
+
+template <typename T>
+int scoped_decision<T>::calculate_ai_chance(const T *scope, character *source) const
+{
+	if (this->ai_chance == nullptr) {
+		return 100; //always take the decision by default
+	}
+
+	read_only_context ctx;
+	ctx.source_character = source;
+	return this->ai_chance->calculate(scope, ctx);
 }
 
 template class scoped_decision<holding>;

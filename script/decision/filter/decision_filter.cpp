@@ -1,5 +1,6 @@
 #include "script/decision/filter/decision_filter.h"
 
+#include "random.h"
 #include "script/context.h"
 #include "script/decision/scoped_decision.h"
 
@@ -15,6 +16,10 @@ void decision_filter<T>::do_ai_decisions(const std::vector<T *> &scopes, charact
 
 		for (T *scope : scopes) {
 			if (!decision->check_conditions(scope)) {
+				continue;
+			}
+
+			if (random::generate(100) >= decision->calculate_ai_chance(scope, source_character)) {
 				continue;
 			}
 

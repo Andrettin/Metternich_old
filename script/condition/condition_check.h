@@ -2,6 +2,7 @@
 
 #include "script/condition/condition.h"
 #include "script/condition/condition_check_base.h"
+#include "script/context.h"
 
 namespace metternich {
 
@@ -30,7 +31,13 @@ public:
 	virtual void calculate_result() override
 	{
 		if (this->get_condition() != nullptr) {
-			this->set_result(this->get_condition()->check(this->checked_instance));
+			read_only_context ctx;
+
+			if constexpr (std::is_same_v<T, character>) {
+				ctx.current_character = this->checked_instance;
+			}
+
+			this->set_result(this->get_condition()->check(this->checked_instance, ctx));
 		} else {
 			this->set_result(true); //always true if there are no conditions
 		}

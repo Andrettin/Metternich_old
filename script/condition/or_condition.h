@@ -33,10 +33,10 @@ public:
 		return identifier;
 	}
 
-	virtual bool check_assignment(const T *scope) const override
+	virtual bool check_assignment(const T *scope, const read_only_context &ctx) const override
 	{
 		for (const std::unique_ptr<condition<T>> &condition : this->conditions) {
-			if (condition->check(scope)) {
+			if (condition->check(scope, ctx)) {
 				return true;
 			}
 		}
@@ -51,7 +51,7 @@ public:
 		}
 	}
 
-	virtual std::string get_assignment_string(const T *scope, const context &ctx, const size_t indent) const
+	virtual std::string get_assignment_string(const T *scope, const read_only_context &ctx, const size_t indent) const
 	{
 		if (this->conditions.empty()) {
 			return std::string();

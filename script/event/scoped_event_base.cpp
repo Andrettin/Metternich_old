@@ -111,13 +111,13 @@ std::string scoped_event_base<T>::get_description() const
 }
 
 template <typename T>
-bool scoped_event_base<T>::check_conditions(const T *scope) const
+bool scoped_event_base<T>::check_conditions(const T *scope, const read_only_context &ctx) const
 {
 	if (this->conditions == nullptr) {
 		return true;
 	}
 
-	return this->conditions->check(scope);
+	return this->conditions->check(scope, ctx);
 }
 
 template <typename T>

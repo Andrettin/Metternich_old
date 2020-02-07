@@ -28,14 +28,28 @@ public:
 		this->effects.process_gsml_scope(scope);
 	}
 
-	virtual U *get_scope(const T *scope) const
+	virtual U *get_scope(T *scope) const
 	{
 		Q_UNUSED(scope)
 
 		throw std::runtime_error("Scope effect type \"" + this->get_identifier() + "\" has no implementation for the function to get a scope.");
 	}
 
-	virtual U *get_scope(const T *scope, const context &ctx) const
+	virtual U *get_scope(T *scope, const context &ctx) const
+	{
+		Q_UNUSED(ctx)
+
+		return this->get_scope(scope);
+	}
+
+	virtual const U *get_scope(const T *scope) const
+	{
+		Q_UNUSED(scope)
+
+		throw std::runtime_error("Scope effect type \"" + this->get_identifier() + "\" has no implementation for the function to get a scope.");
+	}
+
+	virtual const U *get_scope(const T *scope, const read_only_context &ctx) const
 	{
 		Q_UNUSED(ctx)
 
@@ -53,7 +67,7 @@ public:
 		this->effects.do_effects(new_scope, ctx);
 	}
 
-	virtual std::string get_assignment_string(const T *scope, const context &ctx, const size_t indent) const override
+	virtual std::string get_assignment_string(const T *scope, const read_only_context &ctx, const size_t indent) const override
 	{
 		const U *new_scope = this->get_scope(scope, ctx);
 

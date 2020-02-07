@@ -160,11 +160,11 @@ void condition<T>::process_gsml_scope(const gsml_data &scope)
 }
 
 template <typename T>
-bool condition<T>::check(const T *scope) const
+bool condition<T>::check(const T *scope, const read_only_context &ctx) const
 {
 	switch (this->get_operator()) {
 		case gsml_operator::assignment:
-			return this->check_assignment(scope);
+			return this->check_assignment(scope, ctx);
 		case gsml_operator::equality:
 			return this->check_equality(scope);
 		case gsml_operator::inequality:
@@ -184,11 +184,11 @@ bool condition<T>::check(const T *scope) const
 
 
 template <typename T>
-std::string condition<T>::get_string(const T *scope, const context &ctx, const size_t indent) const
+std::string condition<T>::get_string(const T *scope, const read_only_context &ctx, const size_t indent) const
 {
 	std::string str = "(";
 
-	if (this->check(scope)) {
+	if (this->check(scope, ctx)) {
 		str += string::color("*", "green");
 	} else {
 		str += string::color("x", "red");

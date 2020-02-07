@@ -21,7 +21,14 @@ public:
 		return identifier;
 	}
 
-	virtual character *get_scope(const T *scope, const context &ctx) const override
+	virtual character *get_scope(T *scope, const context &ctx) const override
+	{
+		Q_UNUSED(scope)
+
+		return ctx.source_character;
+	}
+
+	virtual const character *get_scope(const T *scope, const read_only_context &ctx) const override
 	{
 		Q_UNUSED(scope)
 

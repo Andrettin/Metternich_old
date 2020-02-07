@@ -1,17 +1,20 @@
 #pragma once
 
-#include "script/condition/condition.h"
-
 #include <memory>
 #include <vector>
 
 namespace metternich {
 
+class character;
 class gsml_data;
 class gsml_property;
+class holding;
+class holding_slot;
+class province;
+struct read_only_context;
 
 template <typename T>
-class condition;
+class and_condition;
 
 /**
 **	@brief	A modifier for a factor, e.g. a random chance, weight or mean-time-to-happen
@@ -36,20 +39,12 @@ public:
 		return this->additive;
 	}
 
-	bool check_conditions(const T *scope) const
-	{
-		for (const std::unique_ptr<condition<T>> &condition : this->conditions) {
-			if (!condition->check(scope)) {
-				return false;
-			}
-		}
-		return true;
-	}
+	bool check_conditions(const T *scope, const read_only_context &ctx) const;
 
 private:
 	int factor = 0; //the factor of the modifier itself
 	bool additive = false; //whether the modifier is additive instead of multiplicative
-	std::vector<std::unique_ptr<condition<T>>> conditions; //conditions for whether the modifier is to be applied
+	std::unique_ptr<and_condition<T>> conditions; //conditions for whether the modifier is to be applied
 };
 
 extern template class factor_modifier<character>;

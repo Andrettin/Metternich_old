@@ -55,13 +55,13 @@ void chance_factor<T>::process_gsml_scope(const gsml_data &scope)
 }
 
 template <typename T>
-int chance_factor<T>::calculate(const T *scope) const
+int chance_factor<T>::calculate(const T *scope, const read_only_context &ctx) const
 {
 	//get the resulting chance factor after taking into account all modifiers
 	int result = this->factor;
 
 	for (const std::unique_ptr<factor_modifier<T>> &modifier : this->modifiers) {
-		if (modifier->check_conditions(scope)) {
+		if (modifier->check_conditions(scope, ctx)) {
 			result *= modifier->get_factor();
 			result /= 100;
 		}
@@ -71,6 +71,7 @@ int chance_factor<T>::calculate(const T *scope) const
 }
 
 template class chance_factor<character>;
+template class chance_factor<holding>;
 template class chance_factor<holding_slot>;
 
 }

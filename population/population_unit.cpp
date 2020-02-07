@@ -17,6 +17,7 @@
 #include "religion/religion.h"
 #include "religion/religion_group.h"
 #include "script/condition/condition.h"
+#include "script/context.h"
 #include "util/container_util.h"
 
 #include <QApplication>
@@ -108,8 +109,10 @@ void population_unit::do_mixing()
 
 void population_unit::do_cultural_derivation()
 {
+	read_only_context ctx;
+
 	for (metternich::culture *culture : this->get_culture()->get_derived_cultures()) {
-		if (culture->get_derivation_conditions() == nullptr || !culture->get_derivation_conditions()->check(this)) {
+		if (culture->get_derivation_conditions() == nullptr || !culture->get_derivation_conditions()->check(this, ctx)) {
 			continue;
 		}
 

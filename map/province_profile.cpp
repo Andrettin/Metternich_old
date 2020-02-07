@@ -3,6 +3,7 @@
 #include "map/province.h"
 #include "random.h"
 #include "script/condition/and_condition.h"
+#include "script/context.h"
 
 namespace metternich {
 
@@ -50,13 +51,15 @@ province *province_profile::get_province()
 		return this->province;
 	}
 
+	read_only_context ctx;
+
 	std::vector<metternich::province *> potential_provinces;
 	for (metternich::province *province : province::get_all()) {
 		if (province->get_county() == nullptr) {
 			continue; //only take into account provinces that belong to counties
 		}
 
-		if (!this->conditions || this->conditions->check(province)) {
+		if (!this->conditions || this->conditions->check(province, ctx)) {
 			potential_provinces.push_back(province);
 		}
 	}

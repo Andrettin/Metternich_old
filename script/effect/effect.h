@@ -13,6 +13,7 @@ class population_unit;
 class province;
 enum class gsml_operator;
 struct context;
+struct read_only_context;
 
 static constexpr const char *no_effect_string = "No effect";
 
@@ -77,14 +78,14 @@ public:
 		return this->effect_operator;
 	}
 
-	std::string get_string(const T *scope, const context &ctx, const size_t indent) const;
+	std::string get_string(const T *scope, const read_only_context &ctx, const size_t indent) const;
 
 	virtual std::string get_assignment_string() const
 	{
 		throw std::runtime_error("The assignment operator is not supported for \"" + this->get_identifier() + "\" effects.");
 	}
 
-	virtual std::string get_assignment_string(const T *scope, const context &ctx, const size_t indent) const
+	virtual std::string get_assignment_string(const T *scope, const read_only_context &ctx, const size_t indent) const
 	{
 		Q_UNUSED(scope)
 		Q_UNUSED(ctx)

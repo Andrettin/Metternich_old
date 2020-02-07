@@ -10,7 +10,7 @@ template <typename T>
 void event_trigger<T>::do_events(T *scope, const context &ctx) const
 {
 	for (const auto *event : this->events) {
-		if (event->check_conditions(scope)) {
+		if (event->check_conditions(scope, ctx)) {
 			event->do_event(scope, ctx);
 		}
 	}
@@ -18,7 +18,7 @@ void event_trigger<T>::do_events(T *scope, const context &ctx) const
 	std::vector<const scoped_event_base<T> *> random_events;
 	random_events.reserve(this->random_events.size());
 	for (const auto *event : this->random_events) {
-		if (event->check_conditions(scope)) {
+		if (event->check_conditions(scope, ctx)) {
 			random_events.push_back(event);
 		}
 	}

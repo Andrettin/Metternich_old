@@ -88,7 +88,7 @@ public:
 		}
 	}
 
-	virtual std::string get_assignment_string(const T *scope, const context &ctx, const size_t indent) const override
+	virtual std::string get_assignment_string(const T *scope, const read_only_context &ctx, const size_t indent) const override
 	{
 		std::string str = "Combat against " + std::to_string(this->enemy_amount) + " ";
 		if (this->enemy != nullptr) {

@@ -16,6 +16,7 @@
 #include "random.h"
 #include "politics/government_type.h"
 #include "script/condition/condition_check.h"
+#include "script/context.h"
 #include "script/decision/filter/decision_filter.h"
 #include "script/decision/holding_decision.h"
 #include "script/event/character_event.h"
@@ -520,8 +521,11 @@ void character::calculate_government_type()
 		return;
 	}
 
+	read_only_context ctx;
+	ctx.current_character = this;
+
 	for (metternich::government_type *government_type : government_type::get_all()) {
-		if (government_type->get_conditions() == nullptr || government_type->get_conditions()->check(this)) {
+		if (government_type->get_conditions() == nullptr || government_type->get_conditions()->check(this, ctx)) {
 			this->set_government_type(government_type);
 			return;
 		}

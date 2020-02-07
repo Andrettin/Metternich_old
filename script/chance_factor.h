@@ -8,7 +8,9 @@ namespace metternich {
 class character;
 class gsml_data;
 class gsml_property;
+class holding;
 class holding_slot;
+struct read_only_context;
 
 template <typename T>
 class factor_modifier;
@@ -27,7 +29,7 @@ public:
 	void process_gsml_property(const gsml_property &property);
 	void process_gsml_scope(const gsml_data &scope);
 
-	int calculate(const T *scope) const;
+	int calculate(const T *scope, const read_only_context &ctx) const;
 
 private:
 	int factor = 0; //the base factor for the random chance
@@ -35,6 +37,7 @@ private:
 };
 
 extern template class chance_factor<character>;
+extern template class chance_factor<holding>;
 extern template class chance_factor<holding_slot>;
 
 }

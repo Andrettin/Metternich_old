@@ -39,7 +39,7 @@ void effect_list<T>::do_effects(T *scope, const context &ctx) const
 }
 
 template <typename T>
-std::string effect_list<T>::get_effects_string(const T *scope, const context &ctx, const size_t indent) const
+std::string effect_list<T>::get_effects_string(const T *scope, const read_only_context &ctx, const size_t indent) const
 {
 	std::string effects_string;
 	bool first = true;

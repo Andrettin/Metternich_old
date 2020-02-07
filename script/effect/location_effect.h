@@ -20,7 +20,12 @@ public:
 		return identifier;
 	}
 
-	virtual province *get_scope(const T *scope) const override
+	virtual province *get_scope(T *scope) const override
+	{
+		return scope->get_location();
+	}
+
+	virtual const province *get_scope(const T *scope) const override
 	{
 		return scope->get_location();
 	}

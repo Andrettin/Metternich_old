@@ -65,7 +65,7 @@ void event_option<T>::do_effects(T *scope, const context &ctx) const
 }
 
 template <typename T>
-std::string event_option<T>::get_effects_string(const T *scope, const context &ctx) const
+std::string event_option<T>::get_effects_string(const T *scope, const read_only_context &ctx) const
 {
 	if (this->effects != nullptr) {
 		std::string effects_string = this->effects->get_effects_string(scope, ctx);

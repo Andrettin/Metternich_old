@@ -42,7 +42,7 @@ public:
 		}
 	}
 
-	virtual std::string get_assignment_string(const T *scope, const context &ctx, const size_t indent) const override
+	virtual std::string get_assignment_string(const T *scope, const read_only_context &ctx, const size_t indent) const override
 	{
 		std::string str = "This will occur " + std::to_string(this->count) + " times:\n";
 		str += this->effects.get_effects_string(scope, ctx, indent + 1);

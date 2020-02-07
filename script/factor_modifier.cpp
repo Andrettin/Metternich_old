@@ -3,7 +3,7 @@
 #include "database/gsml_data.h"
 #include "database/gsml_operator.h"
 #include "database/gsml_property.h"
-#include "script/condition/condition.h"
+#include "script/condition/and_condition.h"
 #include "util/parse_util.h"
 
 namespace metternich {
@@ -11,6 +11,7 @@ namespace metternich {
 template <typename T>
 factor_modifier<T>::factor_modifier()
 {
+	this->conditions = std::make_unique<and_condition<T>>();
 }
 
 template <typename T>
@@ -33,7 +34,7 @@ void factor_modifier<T>::process_gsml_property(const gsml_property &property)
 		}
 	} else {
 		std::unique_ptr<condition<T>> condition = metternich::condition<T>::from_gsml_property(property);
-		this->conditions.push_back(std::move(condition));
+		this->conditions->add_condition(std::move(condition));
 	}
 }
 
@@ -41,7 +42,14 @@ template <typename T>
 void factor_modifier<T>::process_gsml_scope(const gsml_data &scope)
 {
 	std::unique_ptr<condition<T>> condition = metternich::condition<T>::from_gsml_scope(scope);
-	this->conditions.push_back(std::move(condition));
+	this->conditions->add_condition(std::move(condition));
+}
+
+
+template <typename T>
+bool factor_modifier<T>::check_conditions(const T *scope, const read_only_context &ctx) const
+{
+	return this->conditions->check(scope, ctx);
 }
 
 template class factor_modifier<character>;

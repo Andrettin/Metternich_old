@@ -9,6 +9,7 @@ class character;
 class gsml_data;
 class gsml_property;
 struct context;
+struct read_only_context;
 
 template <typename T>
 class chance_factor;
@@ -37,7 +38,7 @@ public:
 	}
 
 	void do_effects(T *scope, const context &ctx) const;
-	std::string get_effects_string(const T *scope, const context &ctx) const;
+	std::string get_effects_string(const T *scope, const read_only_context &ctx) const;
 
 private:
 	std::string name_tag;

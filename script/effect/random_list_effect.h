@@ -36,12 +36,12 @@ public:
 		});
 	}
 
-	int get_weight(const T *scope) const
+	int get_weight(const T *scope, const read_only_context &ctx) const
 	{
 		int weight = this->base_weight;
 
 		for (const std::unique_ptr<factor_modifier<T>> &modifier : this->weight_modifiers) {
-			if (modifier->check_conditions(scope)) {
+			if (modifier->check_conditions(scope, ctx)) {
 				weight *= modifier->get_factor();
 				weight /= 100;
 			}
@@ -55,7 +55,7 @@ public:
 		this->effects->do_effects(scope, ctx);
 	}
 
-	std::string get_effects_string(const T *scope, const context &ctx, const size_t indent) const
+	std::string get_effects_string(const T *scope, const read_only_context &ctx, const size_t indent) const
 	{
 		std::string effects_string = this->effects->get_effects_string(scope, ctx, indent);
 
@@ -93,7 +93,7 @@ public:
 
 	virtual void do_assignment_effect(T *scope, const context &ctx) const override
 	{
-		const std::vector<const random_list_entry<T> *> weighted_entries = this->get_weighted_entries(scope);
+		const std::vector<const random_list_entry<T> *> weighted_entries = this->get_weighted_entries(scope, ctx);
 
 		if (!weighted_entries.empty()) {
 			const random_list_entry<T> *chosen_entry = weighted_entries[random::generate(weighted_entries.size())];
@@ -101,12 +101,12 @@ public:
 		}
 	}
 
-	virtual std::string get_assignment_string(const T *scope, const context &ctx, const size_t indent) const override
+	virtual std::string get_assignment_string(const T *scope, const read_only_context &ctx, const size_t indent) const override
 	{
 		int total_weight = 0;
 		std::vector<std::pair<const random_list_entry<T> *, int>> entry_weights;
 		for (const random_list_entry<T> &entry : this->entries) {
-			const int weight = entry.get_weight(scope);
+			const int weight = entry.get_weight(scope, ctx);
 			if (weight > 0) {
 				total_weight += weight;
 				entry_weights.emplace_back(&entry, weight);
@@ -143,12 +143,12 @@ public:
 	}
 
 private:
-	std::vector<const random_list_entry<T> *> get_weighted_entries(T *scope) const
+	std::vector<const random_list_entry<T> *> get_weighted_entries(T *scope, const context &ctx) const
 	{
 		std::vector<const random_list_entry<T> *> weighted_entries;
 
 		for (const random_list_entry<T> &entry : this->entries) {
-			const int weight = entry.get_weight(scope);
+			const int weight = entry.get_weight(scope, ctx);
 
 			for (int i = 0; i < weight; ++i) {
 				weighted_entries.push_back(&entry);
