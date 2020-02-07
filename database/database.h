@@ -3,6 +3,7 @@
 #include "database/gsml_data.h"
 #include "singleton.h"
 #include "type_traits.h"
+#include "qunique_ptr.h"
 
 #include <QStandardPaths>
 
@@ -44,6 +45,12 @@ public:
 
 	template <typename T>
 	static void process_gsml_data(const std::unique_ptr<T> &instance, const gsml_data &data)
+	{
+		database::process_gsml_data(instance.get(), data);
+	}
+
+	template <typename T>
+	static void process_gsml_data(const qunique_ptr<T> &instance, const gsml_data &data)
 	{
 		database::process_gsml_data(instance.get(), data);
 	}
@@ -301,7 +308,7 @@ public:
 
 private:
 	std::vector<std::unique_ptr<data_type_metadata>> metadata;
-	std::vector<std::unique_ptr<module>> modules;
+	std::vector<qunique_ptr<module>> modules;
 	std::map<std::string, module *> modules_by_identifier;
 	std::map<std::string, std::filesystem::path> icon_paths_by_tag;
 	std::map<std::string, std::filesystem::path> holding_portrait_paths_by_tag;

@@ -113,7 +113,7 @@ public:
 		return this->holding.get();
 	}
 
-	void set_holding(std::unique_ptr<holding> &&holding);
+	void set_holding(qunique_ptr<holding> &&holding);
 
 	province *get_province() const
 	{
@@ -203,7 +203,7 @@ signals:
 private:
 	holding_slot_type type; //the type of the holding slot
 	landed_title *barony = nullptr; //the barony corresponding to this holding slot
-	std::unique_ptr<holding> holding; //the holding built on this slot, if any
+	qunique_ptr<holding> holding; //the holding built on this slot, if any
 	province *province = nullptr; //to which province this holding slot belongs
 	province_profile *province_profile = nullptr;
 	QGeoCoordinate geocoordinate;

@@ -471,7 +471,7 @@ private:
 	int population = 0; //the size of this holding's total population
 	int base_population_growth = 0; //the base population growth
 	int population_growth = 0; //the population growth, in permyriad (per 10,000)
-	std::map<building *, std::unique_ptr<building_slot>> building_slots; //the building slots for each building
+	std::map<building *, qunique_ptr<building_slot>> building_slots; //the building slots for each building
 	building *under_construction_building = nullptr; //the building currently under construction
 	int construction_days = 0; //the amount of days remaining to construct the building under construction
 	metternich::commodity *commodity = nullptr; //the commodity produced by the holding (if any)

@@ -45,12 +45,12 @@ void employment_type::process_gsml_scope(const gsml_data &scope)
 		});
 	} else if (tag == "employees") {
 		scope.for_each_child([&](const gsml_data &employee_scope) {
-			std::unique_ptr<employee> employee = employee::from_gsml_scope(employee_scope);
+			qunique_ptr<employee> employee = employee::from_gsml_scope(employee_scope);
 			this->employees.push_back(std::move(employee));
 		});
 	} else if (tag == "owners") {
 		scope.for_each_child([&](const gsml_data &owner_scope) {
-			std::unique_ptr<employment_owner> owner = employment_owner::from_gsml_scope(owner_scope);
+			qunique_ptr<employment_owner> owner = employment_owner::from_gsml_scope(owner_scope);
 			this->owners.push_back(std::move(owner));
 		});
 	} else {
@@ -79,13 +79,13 @@ void employment_type::initialize()
 		}
 
 		if (this->employees.empty()) {
-			for (const std::unique_ptr<employee> &employee : this->template_type->employees) {
+			for (const qunique_ptr<employee> &employee : this->template_type->employees) {
 				this->employees.push_back(employee->duplicate());
 			}
 		}
 
 		if (this->owners.empty()) {
-			for (const std::unique_ptr<employment_owner> &owner : this->template_type->owners) {
+			for (const qunique_ptr<employment_owner> &owner : this->template_type->owners) {
 				this->owners.push_back(owner->duplicate());
 			}
 		}
@@ -103,7 +103,7 @@ void employment_type::initialize()
 */
 int employment_type::get_employee_efficiency(const population_type *population_type) const
 {
-	for (const std::unique_ptr<employee> &employee : this->employees) {
+	for (const qunique_ptr<employee> &employee : this->employees) {
 		if (employee->get_population_type() == population_type) {
 			return employee->get_efficiency();
 		}
@@ -121,7 +121,7 @@ int employment_type::get_employee_efficiency(const population_type *population_t
 */
 bool employment_type::can_employ_population_type(const population_type *population_type) const
 {
-	for (const std::unique_ptr<employee> &employee : this->employees) {
+	for (const qunique_ptr<employee> &employee : this->employees) {
 		if (employee->get_population_type() == population_type) {
 			return true;
 		}

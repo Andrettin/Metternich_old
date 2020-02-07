@@ -1,5 +1,7 @@
 #pragma once
 
+#include "qunique_ptr.h"
+
 #include <QObject>
 
 namespace metternich {
@@ -17,14 +19,14 @@ class employment_owner : public QObject
 	Q_PROPERTY(int income_share MEMBER income_share READ get_income_share)
 
 public:
-	static std::unique_ptr<employment_owner> from_gsml_scope(const gsml_data &scope);
+	static qunique_ptr<employment_owner> from_gsml_scope(const gsml_data &scope);
 
 	void process_gsml_property(const gsml_property &property);
 	void process_gsml_scope(const gsml_data &scope) { Q_UNUSED(scope) }
 
-	std::unique_ptr<employment_owner> duplicate() const
+	qunique_ptr<employment_owner> duplicate() const
 	{
-		auto owner = std::make_unique<employment_owner>();
+		auto owner = make_qunique<employment_owner>();
 		owner->population_type = this->get_population_type();
 		owner->output_modifier = this->get_output_modifier();
 		owner->proportion_to_workforce = this->get_proportion_to_workforce();

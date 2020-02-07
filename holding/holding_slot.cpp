@@ -167,7 +167,7 @@ QVariantList holding_slot::get_available_commodities_qvariant_list() const
 	return container::to_qvariant_list(this->get_available_commodities());
 }
 
-void holding_slot::set_holding(std::unique_ptr<metternich::holding> &&holding)
+void holding_slot::set_holding(qunique_ptr<metternich::holding> &&holding)
 {
 	this->holding = std::move(holding);
 	emit holding_changed();

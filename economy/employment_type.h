@@ -53,8 +53,8 @@ public:
 
 private:
 	employment_type *template_type = nullptr;
-	std::vector<std::unique_ptr<employee>> employees;
-	std::vector<std::unique_ptr<employment_owner>> owners;
+	std::vector<qunique_ptr<employee>> employees;
+	std::vector<qunique_ptr<employment_owner>> owners;
 	int workforce = 0;
 	commodity *output_commodity = nullptr;
 	int output_value = 0; //how much of the output commodity is produced

@@ -97,7 +97,7 @@ void holding::initialize_history()
 	}
 
 	for (const auto &kv_pair : this->building_slots) {
-		const std::unique_ptr<building_slot> &building_slot = kv_pair.second;
+		const qunique_ptr<building_slot> &building_slot = kv_pair.second;
 		building_slot->initialize_history();
 	}
 
@@ -616,7 +616,7 @@ void holding::calculate_building_slots()
 	}
 
 	for (building *building : buildings_to_add) {
-		auto new_building_slot = std::make_unique<building_slot>(building, this);
+		auto new_building_slot = make_qunique<building_slot>(building, this);
 		new_building_slot->moveToThread(QApplication::instance()->thread());
 
 		connect(new_building_slot.get(), &building_slot::built_changed, this, &holding::buildings_changed);

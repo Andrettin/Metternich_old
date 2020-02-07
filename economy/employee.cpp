@@ -8,9 +8,9 @@
 
 namespace metternich {
 
-std::unique_ptr<employee> employee::from_gsml_scope(const gsml_data &scope)
+qunique_ptr<employee> employee::from_gsml_scope(const gsml_data &scope)
 {
-	auto employee = std::make_unique<metternich::employee>();
+	auto employee = make_qunique<metternich::employee>();
 	employee->population_type = population_type::get(scope.get_tag());
 
 	database::process_gsml_data(employee, scope);

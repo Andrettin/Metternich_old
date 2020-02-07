@@ -36,6 +36,7 @@
 #include "politics/law.h"
 #include "politics/law_group.h"
 #include "population/population_type.h"
+#include "qunique_ptr.h"
 #include "religion/religion.h"
 #include "religion/religion_group.h"
 #include "species/species.h"
@@ -431,7 +432,7 @@ void database::process_modules()
 		this->process_modules_at_dir(database::get_documents_modules_path());
 	}
 
-	for (const std::unique_ptr<module> &module : this->modules) {
+	for (const qunique_ptr<module> &module : this->modules) {
 		std::filesystem::path module_file = module->get_path() / "module.txt";
 
 		if (std::filesystem::exists(module_file)) {
@@ -440,7 +441,7 @@ void database::process_modules()
 		}
 	}
 
-	std::sort(this->modules.begin(), this->modules.end(), [](const std::unique_ptr<module> &a, const std::unique_ptr<module> &b) {
+	std::sort(this->modules.begin(), this->modules.end(), [](const qunique_ptr<module> &a, const qunique_ptr<module> &b) {
 		if (a->depends_on(b.get())) {
 			return false;
 		} else if (b->depends_on(a.get())) {
@@ -465,7 +466,7 @@ void database::process_modules_at_dir(const std::filesystem::path &path, module 
 		}
 
 		const std::string module_identifier = dir_entry.path().stem().string();
-		auto module = std::make_unique<metternich::module>(module_identifier, dir_entry.path(), parent_module);
+		auto module = make_qunique<metternich::module>(module_identifier, dir_entry.path(), parent_module);
 
 		std::filesystem::path submodules_path = dir_entry.path() / "modules";
 		if (std::filesystem::exists(submodules_path)) {
@@ -481,7 +482,7 @@ std::vector<std::filesystem::path> database::get_module_paths() const
 {
 	std::vector<std::filesystem::path> module_paths;
 
-	for (const std::unique_ptr<module> &module : this->modules) {
+	for (const qunique_ptr<module> &module : this->modules) {
 		module_paths.push_back(module->get_path());
 	}
 

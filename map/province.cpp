@@ -1282,7 +1282,7 @@ QVariantList province::get_settlement_holdings_qvariant_list() const
 
 void province::create_holding(holding_slot *holding_slot, holding_type *type)
 {
-	auto new_holding = std::make_unique<holding>(holding_slot, type);
+	auto new_holding = make_qunique<holding>(holding_slot, type);
 	new_holding->moveToThread(QApplication::instance()->thread());
 	holding_slot->set_holding(std::move(new_holding));
 	switch (holding_slot->get_type()) {

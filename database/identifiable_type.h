@@ -1,5 +1,7 @@
 #pragma once
 
+#include "qunique_ptr.h"
+
 #include <map>
 #include <memory>
 #include <stdexcept>
@@ -8,9 +10,12 @@
 namespace metternich {
 
 //a type with an identifier to instance database
-template <typename T>
+template <typename T, bool is_qobject = false>
 class identifiable_type
 {
+	template <typename U>
+	using unique_ptr = std::conditional_t<is_qobject, qunique_ptr<U>, std::unique_ptr<U>>;
+
 public:
 	static T *get(const std::string &identifier)
 	{
@@ -58,7 +63,11 @@ public:
 			throw std::runtime_error("Tried to add a " + std::string(T::class_identifier) + " instance with the already-used \"" + identifier + "\" string identifier.");
 		}
 
-		identifiable_type::instances_by_identifier[identifier] = std::make_unique<T>(identifier);
+		if constexpr (is_qobject) {
+			identifiable_type::instances_by_identifier[identifier] = make_qunique<T>(identifier);
+		} else {
+			identifiable_type::instances_by_identifier[identifier] = std::make_unique<T>(identifier);
+		}
 		T *instance = identifiable_type::instances_by_identifier.find(identifier)->second.get();
 
 		return instance;
@@ -80,7 +89,7 @@ public:
 	}
 
 private:
-	static inline std::map<std::string, std::unique_ptr<T>> instances_by_identifier;
+	static inline std::map<std::string, unique_ptr<T>> instances_by_identifier;
 };
 
 }

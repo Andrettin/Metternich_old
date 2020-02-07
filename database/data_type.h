@@ -20,7 +20,7 @@
 namespace metternich {
 
 template <typename T>
-class data_type : public data_type_base<T>, public identifiable_type<T>
+class data_type : public data_type_base<T>, public identifiable_type<T, true>
 {
 public:
 	static constexpr bool history_only = false; //whether the data type is defined in history only
