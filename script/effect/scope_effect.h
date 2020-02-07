@@ -69,7 +69,7 @@ public:
 		}
 
 		std::string str = string::highlight(scope_name) + ":\n";
-		str += std::string(indent, '\t') + this->effects.get_effects_string(new_scope, ctx, indent + 1);
+		str += this->effects.get_effects_string(new_scope, ctx, indent + 1);
 		return str;
 	}
 

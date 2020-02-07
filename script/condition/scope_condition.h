@@ -74,7 +74,7 @@ public:
 		}
 
 		std::string str = string::highlight(scope_name) + ":\n";
-		str += std::string(indent, '\t') + this->conditions.get_conditions_string(new_scope, ctx, indent + 1);
+		str += this->conditions.get_conditions_string(new_scope, ctx, indent + 1);
 		return str;
 	}
 

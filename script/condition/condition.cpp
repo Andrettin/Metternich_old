@@ -186,24 +186,43 @@ bool condition<T>::check(const T *scope) const
 template <typename T>
 std::string condition<T>::get_string(const T *scope, const context &ctx, const size_t indent) const
 {
+	std::string str = "(";
+
+	if (this->check(scope)) {
+		str += string::color("*", "green");
+	} else {
+		str += string::color("x", "red");
+	}
+
+	str += ") ";
+
 	switch (this->get_operator()) {
 		case gsml_operator::assignment:
-			return this->get_assignment_string(scope, ctx, indent);
+			str += this->get_assignment_string(scope, ctx, indent);
+			break;
 		case gsml_operator::equality:
-			return this->get_equality_string();
+			str += this->get_equality_string();
+			break;
 		case gsml_operator::inequality:
-			return this->get_inequality_string();
+			str += this->get_inequality_string();
+			break;
 		case gsml_operator::less_than:
-			return this->get_less_than_string();
+			str += this->get_less_than_string();
+			break;
 		case gsml_operator::less_than_or_equality:
-			return this->get_less_than_or_equality_string();
+			str += this->get_less_than_or_equality_string();
+			break;
 		case gsml_operator::greater_than:
-			return this->get_greater_than_string();
+			str += this->get_greater_than_string();
+			break;
 		case gsml_operator::greater_than_or_equality:
-			return this->get_greater_than_or_equality_string();
+			str += this->get_greater_than_or_equality_string();
+			break;
 		default:
 			throw std::runtime_error("Invalid condition operator: \"" + std::to_string(static_cast<int>(this->get_operator())) + "\".");
 	}
+
+	return str;
 }
 
 template class condition<character>;
