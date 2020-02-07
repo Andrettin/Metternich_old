@@ -201,6 +201,13 @@ public:
 	void add_landed_title(landed_title *title);
 	void remove_landed_title(landed_title *title);
 
+	void add_holding(holding *holding)
+	{
+		this->holdings.push_back(holding);
+	}
+
+	void remove_holding(holding *holding);
+
 	character *get_father() const
 	{
 		return this->father;
@@ -464,6 +471,10 @@ private:
 		QVariantList disabled_decision_list;
 
 		for (decision_type *decision : decision_type::get_all()) {
+			if (!decision->check_filter(scope, this)) {
+				continue;
+			}
+
 			if (!decision->check_preconditions(scope, this)) {
 				continue;
 			}
@@ -513,6 +524,7 @@ private:
 	metternich::phenotype *phenotype = nullptr;
 	landed_title *primary_title = nullptr;
 	std::vector<landed_title *> landed_titles;
+	std::vector<holding *> holdings;
 	character *father = nullptr;
 	character *mother = nullptr;
 	std::vector<character *> children;

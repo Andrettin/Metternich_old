@@ -118,7 +118,7 @@ public:
 		return this->owner;
 	}
 
-	void set_owner(character *character);
+	void set_owner(character *new_owner);
 
 	metternich::province *get_province() const;
 

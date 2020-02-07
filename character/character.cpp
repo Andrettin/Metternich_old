@@ -16,6 +16,7 @@
 #include "random.h"
 #include "politics/government_type.h"
 #include "script/condition/condition_check.h"
+#include "script/decision/filter/decision_filter.h"
 #include "script/decision/holding_decision.h"
 #include "script/event/character_event.h"
 #include "script/event/event_trigger.h"
@@ -191,6 +192,10 @@ void character::do_month()
 
 	if (this->is_landed()) {
 		character_event_trigger::landed_monthly_pulse->do_events(this);
+
+		if (this->is_ai()) {
+			holding_decision_filter::owned->do_ai_decisions(this->holdings, this);
+		}
 	}
 }
 
@@ -349,11 +354,16 @@ void character::add_landed_title(landed_title *title)
 
 void character::remove_landed_title(landed_title *title)
 {
-	this->landed_titles.erase(std::remove(this->landed_titles.begin(), this->landed_titles.end(), title), this->landed_titles.end());
+	vector::remove(this->landed_titles, title);
 
 	if (title == this->get_primary_title()) {
 		this->choose_primary_title(); //needs to choose a new primary title, as the old one has been lost
 	}
+}
+
+void character::remove_holding(holding *holding)
+{
+	vector::remove(this->holdings, holding);
 }
 
 province *character::get_capital_province() const
@@ -544,6 +554,12 @@ bool character::can_build_in_holding(const QVariant &holding_variant)
 {
 	QObject *holding_object = qvariant_cast<QObject *>(holding_variant);
 	const holding *holding = static_cast<metternich::holding *>(holding_object);
+
+	if (holding->get_owner() == nullptr) {
+		qCritical() << QString::fromStdString("Holding \"" + holding->get_identifier() + "\" has no owner.");
+		return false;
+	}
+
 	return this->can_build_in_holding(holding);
 }
 

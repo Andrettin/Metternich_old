@@ -3,8 +3,10 @@
 #include "character/character.h"
 #include "database/database.h"
 #include "database/gsml_data.h"
+#include "holding/holding.h"
 #include "script/condition/and_condition.h"
 #include "script/context.h"
+#include "script/decision/filter/decision_filter.h"
 #include "script/effect/effect.h"
 #include "script/effect/effect_list.h"
 #include "util/string_util.h"
@@ -19,6 +21,31 @@ scoped_decision<T>::scoped_decision()
 template <typename T>
 scoped_decision<T>::~scoped_decision()
 {
+}
+
+template <typename T>
+void scoped_decision<T>::initialize()
+{
+	if (this->filter != nullptr) {
+		this->filter->add_decision(this);
+	}
+}
+
+template <typename T>
+void scoped_decision<T>::process_gsml_property(const gsml_property &property)
+{
+	if (property.get_key() == "filter") {
+		decision_filter<T> *filter = decision_filter<T>::get(property.get_value());
+		switch (property.get_operator()) {
+			case gsml_operator::assignment:
+				this->filter = filter;
+				break;
+			default:
+				throw std::runtime_error("Invalid operator for \"" + property.get_key() + "\" decision property.");
+		}
+	} else {
+		throw std::runtime_error("Invalid decision property: \"" + property.get_key() + "\".");
+	}
 }
 
 template <typename T>
@@ -42,6 +69,18 @@ void scoped_decision<T>::process_gsml_scope(const gsml_data &scope)
 	} else {
 		throw std::runtime_error("Invalid decision scope: \"" + scope.get_tag() + "\".");
 	}
+}
+
+template <typename T>
+bool scoped_decision<T>::check_filter(const T *scope, const character *source) const
+{
+	if constexpr (std::is_same_v<T, holding>) {
+		if (this->filter == holding_decision_filter::owned) {
+			return scope->get_owner() == source;
+		}
+	}
+
+	return false;
 }
 
 template <typename T>

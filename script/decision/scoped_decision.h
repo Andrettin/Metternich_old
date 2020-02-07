@@ -6,10 +6,14 @@ namespace metternich {
 
 class character;
 class gsml_data;
+class gsml_property;
 class holding;
 
 template <typename T>
 class and_condition;
+
+template <typename T>
+class decision_filter;
 
 template <typename T>
 class effect_list;
@@ -21,8 +25,12 @@ public:
 	scoped_decision();
 	virtual ~scoped_decision();
 
+	void initialize();
+
+	void process_gsml_property(const gsml_property &property);
 	void process_gsml_scope(const gsml_data &scope);
 
+	bool check_filter(const T *scope, const character *source) const;
 	bool check_preconditions(const T *scope) const;
 	bool check_preconditions(const T *scope, const character *source) const;
 	bool check_conditions(const T *scope) const;
@@ -33,6 +41,7 @@ public:
 	QString get_string(const T *scope, character *source) const;
 
 private:
+	decision_filter<T> *filter = nullptr;
 	std::unique_ptr<and_condition<T>> preconditions;
 	std::unique_ptr<and_condition<T>> conditions;
 	std::unique_ptr<and_condition<character>> source_preconditions;

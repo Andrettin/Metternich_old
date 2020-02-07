@@ -19,6 +19,22 @@ public:
 
 	holding_decision(const std::string &identifier) : decision(identifier) {}
 
+	virtual void initialize() override
+	{
+		scoped_decision::initialize();
+	}
+
+	virtual void process_gsml_property(const gsml_property &property) override
+	{
+		const std::string &key = property.get_key();
+
+		if (key == "filter") {
+			scoped_decision::process_gsml_property(property);
+		} else {
+			data_entry_base::process_gsml_property(property);
+		}
+	}
+
 	virtual void process_gsml_scope(const gsml_data &scope) override
 	{
 		const std::string &tag = scope.get_tag();

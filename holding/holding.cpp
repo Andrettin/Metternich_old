@@ -1,5 +1,6 @@
 #include "holding/holding.h"
 
+#include "character/character.h"
 #include "culture/culture.h"
 #include "culture/culture_group.h"
 #include "defines.h"
@@ -254,20 +255,29 @@ const std::filesystem::path &holding::get_portrait_path() const
 	}
 }
 
-void holding::set_owner(character *character)
+void holding::set_owner(character *new_owner)
 {
-	if (character == this->get_owner()) {
+	if (new_owner == this->get_owner()) {
 		return;
 	}
 
-	if (this->get_barony() != nullptr && this->get_barony()->get_holder() != character) {
+	character *old_owner = this->get_owner();
+	if (old_owner != nullptr) {
+		old_owner->remove_holding(this);
+	}
+
+	if (this->get_barony() != nullptr && this->get_barony()->get_holder() != new_owner) {
 		throw std::runtime_error("Tried to set the owner of a holding which has a barony to a different character than its barony's holder.");
-	} else if (is_extra_holding_slot_type(this->get_slot()->get_type()) && !is_separately_ownable_extra_holding_slot_type(this->get_slot()->get_type()) && this->get_province()->get_owner() != character) {
+	} else if (is_extra_holding_slot_type(this->get_slot()->get_type()) && !is_separately_ownable_extra_holding_slot_type(this->get_slot()->get_type()) && this->get_province()->get_owner() != new_owner) {
 		throw std::runtime_error("Tried to set the owner of an extra holding which is not separately ownable to a different character than its province's owner.");
 	}
 
-	this->owner = character;
+	this->owner = new_owner;
 	emit owner_changed();
+
+	if (new_owner != nullptr) {
+		new_owner->add_holding(this);
+	}
 
 	if (this->get_slot()->get_type() == holding_slot_type::trading_post && map::get()->get_mode() == map_mode::trade_zone) {
 		this->get_province()->update_color_for_map_mode(map::get()->get_mode());

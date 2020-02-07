@@ -62,6 +62,7 @@ SOURCES += \
         script/condition/condition.cpp \
         script/condition/has_technology_condition.cpp \
         script/decision/decision.cpp \
+        script/decision/filter/decision_filter.cpp \
         script/decision/holding_decision.cpp \
         script/decision/scoped_decision.cpp \
         script/effect/effect.cpp \
@@ -202,6 +203,7 @@ HEADERS += \
     script/condition/world_condition.h \
     script/context.h \
     script/decision/decision.h \
+    script/decision/filter/decision_filter.h \
     script/decision/holding_decision.h \
     script/decision/scoped_decision.h \
     script/effect/combat_effect.h \
