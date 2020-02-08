@@ -27,7 +27,8 @@ scoped_decision<T>::~scoped_decision()
 template <typename T>
 void scoped_decision<T>::initialize()
 {
-	if (this->filter != nullptr) {
+	if (this->filter != nullptr && this->ai) {
+		//only add to the filter's decision list if it is allowed for the AI, otherwise there is no point to it, as the list is only used by the AI
 		this->filter->add_decision(this);
 	}
 }
@@ -40,6 +41,15 @@ void scoped_decision<T>::process_gsml_property(const gsml_property &property)
 		switch (property.get_operator()) {
 			case gsml_operator::assignment:
 				this->filter = filter;
+				break;
+			default:
+				throw std::runtime_error("Invalid operator for \"" + property.get_key() + "\" decision property.");
+		}
+	} else if (property.get_key() == "ai") {
+		const bool ai = string::to_bool(property.get_value());
+		switch (property.get_operator()) {
+			case gsml_operator::assignment:
+				this->ai = ai;
 				break;
 			default:
 				throw std::runtime_error("Invalid operator for \"" + property.get_key() + "\" decision property.");

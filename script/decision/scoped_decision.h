@@ -46,6 +46,7 @@ public:
 
 private:
 	decision_filter<T> *filter = nullptr;
+	bool ai = true; //whether the decision is allowed for the AI
 	std::unique_ptr<and_condition<T>> preconditions;
 	std::unique_ptr<and_condition<T>> conditions;
 	std::unique_ptr<and_condition<character>> source_preconditions;

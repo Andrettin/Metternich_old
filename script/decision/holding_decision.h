@@ -28,7 +28,7 @@ public:
 	{
 		const std::string &key = property.get_key();
 
-		if (key == "filter") {
+		if (key == "filter" || key == "ai") {
 			scoped_decision::process_gsml_property(property);
 		} else {
 			data_entry_base::process_gsml_property(property);
