@@ -261,6 +261,26 @@ QString game::get_current_date_string() const
 	return current_date_string;
 }
 
+void game::set_player_character(character *character)
+{
+	if (character == this->get_player_character()) {
+		return;
+	}
+
+	metternich::character *old_character = this->get_player_character();
+
+	this->player_character = character;
+	emit player_character_changed();
+
+	if (old_character != nullptr) {
+		emit old_character->ai_changed();
+	}
+
+	if (character != nullptr) {
+		emit character->ai_changed();
+	}
+}
+
 void game::generate_missing_title_holders()
 {
 	std::vector<landed_title *> landed_titles = landed_title::get_all();

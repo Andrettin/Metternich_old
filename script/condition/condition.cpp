@@ -10,6 +10,7 @@
 #include "landed_title/landed_title_tier.h"
 #include "map/province.h"
 #include "population/population_unit.h"
+#include "script/condition/ai_condition.h"
 #include "script/condition/alive_condition.h"
 #include "script/condition/and_condition.h"
 #include "script/condition/borders_water_condition.h"
@@ -45,7 +46,9 @@ std::unique_ptr<condition<T>> condition<T>::from_gsml_property(const gsml_proper
 	const std::string &condition_identifier = property.get_key();
 
 	if constexpr (std::is_same_v<T, character>) {
-		if (condition_identifier == "alive") {
+		if (condition_identifier == "ai") {
+			return std::make_unique<ai_condition<T>>(string::to_bool(property.get_value()), property.get_operator());
+		} else if (condition_identifier == "alive") {
 			return std::make_unique<alive_condition<T>>(string::to_bool(property.get_value()), property.get_operator());
 		} else if (condition_identifier == "has_item") {
 			return std::make_unique<has_item_condition<T>>(property.get_value(), property.get_operator());

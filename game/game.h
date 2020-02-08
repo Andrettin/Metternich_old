@@ -84,15 +84,7 @@ public:
 		return this->player_character;
 	}
 
-	void set_player_character(character *character)
-	{
-		if (this->player_character == character) {
-			return;
-		}
-
-		this->player_character = character;
-		emit player_character_changed();
-	}
+	void set_player_character(character *character);
 
 	void post_order(const std::function<void()> &function)
 	{

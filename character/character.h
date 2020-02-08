@@ -513,6 +513,7 @@ signals:
 	void flags_changed();
 	void capital_province_changed();
 	void location_changed();
+	void ai_changed();
 
 private:
 	std::string name;
