@@ -346,6 +346,20 @@ QVariant database::process_gsml_scope_value(const gsml_data &scope, const QMetaP
 	return new_property_value;
 }
 
+void database::parse_folder(const std::filesystem::path &path, std::vector<gsml_data> &gsml_data_list)
+{
+	std::filesystem::recursive_directory_iterator dir_iterator(path);
+
+	for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
+		if (!dir_entry.is_regular_file() || dir_entry.path().extension() != ".txt") {
+			continue;
+		}
+
+		gsml_parser parser(dir_entry.path());
+		gsml_data_list.push_back(parser.parse());
+	}
+}
+
 database::database()
 {
 }

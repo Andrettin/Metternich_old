@@ -17,7 +17,6 @@
 #include <QLocale>
 #include <QMetaProperty>
 #include <QObject>
-#include <QPainter>
 #include <QPoint>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>

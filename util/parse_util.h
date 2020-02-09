@@ -48,4 +48,9 @@ inline int centesimal_number_string_to_int(const std::string &str)
 	return fractional_number_string_to_int<2>(str);
 }
 
+inline int millesimal_number_string_to_int(const std::string &str)
+{
+	return fractional_number_string_to_int<3>(str);
+}
+
 }

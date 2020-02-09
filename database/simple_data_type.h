@@ -34,16 +34,7 @@ public:
 				continue;
 			}
 
-			std::filesystem::recursive_directory_iterator dir_iterator(history_path);
-
-			for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
-				if (!dir_entry.is_regular_file()) {
-					continue;
-				}
-
-				gsml_parser parser(dir_entry.path());
-				T::gsml_history_data_to_process.push_back(parser.parse());
-			}
+			database::parse_folder(history_path, T::gsml_history_data_to_process);
 		}
 	}
 };

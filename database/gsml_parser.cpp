@@ -38,7 +38,7 @@ gsml_data gsml_parser::parse()
 			++line_index;
 		}
 	} catch (std::exception &exception) {
-		throw std::runtime_error("Error parsing data file \"" + this->filepath.string() + "\", line " + std::to_string(line_index) + ": " + exception.what() + ".");
+		throw std::runtime_error("Error parsing data file \"" + this->filepath.string() + "\", line " + std::to_string(line_index) + ": " + exception.what());
 	}
 
 	this->reset();

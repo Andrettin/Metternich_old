@@ -12,6 +12,14 @@ void merge(std::vector<T> &vector, const U &other_container)
 	}
 }
 
+template <typename T, typename U>
+void merge(std::vector<T> &vector, U &&other_container)
+{
+	for (typename U::value_type &element : other_container) {
+		vector.push_back(std::move(element));
+	}
+}
+
 template <typename T>
 inline void remove(T &vector, const typename T::value_type &element)
 {

@@ -75,11 +75,6 @@ public:
 		return database::get_documents_path() / "modules";
 	}
 
-	static std::filesystem::path get_data_path()
-	{
-		return database::get_root_path() / "data";
-	}
-
 	static std::filesystem::path get_map_path()
 	{
 		return database::get_root_path() / "map";
@@ -102,6 +97,8 @@ public:
 		cache_path /= "cache";
 		return cache_path;
 	}
+
+	static void parse_folder(const std::filesystem::path &path, std::vector<gsml_data> &gsml_data_list);
 
 public:
 	database();

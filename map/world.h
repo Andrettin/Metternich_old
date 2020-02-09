@@ -152,20 +152,7 @@ public:
 				continue;
 			}
 
-			std::filesystem::recursive_directory_iterator dir_iterator(map_path);
-
-			for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
-				if (!dir_entry.is_regular_file() || dir_entry.path().extension() != ".txt") {
-					continue;
-				}
-
-				if (T::try_get(dir_entry.path().stem().string()) == nullptr) {
-					throw std::runtime_error(dir_entry.path().stem().string() + " is not a valid " + T::class_identifier + " instance identifier.");
-				}
-
-				gsml_parser parser(dir_entry.path());
-				gsml_map_data_to_process.push_back(parser.parse());
-			}
+			database::parse_folder(map_path, gsml_map_data_to_process);
 		}
 
 		return gsml_map_data_to_process;

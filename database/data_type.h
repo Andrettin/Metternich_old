@@ -123,16 +123,7 @@ public:
 			return;
 		}
 
-		std::filesystem::recursive_directory_iterator dir_iterator(database_path);
-
-		for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
-			if (!dir_entry.is_regular_file()) {
-				continue;
-			}
-
-			gsml_parser parser(dir_entry.path());
-			T::gsml_data_to_process.push_back(parser.parse());
-		}
+		database::parse_folder(database_path, T::gsml_data_to_process);
 	}
 
 	static void process_database(const bool definition)
@@ -202,23 +193,7 @@ public:
 				continue;
 			}
 
-			std::filesystem::recursive_directory_iterator dir_iterator(history_path);
-
-			for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
-				if (!dir_entry.is_regular_file()) {
-					continue;
-				}
-
-				if constexpr (T::history_only == false) {
-					//non-history only data types have files with the same name as their identifiers, while for history only data types the file name is not relevant, with the identifier being scoped to within a file
-					if (T::try_get(dir_entry.path().stem().string()) == nullptr) {
-						throw std::runtime_error("Could not parse history for \"" + dir_entry.path().stem().string() + "\", as it is not a valid " + std::string(T::class_identifier) + " instance identifier.");
-					}
-				}
-
-				gsml_parser parser(dir_entry.path());
-				T::gsml_history_data_to_process.push_back(parser.parse());
-			}
+			database::parse_folder(history_path, T::gsml_history_data_to_process);
 		}
 	}
 
@@ -290,23 +265,9 @@ public:
 		}
 
 		std::vector<gsml_data> cache_data_to_process;
+		database::parse_folder(cache_path, cache_data_to_process);
 
-		std::filesystem::recursive_directory_iterator dir_iterator(cache_path);
-
-		for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
-			if (!dir_entry.is_regular_file() || dir_entry.path().extension() != ".txt") {
-				continue;
-			}
-
-			if (T::try_get(dir_entry.path().stem().string()) == nullptr) {
-				throw std::runtime_error("Could not process the cache for \"" + dir_entry.path().stem().string() + "\", as it is not a valid " + std::string(T::class_identifier) + " instance identifier.");
-			}
-
-			gsml_parser parser(dir_entry.path());
-			cache_data_to_process.push_back(parser.parse());
-		}
-
-		for (gsml_data &data : cache_data_to_process) {
+		for (const gsml_data &data : cache_data_to_process) {
 			T *instance = T::get(data.get_tag());
 			try {
 				database::process_gsml_data<T>(instance, data);

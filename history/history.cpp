@@ -154,7 +154,7 @@ void history::generate_wildlife_units()
 
 QDateTime history::string_to_date(const std::string &date_str)
 {
-	std::vector<std::string> date_string_list = string::split(date_str, '.');
+	const std::vector<std::string> date_string_list = string::split(date_str, '.');
 
 	int years = 0;
 	int months = 1;
