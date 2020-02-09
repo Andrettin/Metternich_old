@@ -12,6 +12,7 @@
 #include "util/image_util.h"
 #include "util/location_util.h"
 #include "util/point_util.h"
+#include "util/vector_util.h"
 
 namespace metternich {
 
@@ -36,6 +37,23 @@ void world::initialize()
 	this->pathfinder = std::make_unique<metternich::pathfinder>(this->provinces);
 
 	data_entry_base::initialize();
+}
+
+void world::set_map(const bool map)
+{
+	if (map == this->has_map()) {
+		return;
+	}
+
+	if (this->has_map()) {
+		vector::remove(world::map_worlds, this);
+	}
+
+	this->map = map;
+
+	if (this->has_map()) {
+		world::map_worlds.push_back(this);
+	}
 }
 
 QVariantList world::get_provinces_qvariant_list() const
@@ -208,9 +226,15 @@ void world::process_terrain_gsml_scope(const terrain_type *terrain, const gsml_d
 
 void world::load_province_map()
 {
+	const std::filesystem::path province_image_path = this->get_cache_path() / "provinces.png";
+
+	if (!std::filesystem::exists(province_image_path)) {
+		return;
+	}
+
 	engine_interface::get()->set_loading_message("Loading " + this->get_loading_message_name() + " Provinces... (0%)");
 
-	this->province_image = QImage(QString::fromStdString((this->get_cache_path() / "provinces.png").string()));
+	this->province_image = QImage(QString::fromStdString(province_image_path.string()));
 
 	this->pixel_size = this->province_image.size(); //set the world's pixel size to that of its province map
 	const int pixel_count = this->province_image.width() * this->province_image.height();
@@ -350,8 +374,14 @@ void world::load_province_map()
 
 void world::load_terrain_map()
 {
+	const std::filesystem::path terrain_image_path = this->get_cache_path() / "terrain.png";
+
+	if (!std::filesystem::exists(terrain_image_path)) {
+		return;
+	}
+
 	engine_interface::get()->set_loading_message("Loading " + this->get_loading_message_name() + " Terrain...");
-	this->terrain_image = QImage(QString::fromStdString((this->get_cache_path() / "terrain.png").string()));
+	this->terrain_image = QImage(QString::fromStdString(terrain_image_path.string()));
 }
 
 void world::write_geodata_to_image()
@@ -399,8 +429,10 @@ void world::write_geodata_to_image()
 		break;
 	}
 
-	//the terrain image has to be saved after the province image has been written, because provinces can also write to it
-	terrain_image.save(QString::fromStdString((this->get_cache_path() / "terrain.png").string()));
+	if (!terrain_image.isNull()) {
+		//the terrain image has to be saved after the province image has been written, because provinces can also write to it
+		terrain_image.save(QString::fromStdString((this->get_cache_path() / "terrain.png").string()));
+	}
 }
 
 void world::write_terrain_geodata_to_image(QImage &terrain_image)

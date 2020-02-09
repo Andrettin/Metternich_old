@@ -20,6 +20,8 @@ class world : public data_entry, public data_type<world>
 {
 	Q_OBJECT
 
+	Q_PROPERTY(bool map READ has_map WRITE set_map)
+	Q_PROPERTY(bool ethereal MEMBER ethereal READ is_ethereal)
 	Q_PROPERTY(int surface_area MEMBER surface_area READ get_surface_area)
 	Q_PROPERTY(QVariantList provinces READ get_provinces_qvariant_list CONSTANT)
 	Q_PROPERTY(QVariantList trade_nodes READ get_trade_nodes_qvariant_list CONSTANT)
@@ -30,11 +32,31 @@ public:
 	static constexpr const char *class_identifier = "world";
 	static constexpr const char *database_folder = "worlds";
 
+	static const std::vector<world *> &get_map_worlds()
+	{
+		return world::map_worlds;
+	}
+
+private:
+	static inline std::vector<world *> map_worlds;
+
 public:
 	world(const std::string &identifier);
 	virtual ~world() override;
 
 	virtual void initialize() override;
+
+	bool has_map() const
+	{
+		return this->map;
+	}
+
+	void set_map(const bool map);
+
+	bool is_ethereal() const
+	{
+		return this->ethereal;
+	}
 
 	int get_surface_area() const
 	{
@@ -228,13 +250,12 @@ public:
 
 	QString get_loading_message_name() const
 	{
-		if (world::get_all().size() > 1) {
+		if (world::get_map_worlds().size() > 1) {
 			return this->get_name_qstring();
 		} else {
 			return "World";
 		}
 	}
-
 
 	Q_INVOKABLE QPoint coordinate_to_point(const QGeoCoordinate &coordinate) const
 	{
@@ -245,6 +266,8 @@ private:
 	void add_province(province *province);
 
 private:
+	bool map = false; //whether the world has a map
+	bool ethereal = false; //whether the world is an ethereal one (i.e. Asgard)
 	int surface_area = 0; //the world's surface area, in square kilometers
 	std::set<province *> provinces;
 	std::set<trade_node *> trade_nodes; //the trade nodes in the world

@@ -76,7 +76,7 @@ void map::load()
 		std::filesystem::remove_all(cache_path);
 		std::filesystem::create_directories(cache_path);
 
-		for (world *world : world::get_all()) {
+		for (world *world : world::get_map_worlds()) {
 			//load map data for terrain types and provinces
 			world->process_province_map_database();
 			world->process_data_type_map_geojson_database<holding_slot>();
@@ -93,7 +93,7 @@ void map::load()
 		}
 	}
 
-	for (world *world : world::get_all()) {
+	for (world *world : world::get_map_worlds()) {
 		world->load_terrain_map();
 		world->load_province_map();
 	}
