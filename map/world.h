@@ -7,6 +7,7 @@
 
 #include <filesystem>
 #include <set>
+#include <string_view>
 
 namespace metternich {
 
@@ -141,7 +142,7 @@ public:
 	}
 
 	template <typename T>
-	inline std::vector<gsml_data> parse_data_type_map_database() const
+	std::vector<gsml_data> parse_data_type_map_database() const
 	{
 		std::vector<gsml_data> gsml_map_data_to_process;
 
@@ -158,57 +159,16 @@ public:
 		return gsml_map_data_to_process;
 	}
 
-	template <typename T>
-	inline std::vector<QVariantList> parse_data_type_map_geojson_database() const
-	{
-		std::vector<QVariantList> geojson_data_list;
-
-		for (const std::filesystem::path &path : database::get()->get_map_paths()) {
-			std::filesystem::path map_path = path / this->get_identifier() / T::database_folder;
-
-			if (!std::filesystem::exists(map_path)) {
-				continue;
-			}
-
-			std::filesystem::recursive_directory_iterator dir_iterator(map_path);
-
-			for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
-				if (!dir_entry.is_regular_file() || dir_entry.path().extension() != ".geojson") {
-					continue;
-				}
-
-				std::ifstream ifstream(dir_entry);
-
-				if (!ifstream) {
-					throw std::runtime_error("Failed to open file: " + dir_entry.path().string());
-				}
-
-				const std::string raw_geojson_data(std::istreambuf_iterator<char>{ifstream}, std::istreambuf_iterator<char>{});
-				const QByteArray raw_geojson_byte_array = QByteArray::fromStdString(raw_geojson_data);
-
-				QJsonParseError json_error;
-				const QJsonDocument json = QJsonDocument::fromJson(raw_geojson_byte_array, &json_error);
-
-				if (json.isNull()) {
-					throw std::runtime_error("JSON parsing failed: " + json_error.errorString().toStdString() + ".");
-				}
-
-				QVariantList geojson_data = QGeoJson::importGeoJson(json);
-				geojson_data_list.push_back(std::move(geojson_data));
-			}
-		}
-
-		return geojson_data_list;
-	}
+	std::vector<QVariantList> parse_geojson_folder(const std::string_view &folder) const;
 
 	template <typename T>
-	inline void process_data_type_map_geojson_database()
+	void process_data_type_map_geojson_database()
 	{
-		if (std::string(T::database_folder).empty()) {
+		if (std::string_view(T::database_folder).empty()) {
 			return;
 		}
 
-		std::vector<QVariantList> geojson_data_list = this->parse_data_type_map_geojson_database<T>();
+		const std::vector<QVariantList> geojson_data_list = this->parse_geojson_folder(T::database_folder);
 
 		for (const QVariantList &geojson_data : geojson_data_list) {
 			const QVariantMap feature_collection = geojson_data.front().toMap();

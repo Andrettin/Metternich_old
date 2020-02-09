@@ -5,6 +5,7 @@
 #include "economy/trade_route.h"
 #include "engine_interface.h"
 #include "holding/holding_slot.h"
+#include "map/map.h"
 #include "map/pathfinder.h"
 #include "map/province.h"
 #include "map/terrain_type.h"
@@ -146,6 +147,24 @@ province *world::get_coordinate_province(const QGeoCoordinate &coordinate) const
 	}
 
 	return nullptr;
+}
+
+std::vector<QVariantList> world::parse_geojson_folder(const std::string_view &folder) const
+{
+	std::vector<QVariantList> geojson_data_list;
+
+	for (const std::filesystem::path &path : database::get()->get_map_paths()) {
+		const std::filesystem::path map_path = path / this->get_identifier() / folder;
+
+		if (!std::filesystem::exists(map_path)) {
+			continue;
+		}
+
+		std::vector<QVariantList> folder_geojson_data_list = map::parse_geojson_folder(map_path);
+		vector::merge(geojson_data_list, std::move(folder_geojson_data_list));
+	}
+
+	return geojson_data_list;
 }
 
 void world::process_province_map_database()
