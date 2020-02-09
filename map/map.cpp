@@ -10,6 +10,7 @@
 #include "util/image_util.h"
 #include "util/location_util.h"
 #include "util/point_util.h"
+#include "util/vector_util.h"
 
 #include <QCryptographicHash>
 #include <QGeoRectangle>
@@ -20,7 +21,6 @@
 #include <sstream>
 
 namespace metternich {
-
 
 class path
 {
@@ -57,6 +57,41 @@ public:
 	static inline std::map<std::pair<province *, province *>, QGeoPath> geopaths;
 };
 
+//parse the GeoJSON data with world coordinates
+std::vector<QVariantList> map::parse_world_geojson_database()
+{
+	std::vector<QVariantList> geojson_data_list;
+
+	for (const std::filesystem::path &path : database::get()->get_map_paths()) {
+		const std::filesystem::path map_path = path / world::database_folder;
+
+		if (!std::filesystem::exists(map_path)) {
+			continue;
+		}
+
+		std::vector<QVariantList> folder_geojson_data_list = map::parse_geojson_folder(map_path);
+		vector::merge(geojson_data_list, std::move(folder_geojson_data_list));
+	}
+
+	return geojson_data_list;
+}
+
+//process the GeoJSON data with world coordinates
+void map::process_world_geojson_database()
+{
+	const std::vector<QVariantList> geojson_data_list = map::parse_world_geojson_database();
+
+	for (const QVariantList &geojson_data : geojson_data_list) {
+		const QVariantMap feature_collection = geojson_data.front().toMap();
+		const QVariantList feature_collection_data = feature_collection.value("data").toList();
+
+		for (const QVariant &feature_variant : feature_collection_data) {
+			const QVariantMap feature = feature_variant.toMap();
+			world::process_geojson_feature(feature);
+		}
+	}
+}
+
 map::map() : mode(map_mode::none)
 {
 }
@@ -92,6 +127,8 @@ void map::load()
 			}
 		}
 	}
+
+	map::process_world_geojson_database();
 
 	for (world *world : world::get_map_worlds()) {
 		world->load_terrain_map();

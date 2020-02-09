@@ -55,6 +55,9 @@ public:
 	}
 
 private:
+	static std::vector<QVariantList> parse_world_geojson_database();
+	static void process_world_geojson_database();
+
 	static constexpr int geocoordinate_precision = 17;
 
 public:

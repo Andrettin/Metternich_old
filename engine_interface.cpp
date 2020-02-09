@@ -39,6 +39,12 @@ void engine_interface::set_current_world(world *world)
 	});
 }
 
+QVariantList engine_interface::get_worlds() const
+{
+	QVariantList world_list = container::to_qvariant_list(world::get_all());
+	return world_list;
+}
+
 QVariantList engine_interface::get_map_worlds() const
 {
 	QVariantList world_list = container::to_qvariant_list(world::get_map_worlds());

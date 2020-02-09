@@ -3,6 +3,7 @@
 #include "database/data_entry.h"
 #include "database/data_type.h"
 
+#include <QGeoCoordinate>
 #include <QtLocation/private/qgeojson_p.h>
 
 #include <filesystem>
@@ -21,6 +22,8 @@ class world : public data_entry, public data_type<world>
 {
 	Q_OBJECT
 
+	Q_PROPERTY(QGeoCoordinate astrocoordinate READ get_astrocoordinate CONSTANT)
+	Q_PROPERTY(int astrodistance MEMBER astrodistance READ get_astrodistance NOTIFY astrodistance_changed)
 	Q_PROPERTY(bool map READ has_map WRITE set_map)
 	Q_PROPERTY(bool ethereal MEMBER ethereal READ is_ethereal)
 	Q_PROPERTY(int surface_area MEMBER surface_area READ get_surface_area)
@@ -38,6 +41,17 @@ public:
 		return world::map_worlds;
 	}
 
+	static void process_geojson_feature(const QVariantMap &feature)
+	{
+		const QVariantMap properties = feature.value("properties").toMap();
+		const QString world_identifier = properties.value("world").toString();
+
+		world *world = world::get(world_identifier.toStdString());
+
+		const QGeoCircle geocircle = feature.value("data").value<QGeoCircle>();
+		world->astrocoordinate = geocircle.center();
+	}
+
 private:
 	static inline std::vector<world *> map_worlds;
 
@@ -46,6 +60,16 @@ public:
 	virtual ~world() override;
 
 	virtual void initialize() override;
+
+	const QGeoCoordinate &get_astrocoordinate() const
+	{
+		return this->astrocoordinate;
+	}
+
+	int get_astrodistance() const
+	{
+		return this->astrodistance;
+	}
 
 	bool has_map() const
 	{
@@ -212,7 +236,12 @@ public:
 private:
 	void add_province(province *province);
 
+signals:
+	void astrodistance_changed();
+
 private:
+	QGeoCoordinate astrocoordinate;
+	int astrodistance = 0;
 	bool map = false; //whether the world has a map
 	bool ethereal = false; //whether the world is an ethereal one (i.e. Asgard)
 	int surface_area = 0; //the world's surface area, in square kilometers
