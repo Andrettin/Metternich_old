@@ -462,7 +462,7 @@ void database::process_modules()
 			return true;
 		}
 
-		return a.get() < b.get();
+		return a->get_identifier() < b->get_identifier();
 	});
 }
 

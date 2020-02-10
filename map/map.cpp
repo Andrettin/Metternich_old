@@ -425,7 +425,7 @@ bool map::check_cache()
 
 	gsml_parser parser(stored_checksum_path);
 	gsml_data stored_checksum_data = parser.parse();
-	std::string stored_checksum = stored_checksum_data.get_property_value("map");
+	const std::string stored_checksum = stored_checksum_data.get_property_value("map");
 
 	if (stored_checksum != this->checksum) {
 		return false;

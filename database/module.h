@@ -27,6 +27,11 @@ public:
 	void process_gsml_property(const gsml_property &property);
 	void process_gsml_scope(const gsml_data &scope) { Q_UNUSED(scope) }
 
+	const std::string &get_identifier() const
+	{
+		return this->identifier;
+	}
+
 	const std::filesystem::path &get_path() const
 	{
 		return this->path;
