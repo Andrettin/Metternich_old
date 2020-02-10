@@ -56,6 +56,7 @@ SOURCES += \
         politics/government_type.cpp \
         population/population_type.cpp \
         population/population_unit.cpp \
+        random.cpp \
         religion/religion.cpp \
         religion/religion_group.cpp \
         script/chance_factor.cpp \
