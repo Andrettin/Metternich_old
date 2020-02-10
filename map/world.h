@@ -4,7 +4,6 @@
 #include "database/data_type.h"
 
 #include <QGeoCoordinate>
-#include <QtLocation/private/qgeojson_p.h>
 
 #include <filesystem>
 #include <set>
