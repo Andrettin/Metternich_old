@@ -8,7 +8,9 @@
 #include "map/map.h"
 #include "map/pathfinder.h"
 #include "map/province.h"
+#include "map/star_system.h"
 #include "map/terrain_type.h"
+#include "random.h"
 #include "util/container_util.h"
 #include "util/image_util.h"
 #include "util/location_util.h"
@@ -37,8 +39,32 @@ void world::initialize()
 
 	this->pathfinder = std::make_unique<metternich::pathfinder>(this->provinces);
 
+	if (this->get_star_system() != nullptr) {
+		this->orbit_position = random::generate_circle_position();
+	}
+
 	data_entry_base::initialize();
 }
+
+void world::set_star_system(metternich::star_system *system)
+{
+	if (system == this->get_star_system()) {
+		return;
+	}
+
+	if (this->get_star_system() != nullptr) {
+		this->get_star_system()->remove_world(this);
+	}
+
+	this->star_system = system;
+
+	if (this->get_star_system() != nullptr) {
+		this->get_star_system()->add_world(this);
+	}
+
+	emit star_system_changed();
+}
+
 
 void world::set_map(const bool map)
 {
@@ -55,6 +81,12 @@ void world::set_map(const bool map)
 	if (this->has_map()) {
 		world::map_worlds.push_back(this);
 	}
+}
+
+void world::calculate_cosmic_pixel_size()
+{
+	this->cosmic_pixel_size = std::max(world::min_cosmic_pixel_size, this->get_diameter() * star_system::million_km_per_pixel / 1000);
+	this->cosmic_pixel_size = std::min(world::max_cosmic_pixel_size, this->cosmic_pixel_size);
 }
 
 QVariantList world::get_provinces_qvariant_list() const
@@ -74,19 +106,19 @@ QVariantList world::get_trade_routes_qvariant_list() const
 
 QPoint world::get_pixel_pos(const int index) const
 {
-	return point::from_index(index, this->pixel_size);
+	return point::from_index(index, this->map_pixel_size);
 }
 
 QPoint world::get_coordinate_pos(const QGeoCoordinate &coordinate) const
 {
-	const double lon_per_pixel = 360.0 / static_cast<double>(this->pixel_size.width());
-	const double lat_per_pixel = 180.0 / static_cast<double>(this->pixel_size.height());
+	const double lon_per_pixel = 360.0 / static_cast<double>(this->map_pixel_size.width());
+	const double lat_per_pixel = 180.0 / static_cast<double>(this->map_pixel_size.height());
 	return geocoordinate::to_point(coordinate, lon_per_pixel, lat_per_pixel);
 }
 
 QGeoCoordinate world::get_pixel_pos_coordinate(const QPoint &pixel_pos) const
 {
-	return point::to_geocoordinate(pixel_pos, this->pixel_size);
+	return point::to_geocoordinate(pixel_pos, this->map_pixel_size);
 }
 
 terrain_type *world::get_coordinate_terrain(const QGeoCoordinate &coordinate) const
@@ -255,7 +287,7 @@ void world::load_province_map()
 
 	this->province_image = QImage(QString::fromStdString(province_image_path.string()));
 
-	this->pixel_size = this->province_image.size(); //set the world's pixel size to that of its province map
+	this->map_pixel_size = this->province_image.size(); //set the world's pixel size to that of its province map
 	const int pixel_count = this->province_image.width() * this->province_image.height();
 
 	std::map<province *, std::vector<int>> province_pixel_indexes;

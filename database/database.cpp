@@ -28,6 +28,7 @@
 #include "map/province.h"
 #include "map/province_profile.h"
 #include "map/region.h"
+#include "map/star_system.h"
 #include "map/terrain_type.h"
 #include "map/world.h"
 #include "phenotype.h"
@@ -266,6 +267,8 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 			new_property_value = QVariant::fromValue(religion_group::get(property.get_value()));
 		} else if (property_class_name == "metternich::species*") {
 			new_property_value = QVariant::fromValue(species::get(property.get_value()));
+		} else if (property_class_name == "metternich::star_system*") {
+			new_property_value = QVariant::fromValue(star_system::get(property.get_value()));
 		} else if (property_class_name == "metternich::technology*") {
 			new_property_value = QVariant::fromValue(technology::get(property.get_value()));
 		} else if (property_class_name == "metternich::terrain_type*") {

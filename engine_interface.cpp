@@ -5,6 +5,7 @@
 #include "holding/holding.h"
 #include "map/map.h"
 #include "map/province.h"
+#include "map/star_system.h"
 #include "map/world.h"
 #include "script/event/event_instance.h"
 #include "util/container_util.h"
@@ -25,6 +26,12 @@ engine_interface::~engine_interface()
 game *engine_interface::get_game() const
 {
 	return game::get();
+}
+
+QVariantList engine_interface::get_star_systems() const
+{
+	QVariantList star_system_list = container::to_qvariant_list(star_system::get_all());
+	return star_system_list;
 }
 
 world *engine_interface::get_current_world() const

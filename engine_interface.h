@@ -28,6 +28,7 @@ class engine_interface : public QObject, public singleton<engine_interface>
 	Q_OBJECT
 
 	Q_PROPERTY(metternich::game* game READ get_game CONSTANT)
+	Q_PROPERTY(QVariantList star_systems READ get_star_systems CONSTANT)
 	Q_PROPERTY(metternich::world* current_world READ get_current_world WRITE set_current_world NOTIFY current_world_changed)
 	Q_PROPERTY(QVariantList worlds READ get_worlds CONSTANT)
 	Q_PROPERTY(QVariantList map_worlds READ get_map_worlds CONSTANT)
@@ -48,6 +49,7 @@ public:
 	~engine_interface();
 
 	game *get_game() const;
+	QVariantList get_star_systems() const;
 	world *get_current_world() const;
 	void set_current_world(world *world);
 	QVariantList get_worlds() const;

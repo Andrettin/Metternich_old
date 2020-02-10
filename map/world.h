@@ -4,6 +4,7 @@
 #include "database/data_type.h"
 
 #include <QGeoCoordinate>
+#include <QPointF>
 
 #include <filesystem>
 #include <set>
@@ -13,6 +14,7 @@ namespace metternich {
 
 class pathfinder;
 class province;
+class star_system;
 class terrain_type;
 class trade_node;
 class trade_route;
@@ -21,11 +23,16 @@ class world : public data_entry, public data_type<world>
 {
 	Q_OBJECT
 
+	Q_PROPERTY(metternich::star_system* star_system READ get_star_system WRITE set_star_system NOTIFY star_system_changed)
 	Q_PROPERTY(QGeoCoordinate astrocoordinate READ get_astrocoordinate CONSTANT)
 	Q_PROPERTY(int astrodistance MEMBER astrodistance READ get_astrodistance NOTIFY astrodistance_changed)
+	Q_PROPERTY(QPointF orbit_position READ get_orbit_position CONSTANT)
+	Q_PROPERTY(int distance_from_system_center READ get_distance_from_system_center WRITE set_distance_from_system_center NOTIFY distance_from_system_center_changed)
+	Q_PROPERTY(int cosmic_pixel_size READ get_cosmic_pixel_size CONSTANT)
 	Q_PROPERTY(bool map READ has_map WRITE set_map)
 	Q_PROPERTY(bool ethereal MEMBER ethereal READ is_ethereal)
 	Q_PROPERTY(int surface_area MEMBER surface_area READ get_surface_area)
+	Q_PROPERTY(int radius MEMBER radius READ get_radius)
 	Q_PROPERTY(QVariantList provinces READ get_provinces_qvariant_list CONSTANT)
 	Q_PROPERTY(QVariantList trade_nodes READ get_trade_nodes_qvariant_list CONSTANT)
 	Q_PROPERTY(QVariantList trade_routes READ get_trade_routes_qvariant_list CONSTANT)
@@ -34,6 +41,8 @@ class world : public data_entry, public data_type<world>
 public:
 	static constexpr const char *class_identifier = "world";
 	static constexpr const char *database_folder = "worlds";
+	static constexpr int min_cosmic_pixel_size = 32;
+	static constexpr int max_cosmic_pixel_size = 128;
 
 	static const std::vector<world *> &get_map_worlds()
 	{
@@ -60,6 +69,13 @@ public:
 
 	virtual void initialize() override;
 
+	star_system *get_star_system() const
+	{
+		return this->star_system;
+	}
+
+	void set_star_system(star_system *system);
+
 	const QGeoCoordinate &get_astrocoordinate() const
 	{
 		return this->astrocoordinate;
@@ -68,6 +84,26 @@ public:
 	int get_astrodistance() const
 	{
 		return this->astrodistance;
+	}
+
+	const QPointF &get_orbit_position() const
+	{
+		return this->orbit_position;
+	}
+
+	int get_distance_from_system_center() const
+	{
+		return this->distance_from_system_center;
+	}
+
+	void set_distance_from_system_center(const int distance)
+	{
+		if (distance == this->get_distance_from_system_center()) {
+			return;
+		}
+
+		this->distance_from_system_center = distance;
+		emit distance_from_system_center_changed();
 	}
 
 	bool has_map() const
@@ -89,8 +125,25 @@ public:
 
 	int get_area_per_pixel() const
 	{
-		return this->get_surface_area() / this->pixel_size.width() / this->pixel_size.height();
+		return this->get_surface_area() / this->map_pixel_size.width() / this->map_pixel_size.height();
 	}
+
+	int get_radius() const
+	{
+		return this->radius;
+	}
+
+	int get_diameter() const
+	{
+		return this->get_radius() * 2;
+	}
+
+	int get_cosmic_pixel_size() const
+	{
+		return this->cosmic_pixel_size;
+	}
+
+	void calculate_cosmic_pixel_size();
 
 	const std::set<province *> &get_provinces() const
 	{
@@ -140,7 +193,7 @@ public:
 
 	bool is_pos_valid(const QPoint &pos) const
 	{
-		return pos.x() > 0 && pos.y() > 0 && pos.x() < this->pixel_size.width() && pos.y() < this->pixel_size.height();
+		return pos.x() > 0 && pos.y() > 0 && pos.x() < this->map_pixel_size.width() && pos.y() < this->map_pixel_size.height();
 	}
 
 	QPoint get_pixel_pos(const int index) const;
@@ -236,19 +289,26 @@ private:
 	void add_province(province *province);
 
 signals:
+	void star_system_changed();
 	void astrodistance_changed();
+	void distance_from_system_center_changed();
 
 private:
+	star_system *star_system = nullptr;
 	QGeoCoordinate astrocoordinate;
 	int astrodistance = 0;
+	QPointF orbit_position;
+	int distance_from_system_center = 0; //in millions of kilometers
 	bool map = false; //whether the world has a map
 	bool ethereal = false; //whether the world is an ethereal one (i.e. Asgard)
 	int surface_area = 0; //the world's surface area, in square kilometers
+	int radius = 0; //the world's radius, in kilometers
 	std::set<province *> provinces;
 	std::set<trade_node *> trade_nodes; //the trade nodes in the world
 	std::set<trade_node *> active_trade_nodes; //the active trade nodes in the world
 	std::set<trade_route *> trade_routes; //the trade routes in the world
-	QSize pixel_size = QSize(0, 0); //the size of the world, in pixels
+	QSize map_pixel_size = QSize(0, 0); //the size of the world's map, in pixels
+	int cosmic_pixel_size = 0; //the size of the world for the cosmic map
 	QImage terrain_image;
 	QImage province_image;
 	std::map<const terrain_type *, std::vector<QGeoPolygon>> terrain_geopolygons;

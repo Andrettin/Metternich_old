@@ -17,6 +17,7 @@
 #include <QImage>
 #include <QJsonDocument>
 #include <QRect>
+#include <QtLocation/private/qgeojson_p.h>
 
 #include <sstream>
 

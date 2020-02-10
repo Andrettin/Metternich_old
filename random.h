@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QPointF>
+
 #include <random>
 
 namespace metternich {
@@ -26,6 +28,7 @@ public:
 	}
 
 	static double generate_angle();
+	static QPointF generate_circle_position();
 
 private:
 	static inline std::random_device random_device = std::random_device();

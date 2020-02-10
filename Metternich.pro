@@ -51,6 +51,7 @@ SOURCES += \
         map/province_image_provider.cpp \
         map/province_profile.cpp \
         map/region.cpp \
+        map/star_system.cpp \
         map/terrain_type.cpp \
         map/world.cpp \
         politics/government_type.cpp \
@@ -157,6 +158,7 @@ HEADERS += \
     map/province_image_provider.h \
     map/province_profile.h \
     map/region.h \
+    map/star_system.h \
     map/terrain_type.h \
     map/world.h \
     pch.h \
