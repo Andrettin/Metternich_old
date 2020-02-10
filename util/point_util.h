@@ -24,11 +24,13 @@ inline QPoint from_index(const int index, const QSize &size)
 	return QPoint(index % size.width(), index / size.width());
 }
 
-inline int distance_to(const QPoint &point, const QPoint &other_point)
+template <typename point_type>
+inline std::result_of_t<decltype(&point_type::x)(point_type)> distance_to(const point_type &point, const point_type &other_point)
 {
-	const int dx = point.x() - other_point.x();
-	const int dy = point.y() - other_point.y();
-	return static_cast<int>(sqrt(dx * dx + dy * dy));
+	using underlying_type = std::result_of_t<decltype(&point_type::x)(point_type)>;
+	const underlying_type dx = point.x() - other_point.x();
+	const underlying_type dy = point.y() - other_point.y();
+	return static_cast<underlying_type>(sqrt(dx * dx + dy * dy));
 }
 
 inline QPoint get_nearest_point(const QPoint &point, const std::vector<QPoint> &other_points)
