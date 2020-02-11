@@ -27,12 +27,15 @@ class world : public data_entry, public data_type<world>
 	Q_PROPERTY(QGeoCoordinate astrocoordinate READ get_astrocoordinate CONSTANT)
 	Q_PROPERTY(int astrodistance MEMBER astrodistance READ get_astrodistance NOTIFY astrodistance_changed)
 	Q_PROPERTY(QPointF orbit_position READ get_orbit_position CONSTANT)
-	Q_PROPERTY(int distance_from_system_center READ get_distance_from_system_center WRITE set_distance_from_system_center NOTIFY distance_from_system_center_changed)
+	Q_PROPERTY(metternich::world* orbit_center READ get_orbit_center NOTIFY orbit_center_changed)
+	Q_PROPERTY(int distance_from_orbit_center READ get_distance_from_orbit_center WRITE set_distance_from_orbit_center NOTIFY distance_from_orbit_center_changed)
 	Q_PROPERTY(int cosmic_pixel_size READ get_cosmic_pixel_size CONSTANT)
 	Q_PROPERTY(bool map READ has_map WRITE set_map)
+	Q_PROPERTY(bool star MEMBER star READ is_star)
 	Q_PROPERTY(bool ethereal MEMBER ethereal READ is_ethereal)
 	Q_PROPERTY(int surface_area MEMBER surface_area READ get_surface_area)
 	Q_PROPERTY(int radius MEMBER radius READ get_radius)
+	Q_PROPERTY(int solar_radius READ get_solar_radius WRITE set_solar_radius)
 	Q_PROPERTY(QVariantList provinces READ get_provinces_qvariant_list CONSTANT)
 	Q_PROPERTY(QVariantList trade_nodes READ get_trade_nodes_qvariant_list CONSTANT)
 	Q_PROPERTY(QVariantList trade_routes READ get_trade_routes_qvariant_list CONSTANT)
@@ -42,7 +45,9 @@ public:
 	static constexpr const char *class_identifier = "world";
 	static constexpr const char *database_folder = "worlds";
 	static constexpr int min_cosmic_pixel_size = 32;
-	static constexpr int max_cosmic_pixel_size = 128;
+	static constexpr int max_cosmic_pixel_size = 96;
+	static constexpr int max_star_cosmic_pixel_size = 128;
+	static constexpr int solar_radius = 695700; //in kilometers
 
 	static const std::vector<world *> &get_map_worlds()
 	{
@@ -91,19 +96,47 @@ public:
 		return this->orbit_position;
 	}
 
-	int get_distance_from_system_center() const
+	world *get_orbit_center() const
 	{
-		return this->distance_from_system_center;
+		return this->orbit_center;
 	}
 
-	void set_distance_from_system_center(const int distance)
+	bool is_any_orbit_center_of(const world *other_world) const
 	{
-		if (distance == this->get_distance_from_system_center()) {
+		if (other_world->get_orbit_center() == nullptr) {
+			return false;
+		}
+
+		if (other_world->get_orbit_center() == this) {
+			return true;
+		}
+
+		return this->is_any_orbit_center_of(other_world->get_orbit_center());
+	}
+
+	const world *get_top_system_world() const
+	{
+		//get the world itself if it does not orbit anything other than the star system's center, or its orbit center's top system world otherwise
+		if (this->get_orbit_center() != nullptr) {
+			return this->get_orbit_center()->get_top_system_world();
+		}
+
+		return this;
+	}
+
+	int get_distance_from_orbit_center() const
+	{
+		return this->distance_from_orbit_center;
+	}
+
+	void set_distance_from_orbit_center(const int distance)
+	{
+		if (distance == this->get_distance_from_orbit_center()) {
 			return;
 		}
 
-		this->distance_from_system_center = distance;
-		emit distance_from_system_center_changed();
+		this->distance_from_orbit_center = distance;
+		emit distance_from_orbit_center_changed();
 	}
 
 	bool has_map() const
@@ -112,6 +145,11 @@ public:
 	}
 
 	void set_map(const bool map);
+
+	bool is_star() const
+	{
+		return this->star;
+	}
 
 	bool is_ethereal() const
 	{
@@ -131,6 +169,22 @@ public:
 	int get_radius() const
 	{
 		return this->radius;
+	}
+
+	int get_solar_radius() const
+	{
+		long long int solar_radius = this->get_radius();
+		solar_radius *= 10000;
+		solar_radius /= world::solar_radius;
+		return static_cast<int>(solar_radius);
+	}
+
+	void set_solar_radius(const int solar_radius)
+	{
+		long long int radius = solar_radius;
+		radius *= world::solar_radius;
+		radius /= 10000;
+		this->radius = static_cast<int>(radius);
 	}
 
 	int get_diameter() const
@@ -291,15 +345,18 @@ private:
 signals:
 	void star_system_changed();
 	void astrodistance_changed();
-	void distance_from_system_center_changed();
+	void orbit_center_changed();
+	void distance_from_orbit_center_changed();
 
 private:
 	star_system *star_system = nullptr;
 	QGeoCoordinate astrocoordinate;
 	int astrodistance = 0;
 	QPointF orbit_position;
-	int distance_from_system_center = 0; //in millions of kilometers
+	world *orbit_center = nullptr; //if none is given, then the center of the star system is assumed
+	int distance_from_orbit_center = 0; //in millions of kilometers
 	bool map = false; //whether the world has a map
+	bool star = false; //whether the world is a star
 	bool ethereal = false; //whether the world is an ethereal one (i.e. Asgard)
 	int surface_area = 0; //the world's surface area, in square kilometers
 	int radius = 0; //the world's radius, in kilometers

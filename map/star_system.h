@@ -24,7 +24,7 @@ public:
 	static constexpr const char *database_folder = "star_systems";
 	static constexpr int million_km_per_pixel = 1;
 	static constexpr int min_orbit_distance = 32; //minimum distance between an orbit and the next one in the system
-	static constexpr int max_orbit_distance = 128; //maximum distance between an orbit and the next one in the system
+	static constexpr int max_orbit_distance = 64; //maximum distance between an orbit and the next one in the system
 
 public:
 	star_system(const std::string &identifier) : data_entry(identifier)

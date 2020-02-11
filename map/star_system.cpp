@@ -15,7 +15,7 @@ void star_system::initialize()
 	int star_count = 0;
 
 	for (world *world : this->worlds) {
-		if (world->get_astrocoordinate().isValid()) {
+		if (world->is_star() && world->get_astrocoordinate().isValid()) {
 			latitude += world->get_astrocoordinate().latitude();
 			longitude += world->get_astrocoordinate().longitude();
 			astrodistance += world->get_astrodistance();
@@ -29,7 +29,7 @@ void star_system::initialize()
 	}
 
 	std::sort(this->worlds.begin(), this->worlds.end(), [](const world *a, const world *b) {
-		return a->get_distance_from_system_center() < b->get_distance_from_system_center();
+		return a->get_distance_from_orbit_center() < b->get_distance_from_orbit_center();
 	});
 
 	//update the world distances from the system center so that orbits are within a minimum and maximum distance of each other
@@ -38,14 +38,14 @@ void star_system::initialize()
 		world->calculate_cosmic_pixel_size();
 
 		if (previous_world != nullptr) {
-			const int previous_distance = previous_world->get_distance_from_system_center();
+			const int previous_distance = previous_world->get_distance_from_orbit_center();
 			const int base_distance = previous_distance + (previous_world->get_cosmic_pixel_size() / 2) + (world->get_cosmic_pixel_size() / 2);
 			const int min_distance = base_distance + star_system::min_orbit_distance;
 			const int max_distance = base_distance + star_system::max_orbit_distance;
-			int distance = world->get_distance_from_system_center();
+			int distance = world->get_distance_from_orbit_center();
 			distance = std::max(distance, min_distance);
 			distance = std::min(distance, max_distance);
-			world->set_distance_from_system_center(distance);
+			world->set_distance_from_orbit_center(distance);
 		}
 
 		previous_world = world;

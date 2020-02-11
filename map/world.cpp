@@ -86,7 +86,11 @@ void world::set_map(const bool map)
 void world::calculate_cosmic_pixel_size()
 {
 	this->cosmic_pixel_size = std::max(world::min_cosmic_pixel_size, this->get_diameter() * star_system::million_km_per_pixel / 1000);
-	this->cosmic_pixel_size = std::min(world::max_cosmic_pixel_size, this->cosmic_pixel_size);
+	if (this->is_star()) {
+		this->cosmic_pixel_size = std::min(world::max_star_cosmic_pixel_size, this->cosmic_pixel_size);
+	} else {
+		this->cosmic_pixel_size = std::min(world::max_cosmic_pixel_size, this->cosmic_pixel_size);
+	}
 }
 
 QVariantList world::get_provinces_qvariant_list() const
