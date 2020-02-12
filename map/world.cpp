@@ -121,7 +121,9 @@ void world::set_map(const bool map)
 QPointF world::get_cosmic_map_pos() const
 {
 	if (this->get_astrocoordinate().isValid()) {
-		QPointF pos(this->get_astrocoordinate().longitude() * this->get_astrodistance() / 180 * world::astrodistance_multiplier, get_astrocoordinate().latitude() * this->get_astrodistance() / 90 * world::astrodistance_multiplier);
+		const double x = this->get_astrocoordinate().longitude() * cbrt(this->get_astrodistance()) / 180 * world::astrodistance_multiplier;
+		const double y = this->get_astrocoordinate().latitude() * cbrt(this->get_astrodistance()) / 90 * world::astrodistance_multiplier;
+		QPointF pos(x, y);
 
 		if (this->get_orbit_center() == nullptr || point::distance_to(pos, this->get_orbit_center()->get_cosmic_map_pos()) >= ((this->cosmic_pixel_size / 2) + world::min_orbit_distance)) {
 			return pos;

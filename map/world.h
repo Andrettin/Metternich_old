@@ -50,10 +50,11 @@ public:
 	static constexpr int max_cosmic_pixel_size = 128;
 	static constexpr int default_star_pixel_size = 128;
 	static constexpr int solar_radius = 695700; //in kilometers
+	static constexpr int solar_absolute_magnitude = 483; //4.83
 	static constexpr int million_km_per_pixel = 1;
 	static constexpr int min_orbit_distance = 32; //minimum distance between an orbit and the next one in the system
 	static constexpr int max_orbit_distance = 64; //maximum distance between an orbit and the next one in the system
-	static constexpr int astrodistance_multiplier = 4;
+	static constexpr int astrodistance_multiplier = 256;
 	static constexpr int million_km_per_au = 150;
 
 	static const std::vector<world *> &get_map_worlds()
