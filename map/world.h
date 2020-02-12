@@ -29,6 +29,7 @@ class world : public data_entry, public data_type<world>
 	Q_PROPERTY(QPointF orbit_position READ get_orbit_position CONSTANT)
 	Q_PROPERTY(metternich::world* orbit_center READ get_orbit_center WRITE set_orbit_center NOTIFY orbit_center_changed)
 	Q_PROPERTY(int distance_from_orbit_center READ get_distance_from_orbit_center WRITE set_distance_from_orbit_center NOTIFY distance_from_orbit_center_changed)
+	Q_PROPERTY(int au_distance_from_orbit_center READ get_au_distance_from_orbit_center WRITE set_au_distance_from_orbit_center NOTIFY distance_from_orbit_center_changed)
 	Q_PROPERTY(QPointF cosmic_map_pos READ get_cosmic_map_pos CONSTANT)
 	Q_PROPERTY(int cosmic_pixel_size READ get_cosmic_pixel_size CONSTANT)
 	Q_PROPERTY(bool map READ has_map WRITE set_map)
@@ -47,11 +48,13 @@ public:
 	static constexpr const char *database_folder = "worlds";
 	static constexpr int min_cosmic_pixel_size = 32;
 	static constexpr int max_cosmic_pixel_size = 128;
+	static constexpr int default_star_pixel_size = 128;
 	static constexpr int solar_radius = 695700; //in kilometers
 	static constexpr int million_km_per_pixel = 1;
 	static constexpr int min_orbit_distance = 32; //minimum distance between an orbit and the next one in the system
 	static constexpr int max_orbit_distance = 64; //maximum distance between an orbit and the next one in the system
 	static constexpr int astrodistance_multiplier = 4;
+	static constexpr int million_km_per_au = 150;
 
 	static const std::vector<world *> &get_map_worlds()
 	{
@@ -157,6 +160,16 @@ public:
 
 		this->distance_from_orbit_center = distance;
 		emit distance_from_orbit_center_changed();
+	}
+
+	int get_au_distance_from_orbit_center() const
+	{
+		return this->get_distance_from_orbit_center() / world::million_km_per_au;
+	}
+
+	void set_au_distance_from_orbit_center(const int au_distance)
+	{
+		this->set_distance_from_orbit_center(au_distance * world::million_km_per_au);
 	}
 
 	bool has_map() const

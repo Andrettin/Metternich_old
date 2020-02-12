@@ -141,7 +141,13 @@ void world::calculate_cosmic_pixel_size()
 		this->get_orbit_center()->calculate_cosmic_pixel_size();
 	}
 
-	this->cosmic_pixel_size = std::max(world::min_cosmic_pixel_size, this->get_diameter() * world::million_km_per_pixel / 1000);
+	this->cosmic_pixel_size = this->get_diameter() * world::million_km_per_pixel / 1000;
+
+	if (this->cosmic_pixel_size == 0 && this->is_star()) {
+		this->cosmic_pixel_size = world::default_star_pixel_size;
+	}
+
+	this->cosmic_pixel_size = std::max(world::min_cosmic_pixel_size, this->cosmic_pixel_size);
 	this->cosmic_pixel_size = std::min(world::max_cosmic_pixel_size, this->cosmic_pixel_size);
 	if (this->get_orbit_center() != nullptr) {
 		this->cosmic_pixel_size = std::min(this->get_orbit_center()->get_cosmic_pixel_size() * 3 / 4, this->cosmic_pixel_size);
