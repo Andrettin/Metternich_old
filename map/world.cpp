@@ -39,8 +39,39 @@ void world::initialize()
 
 	this->pathfinder = std::make_unique<metternich::pathfinder>(this->provinces);
 
-	if (this->get_star_system() != nullptr) {
-		this->orbit_position = random::generate_circle_position();
+	this->orbit_position = random::generate_circle_position();
+	this->calculate_cosmic_pixel_size();
+
+	for (world *satellite : this->satellites) {
+		if (!satellite->is_initialized()) {
+			satellite->initialize();
+		}
+	}
+
+	std::sort(this->satellites.begin(), this->satellites.end(), [](const world *a, const world *b) {
+		return a->get_distance_from_orbit_center() < b->get_distance_from_orbit_center();
+	});
+
+	//update the satellite distances from this world so that orbits are within a minimum and maximum distance of each other
+	const world *previous_satellite = nullptr;
+	for (world *satellite : this->satellites) {
+		int base_distance = 0;
+		if (previous_satellite != nullptr) {
+			base_distance += previous_satellite->get_distance_from_orbit_center();
+			base_distance += previous_satellite->get_cosmic_pixel_size_with_satellites() / 2;
+		} else {
+			base_distance += this->get_cosmic_pixel_size() / 2;
+		}
+
+		base_distance += satellite->get_cosmic_pixel_size_with_satellites() / 2;
+		const int min_distance = base_distance + world::min_orbit_distance;
+		const int max_distance = base_distance + world::max_orbit_distance;
+		int distance = satellite->get_distance_from_orbit_center();
+		distance = std::max(distance, min_distance);
+		distance = std::min(distance, max_distance);
+		satellite->set_distance_from_orbit_center(distance);
+
+		previous_satellite = satellite;
 	}
 
 	data_entry_base::initialize();
@@ -65,6 +96,10 @@ void world::set_star_system(metternich::star_system *system)
 	emit star_system_changed();
 }
 
+void world::remove_satellite(world *satellite)
+{
+	vector::remove(this->satellites, satellite);
+}
 
 void world::set_map(const bool map)
 {
@@ -83,13 +118,33 @@ void world::set_map(const bool map)
 	}
 }
 
+QPointF world::get_cosmic_map_pos() const
+{
+	if (this->get_astrocoordinate().isValid()) {
+		QPointF pos(this->get_astrocoordinate().longitude() * this->get_astrodistance() / 180 * world::astrodistance_multiplier, get_astrocoordinate().latitude() * this->get_astrodistance() / 90 * world::astrodistance_multiplier);
+
+		if (this->get_orbit_center() == nullptr || point::distance_to(pos, this->get_orbit_center()->get_cosmic_map_pos()) >= ((this->cosmic_pixel_size / 2) + world::min_orbit_distance)) {
+			return pos;
+		}
+	}
+
+	if (this->get_orbit_center() != nullptr) {
+		return this->get_orbit_center()->get_cosmic_map_pos() + QPointF(this->get_orbit_position().x() * this->get_distance_from_orbit_center(), this->get_orbit_position().y() * this->get_distance_from_orbit_center());
+	}
+
+	return QPointF(0, 0);
+}
+
 void world::calculate_cosmic_pixel_size()
 {
-	this->cosmic_pixel_size = std::max(world::min_cosmic_pixel_size, this->get_diameter() * star_system::million_km_per_pixel / 1000);
-	if (this->is_star()) {
-		this->cosmic_pixel_size = std::min(world::max_star_cosmic_pixel_size, this->cosmic_pixel_size);
-	} else {
-		this->cosmic_pixel_size = std::min(world::max_cosmic_pixel_size, this->cosmic_pixel_size);
+	if (this->get_orbit_center() != nullptr && this->get_orbit_center()->get_cosmic_pixel_size() == 0) {
+		this->get_orbit_center()->calculate_cosmic_pixel_size();
+	}
+
+	this->cosmic_pixel_size = std::max(world::min_cosmic_pixel_size, this->get_diameter() * world::million_km_per_pixel / 1000);
+	this->cosmic_pixel_size = std::min(world::max_cosmic_pixel_size, this->cosmic_pixel_size);
+	if (this->get_orbit_center() != nullptr) {
+		this->cosmic_pixel_size = std::min(this->get_orbit_center()->get_cosmic_pixel_size() * 3 / 4, this->cosmic_pixel_size);
 	}
 }
 

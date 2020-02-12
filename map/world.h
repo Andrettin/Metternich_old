@@ -27,8 +27,9 @@ class world : public data_entry, public data_type<world>
 	Q_PROPERTY(QGeoCoordinate astrocoordinate READ get_astrocoordinate CONSTANT)
 	Q_PROPERTY(int astrodistance MEMBER astrodistance READ get_astrodistance NOTIFY astrodistance_changed)
 	Q_PROPERTY(QPointF orbit_position READ get_orbit_position CONSTANT)
-	Q_PROPERTY(metternich::world* orbit_center READ get_orbit_center NOTIFY orbit_center_changed)
+	Q_PROPERTY(metternich::world* orbit_center READ get_orbit_center WRITE set_orbit_center NOTIFY orbit_center_changed)
 	Q_PROPERTY(int distance_from_orbit_center READ get_distance_from_orbit_center WRITE set_distance_from_orbit_center NOTIFY distance_from_orbit_center_changed)
+	Q_PROPERTY(QPointF cosmic_map_pos READ get_cosmic_map_pos CONSTANT)
 	Q_PROPERTY(int cosmic_pixel_size READ get_cosmic_pixel_size CONSTANT)
 	Q_PROPERTY(bool map READ has_map WRITE set_map)
 	Q_PROPERTY(bool star MEMBER star READ is_star)
@@ -45,9 +46,12 @@ public:
 	static constexpr const char *class_identifier = "world";
 	static constexpr const char *database_folder = "worlds";
 	static constexpr int min_cosmic_pixel_size = 32;
-	static constexpr int max_cosmic_pixel_size = 96;
-	static constexpr int max_star_cosmic_pixel_size = 128;
+	static constexpr int max_cosmic_pixel_size = 128;
 	static constexpr int solar_radius = 695700; //in kilometers
+	static constexpr int million_km_per_pixel = 1;
+	static constexpr int min_orbit_distance = 32; //minimum distance between an orbit and the next one in the system
+	static constexpr int max_orbit_distance = 64; //maximum distance between an orbit and the next one in the system
+	static constexpr int astrodistance_multiplier = 4;
 
 	static const std::vector<world *> &get_map_worlds()
 	{
@@ -101,6 +105,25 @@ public:
 		return this->orbit_center;
 	}
 
+	void set_orbit_center(world *world)
+	{
+		if (world == this->get_orbit_center()) {
+			return;
+		}
+
+		if (this->get_orbit_center() != nullptr) {
+			this->get_orbit_center()->remove_satellite(this);
+		}
+
+		this->orbit_center = world;
+
+		if (this->get_orbit_center() != nullptr) {
+			this->get_orbit_center()->add_satellite(this);
+		}
+
+		emit orbit_center_changed();
+	}
+
 	bool is_any_orbit_center_of(const world *other_world) const
 	{
 		if (other_world->get_orbit_center() == nullptr) {
@@ -114,15 +137,12 @@ public:
 		return this->is_any_orbit_center_of(other_world->get_orbit_center());
 	}
 
-	const world *get_top_system_world() const
+	void add_satellite(world *satellite)
 	{
-		//get the world itself if it does not orbit anything other than the star system's center, or its orbit center's top system world otherwise
-		if (this->get_orbit_center() != nullptr) {
-			return this->get_orbit_center()->get_top_system_world();
-		}
-
-		return this;
+		this->satellites.push_back(satellite);
 	}
+
+	void remove_satellite(world *satellite);
 
 	int get_distance_from_orbit_center() const
 	{
@@ -192,9 +212,23 @@ public:
 		return this->get_radius() * 2;
 	}
 
+	QPointF get_cosmic_map_pos() const;
+
 	int get_cosmic_pixel_size() const
 	{
 		return this->cosmic_pixel_size;
+	}
+
+	int get_cosmic_pixel_size_with_satellites() const
+	{
+		int cosmic_pixel_size = this->get_cosmic_pixel_size();
+
+		if (!this->satellites.empty()) {
+			const world *last_satellite = this->satellites.back();
+			cosmic_pixel_size += last_satellite->get_distance_from_orbit_center() + (last_satellite->get_cosmic_pixel_size() / 2);
+		}
+
+		return cosmic_pixel_size;
 	}
 
 	void calculate_cosmic_pixel_size();
@@ -360,6 +394,7 @@ private:
 	bool ethereal = false; //whether the world is an ethereal one (i.e. Asgard)
 	int surface_area = 0; //the world's surface area, in square kilometers
 	int radius = 0; //the world's radius, in kilometers
+	std::vector<world *> satellites;
 	std::set<province *> provinces;
 	std::set<trade_node *> trade_nodes; //the trade nodes in the world
 	std::set<trade_node *> active_trade_nodes; //the active trade nodes in the world
