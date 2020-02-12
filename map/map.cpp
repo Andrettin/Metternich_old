@@ -7,8 +7,8 @@
 #include "map/terrain_type.h"
 #include "map/world.h"
 #include "util/filesystem_util.h"
+#include "util/geocoordinate_util.h"
 #include "util/image_util.h"
-#include "util/location_util.h"
 #include "util/point_util.h"
 #include "util/vector_util.h"
 

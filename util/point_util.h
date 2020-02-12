@@ -79,6 +79,20 @@ inline QPoint get_best_intermediate_point(const QPoint &point, const QPoint &tar
 	return best_intermediate_point;
 }
 
+inline QPointF get_circle_point(const QPointF &point, const double source_radius, const double target_radius)
+{
+	const double x = point.x() * target_radius / source_radius;
+	const double y = point.y() * target_radius / source_radius;
+	return QPointF(x, y);
+}
+
+inline QPointF get_nearest_circle_edge_point(const QPointF &point, const double radius)
+{
+	const double x = radius * point.x() / sqrt(pow(point.x(), 2) + pow(point.y(), 2));
+	const double y = radius * point.y() / sqrt(pow(point.x(), 2) + pow(point.y(), 2));
+	return QPointF(x, y);
+}
+
 inline QGeoCoordinate to_geocoordinate(const QPoint &point, const QSize &area_size)
 {
 	const double lon = (point.x() - (area_size.width() / 2)) * 180.0 / (area_size.width() / 2);

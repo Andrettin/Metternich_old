@@ -35,7 +35,7 @@
 #include "technology/technology.h"
 #include "translator.h"
 #include "util/container_util.h"
-#include "util/location_util.h"
+#include "util/geocoordinate_util.h"
 #include "util/point_util.h"
 #include "util/rect_util.h"
 

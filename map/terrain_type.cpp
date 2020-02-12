@@ -3,7 +3,7 @@
 #include "database/gsml_data.h"
 #include "engine_interface.h"
 #include "script/modifier.h"
-#include "util/location_util.h"
+#include "util/geocoordinate_util.h"
 #include "util/point_util.h"
 
 namespace metternich {

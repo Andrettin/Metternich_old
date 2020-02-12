@@ -35,6 +35,13 @@ inline QPoint to_point(const QGeoCoordinate &coordinate, const double lon_per_pi
 	return QPoint(x, y);
 }
 
+inline QPointF to_circle_point(const QGeoCoordinate &coordinate)
+{
+	return QPointF(coordinate.longitude(), coordinate.latitude() * 2);
+}
+
+extern QPointF to_circle_edge_point(const QGeoCoordinate &coordinate);
+
 /**
 **	@brief	Get whether a coordinate is in a georectangle (presuming the rectangle is valid)
 **

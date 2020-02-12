@@ -82,6 +82,7 @@ SOURCES += \
         technology/technology_set.cpp \
         third_party/maskedmousearea/maskedmousearea.cpp \
         translator.cpp \
+        util/geocoordinate_util.cpp \
         util/image_util.cpp \
         util/point_container.cpp
 
@@ -257,8 +258,8 @@ HEADERS += \
     util/container_util.h \
     util/exception_util.h \
     util/filesystem_util.h \
+    util/geocoordinate_util.h \
     util/image_util.h \
-    util/location_util.h \
     util/map_util.h \
     util/number_util.h \
     util/parse_util.h \

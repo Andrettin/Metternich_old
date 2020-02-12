@@ -12,8 +12,8 @@
 #include "map/terrain_type.h"
 #include "random.h"
 #include "util/container_util.h"
+#include "util/geocoordinate_util.h"
 #include "util/image_util.h"
-#include "util/location_util.h"
 #include "util/point_util.h"
 #include "util/vector_util.h"
 
@@ -121,8 +121,13 @@ void world::set_map(const bool map)
 QPointF world::get_cosmic_map_pos() const
 {
 	if (this->get_astrocoordinate().isValid()) {
-		const double x = this->get_astrocoordinate().longitude() * cbrt(this->get_astrodistance()) / 180 * world::astrodistance_multiplier;
-		const double y = this->get_astrocoordinate().latitude() * cbrt(this->get_astrodistance()) / 90 * world::astrodistance_multiplier;
+		if (this->get_astrocoordinate() == QGeoCoordinate(0, 0)) {
+			return QPointF(0, 0);
+		}
+
+		QPointF direction_pos = geocoordinate::to_circle_edge_point(this->get_astrocoordinate());
+		const double x = direction_pos.x() * cbrt(this->get_astrodistance()) * world::astrodistance_multiplier;
+		const double y = direction_pos.y() * cbrt(this->get_astrodistance()) * world::astrodistance_multiplier;
 		QPointF pos(x, y);
 
 		if (this->get_orbit_center() == nullptr || point::distance_to(pos, this->get_orbit_center()->get_cosmic_map_pos()) >= ((this->cosmic_pixel_size / 2) + world::min_orbit_distance)) {
