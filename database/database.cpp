@@ -31,6 +31,7 @@
 #include "map/star_system.h"
 #include "map/terrain_type.h"
 #include "map/world.h"
+#include "map/world_type.h"
 #include "phenotype.h"
 #include "politics/government_type.h"
 #include "politics/government_type_group.h"
@@ -281,6 +282,8 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 			new_property_value = QVariant::fromValue(trait::get(property.get_value()));
 		} else if (property_class_name == "metternich::world*") {
 			new_property_value = QVariant::fromValue(world::get(property.get_value()));
+		} else if (property_class_name == "metternich::world_type*") {
+			new_property_value = QVariant::fromValue(world_type::get(property.get_value()));
 		} else {
 			throw std::runtime_error("Unknown type for object reference property \"" + std::string(property_name) + "\" (\"" + property_class_name + "\").");
 		}

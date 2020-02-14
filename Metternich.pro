@@ -162,6 +162,7 @@ HEADERS += \
     map/star_system.h \
     map/terrain_type.h \
     map/world.h \
+    map/world_type.h \
     pch.h \
     phenotype.h \
     politics/government_type.h \

@@ -10,6 +10,7 @@
 #include "map/province.h"
 #include "map/star_system.h"
 #include "map/terrain_type.h"
+#include "map/world_type.h"
 #include "random.h"
 #include "util/container_util.h"
 #include "util/geocoordinate_util.h"
@@ -126,8 +127,12 @@ QPointF world::get_cosmic_map_pos() const
 		}
 
 		QPointF direction_pos = geocoordinate::to_circle_edge_point(this->get_astrocoordinate());
-		const double x = direction_pos.x() * cbrt(this->get_astrodistance()) * world::astrodistance_multiplier;
-		const double y = direction_pos.y() * cbrt(this->get_astrodistance()) * world::astrodistance_multiplier;
+		double astrodistance = this->get_astrodistance();
+		astrodistance /= 100.;
+		astrodistance = cbrt(astrodistance);
+		astrodistance *= world::astrodistance_multiplier;
+		const double x = direction_pos.x() * astrodistance;
+		const double y = direction_pos.y() * astrodistance;
 		QPointF pos(x, y);
 
 		if (this->get_orbit_center() == nullptr || point::distance_to(pos, this->get_orbit_center()->get_cosmic_map_pos()) >= ((this->cosmic_pixel_size / 2) + world::min_orbit_distance)) {
@@ -150,7 +155,7 @@ void world::calculate_cosmic_pixel_size()
 
 	this->cosmic_pixel_size = this->get_diameter() * world::million_km_per_pixel / 1000;
 
-	if (this->cosmic_pixel_size == 0 && this->is_star()) {
+	if (this->cosmic_pixel_size == 0 && this->get_type()->is_star()) {
 		this->cosmic_pixel_size = world::default_star_pixel_size;
 	}
 

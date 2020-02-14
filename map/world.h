@@ -18,11 +18,13 @@ class star_system;
 class terrain_type;
 class trade_node;
 class trade_route;
+class world_type;
 
 class world : public data_entry, public data_type<world>
 {
 	Q_OBJECT
 
+	Q_PROPERTY(metternich::world_type* type READ get_type WRITE set_type NOTIFY type_changed)
 	Q_PROPERTY(metternich::star_system* star_system READ get_star_system WRITE set_star_system NOTIFY star_system_changed)
 	Q_PROPERTY(QGeoCoordinate astrocoordinate READ get_astrocoordinate CONSTANT)
 	Q_PROPERTY(int astrodistance MEMBER astrodistance READ get_astrodistance NOTIFY astrodistance_changed)
@@ -33,8 +35,6 @@ class world : public data_entry, public data_type<world>
 	Q_PROPERTY(QPointF cosmic_map_pos READ get_cosmic_map_pos CONSTANT)
 	Q_PROPERTY(int cosmic_pixel_size READ get_cosmic_pixel_size CONSTANT)
 	Q_PROPERTY(bool map READ has_map WRITE set_map)
-	Q_PROPERTY(bool star MEMBER star READ is_star)
-	Q_PROPERTY(bool ethereal MEMBER ethereal READ is_ethereal)
 	Q_PROPERTY(int surface_area MEMBER surface_area READ get_surface_area)
 	Q_PROPERTY(int radius MEMBER radius READ get_radius)
 	Q_PROPERTY(int solar_radius READ get_solar_radius WRITE set_solar_radius)
@@ -54,7 +54,7 @@ public:
 	static constexpr int million_km_per_pixel = 1;
 	static constexpr int min_orbit_distance = 32; //minimum distance between an orbit and the next one in the system
 	static constexpr int max_orbit_distance = 64; //maximum distance between an orbit and the next one in the system
-	static constexpr int astrodistance_multiplier = 256;
+	static constexpr int astrodistance_multiplier = 1024;
 	static constexpr int million_km_per_au = 150;
 
 	static const std::vector<world *> &get_map_worlds()
@@ -81,6 +81,28 @@ public:
 	virtual ~world() override;
 
 	virtual void initialize() override;
+
+	virtual void check() const override
+	{
+		if (this->get_type() == nullptr) {
+			throw std::runtime_error("World \"" + this->get_identifier() + "\" has no type.");
+		}
+	}
+
+	world_type *get_type() const
+	{
+		return this->type;
+	}
+
+	void set_type(world_type *type)
+	{
+		if (type == this->get_type()) {
+			return;
+		}
+
+		this->type = type;
+		emit type_changed();
+	}
 
 	star_system *get_star_system() const
 	{
@@ -179,16 +201,6 @@ public:
 	}
 
 	void set_map(const bool map);
-
-	bool is_star() const
-	{
-		return this->star;
-	}
-
-	bool is_ethereal() const
-	{
-		return this->ethereal;
-	}
 
 	int get_surface_area() const
 	{
@@ -391,12 +403,14 @@ private:
 	void add_province(province *province);
 
 signals:
+	void type_changed();
 	void star_system_changed();
 	void astrodistance_changed();
 	void orbit_center_changed();
 	void distance_from_orbit_center_changed();
 
 private:
+	world_type *type = nullptr;
 	star_system *star_system = nullptr;
 	QGeoCoordinate astrocoordinate;
 	int astrodistance = 0;
@@ -404,8 +418,6 @@ private:
 	world *orbit_center = nullptr; //if none is given, then the center of the star system is assumed
 	int distance_from_orbit_center = 0; //in millions of kilometers
 	bool map = false; //whether the world has a map
-	bool star = false; //whether the world is a star
-	bool ethereal = false; //whether the world is an ethereal one (i.e. Asgard)
 	int surface_area = 0; //the world's surface area, in square kilometers
 	int radius = 0; //the world's radius, in kilometers
 	std::vector<world *> satellites;
