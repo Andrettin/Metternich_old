@@ -37,7 +37,7 @@ inline QPoint to_point(const QGeoCoordinate &coordinate, const double lon_per_pi
 
 inline QPointF to_circle_point(const QGeoCoordinate &coordinate)
 {
-	return QPointF(coordinate.longitude(), coordinate.latitude() * 2);
+	return QPointF(coordinate.longitude(), coordinate.latitude() * 2 * -1);
 }
 
 extern QPointF to_circle_edge_point(const QGeoCoordinate &coordinate);
