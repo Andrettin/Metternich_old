@@ -39,6 +39,7 @@
 #include "politics/law_group.h"
 #include "population/population_type.h"
 #include "qunique_ptr.h"
+#include "random.h"
 #include "religion/religion.h"
 #include "religion/religion_group.h"
 #include "species/species.h"
@@ -47,6 +48,7 @@
 #include "translator.h"
 #include "util/parse_util.h"
 #include "util/string_util.h"
+#include "util/vector_random_util.h"
 
 #include <QMetaProperty>
 #include <QObject>
@@ -381,6 +383,7 @@ void database::load()
 	this->process_icon_paths();
 	this->process_holding_portrait_paths();
 	this->process_flag_paths();
+	this->process_texture_paths();
 
 	//sort the metadata instances so they are placed after their class' dependencies' metadata
 	std::sort(this->metadata.begin(), this->metadata.end(), [](const std::unique_ptr<data_type_metadata> &a, const std::unique_ptr<data_type_metadata> &b) {
@@ -509,14 +512,43 @@ std::vector<std::filesystem::path> database::get_module_paths() const
 	return module_paths;
 }
 
-const std::filesystem::path &database::get_tagged_image_path(const std::map<std::string, std::filesystem::path> &image_paths_by_tag, const std::string &base_tag, const std::vector<std::vector<std::string>> &suffix_list_with_fallbacks, const std::string &final_suffix) const
+void database::process_image_paths_at_dir(const std::filesystem::path &path, std::map<std::string, std::vector<std::filesystem::path>> &image_paths_by_tag)
+{
+	std::filesystem::recursive_directory_iterator dir_iterator(path);
+
+	for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
+		if (!dir_entry.is_regular_file()) {
+			continue;
+		}
+
+		std::string tag = dir_entry.path().stem().string();
+		//if there is a number at the end, remove it, as it was just there to indicate that this is a variation to be randomly-chosen
+		const size_t find_pos = tag.rfind('_');
+		const std::string suffix = tag.substr(find_pos + 1);
+		if (find_pos != std::string::npos && find_pos < tag.size() && string::is_number(suffix)) {
+			const size_t n = std::stoul(suffix);
+			tag = tag.substr(0, find_pos);
+			if (n >= image_paths_by_tag[tag].size()) {
+				image_paths_by_tag[tag].resize(n);
+			}
+			image_paths_by_tag[tag][n - 1] = dir_entry.path();
+			continue;
+		}
+
+		//icon paths processed later (e.g. because they are in modules which depend on other ones) will overwrite those processed before, if they have the same tag/file name
+		image_paths_by_tag[tag].clear();
+		image_paths_by_tag[tag].push_back(dir_entry.path());
+	}
+}
+
+const std::filesystem::path &database::get_tagged_image_path(const std::map<std::string, std::vector<std::filesystem::path>> &image_paths_by_tag, const std::string &base_tag, const std::vector<std::vector<std::string>> &suffix_list_with_fallbacks, const std::string &final_suffix) const
 {
 	std::vector<std::string> suffix_combinations = string::get_suffix_combinations(suffix_list_with_fallbacks);
 
 	for (const std::string &suffix : suffix_combinations) {
 		auto find_iterator = image_paths_by_tag.find(base_tag + suffix + final_suffix);
 		if (find_iterator != image_paths_by_tag.end()) {
-			return find_iterator->second;
+			return vector::get_random(find_iterator->second);
 		}
 	}
 

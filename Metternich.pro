@@ -54,6 +54,7 @@ SOURCES += \
         map/star_system.cpp \
         map/terrain_type.cpp \
         map/world.cpp \
+        map/world_type.cpp \
         politics/government_type.cpp \
         population/population_type.cpp \
         population/population_unit.cpp \

@@ -26,6 +26,7 @@ class world : public data_entry, public data_type<world>
 
 	Q_PROPERTY(metternich::world_type* type READ get_type WRITE set_type NOTIFY type_changed)
 	Q_PROPERTY(metternich::star_system* star_system READ get_star_system WRITE set_star_system NOTIFY star_system_changed)
+	Q_PROPERTY(QString texture_path READ get_texture_path_qstring CONSTANT)
 	Q_PROPERTY(QGeoCoordinate astrocoordinate READ get_astrocoordinate CONSTANT)
 	Q_PROPERTY(int astrodistance MEMBER astrodistance READ get_astrodistance NOTIFY astrodistance_changed)
 	Q_PROPERTY(QPointF orbit_position READ get_orbit_position CONSTANT)
@@ -87,6 +88,8 @@ public:
 		if (this->get_type() == nullptr) {
 			throw std::runtime_error("World \"" + this->get_identifier() + "\" has no type.");
 		}
+
+		this->get_texture_path(); //throws an exception if the texture isn't found
 	}
 
 	world_type *get_type() const
@@ -110,6 +113,13 @@ public:
 	}
 
 	void set_star_system(star_system *system);
+
+	const std::filesystem::path &get_texture_path() const;
+
+	QString get_texture_path_qstring() const
+	{
+		return "file:///" + QString::fromStdString(this->get_texture_path().string());
+	}
 
 	const QGeoCoordinate &get_astrocoordinate() const
 	{

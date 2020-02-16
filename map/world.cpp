@@ -97,6 +97,11 @@ void world::set_star_system(metternich::star_system *system)
 	emit star_system_changed();
 }
 
+const std::filesystem::path &world::get_texture_path() const
+{
+	return this->get_type()->get_texture_path();
+}
+
 void world::remove_satellite(world *satellite)
 {
 	vector::remove(this->satellites, satellite);

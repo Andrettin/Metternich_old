@@ -213,7 +213,7 @@ public:
 
 	void process_icon_paths()
 	{
-		std::vector<std::filesystem::path> icons_paths = this->get_icons_paths();
+		const std::vector<std::filesystem::path> icons_paths = this->get_icons_paths();
 
 		for (const std::filesystem::path &path : icons_paths) {
 			if (!std::filesystem::exists(path)) {
@@ -237,7 +237,7 @@ public:
 
 	void process_holding_portrait_paths()
 	{
-		std::vector<std::filesystem::path> holding_portraits_paths = this->get_holding_portraits_paths();
+		const std::vector<std::filesystem::path> holding_portraits_paths = this->get_holding_portraits_paths();
 
 		for (const std::filesystem::path &path : holding_portraits_paths) {
 			if (!std::filesystem::exists(path)) {
@@ -261,7 +261,7 @@ public:
 
 	void process_flag_paths()
 	{
-		std::vector<std::filesystem::path> flags_paths = this->get_flags_paths();
+		const std::vector<std::filesystem::path> flags_paths = this->get_flags_paths();
 
 		for (const std::filesystem::path &path : flags_paths) {
 			if (!std::filesystem::exists(path)) {
@@ -272,21 +272,33 @@ public:
 		}
 	}
 
-	void process_image_paths_at_dir(const std::filesystem::path &path, std::map<std::string, std::filesystem::path> &image_paths_by_tag)
+	std::vector<std::filesystem::path> get_texture_paths() const
 	{
-		std::filesystem::recursive_directory_iterator dir_iterator(path);
+		std::vector<std::filesystem::path> paths = this->get_graphics_paths();
 
-		for (const std::filesystem::directory_entry &dir_entry : dir_iterator) {
-			if (!dir_entry.is_regular_file()) {
+		for (std::filesystem::path &path : paths) {
+			path /= "textures";
+		}
+
+		return paths;
+	}
+
+	void process_texture_paths()
+	{
+		const std::vector<std::filesystem::path> texture_paths = this->get_texture_paths();
+
+		for (const std::filesystem::path &path : texture_paths) {
+			if (!std::filesystem::exists(path)) {
 				continue;
 			}
 
-			//icon paths processed later (e.g. because they are in modules which depend on other ones) will overwrite those processed before, if they have the same tag/file name
-			image_paths_by_tag[dir_entry.path().stem().string()] = dir_entry.path();
+			this->process_image_paths_at_dir(path, this->texture_paths_by_tag);
 		}
 	}
 
-	const std::filesystem::path &get_tagged_image_path(const std::map<std::string, std::filesystem::path> &image_paths_by_tag, const std::string &base_tag, const std::vector<std::vector<std::string>> &suffix_list_with_fallbacks = {}, const std::string &final_suffix = std::string()) const;
+	void process_image_paths_at_dir(const std::filesystem::path &path, std::map<std::string, std::vector<std::filesystem::path>> &image_paths_by_tag);
+
+	const std::filesystem::path &get_tagged_image_path(const std::map<std::string, std::vector<std::filesystem::path>> &image_paths_by_tag, const std::string &base_tag, const std::vector<std::vector<std::string>> &suffix_list_with_fallbacks = {}, const std::string &final_suffix = std::string()) const;
 
 	const std::filesystem::path &get_tagged_icon_path(const std::string &base_tag, const std::vector<std::vector<std::string>> &suffix_list_with_fallbacks = {}, const std::string &final_suffix = std::string()) const
 	{
@@ -303,13 +315,19 @@ public:
 		return this->get_tagged_image_path(this->flag_paths_by_tag, base_tag, suffix_list_with_fallbacks, final_suffix);
 	}
 
+	const std::filesystem::path &get_tagged_texture_path(const std::string &base_tag, const std::vector<std::vector<std::string>> &suffix_list_with_fallbacks = {}, const std::string &final_suffix = std::string()) const
+	{
+		return this->get_tagged_image_path(this->texture_paths_by_tag, base_tag, suffix_list_with_fallbacks, final_suffix);
+	}
+
 private:
 	std::vector<std::unique_ptr<data_type_metadata>> metadata;
 	std::vector<qunique_ptr<module>> modules;
 	std::map<std::string, module *> modules_by_identifier;
-	std::map<std::string, std::filesystem::path> icon_paths_by_tag;
-	std::map<std::string, std::filesystem::path> holding_portrait_paths_by_tag;
-	std::map<std::string, std::filesystem::path> flag_paths_by_tag;
+	std::map<std::string, std::vector<std::filesystem::path>> icon_paths_by_tag;
+	std::map<std::string, std::vector<std::filesystem::path>> holding_portrait_paths_by_tag;
+	std::map<std::string, std::vector<std::filesystem::path>> flag_paths_by_tag;
+	std::map<std::string, std::vector<std::filesystem::path>> texture_paths_by_tag;
 };
 
 }
