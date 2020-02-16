@@ -31,10 +31,10 @@ class world : public data_entry, public data_type<world>
 	Q_PROPERTY(int astrodistance MEMBER astrodistance READ get_astrodistance NOTIFY astrodistance_changed)
 	Q_PROPERTY(QPointF orbit_position READ get_orbit_position CONSTANT)
 	Q_PROPERTY(metternich::world* orbit_center READ get_orbit_center WRITE set_orbit_center NOTIFY orbit_center_changed)
-	Q_PROPERTY(int distance_from_orbit_center READ get_distance_from_orbit_center WRITE set_distance_from_orbit_center NOTIFY distance_from_orbit_center_changed)
-	Q_PROPERTY(int au_distance_from_orbit_center READ get_au_distance_from_orbit_center WRITE set_au_distance_from_orbit_center NOTIFY distance_from_orbit_center_changed)
+	Q_PROPERTY(double distance_from_orbit_center READ get_distance_from_orbit_center WRITE set_distance_from_orbit_center NOTIFY distance_from_orbit_center_changed)
+	Q_PROPERTY(double au_distance_from_orbit_center READ get_au_distance_from_orbit_center WRITE set_au_distance_from_orbit_center NOTIFY distance_from_orbit_center_changed)
 	Q_PROPERTY(QPointF cosmic_map_pos READ get_cosmic_map_pos CONSTANT)
-	Q_PROPERTY(int cosmic_pixel_size READ get_cosmic_pixel_size CONSTANT)
+	Q_PROPERTY(double cosmic_size READ get_cosmic_size CONSTANT)
 	Q_PROPERTY(bool map READ has_map WRITE set_map)
 	Q_PROPERTY(int surface_area MEMBER surface_area READ get_surface_area)
 	Q_PROPERTY(int radius MEMBER radius READ get_radius)
@@ -47,9 +47,9 @@ class world : public data_entry, public data_type<world>
 public:
 	static constexpr const char *class_identifier = "world";
 	static constexpr const char *database_folder = "worlds";
-	static constexpr int min_cosmic_pixel_size = 32;
-	static constexpr int max_cosmic_pixel_size = 128;
-	static constexpr int default_star_pixel_size = 128;
+	static constexpr double default_moon_size = 16;
+	static constexpr double default_planet_size = 32;
+	static constexpr double default_star_size = 128;
 	static constexpr int solar_radius = 695700; //in kilometers
 	static constexpr int solar_absolute_magnitude = 483; //4.83
 	static constexpr int million_km_per_pixel = 1;
@@ -180,12 +180,12 @@ public:
 
 	void remove_satellite(world *satellite);
 
-	int get_distance_from_orbit_center() const
+	double get_distance_from_orbit_center() const
 	{
 		return this->distance_from_orbit_center;
 	}
 
-	void set_distance_from_orbit_center(const int distance)
+	void set_distance_from_orbit_center(const double distance)
 	{
 		if (distance == this->get_distance_from_orbit_center()) {
 			return;
@@ -195,14 +195,26 @@ public:
 		emit distance_from_orbit_center_changed();
 	}
 
-	int get_au_distance_from_orbit_center() const
+	double get_au_distance_from_orbit_center() const
 	{
 		return this->get_distance_from_orbit_center() / world::million_km_per_au;
 	}
 
-	void set_au_distance_from_orbit_center(const int au_distance)
+	void set_au_distance_from_orbit_center(const double au_distance)
 	{
 		this->set_distance_from_orbit_center(au_distance * world::million_km_per_au);
+	}
+
+	bool is_star() const;
+
+	bool is_planet() const
+	{
+		return this->get_orbit_center() != nullptr && this->get_orbit_center()->is_star();
+	}
+
+	bool is_moon() const
+	{
+		return this->get_orbit_center() != nullptr && !this->get_orbit_center()->is_star();
 	}
 
 	bool has_map() const
@@ -250,24 +262,24 @@ public:
 
 	QPointF get_cosmic_map_pos() const;
 
-	int get_cosmic_pixel_size() const
+	double get_cosmic_size() const
 	{
-		return this->cosmic_pixel_size;
+		return this->cosmic_size;
 	}
 
-	int get_cosmic_pixel_size_with_satellites() const
+	double get_cosmic_size_with_satellites() const
 	{
-		int cosmic_pixel_size = this->get_cosmic_pixel_size();
+		double cosmic_size = this->get_cosmic_size();
 
 		if (!this->satellites.empty()) {
 			const world *last_satellite = this->satellites.back();
-			cosmic_pixel_size += last_satellite->get_distance_from_orbit_center() + (last_satellite->get_cosmic_pixel_size() / 2);
+			cosmic_size += last_satellite->get_distance_from_orbit_center() + (last_satellite->get_cosmic_size() / 2);
 		}
 
-		return cosmic_pixel_size;
+		return cosmic_size;
 	}
 
-	void calculate_cosmic_pixel_size();
+	void calculate_cosmic_size();
 
 	const std::set<province *> &get_provinces() const
 	{
@@ -426,7 +438,7 @@ private:
 	int astrodistance = 0;
 	QPointF orbit_position;
 	world *orbit_center = nullptr; //if none is given, then the center of the star system is assumed
-	int distance_from_orbit_center = 0; //in millions of kilometers
+	double distance_from_orbit_center = 0; //in millions of kilometers
 	bool map = false; //whether the world has a map
 	int surface_area = 0; //the world's surface area, in square kilometers
 	int radius = 0; //the world's radius, in kilometers
@@ -436,7 +448,7 @@ private:
 	std::set<trade_node *> active_trade_nodes; //the active trade nodes in the world
 	std::set<trade_route *> trade_routes; //the trade routes in the world
 	QSize map_pixel_size = QSize(0, 0); //the size of the world's map, in pixels
-	int cosmic_pixel_size = 0; //the size of the world for the cosmic map
+	double cosmic_size = 0; //the size of the world for the cosmic map
 	QImage terrain_image;
 	QImage province_image;
 	std::map<const terrain_type *, std::vector<QGeoPolygon>> terrain_geopolygons;
