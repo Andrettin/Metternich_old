@@ -35,6 +35,7 @@ class world : public data_entry, public data_type<world>
 	Q_PROPERTY(double au_distance_from_orbit_center READ get_au_distance_from_orbit_center WRITE set_au_distance_from_orbit_center NOTIFY distance_from_orbit_center_changed)
 	Q_PROPERTY(QPointF cosmic_map_pos READ get_cosmic_map_pos CONSTANT)
 	Q_PROPERTY(double cosmic_size READ get_cosmic_size CONSTANT)
+	Q_PROPERTY(bool star READ is_star CONSTANT)
 	Q_PROPERTY(bool map READ has_map WRITE set_map)
 	Q_PROPERTY(int surface_area MEMBER surface_area READ get_surface_area)
 	Q_PROPERTY(int radius MEMBER radius READ get_radius)

@@ -67,7 +67,7 @@ void world::initialize()
 		base_distance += satellite->get_cosmic_size_with_satellites() / 2;
 		const double min_distance = base_distance + world::min_orbit_distance;
 		const double max_distance = base_distance + world::max_orbit_distance;
-		double distance = satellite->get_distance_from_orbit_center();
+		double distance = sqrt(satellite->get_distance_from_orbit_center()) * 10;
 		distance = std::max(distance, min_distance);
 		distance = std::min(distance, max_distance);
 		satellite->set_distance_from_orbit_center(distance);
