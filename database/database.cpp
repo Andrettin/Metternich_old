@@ -190,6 +190,16 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 		}
 
 		new_property_value = value;
+	} else if (property_type == QVariant::Double) {
+		double value = std::stod(property.get_value());
+
+		if (property.get_operator() == gsml_operator::addition) {
+			value = object->property(property_name).toDouble() + value;
+		} else if (property.get_operator() == gsml_operator::subtraction) {
+			value = object->property(property_name).toDouble() - value;
+		}
+
+		new_property_value = value;
 	} else if (property_type == QVariant::String) {
 		if (property.get_operator() != gsml_operator::assignment) {
 			throw std::runtime_error("Only the assignment operator is available for string properties.");
