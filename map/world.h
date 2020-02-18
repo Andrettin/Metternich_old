@@ -29,10 +29,11 @@ class world : public data_entry, public data_type<world>
 	Q_PROPERTY(QString texture_path READ get_texture_path_qstring CONSTANT)
 	Q_PROPERTY(QGeoCoordinate astrocoordinate READ get_astrocoordinate CONSTANT)
 	Q_PROPERTY(int astrodistance MEMBER astrodistance READ get_astrodistance NOTIFY astrodistance_changed)
+	Q_PROPERTY(int astrodistance_pc READ get_astrodistance_pc WRITE set_astrodistance_pc NOTIFY astrodistance_changed)
 	Q_PROPERTY(QPointF orbit_position READ get_orbit_position CONSTANT)
 	Q_PROPERTY(metternich::world* orbit_center READ get_orbit_center WRITE set_orbit_center NOTIFY orbit_center_changed)
 	Q_PROPERTY(double distance_from_orbit_center READ get_distance_from_orbit_center WRITE set_distance_from_orbit_center NOTIFY distance_from_orbit_center_changed)
-	Q_PROPERTY(double au_distance_from_orbit_center READ get_au_distance_from_orbit_center WRITE set_au_distance_from_orbit_center NOTIFY distance_from_orbit_center_changed)
+	Q_PROPERTY(double distance_from_orbit_center_au READ get_distance_from_orbit_center_au WRITE set_distance_from_orbit_center_au NOTIFY distance_from_orbit_center_changed)
 	Q_PROPERTY(QPointF cosmic_map_pos READ get_cosmic_map_pos CONSTANT)
 	Q_PROPERTY(double cosmic_size READ get_cosmic_size CONSTANT)
 	Q_PROPERTY(bool star READ is_star CONSTANT)
@@ -54,6 +55,7 @@ public:
 	static constexpr int solar_radius = 695700; //in kilometers
 	static constexpr int solar_absolute_magnitude = 483; //4.83
 	static constexpr int million_km_per_pixel = 1;
+	static constexpr int light_years_per_hundred_parsecs = 326; //1 parsec = 3.26 light years
 	static constexpr int min_orbit_distance = 32; //minimum distance between an orbit and the next one in the system
 	static constexpr int max_orbit_distance = 64; //maximum distance between an orbit and the next one in the system
 	static constexpr int astrodistance_multiplier = 1024;
@@ -132,6 +134,22 @@ public:
 		return this->astrodistance;
 	}
 
+	int get_astrodistance_pc() const
+	{
+		long long int astrodistance = this->get_astrodistance();
+		astrodistance *= 100;
+		astrodistance /= world::light_years_per_hundred_parsecs;
+		return static_cast<int>(astrodistance);
+	}
+
+	void set_astrodistance_pc(const int astrodistance_pc)
+	{
+		long long int astrodistance = astrodistance_pc;
+		astrodistance *= world::light_years_per_hundred_parsecs;
+		astrodistance /= 100;
+		this->astrodistance = static_cast<int>(astrodistance);
+	}
+
 	const QPointF &get_orbit_position() const
 	{
 		return this->orbit_position;
@@ -196,14 +214,14 @@ public:
 		emit distance_from_orbit_center_changed();
 	}
 
-	double get_au_distance_from_orbit_center() const
+	double get_distance_from_orbit_center_au() const
 	{
 		return this->get_distance_from_orbit_center() / world::million_km_per_au;
 	}
 
-	void set_au_distance_from_orbit_center(const double au_distance)
+	void set_distance_from_orbit_center_au(const double distance_au)
 	{
-		this->set_distance_from_orbit_center(au_distance * world::million_km_per_au);
+		this->set_distance_from_orbit_center(distance_au * world::million_km_per_au);
 	}
 
 	bool is_star() const;
