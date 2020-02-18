@@ -40,6 +40,18 @@ void world::initialize()
 
 	this->pathfinder = std::make_unique<metternich::pathfinder>(this->provinces);
 
+	if (this->get_star_system() == nullptr) {
+		const world *orbit_center = this->get_orbit_center();
+		while (orbit_center != nullptr) {
+			if (orbit_center->get_star_system() != nullptr) {
+				this->set_star_system(orbit_center->get_star_system());
+				break;
+			}
+
+			orbit_center = orbit_center->get_orbit_center();
+		}
+	}
+
 	this->orbit_position = random::generate_circle_position();
 	this->calculate_cosmic_size();
 
@@ -50,6 +62,10 @@ void world::initialize()
 	}
 
 	std::sort(this->satellites.begin(), this->satellites.end(), [](const world *a, const world *b) {
+		if (a->get_distance_from_orbit_center() == 0 || b->get_distance_from_orbit_center() == 0) {
+			return a->get_distance_from_orbit_center() != 0; //place satellites without a predefined distance from orbit center last
+		}
+
 		return a->get_distance_from_orbit_center() < b->get_distance_from_orbit_center();
 	});
 

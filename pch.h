@@ -18,6 +18,7 @@
 #include <QMetaProperty>
 #include <QObject>
 #include <QPoint>
+#include <QPolygonF>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QQuickImageProvider>
