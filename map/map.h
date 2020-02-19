@@ -27,6 +27,7 @@ private:
 	static void process_world_geojson_database();
 
 	static constexpr int geocoordinate_precision = 17;
+	static constexpr int cosmic_map_boundary_offset = 128; //the offset from the celestial body at the cosmic map's boundary for determining its bounding rect
 
 public:
 	map();
@@ -46,6 +47,13 @@ public:
 
 	void set_mode(const map_mode mode);
 
+	const QRectF &get_cosmic_map_bounding_rect() const
+	{
+		return this->cosmic_map_bounding_rect;
+	}
+
+	void calculate_cosmic_map_bounding_rect();
+
 private:
 	void load_geojson_files();
 	void process_geojson_data(const QVariantMap &geojson_data);
@@ -63,6 +71,7 @@ private:
 	std::string checksum;
 	world *current_world = nullptr;
 	map_mode mode;
+	QRectF cosmic_map_bounding_rect;
 };
 
 }

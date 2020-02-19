@@ -68,6 +68,11 @@ holding *engine_interface::get_selected_holding() const
 	return holding::get_selected_holding();
 }
 
+const QRectF &engine_interface::get_cosmic_map_bounding_rect() const
+{
+	return map::get()->get_cosmic_map_bounding_rect();
+}
+
 bool engine_interface::is_paused() const
 {
 	return game::get()->is_paused();

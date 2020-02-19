@@ -239,6 +239,24 @@ void map::set_mode(const map_mode mode)
 	emit engine_interface::get()->map_mode_changed();
 }
 
+void map::calculate_cosmic_map_bounding_rect()
+{
+	this->cosmic_map_bounding_rect = QRectF(0, 0, 0, 0);
+
+	for (const world *world : world::get_all()) {
+		if (world->get_orbit_center() != nullptr) {
+			continue;
+		}
+
+		const double size = world->get_cosmic_size_with_satellites();
+		const QPointF pos = world->get_cosmic_map_pos();
+		const QPointF top_left(pos.x() - (size / 2) - map::cosmic_map_boundary_offset, pos.y() - (size / 2) - map::cosmic_map_boundary_offset);
+		const QPointF bottom_right(pos.x() + (size / 2) + map::cosmic_map_boundary_offset, pos.y() + (size / 2) + map::cosmic_map_boundary_offset);
+		const QRectF world_bounding_rect(top_left, bottom_right);
+		this->cosmic_map_bounding_rect = this->cosmic_map_bounding_rect.united(world_bounding_rect);
+	}
+}
+
 /**
 **	@brief	Load GeoJSON files and save their data in GSML files
 */

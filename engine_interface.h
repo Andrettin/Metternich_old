@@ -35,6 +35,7 @@ class engine_interface : public QObject, public singleton<engine_interface>
 	Q_PROPERTY(metternich::province* selected_province READ get_selected_province NOTIFY selected_province_changed)
 	Q_PROPERTY(metternich::holding* selected_holding READ get_selected_holding NOTIFY selected_holding_changed)
 	Q_PROPERTY(metternich::character* selected_character READ get_selected_character WRITE set_selected_character NOTIFY selected_character_changed)
+	Q_PROPERTY(QRectF cosmic_map_bounding_rect READ get_cosmic_map_bounding_rect CONSTANT)
 	Q_PROPERTY(QString loading_message READ get_loading_message NOTIFY loading_message_changed)
 	Q_PROPERTY(bool paused READ is_paused WRITE set_paused NOTIFY paused_changed)
 	Q_PROPERTY(int map_mode READ get_map_mode WRITE set_map_mode NOTIFY map_mode_changed)
@@ -71,6 +72,8 @@ public:
 		this->selected_character = character;
 		emit selected_character_changed();
 	}
+
+	const QRectF &get_cosmic_map_bounding_rect() const;
 
 	const QString &get_loading_message() const
 	{
