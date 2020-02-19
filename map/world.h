@@ -38,6 +38,7 @@ class world : public data_entry, public data_type<world>
 	Q_PROPERTY(double cosmic_size READ get_cosmic_size CONSTANT)
 	Q_PROPERTY(bool star READ is_star CONSTANT)
 	Q_PROPERTY(bool map READ has_map WRITE set_map)
+	Q_PROPERTY(QSize map_size READ get_map_size CONSTANT)
 	Q_PROPERTY(int surface_area MEMBER surface_area READ get_surface_area)
 	Q_PROPERTY(int radius MEMBER radius READ get_radius)
 	Q_PROPERTY(int solar_radius READ get_solar_radius WRITE set_solar_radius)
@@ -243,6 +244,11 @@ public:
 
 	void set_map(const bool map);
 
+	const QSize &get_map_size() const
+	{
+		return this->map_size;
+	}
+
 	int get_surface_area() const
 	{
 		return this->surface_area;
@@ -250,7 +256,7 @@ public:
 
 	int get_area_per_pixel() const
 	{
-		return this->get_surface_area() / this->map_pixel_size.width() / this->map_pixel_size.height();
+		return this->get_surface_area() / this->get_map_size().width() / this->get_map_size().height();
 	}
 
 	int get_radius() const
@@ -348,7 +354,7 @@ public:
 
 	bool is_pos_valid(const QPoint &pos) const
 	{
-		return pos.x() > 0 && pos.y() > 0 && pos.x() < this->map_pixel_size.width() && pos.y() < this->map_pixel_size.height();
+		return pos.x() > 0 && pos.y() > 0 && pos.x() < this->get_map_size().width() && pos.y() < this->get_map_size().height();
 	}
 
 	QPoint get_pixel_pos(const int index) const;
@@ -466,7 +472,7 @@ private:
 	std::set<trade_node *> trade_nodes; //the trade nodes in the world
 	std::set<trade_node *> active_trade_nodes; //the active trade nodes in the world
 	std::set<trade_route *> trade_routes; //the trade routes in the world
-	QSize map_pixel_size = QSize(0, 0); //the size of the world's map, in pixels
+	QSize map_size = QSize(0, 0); //the size of the world's map, in pixels
 	double cosmic_size = 0; //the size of the world for the cosmic map
 	QImage terrain_image;
 	QImage province_image;

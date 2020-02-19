@@ -33,14 +33,30 @@ void star_system::initialize()
 	this->territory_polygon.clear();
 
 	const QPointF center_pos = this->get_primary_star()->get_cosmic_map_pos();
-	for (star_system *adjacent_system : this->adjacent_systems) {
-		if (adjacent_system->get_primary_star() == nullptr) {
-			adjacent_system->calculate_primary_star();
-		}
 
-		const QPointF adjacent_center_pos = adjacent_system->get_primary_star()->get_cosmic_map_pos();
-		const QPointF middle_pos((center_pos.x() + adjacent_center_pos.x()) / 2, (center_pos.y() + adjacent_center_pos.y()) / 2);
-		this->territory_polygon.append(middle_pos);
+	for (star_system *adj_system : this->adjacent_systems) {
+		if (adj_system->get_primary_star() == nullptr) {
+			adj_system->calculate_primary_star();
+		}
+	}
+
+	if (!this->adjacent_systems.empty()) {
+		const star_system *prev_adj_system = this->adjacent_systems.back();
+		QPointF prev_adj_center_pos = prev_adj_system->get_primary_star()->get_cosmic_map_pos();
+		for (const star_system *adj_system : this->adjacent_systems) {
+			const QPointF adj_center_pos = adj_system->get_primary_star()->get_cosmic_map_pos();
+			const QPointF middle_pos((center_pos.x() + adj_center_pos.x()) / 2, (center_pos.y() + adj_center_pos.y()) / 2);
+
+			if (prev_adj_system != nullptr && prev_adj_system != adj_system) {
+				//calculate the middle point between the previous adjacent system, the current one and this system
+				const QPointF adj_middle_pos((center_pos.x() + prev_adj_center_pos.x() + adj_center_pos.x()) / 3, (center_pos.y() + prev_adj_center_pos.y() + adj_center_pos.y()) / 3);
+				this->territory_polygon.append(adj_middle_pos);
+			}
+
+			this->territory_polygon.append(middle_pos);
+			prev_adj_system = adj_system;
+			prev_adj_center_pos = adj_center_pos;
+		}
 	}
 
 	if (this->territory_polygon.size() >= 3) {
