@@ -17,7 +17,6 @@
 #include "holding/holding_slot_type.h"
 #include "holding/holding_type.h"
 #include "landed_title/landed_title.h"
-#include "landed_title/landed_title_tier.h"
 #include "map/map.h"
 #include "map/map_mode.h"
 #include "map/pathfinder.h"

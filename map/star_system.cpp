@@ -1,6 +1,8 @@
 #include "map/star_system.h"
 
+#include "landed_title/landed_title.h"
 #include "map/world.h"
+#include "translator.h"
 #include "util/container_util.h"
 #include "util/vector_util.h"
 
@@ -48,6 +50,26 @@ void star_system::initialize()
 	}
 }
 
+std::string star_system::get_name() const
+{
+	if (this->get_duchy() != nullptr) {
+		return translator::get()->translate(this->get_duchy()->get_identifier_with_aliases());
+	}
+
+	return translator::get()->translate(this->get_identifier_with_aliases()); //star system without a cosmic duchy
+}
+
+void star_system::set_duchy(landed_title *duchy)
+{
+	if (duchy == this->get_duchy()) {
+		return;
+	}
+
+	this->duchy = duchy;
+	duchy->set_star_system(this);
+	emit duchy_changed();
+}
+
 void star_system::calculate_primary_star()
 {
 	this->primary_star = nullptr;
@@ -65,6 +87,15 @@ void star_system::calculate_primary_star()
 	if (this->get_primary_star() == nullptr) {
 		throw std::runtime_error("Star system \"" + this->get_identifier() + "\" has no celestial bodies orbiting no other one, and thus no candidate for primary star.");
 	}
+}
+
+const QColor &star_system::get_color() const
+{
+	if (this->get_duchy() != nullptr) {
+		return this->get_duchy()->get_color();
+	}
+
+	return star_system::empty_system_color;
 }
 
 QVariantList star_system::get_territory_polygon_qvariant_list() const

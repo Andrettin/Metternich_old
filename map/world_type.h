@@ -11,7 +11,6 @@ class world_type : public data_entry, public data_type<world_type>
 
 	Q_PROPERTY(QString texture_tag READ get_texture_tag_qstring WRITE set_texture_tag_qstring)
 	Q_PROPERTY(bool star MEMBER star READ is_star)
-	Q_PROPERTY(bool ethereal MEMBER ethereal READ is_ethereal)
 
 public:
 	static constexpr const char *class_identifier = "world_type";
@@ -56,15 +55,9 @@ public:
 		return this->star;
 	}
 
-	bool is_ethereal() const
-	{
-		return this->ethereal;
-	}
-
 private:
 	std::string texture_tag;
 	bool star = false;
-	bool ethereal = false; //whether the world is an ethereal one (i.e. Asgard)
 };
 
 }

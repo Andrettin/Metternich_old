@@ -19,6 +19,7 @@ class law;
 class law_group;
 class province;
 class religion;
+class star_system;
 enum class landed_title_tier : int;
 
 class landed_title : public data_entry, public data_type<landed_title>
@@ -46,6 +47,11 @@ public:
 	static constexpr const char *duchy_prefix = "d_";
 	static constexpr const char *kingdom_prefix = "k_";
 	static constexpr const char *empire_prefix = "e_";
+	static constexpr const char *cosmic_barony_prefix = "cb_";
+	static constexpr const char *cosmic_county_prefix = "cc_";
+	static constexpr const char *cosmic_duchy_prefix = "cd_";
+	static constexpr const char *cosmic_kingdom_prefix = "ck_";
+	static constexpr const char *cosmic_empire_prefix = "ce_";
 
 	//string identifiers for landed title tiers
 	static constexpr const char *barony_identifier = "barony";
@@ -53,6 +59,11 @@ public:
 	static constexpr const char *duchy_identifier = "duchy";
 	static constexpr const char *kingdom_identifier = "kingdom";
 	static constexpr const char *empire_identifier = "empire";
+	static constexpr const char *cosmic_barony_identifier = "cosmic_barony";
+	static constexpr const char *cosmic_county_identifier = "cosmic_county";
+	static constexpr const char *cosmic_duchy_identifier = "cosmic_duchy";
+	static constexpr const char *cosmic_kingdom_identifier = "cosmic_kingdom";
+	static constexpr const char *cosmic_empire_identifier = "cosmic_empire";
 
 	//string identifiers for landed title tier holder title names
 	static constexpr const char *baron_identifier = "baron";
@@ -60,6 +71,11 @@ public:
 	static constexpr const char *duke_identifier = "duke";
 	static constexpr const char *king_identifier = "king";
 	static constexpr const char *emperor_identifier = "emperor";
+	static constexpr const char *cosmic_baron_identifier = "cosmic_baron";
+	static constexpr const char *cosmic_count_identifier = "cosmic_count";
+	static constexpr const char *cosmic_duke_identifier = "cosmic_duke";
+	static constexpr const char *cosmic_king_identifier = "cosmic_king";
+	static constexpr const char *cosmic_emperor_identifier = "cosmic_emperor";
 
 	static landed_title *add(const std::string &identifier);
 
@@ -129,6 +145,20 @@ public:
 		this->capital_province = province;
 	}
 
+	metternich::star_system *get_star_system() const
+	{
+		return this->star_system;
+	}
+
+	void set_star_system(star_system *system)
+	{
+		if (system == this->get_star_system()) {
+			return;
+		}
+
+		this->star_system = system;
+	}
+
 	landed_title *get_realm() const;
 	landed_title *get_liege_title() const;
 
@@ -168,7 +198,7 @@ public:
 	bool is_titular() const
 	{
 		//a title is not titular if it has de jure vassals, or if it is a county belonging to a province, or a barony belonging to a holding
-		return this->get_de_jure_vassal_titles().empty() && this->get_province() == nullptr && this->get_holding_slot() == nullptr;
+		return this->get_de_jure_vassal_titles().empty() && this->get_province() == nullptr && this->get_holding_slot() == nullptr && this->get_star_system() == nullptr;
 	}
 
 	bool is_primary() const;
@@ -263,6 +293,7 @@ private:
 	character *holder = nullptr;
 	metternich::holding_slot *holding_slot = nullptr; //the title's holding slot, if it is a non-titular barony
 	metternich::province *province = nullptr; //the title's province, if it is a non-titular county
+	metternich::star_system *star_system = nullptr; //the title's star system, if it is a non-titular cosmic duchy
 	landed_title *de_jure_liege_title = nullptr;
 	std::vector<landed_title *> de_jure_vassal_titles;
 	metternich::province *capital_province = nullptr;
