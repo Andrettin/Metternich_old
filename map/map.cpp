@@ -4,6 +4,7 @@
 #include "holding/holding_slot.h"
 #include "map/map_mode.h"
 #include "map/province.h"
+#include "map/star_system.h"
 #include "map/terrain_type.h"
 #include "map/world.h"
 #include "util/filesystem_util.h"
@@ -145,10 +146,16 @@ void map::load()
 		std::filesystem::path cache_path = database::get_cache_path();
 		std::filesystem::remove_all(cache_path);
 		std::filesystem::create_directories(cache_path);
+	}
+
+	if (!cache_valid) {
+		for (world *world : world::get_map_worlds()) {
+			//load map data for provinces
+			world->process_province_map_database();
+		}
 
 		for (world *world : world::get_map_worlds()) {
-			//load map data for terrain types and provinces
-			world->process_province_map_database();
+			//load map data
 			world->process_data_type_map_geojson_database<holding_slot>();
 			world->process_terrain_map_database();
 			world->process_data_type_map_geojson_database<path>();
@@ -254,6 +261,11 @@ void map::calculate_cosmic_map_bounding_rect()
 		const QPointF bottom_right(pos.x() + (size / 2) + map::cosmic_map_boundary_offset, pos.y() + (size / 2) + map::cosmic_map_boundary_offset);
 		const QRectF world_bounding_rect(top_left, bottom_right);
 		this->cosmic_map_bounding_rect = this->cosmic_map_bounding_rect.united(world_bounding_rect);
+	}
+
+	//calculate territory polygons for star systems, as those depend on the cosmic bounding rect
+	for (star_system *system : star_system::get_all()) {
+		system->calculate_territory_polygon();
 	}
 }
 

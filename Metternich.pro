@@ -154,6 +154,7 @@ HEADERS += \
     landed_title/landed_title.h \
     landed_title/landed_title_tier.h \
     map/map.h \
+    map/map_edge.h \
     map/map_mode.h \
     map/pathfinder.h \
     map/province.h \

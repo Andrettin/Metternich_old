@@ -9,6 +9,7 @@ namespace metternich {
 
 class landed_title;
 class world;
+enum class map_edge;
 
 class star_system : public data_entry, public data_type<star_system>
 {
@@ -17,9 +18,10 @@ class star_system : public data_entry, public data_type<star_system>
 	Q_PROPERTY(metternich::landed_title* duchy READ get_duchy WRITE set_duchy NOTIFY duchy_changed)
 	Q_PROPERTY(metternich::world* primary_star READ get_primary_star CONSTANT)
 	Q_PROPERTY(QColor color READ get_color NOTIFY color_changed)
+	Q_PROPERTY(QVariantList worlds READ get_worlds_qvariant_list CONSTANT)
+	Q_PROPERTY(metternich::map_edge map_edge MEMBER map_edge READ get_map_edge)
 	Q_PROPERTY(QVariantList territory_polygon READ get_territory_polygon_qvariant_list CONSTANT)
 	Q_PROPERTY(QRectF territory_bounding_rect READ get_territory_bounding_rect CONSTANT)
-	Q_PROPERTY(QVariantList worlds READ get_worlds_qvariant_list CONSTANT)
 	Q_PROPERTY(bool ethereal MEMBER ethereal READ is_ethereal NOTIFY ethereal_changed)
 
 public:
@@ -27,9 +29,7 @@ public:
 	static constexpr const char *database_folder = "star_systems";
 	static const inline QColor empty_system_color = QColor("#f5f5dc");
 
-	star_system(const std::string &identifier) : data_entry(identifier)
-	{
-	}
+	star_system(const std::string &identifier);
 
 	virtual void process_gsml_scope(const gsml_data &scope) override;
 	virtual void initialize() override;
@@ -59,6 +59,8 @@ public:
 		return this->territory_polygon.boundingRect();
 	}
 
+	void calculate_territory_polygon();
+
 	const std::vector<world *> &get_worlds() const
 	{
 		return this->worlds;
@@ -72,6 +74,11 @@ public:
 	}
 
 	void remove_world(world *world);
+
+	map_edge get_map_edge() const
+	{
+		return this->map_edge;
+	}
 
 	bool is_ethereal() const
 	{
@@ -87,6 +94,7 @@ private:
 	landed_title *duchy = nullptr; //the star system's corresponding cosmic duchy
 	world *primary_star = nullptr;
 	std::vector<world *> worlds;
+	map_edge map_edge;
 	std::vector<star_system *> adjacent_systems;
 	QPolygonF territory_polygon;
 	bool ethereal = false; //whether the star system is an ethereal one (i.e. Asgard's system); ethereal systems can only be entered by ethereal beings, who cannot enter non-ethereal systems, either; these impediments could be surpassed by technological or magical developments

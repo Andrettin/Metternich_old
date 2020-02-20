@@ -1,12 +1,18 @@
 #include "map/star_system.h"
 
 #include "landed_title/landed_title.h"
+#include "map/map.h"
+#include "map/map_edge.h"
 #include "map/world.h"
 #include "translator.h"
 #include "util/container_util.h"
 #include "util/vector_util.h"
 
 namespace metternich {
+
+star_system::star_system(const std::string &identifier) : data_entry(identifier), map_edge(map_edge::none)
+{
+}
 
 void star_system::process_gsml_scope(const gsml_data &scope)
 {
@@ -27,42 +33,6 @@ void star_system::initialize()
 {
 	if (this->get_primary_star() == nullptr) {
 		this->calculate_primary_star();
-	}
-
-	//create a polygon representing the star system's territory, using the middle points between this system's primary star and the primary stars of adjacent systems to build the polygon
-	this->territory_polygon.clear();
-
-	const QPointF center_pos = this->get_primary_star()->get_cosmic_map_pos();
-
-	for (star_system *adj_system : this->adjacent_systems) {
-		if (adj_system->get_primary_star() == nullptr) {
-			adj_system->calculate_primary_star();
-		}
-	}
-
-	if (!this->adjacent_systems.empty()) {
-		const star_system *prev_adj_system = this->adjacent_systems.back();
-		QPointF prev_adj_center_pos = prev_adj_system->get_primary_star()->get_cosmic_map_pos();
-		for (const star_system *adj_system : this->adjacent_systems) {
-			const QPointF adj_center_pos = adj_system->get_primary_star()->get_cosmic_map_pos();
-			const QPointF middle_pos((center_pos.x() + adj_center_pos.x()) / 2, (center_pos.y() + adj_center_pos.y()) / 2);
-
-			if (prev_adj_system != nullptr && prev_adj_system != adj_system) {
-				//calculate the middle point between the previous adjacent system, the current one and this system
-				const QPointF adj_middle_pos((center_pos.x() + prev_adj_center_pos.x() + adj_center_pos.x()) / 3, (center_pos.y() + prev_adj_center_pos.y() + adj_center_pos.y()) / 3);
-				this->territory_polygon.append(adj_middle_pos);
-			}
-
-			this->territory_polygon.append(middle_pos);
-			prev_adj_system = adj_system;
-			prev_adj_center_pos = adj_center_pos;
-		}
-	}
-
-	if (this->territory_polygon.size() >= 3) {
-		this->territory_polygon.append(this->territory_polygon.front()); //close the polyon
-	} else {
-		this->territory_polygon.clear(); //must have at least three points to form the territory polygon
 	}
 }
 
@@ -125,6 +95,83 @@ QVariantList star_system::get_territory_polygon_qvariant_list() const
 	}
 
 	return polygon_qvariant_list;
+}
+
+void star_system::calculate_territory_polygon()
+{
+	//create a polygon representing the star system's territory, using the middle points between this system's primary star and the primary stars of adjacent systems to build the polygon
+	this->territory_polygon.clear();
+
+	if (this->adjacent_systems.empty()) {
+		return;
+	}
+
+	const QPointF center_pos = this->get_primary_star()->get_cosmic_map_pos();
+
+	const star_system *prev_adj_system = this->adjacent_systems.back();
+	QPointF prev_adj_center_pos = prev_adj_system->get_primary_star()->get_cosmic_map_pos();
+	QPointF prev_middle_pos((center_pos.x() + prev_adj_center_pos.x()) / 2, (center_pos.y() + prev_adj_center_pos.y()) / 2);
+	for (const star_system *adj_system : this->adjacent_systems) {
+		const QPointF adj_center_pos = adj_system->get_primary_star()->get_cosmic_map_pos();
+		const QPointF middle_pos((center_pos.x() + adj_center_pos.x()) / 2, (center_pos.y() + adj_center_pos.y()) / 2);
+
+		if (this->get_map_edge() != map_edge::none && adj_system->get_map_edge() != map_edge::none && prev_adj_system->get_map_edge() != map_edge::none) {
+			QPointF prev_edge_middle_pos;
+			if (is_north_map_edge(prev_adj_system->get_map_edge())) {
+				prev_edge_middle_pos = QPointF(prev_middle_pos.x(), map::get()->get_cosmic_map_bounding_rect().top());
+			} else if (is_south_map_edge(prev_adj_system->get_map_edge())) {
+				prev_edge_middle_pos = QPointF(prev_middle_pos.x(), map::get()->get_cosmic_map_bounding_rect().bottom());
+			} else if (is_west_map_edge(prev_adj_system->get_map_edge())) {
+				prev_edge_middle_pos = QPointF(map::get()->get_cosmic_map_bounding_rect().left(), prev_middle_pos.y());
+			} else if (is_east_map_edge(prev_adj_system->get_map_edge())) {
+				prev_edge_middle_pos = QPointF(map::get()->get_cosmic_map_bounding_rect().right(), prev_middle_pos.y());
+			}
+			this->territory_polygon.append(prev_edge_middle_pos);
+
+			if (is_diagonal_map_edge(this->get_map_edge())) {
+				QPointF diagonal_edge_pos;
+				if (this->get_map_edge() == map_edge::northwest) {
+					diagonal_edge_pos = QPointF(map::get()->get_cosmic_map_bounding_rect().left(), map::get()->get_cosmic_map_bounding_rect().top());
+				} else if (this->get_map_edge() == map_edge::northeast) {
+					diagonal_edge_pos = QPointF(map::get()->get_cosmic_map_bounding_rect().right(), map::get()->get_cosmic_map_bounding_rect().top());
+				} else if (this->get_map_edge() == map_edge::southwest) {
+					diagonal_edge_pos = QPointF(map::get()->get_cosmic_map_bounding_rect().left(), map::get()->get_cosmic_map_bounding_rect().bottom());
+				} else if (this->get_map_edge() == map_edge::southeast) {
+					diagonal_edge_pos = QPointF(map::get()->get_cosmic_map_bounding_rect().right(), map::get()->get_cosmic_map_bounding_rect().bottom());
+				}
+				this->territory_polygon.append(diagonal_edge_pos);
+			}
+
+			QPointF edge_middle_pos;
+			if (is_north_map_edge(adj_system->get_map_edge())) {
+				edge_middle_pos = QPointF(middle_pos.x(), map::get()->get_cosmic_map_bounding_rect().top());
+			} else if (is_south_map_edge(adj_system->get_map_edge())) {
+				edge_middle_pos = QPointF(middle_pos.x(), map::get()->get_cosmic_map_bounding_rect().bottom());
+			} else if (is_west_map_edge(adj_system->get_map_edge())) {
+				edge_middle_pos = QPointF(map::get()->get_cosmic_map_bounding_rect().left(), middle_pos.y());
+			} else if (is_east_map_edge(adj_system->get_map_edge())) {
+				edge_middle_pos = QPointF(map::get()->get_cosmic_map_bounding_rect().right(), middle_pos.y());
+			}
+			this->territory_polygon.append(edge_middle_pos);
+
+		} else {
+			//calculate the middle point between the previous adjacent system, the current one and this system
+			const QPointF adj_middle_pos((center_pos.x() + prev_adj_center_pos.x() + adj_center_pos.x()) / 3, (center_pos.y() + prev_adj_center_pos.y() + adj_center_pos.y()) / 3);
+			this->territory_polygon.append(adj_middle_pos);
+		}
+
+		this->territory_polygon.append(middle_pos);
+
+		prev_adj_system = adj_system;
+		prev_adj_center_pos = adj_center_pos;
+		prev_middle_pos = middle_pos;
+	}
+
+	if (this->territory_polygon.size() >= 3) {
+		this->territory_polygon.append(this->territory_polygon.front()); //close the polyon
+	} else {
+		this->territory_polygon.clear(); //must have at least three points to form the territory polygon
+	}
 }
 
 QVariantList star_system::get_worlds_qvariant_list() const
