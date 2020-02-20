@@ -25,6 +25,7 @@
 #include "holding/holding_slot_type.h"
 #include "holding/holding_type.h"
 #include "landed_title/landed_title.h"
+#include "map/map_edge.h"
 #include "map/province.h"
 #include "map/province_profile.h"
 #include "map/region.h"
@@ -262,6 +263,8 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 			new_property_value = QVariant::fromValue(landed_title::get(property.get_value()));
 		} else if (property_class_name == "metternich::law*") {
 			new_property_value = QVariant::fromValue(law::get(property.get_value()));
+		} else if (property_class_name == "metternich::map_edge") {
+			new_property_value = QVariant::fromValue(string_to_map_edge(property.get_value()));
 		} else if (property_class_name == "metternich::module*") {
 			new_property_value = QVariant::fromValue(database::get()->get_module(property.get_value()));
 		} else if (property_class_name == "metternich::phenotype*") {
