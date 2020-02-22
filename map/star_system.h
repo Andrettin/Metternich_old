@@ -27,7 +27,11 @@ class star_system : public data_entry, public data_type<star_system>
 public:
 	static constexpr const char *class_identifier = "star_system";
 	static constexpr const char *database_folder = "star_systems";
-	static const inline QColor empty_system_color = QColor("#f5f5dc");
+	static inline const QColor empty_color = QColor("#f5f5dc");
+	static constexpr int max_bounding_rect_offset = 1024; //the offset for the maximum size the width or height of a system's bounding rect can have
+	static constexpr double territory_radius_growth = 1.; //the growth for the territory polygon in a given direction during a single loop
+
+	static void calculate_territory_polygons();
 
 	star_system(const std::string &identifier);
 
@@ -59,7 +63,8 @@ public:
 		return this->territory_polygon.boundingRect();
 	}
 
-	void calculate_territory_polygon();
+	void calculate_initial_territory_polygon();
+	bool grow_territory_polygon();
 
 	const std::vector<world *> &get_worlds() const
 	{
@@ -94,8 +99,10 @@ private:
 	landed_title *duchy = nullptr; //the star system's corresponding cosmic duchy
 	world *primary_star = nullptr;
 	std::vector<world *> worlds;
+	double max_bounding_size = 0; //the maximum size the width or height the system's bounding rect can have
 	map_edge map_edge;
 	std::vector<star_system *> adjacent_systems;
+	std::set<const star_system *> nearby_systems;
 	QPolygonF territory_polygon;
 	bool ethereal = false; //whether the star system is an ethereal one (i.e. Asgard's system); ethereal systems can only be entered by ethereal beings, who cannot enter non-ethereal systems, either; these impediments could be surpassed by technological or magical developments
 };

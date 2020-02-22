@@ -61,13 +61,14 @@ void world::initialize()
 		}
 	}
 
-	std::sort(this->satellites.begin(), this->satellites.end(), [](const world *a, const world *b) {
+	const auto satellite_sort_func = [](const world *a, const world *b) {
 		if (a->get_distance_from_orbit_center() == 0 || b->get_distance_from_orbit_center() == 0) {
 			return a->get_distance_from_orbit_center() != 0; //place satellites without a predefined distance from orbit center last
 		}
 
 		return a->get_distance_from_orbit_center() < b->get_distance_from_orbit_center();
-	});
+	};
+	std::sort(this->satellites.begin(), this->satellites.end(), satellite_sort_func);
 
 	//update the satellite distances from this world so that orbits are within a minimum and maximum distance of each other
 	const world *previous_satellite = nullptr;
@@ -90,6 +91,8 @@ void world::initialize()
 
 		previous_satellite = satellite;
 	}
+
+	std::sort(this->satellites.begin(), this->satellites.end(), satellite_sort_func);
 
 	data_entry_base::initialize();
 }

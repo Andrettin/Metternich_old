@@ -1,14 +1,51 @@
 #include "map/star_system.h"
 
+#include "engine_interface.h"
 #include "landed_title/landed_title.h"
 #include "map/map.h"
 #include "map/map_edge.h"
 #include "map/world.h"
 #include "translator.h"
 #include "util/container_util.h"
+#include "util/point_util.h"
+#include "util/polygon_util.h"
 #include "util/vector_util.h"
 
 namespace metternich {
+
+void star_system::calculate_territory_polygons()
+{
+	std::vector<star_system *> systems = star_system::get_all();
+
+	if (systems.empty()) {
+		return;
+	}
+
+	engine_interface::get()->set_loading_message("Calculating Star System Territories... (0%)");
+
+	for (star_system *system : systems) {
+		system->calculate_initial_territory_polygon();
+	}
+
+	const size_t total_system_count = systems.size();
+	std::vector<star_system *> grown_systems;
+	while (!systems.empty()) {
+		for (star_system *system : systems) {
+			const bool grew = system->grow_territory_polygon();
+			if (grew) {
+				grown_systems.push_back(system);
+			}
+		}
+
+		if (grown_systems.size() != systems.size()) {
+			engine_interface::get()->set_loading_message("Calculating Star System Territories... (" + QString::number((total_system_count - grown_systems.size()) * 100 / total_system_count) + "%)");
+
+			systems = grown_systems;
+		}
+
+		grown_systems.clear();
+	}
+}
 
 star_system::star_system(const std::string &identifier) : data_entry(identifier), map_edge(map_edge::none)
 {
@@ -81,7 +118,7 @@ const QColor &star_system::get_color() const
 		return this->get_duchy()->get_color();
 	}
 
-	return star_system::empty_system_color;
+	return star_system::empty_color;
 }
 
 QVariantList star_system::get_territory_polygon_qvariant_list() const
@@ -97,81 +134,85 @@ QVariantList star_system::get_territory_polygon_qvariant_list() const
 	return polygon_qvariant_list;
 }
 
-void star_system::calculate_territory_polygon()
+void star_system::calculate_initial_territory_polygon()
 {
 	//create a polygon representing the star system's territory, using the middle points between this system's primary star and the primary stars of adjacent systems to build the polygon
-	this->territory_polygon.clear();
 
-	if (this->adjacent_systems.empty()) {
-		return;
+	const double radius = (this->get_primary_star()->get_cosmic_size_with_satellites() / 2) + 32;
+	const QPointF center_pos = this->get_primary_star()->get_cosmic_map_pos();
+	this->territory_polygon = polygon::from_radius(radius, center_pos);
+	this->max_bounding_size = this->territory_polygon.boundingRect().width() + star_system::max_bounding_rect_offset;
+
+	//calculate the nearby systems, for subsequent polygon growth calculation
+
+	//the maximum distance to another system to consider it a nearby one
+	const double max_nearby_distance = this->max_bounding_size;
+
+	for (star_system *system : star_system::get_all()) {
+		if (system == this) {
+			continue;
+		}
+
+		const QPointF other_center_pos = system->get_primary_star()->get_cosmic_map_pos();
+		const double distance = point::distance_to(center_pos, other_center_pos);
+
+		if (distance > max_nearby_distance) {
+			continue;
+		}
+
+		this->nearby_systems.insert(system);
+		system->nearby_systems.insert(this);
+	}
+}
+
+bool star_system::grow_territory_polygon()
+{
+	//return true if the polygon has grown, or false otherwise
+
+	const int old_area = static_cast<int>(std::round(polygon::get_area(this->territory_polygon)));
+	const QRectF old_bounding_rect = this->territory_polygon.boundingRect();
+
+	if (old_bounding_rect.width() >= this->max_bounding_size || old_bounding_rect.height() >= this->max_bounding_size) {
+		return false;
 	}
 
 	const QPointF center_pos = this->get_primary_star()->get_cosmic_map_pos();
+	const double max_distance_from_center = this->max_bounding_size / 2;
+	QPolygonF new_polygon;
+	for (const QPointF &point : this->territory_polygon) {
+		const double radius = point::distance_to(point, center_pos);
+		const double new_radius = radius + star_system::territory_radius_growth;
 
-	const star_system *prev_adj_system = this->adjacent_systems.back();
-	QPointF prev_adj_center_pos = prev_adj_system->get_primary_star()->get_cosmic_map_pos();
-	QPointF prev_middle_pos((center_pos.x() + prev_adj_center_pos.x()) / 2, (center_pos.y() + prev_adj_center_pos.y()) / 2);
-	for (const star_system *adj_system : this->adjacent_systems) {
-		const QPointF adj_center_pos = adj_system->get_primary_star()->get_cosmic_map_pos();
-		const QPointF middle_pos((center_pos.x() + adj_center_pos.x()) / 2, (center_pos.y() + adj_center_pos.y()) / 2);
-
-		if (this->get_map_edge() != map_edge::none && adj_system->get_map_edge() != map_edge::none && prev_adj_system->get_map_edge() != map_edge::none) {
-			QPointF prev_edge_middle_pos;
-			if (is_north_map_edge(prev_adj_system->get_map_edge())) {
-				prev_edge_middle_pos = QPointF(prev_middle_pos.x(), map::get()->get_cosmic_map_bounding_rect().top());
-			} else if (is_south_map_edge(prev_adj_system->get_map_edge())) {
-				prev_edge_middle_pos = QPointF(prev_middle_pos.x(), map::get()->get_cosmic_map_bounding_rect().bottom());
-			} else if (is_west_map_edge(prev_adj_system->get_map_edge())) {
-				prev_edge_middle_pos = QPointF(map::get()->get_cosmic_map_bounding_rect().left(), prev_middle_pos.y());
-			} else if (is_east_map_edge(prev_adj_system->get_map_edge())) {
-				prev_edge_middle_pos = QPointF(map::get()->get_cosmic_map_bounding_rect().right(), prev_middle_pos.y());
-			}
-			this->territory_polygon.append(prev_edge_middle_pos);
-
-			if (is_diagonal_map_edge(this->get_map_edge())) {
-				QPointF diagonal_edge_pos;
-				if (this->get_map_edge() == map_edge::northwest) {
-					diagonal_edge_pos = QPointF(map::get()->get_cosmic_map_bounding_rect().left(), map::get()->get_cosmic_map_bounding_rect().top());
-				} else if (this->get_map_edge() == map_edge::northeast) {
-					diagonal_edge_pos = QPointF(map::get()->get_cosmic_map_bounding_rect().right(), map::get()->get_cosmic_map_bounding_rect().top());
-				} else if (this->get_map_edge() == map_edge::southwest) {
-					diagonal_edge_pos = QPointF(map::get()->get_cosmic_map_bounding_rect().left(), map::get()->get_cosmic_map_bounding_rect().bottom());
-				} else if (this->get_map_edge() == map_edge::southeast) {
-					diagonal_edge_pos = QPointF(map::get()->get_cosmic_map_bounding_rect().right(), map::get()->get_cosmic_map_bounding_rect().bottom());
-				}
-				this->territory_polygon.append(diagonal_edge_pos);
-			}
-
-			QPointF edge_middle_pos;
-			if (is_north_map_edge(adj_system->get_map_edge())) {
-				edge_middle_pos = QPointF(middle_pos.x(), map::get()->get_cosmic_map_bounding_rect().top());
-			} else if (is_south_map_edge(adj_system->get_map_edge())) {
-				edge_middle_pos = QPointF(middle_pos.x(), map::get()->get_cosmic_map_bounding_rect().bottom());
-			} else if (is_west_map_edge(adj_system->get_map_edge())) {
-				edge_middle_pos = QPointF(map::get()->get_cosmic_map_bounding_rect().left(), middle_pos.y());
-			} else if (is_east_map_edge(adj_system->get_map_edge())) {
-				edge_middle_pos = QPointF(map::get()->get_cosmic_map_bounding_rect().right(), middle_pos.y());
-			}
-			this->territory_polygon.append(edge_middle_pos);
-
-		} else {
-			//calculate the middle point between the previous adjacent system, the current one and this system
-			const QPointF adj_middle_pos((center_pos.x() + prev_adj_center_pos.x() + adj_center_pos.x()) / 3, (center_pos.y() + prev_adj_center_pos.y() + adj_center_pos.y()) / 3);
-			this->territory_polygon.append(adj_middle_pos);
+		if (new_radius > max_distance_from_center) {
+			new_polygon.append(point);
+			continue;
 		}
 
-		this->territory_polygon.append(middle_pos);
-
-		prev_adj_system = adj_system;
-		prev_adj_center_pos = adj_center_pos;
-		prev_middle_pos = middle_pos;
+		QPointF new_point(point::get_circle_point(point - center_pos, radius, new_radius) + center_pos);
+		new_polygon.append(std::move(new_point));
 	}
 
-	if (this->territory_polygon.size() >= 3) {
-		this->territory_polygon.append(this->territory_polygon.front()); //close the polyon
-	} else {
-		this->territory_polygon.clear(); //must have at least three points to form the territory polygon
+	for (const star_system *adj_system : this->nearby_systems) {
+		const QRectF bounding_rect = new_polygon.boundingRect();
+		const QRectF adj_bounding_rect = adj_system->territory_polygon.boundingRect();
+		if (bounding_rect.intersects(adj_bounding_rect) && new_polygon.intersects(adj_system->territory_polygon)) {
+			new_polygon = new_polygon.subtracted(adj_system->territory_polygon);
+		}
 	}
+
+	const QRectF bounding_rect = new_polygon.boundingRect();
+	const QRectF &map_bounding_rect = map::get()->get_cosmic_map_bounding_rect();
+	if (!map_bounding_rect.contains(bounding_rect)) {
+		new_polygon = new_polygon.intersected(map_bounding_rect);
+	}
+
+	const int new_area = static_cast<int>(std::round(polygon::get_area(new_polygon)));
+	if (new_area > old_area) {
+		this->territory_polygon = new_polygon;
+		return true;
+	}
+
+	return false;
 }
 
 QVariantList star_system::get_worlds_qvariant_list() const

@@ -294,14 +294,12 @@ public:
 
 	double get_cosmic_size_with_satellites() const
 	{
-		double cosmic_size = this->get_cosmic_size();
-
 		if (!this->satellites.empty()) {
 			const world *last_satellite = this->satellites.back();
-			cosmic_size += last_satellite->get_distance_from_orbit_center() + (last_satellite->get_cosmic_size() / 2);
+			return (last_satellite->get_distance_from_orbit_center() + (last_satellite->get_cosmic_size() / 2)) * 2;
 		}
 
-		return cosmic_size;
+		return this->get_cosmic_size();
 	}
 
 	void calculate_cosmic_size();

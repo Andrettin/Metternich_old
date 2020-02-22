@@ -264,9 +264,7 @@ void map::calculate_cosmic_map_bounding_rect()
 	}
 
 	//calculate territory polygons for star systems, as those depend on the cosmic bounding rect
-	for (star_system *system : star_system::get_all()) {
-		system->calculate_territory_polygon();
-	}
+	star_system::calculate_territory_polygons();
 }
 
 /**
