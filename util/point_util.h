@@ -93,6 +93,11 @@ inline QPointF get_nearest_circle_edge_point(const QPointF &point, const double 
 	return QPointF(x, y);
 }
 
+inline QPointF get_angle_direction(const double angle)
+{
+	return QPointF(std::cos(angle), std::sin(angle) * -1);
+}
+
 inline QGeoCoordinate to_geocoordinate(const QPoint &point, const QSize &area_size)
 {
 	const double lon = (point.x() - (area_size.width() / 2)) * 180.0 / (area_size.width() / 2);
