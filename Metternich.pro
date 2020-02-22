@@ -85,7 +85,8 @@ SOURCES += \
         translator.cpp \
         util/geocoordinate_util.cpp \
         util/image_util.cpp \
-        util/point_container.cpp
+        util/point_container.cpp \
+        util/polygon_util.cpp
 
 RESOURCES += qml.qrc
 
@@ -268,6 +269,7 @@ HEADERS += \
     util/parse_util.h \
     util/point_container.h \
     util/point_util.h \
+    util/polygon_util.h \
     util/rect_util.h \
     util/set_util.h \
     util/string_util.h \
