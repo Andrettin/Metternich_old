@@ -8,15 +8,15 @@
 
 namespace metternich {
 
-double random::generate_angle()
+double random::generate_radian_angle()
 {
 	return random::generate_in_range(0., 1.) * 2. * boost::math::constants::pi<double>();
 }
 
 QPointF random::generate_circle_position()
 {
-	const double angle = random::generate_angle();
-	return point::get_angle_direction(angle);
+	const double angle = random::generate_radian_angle();
+	return point::get_radian_angle_direction(angle);
 }
 
 }

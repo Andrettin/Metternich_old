@@ -140,7 +140,7 @@ void star_system::calculate_initial_territory_polygon()
 
 	const double radius = (this->get_primary_star()->get_cosmic_size_with_satellites() / 2) + 32;
 	const QPointF center_pos = this->get_primary_star()->get_cosmic_map_pos();
-	this->territory_polygon = polygon::from_radius(radius, center_pos);
+	this->territory_polygon = polygon::from_radius(radius, 1, center_pos);
 	this->max_bounding_size = this->territory_polygon.boundingRect().width() + star_system::max_bounding_rect_offset;
 
 	//calculate the nearby systems, for subsequent polygon growth calculation
@@ -177,16 +177,10 @@ bool star_system::grow_territory_polygon()
 	}
 
 	const QPointF center_pos = this->get_primary_star()->get_cosmic_map_pos();
-	const double max_distance_from_center = this->max_bounding_size / 2;
 	QPolygonF new_polygon;
 	for (const QPointF &point : this->territory_polygon) {
 		const double radius = point::distance_to(point, center_pos);
 		const double new_radius = radius + star_system::territory_radius_growth;
-
-		if (new_radius > max_distance_from_center) {
-			new_polygon.append(point);
-			continue;
-		}
 
 		QPointF new_point(point::get_circle_point(point - center_pos, radius, new_radius) + center_pos);
 		new_polygon.append(std::move(new_point));

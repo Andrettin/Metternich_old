@@ -27,7 +27,7 @@ public:
 		}
 	}
 
-	static double generate_angle();
+	static double generate_radian_angle();
 	static QPointF generate_circle_position();
 
 private:

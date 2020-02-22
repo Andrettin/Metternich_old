@@ -18,6 +18,6 @@ inline double get_area(const QPolygonF &polygon)
 	return area;
 }
 
-extern QPolygonF from_radius(const double radius, const QPointF &offset = QPointF(0, 0));
+extern QPolygonF from_radius(const double radius, const int angle_per_point, const QPointF &offset = QPointF(0, 0));
 
 }

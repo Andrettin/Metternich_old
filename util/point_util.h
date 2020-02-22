@@ -33,6 +33,16 @@ inline std::result_of_t<decltype(&point_type::x)(point_type)> distance_to(const 
 	return static_cast<underlying_type>(sqrt(dx * dx + dy * dy));
 }
 
+inline QPointF direction_to(const QPointF &point, const QPointF &other_point)
+{
+	const double distance = point::distance_to(point, other_point);
+	const double dx = other_point.x() - point.x();
+	const double dy = other_point.y() - point.y();
+	const double x = dx / distance;
+	const double y = dy / distance;
+	return QPointF(x, y);
+}
+
 inline QPoint get_nearest_point(const QPoint &point, const std::vector<QPoint> &other_points)
 {
 	QPoint nearest_point(-1, -1);
@@ -93,10 +103,12 @@ inline QPointF get_nearest_circle_edge_point(const QPointF &point, const double 
 	return QPointF(x, y);
 }
 
-inline QPointF get_angle_direction(const double angle)
+inline QPointF get_radian_angle_direction(const double angle)
 {
-	return QPointF(std::cos(angle), std::sin(angle) * -1);
+	return QPointF(std::cos(angle), std::sin(angle));
 }
+
+extern QPointF get_degree_angle_direction(const double angle);
 
 inline QGeoCoordinate to_geocoordinate(const QPoint &point, const QSize &area_size)
 {

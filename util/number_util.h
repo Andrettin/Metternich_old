@@ -106,4 +106,6 @@ inline std::string to_signed_centesimal_string(const int number)
 	return number_str;
 }
 
+extern double degree_to_radian(const double degree);
+
 }

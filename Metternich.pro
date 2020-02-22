@@ -85,7 +85,9 @@ SOURCES += \
         translator.cpp \
         util/geocoordinate_util.cpp \
         util/image_util.cpp \
+        util/number_util.cpp \
         util/point_container.cpp \
+        util/point_util.cpp \
         util/polygon_util.cpp
 
 RESOURCES += qml.qrc
