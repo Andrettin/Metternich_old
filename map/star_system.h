@@ -26,7 +26,7 @@ public:
 	static constexpr const char *class_identifier = "star_system";
 	static constexpr const char *database_folder = "star_systems";
 	static inline const QColor empty_color = QColor("#f5f5dc");
-	static constexpr int territory_radius = 1024; //the radius for the system's territory
+	static constexpr int territory_radius = 1280; //the radius for the system's territory
 
 	static void calculate_territory_polygons();
 

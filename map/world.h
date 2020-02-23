@@ -93,6 +93,10 @@ public:
 			throw std::runtime_error("World \"" + this->get_identifier() + "\" has no type.");
 		}
 
+		if (this->get_star_system() == nullptr) {
+			throw std::runtime_error("World \"" + this->get_identifier() + "\" has no star system.");
+		}
+
 		this->get_texture_path(); //throws an exception if the texture isn't found
 	}
 
