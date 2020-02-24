@@ -4,7 +4,6 @@
 #include "map/province.h"
 #include "map/world.h"
 #include "util/container_util.h"
-#include "util/map_util.h"
 #include "util/point_util.h"
 #include "util/set_util.h"
 

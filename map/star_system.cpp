@@ -3,6 +3,7 @@
 #include "engine_interface.h"
 #include "landed_title/landed_title.h"
 #include "map/map.h"
+#include "map/map_mode.h"
 #include "map/world.h"
 #include "translator.h"
 #include "util/container_util.h"
@@ -58,6 +59,42 @@ void star_system::set_duchy(landed_title *duchy)
 	emit duchy_changed();
 }
 
+landed_title *star_system::get_kingdom() const
+{
+	if (this->get_duchy() != nullptr) {
+		return this->get_duchy()->get_cosmic_kingdom();
+	}
+
+	return nullptr;
+}
+
+landed_title *star_system::get_de_jure_kingdom() const
+{
+	if (this->get_duchy() != nullptr) {
+		return this->get_duchy()->get_de_jure_cosmic_kingdom();
+	}
+
+	return nullptr;
+}
+
+landed_title *star_system::get_empire() const
+{
+	if (this->get_duchy() != nullptr) {
+		return this->get_duchy()->get_cosmic_empire();
+	}
+
+	return nullptr;
+}
+
+landed_title *star_system::get_de_jure_empire() const
+{
+	if (this->get_duchy() != nullptr) {
+		return this->get_duchy()->get_de_jure_cosmic_empire();
+	}
+
+	return nullptr;
+}
+
 void star_system::calculate_primary_star()
 {
 	this->primary_star = nullptr;
@@ -77,13 +114,82 @@ void star_system::calculate_primary_star()
 	}
 }
 
-const QColor &star_system::get_color() const
+const QColor &star_system::get_color_for_map_mode(const map_mode mode) const
 {
 	if (this->get_duchy() != nullptr) {
-		return this->get_duchy()->get_color();
+		switch (mode) {
+			case map_mode::country: {
+				const landed_title *realm = this->get_duchy()->get_realm();
+				if (realm != nullptr) {
+					return realm->get_color();
+				}
+				break;
+			}
+			case map_mode::de_jure_empire: {
+				const landed_title *empire = this->get_de_jure_empire();
+				if (empire != nullptr) {
+					return empire->get_color();
+				}
+				break;
+			}
+			case map_mode::de_jure_kingdom: {
+				const landed_title *kingdom = this->get_de_jure_kingdom();
+				if (kingdom != nullptr) {
+					return kingdom->get_color();
+				}
+				break;
+			}
+			case map_mode::de_jure_duchy: {
+				const landed_title *duchy = this->get_duchy();
+				if (duchy != nullptr) {
+					return duchy->get_color();
+				}
+				break;
+			}
+			/*
+			case map_mode::culture: {
+				if (this->get_culture() != nullptr) {
+					return this->get_culture()->get_color();
+				}
+				break;
+			}
+			case map_mode::culture_group: {
+				if (this->get_culture() != nullptr) {
+					return this->get_culture()->get_culture_group()->get_color();
+				}
+				break;
+			}
+			case map_mode::religion: {
+				if (this->get_religion() != nullptr) {
+					return this->get_religion()->get_color();
+				}
+				break;
+			}
+			case map_mode::religion_group: {
+				if (this->get_religion() != nullptr) {
+					return this->get_religion()->get_religion_group()->get_color();
+				}
+				break;
+			}
+			case map_mode::trade_node: {
+				if (this->get_trade_node() != nullptr && this->get_owner() != nullptr) {
+					return this->get_trade_node()->get_color();
+				}
+				break;
+			}
+			case map_mode::trade_zone: {
+				if (this->get_trading_post_holding() != nullptr) {
+					return this->get_trading_post_holding()->get_owner()->get_realm()->get_color();
+				}
+				break;
+			}
+			*/
+			default:
+				break;
+		}
 	}
 
-	return star_system::empty_color;
+	return star_system::empty_color; //unowned system
 }
 
 QPointF star_system::get_center_pos() const

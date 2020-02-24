@@ -243,6 +243,10 @@ void map::set_mode(const map_mode mode)
 		province->update_color_for_map_mode(this->get_mode());
 	}
 
+	for (star_system *system : star_system::get_all()) {
+		system->update_color_for_map_mode(this->get_mode());
+	}
+
 	emit engine_interface::get()->map_mode_changed();
 }
 

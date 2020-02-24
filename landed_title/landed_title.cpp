@@ -13,7 +13,10 @@
 #include "holding/holding_slot.h"
 #include "holding/holding_type.h"
 #include "landed_title/landed_title_tier.h"
+#include "map/map.h"
+#include "map/map_mode.h"
 #include "map/province.h"
+#include "map/star_system.h"
 #include "politics/government_type.h"
 #include "politics/government_type_group.h"
 #include "politics/law.h"
@@ -230,7 +233,7 @@ void landed_title::initialize_history()
 
 void landed_title::check() const
 {
-	if (this->get_tier() != landed_title_tier::barony && this->get_tier() != landed_title_tier::cosmic_barony && !this->get_color().isValid()) {
+	if (this->get_tier() != landed_title_tier::barony && this->get_tier() != landed_title_tier::cosmic_barony && this->get_tier() != landed_title_tier::cosmic_county && !this->get_color().isValid()) {
 		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has no valid color.");
 	}
 
@@ -420,6 +423,14 @@ void landed_title::set_holder(character *character)
 			}
 		} else if (old_realm != realm) {
 			this->get_province()->set_trade_node_recalculation_needed(true);
+		}
+	}
+
+	if (map::get()->get_mode() == map_mode::country && old_realm != realm) {
+		if (this->get_province() != nullptr) {
+			this->get_province()->update_color_for_map_mode(map::get()->get_mode());
+		} else if (this->get_star_system() != nullptr) {
+			this->get_star_system()->update_color_for_map_mode(map::get()->get_mode());
 		}
 	}
 
@@ -667,6 +678,26 @@ landed_title *landed_title::get_de_jure_empire() const
 	return this->get_tier_de_jure_title(landed_title_tier::empire);
 }
 
+landed_title *landed_title::get_cosmic_kingdom() const
+{
+	return this->get_tier_title(landed_title_tier::cosmic_kingdom);
+}
+
+landed_title *landed_title::get_de_jure_cosmic_kingdom() const
+{
+	return this->get_tier_de_jure_title(landed_title_tier::cosmic_kingdom);
+}
+
+landed_title *landed_title::get_cosmic_empire() const
+{
+	return this->get_tier_title(landed_title_tier::cosmic_empire);
+}
+
+landed_title *landed_title::get_de_jure_cosmic_empire() const
+{
+	return this->get_tier_de_jure_title(landed_title_tier::cosmic_empire);
+}
+
 bool landed_title::is_primary() const
 {
 	if (this->get_holder() == nullptr) {
@@ -721,7 +752,7 @@ const std::filesystem::path &landed_title::get_flag_path() const
 
 QVariantList landed_title::get_laws_qvariant_list() const
 {
-	return container::to_qvariant_list(map::get_values(this->laws));
+	return container::to_qvariant_list(map_container::get_values(this->laws));
 }
 
 bool landed_title::has_law(const law *law) const

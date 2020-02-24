@@ -38,7 +38,7 @@ void holding_type::process_gsml_scope(const gsml_data &scope)
 
 QVariantList holding_type::get_default_laws_qvariant_list() const
 {
-	return container::to_qvariant_list(map::get_values(this->default_laws));
+	return container::to_qvariant_list(map_container::get_values(this->default_laws));
 }
 
 Q_INVOKABLE void holding_type::add_default_law(law *law)

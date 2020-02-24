@@ -9,17 +9,22 @@ namespace metternich {
 
 class landed_title;
 class world;
+enum class map_mode;
 
 class star_system : public data_entry, public data_type<star_system>
 {
 	Q_OBJECT
 
 	Q_PROPERTY(metternich::landed_title* duchy READ get_duchy WRITE set_duchy NOTIFY duchy_changed)
+	Q_PROPERTY(metternich::landed_title* kingdom READ get_kingdom NOTIFY kingdom_changed)
+	Q_PROPERTY(metternich::landed_title* de_jure_kingdom READ get_de_jure_kingdom NOTIFY de_jure_kingdom_changed)
+	Q_PROPERTY(metternich::landed_title* empire READ get_empire NOTIFY empire_changed)
+	Q_PROPERTY(metternich::landed_title* de_jure_empire READ get_de_jure_empire NOTIFY de_jure_empire_changed)
 	Q_PROPERTY(metternich::world* primary_star READ get_primary_star CONSTANT)
-	Q_PROPERTY(QColor color READ get_color NOTIFY color_changed)
 	Q_PROPERTY(QVariantList worlds READ get_worlds_qvariant_list CONSTANT)
 	Q_PROPERTY(QVariantList territory_polygon READ get_territory_polygon_qvariant_list CONSTANT)
 	Q_PROPERTY(QRectF territory_bounding_rect READ get_territory_bounding_rect CONSTANT)
+	Q_PROPERTY(QColor map_mode_color READ get_map_mode_color NOTIFY map_mode_color_changed)
 	Q_PROPERTY(bool ethereal MEMBER ethereal READ is_ethereal NOTIFY ethereal_changed)
 
 public:
@@ -43,6 +48,11 @@ public:
 
 	void set_duchy(landed_title *duchy);
 
+	landed_title *get_kingdom() const;
+	landed_title *get_de_jure_kingdom() const;
+	landed_title *get_empire() const;
+	landed_title *get_de_jure_empire() const;
+
 	world *get_primary_star() const
 	{
 		return this->primary_star;
@@ -50,7 +60,27 @@ public:
 
 	void calculate_primary_star();
 
-	const QColor &get_color() const;
+	const QColor &get_map_mode_color() const
+	{
+		return this->map_mode_color;
+	}
+
+	void set_map_mode_color(const QColor &color)
+	{
+		if (color == this->get_map_mode_color()) {
+			return;
+		}
+
+		this->map_mode_color = color;
+	}
+
+	const QColor &get_color_for_map_mode(const map_mode mode) const;
+
+	void update_color_for_map_mode(const map_mode mode)
+	{
+		const QColor &color = this->get_color_for_map_mode(mode);
+		this->set_map_mode_color(color);
+	}
 
 	QPointF get_center_pos() const;
 	QVariantList get_territory_polygon_qvariant_list() const;
@@ -83,7 +113,11 @@ public:
 
 signals:
 	void duchy_changed();
-	void color_changed();
+	void kingdom_changed();
+	void de_jure_kingdom_changed();
+	void empire_changed();
+	void de_jure_empire_changed();
+	void map_mode_color_changed();
 	void ethereal_changed();
 
 private:
@@ -91,6 +125,7 @@ private:
 	world *primary_star = nullptr;
 	std::vector<world *> worlds;
 	QPolygonF territory_polygon;
+	QColor map_mode_color; //the color used for the system by the current map mode
 	bool ethereal = false; //whether the star system is an ethereal one (i.e. Asgard's system); ethereal systems can only be entered by ethereal beings, who cannot enter non-ethereal systems, either; these impediments could be surpassed by technological or magical developments
 };
 

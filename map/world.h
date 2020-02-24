@@ -12,6 +12,7 @@
 
 namespace metternich {
 
+class landed_title;
 class pathfinder;
 class province;
 class star_system;
@@ -24,6 +25,7 @@ class world : public data_entry, public data_type<world>
 {
 	Q_OBJECT
 
+	Q_PROPERTY(metternich::landed_title* county READ get_county WRITE set_county NOTIFY county_changed)
 	Q_PROPERTY(metternich::world_type* type READ get_type WRITE set_type NOTIFY type_changed)
 	Q_PROPERTY(metternich::star_system* star_system READ get_star_system WRITE set_star_system NOTIFY star_system_changed)
 	Q_PROPERTY(QString texture_path READ get_texture_path_qstring CONSTANT)
@@ -99,6 +101,15 @@ public:
 
 		this->get_texture_path(); //throws an exception if the texture isn't found
 	}
+
+	virtual std::string get_name() const override;
+
+	landed_title *get_county() const
+	{
+		return this->county;
+	}
+
+	void set_county(landed_title *county);
 
 	world_type *get_type() const
 	{
@@ -452,6 +463,7 @@ private:
 	void add_province(province *province);
 
 signals:
+	void county_changed();
 	void type_changed();
 	void star_system_changed();
 	void astrodistance_changed();
@@ -459,6 +471,7 @@ signals:
 	void distance_from_orbit_center_changed();
 
 private:
+	landed_title *county = nullptr; //the world's corresponding cosmic county
 	world_type *type = nullptr;
 	star_system *star_system = nullptr;
 	QGeoCoordinate astrocoordinate;

@@ -3,7 +3,7 @@
 #include <set>
 #include <vector>
 
-namespace metternich::map {
+namespace metternich::map_container {
 
 template <typename T>
 inline std::set<typename T::key_type> get_keys(const T &map)

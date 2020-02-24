@@ -20,7 +20,8 @@ class law_group;
 class province;
 class religion;
 class star_system;
-enum class landed_title_tier : int;
+class world;
+enum class landed_title_tier;
 
 class landed_title : public data_entry, public data_type<landed_title>
 {
@@ -145,6 +146,20 @@ public:
 		this->capital_province = province;
 	}
 
+	metternich::world *get_world() const
+	{
+		return this->world;
+	}
+
+	void set_world(world *world)
+	{
+		if (world == this->get_world()) {
+			return;
+		}
+
+		this->world = world;
+	}
+
 	metternich::star_system *get_star_system() const
 	{
 		return this->star_system;
@@ -194,11 +209,15 @@ public:
 	landed_title *get_de_jure_kingdom() const;
 	landed_title *get_empire() const;
 	landed_title *get_de_jure_empire() const;
+	landed_title *get_cosmic_kingdom() const;
+	landed_title *get_de_jure_cosmic_kingdom() const;
+	landed_title *get_cosmic_empire() const;
+	landed_title *get_de_jure_cosmic_empire() const;
 
 	bool is_titular() const
 	{
 		//a title is not titular if it has de jure vassals, or if it is a county belonging to a province, or a barony belonging to a holding
-		return this->get_de_jure_vassal_titles().empty() && this->get_province() == nullptr && this->get_holding_slot() == nullptr && this->get_star_system() == nullptr;
+		return this->get_de_jure_vassal_titles().empty() && this->get_province() == nullptr && this->get_holding_slot() == nullptr && this->get_world() == nullptr && this->get_star_system() == nullptr;
 	}
 
 	bool is_primary() const;
@@ -291,8 +310,9 @@ private:
 	QColor color;
 	landed_title_tier tier;
 	character *holder = nullptr;
-	metternich::holding_slot *holding_slot = nullptr; //the title's holding slot, if it is a non-titular barony
+	metternich::holding_slot *holding_slot = nullptr; //the title's holding slot, if it is a non-titular barony or cosmic barony
 	metternich::province *province = nullptr; //the title's province, if it is a non-titular county
+	metternich::world *world = nullptr; //the title's world, if it is a non-titular cosmic county
 	metternich::star_system *star_system = nullptr; //the title's star system, if it is a non-titular cosmic duchy
 	landed_title *de_jure_liege_title = nullptr;
 	std::vector<landed_title *> de_jure_vassal_titles;

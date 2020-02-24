@@ -5,6 +5,7 @@
 #include "economy/trade_route.h"
 #include "engine_interface.h"
 #include "holding/holding_slot.h"
+#include "landed_title/landed_title.h"
 #include "map/map.h"
 #include "map/pathfinder.h"
 #include "map/province.h"
@@ -12,6 +13,7 @@
 #include "map/terrain_type.h"
 #include "map/world_type.h"
 #include "random.h"
+#include "translator.h"
 #include "util/container_util.h"
 #include "util/geocoordinate_util.h"
 #include "util/image_util.h"
@@ -95,6 +97,26 @@ void world::initialize()
 	std::sort(this->satellites.begin(), this->satellites.end(), satellite_sort_func);
 
 	data_entry_base::initialize();
+}
+
+std::string world::get_name() const
+{
+	if (this->get_county() != nullptr) {
+		return translator::get()->translate(this->get_county()->get_identifier_with_aliases());
+	}
+
+	return translator::get()->translate(this->get_identifier_with_aliases()); //world without a cosmic county
+}
+
+void world::set_county(landed_title *county)
+{
+	if (county == this->get_county()) {
+		return;
+	}
+
+	this->county = county;
+	county->set_world(this);
+	emit county_changed();
 }
 
 void world::set_star_system(metternich::star_system *system)
