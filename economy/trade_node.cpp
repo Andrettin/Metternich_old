@@ -165,7 +165,7 @@ void trade_node::calculate_trade_path(const trade_node *other_node, const bool n
 
 void trade_node::clear_trade_paths()
 {
-	const std::set<const trade_node *> path_nodes = map::get_keys(this->trade_paths);
+	const std::set<const trade_node *> path_nodes = map_container::get_keys(this->trade_paths);
 
 	for (const trade_node *node : path_nodes) {
 		this->set_trade_path(node, trade_node::empty_path, false);
