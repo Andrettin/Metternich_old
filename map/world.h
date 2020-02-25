@@ -26,6 +26,12 @@ class world : public data_entry, public data_type<world>
 	Q_OBJECT
 
 	Q_PROPERTY(metternich::landed_title* county READ get_county WRITE set_county NOTIFY county_changed)
+	Q_PROPERTY(metternich::landed_title* duchy READ get_duchy NOTIFY duchy_changed)
+	Q_PROPERTY(metternich::landed_title* de_jure_duchy READ get_de_jure_duchy NOTIFY de_jure_duchy_changed)
+	Q_PROPERTY(metternich::landed_title* kingdom READ get_kingdom NOTIFY kingdom_changed)
+	Q_PROPERTY(metternich::landed_title* de_jure_kingdom READ get_de_jure_kingdom NOTIFY de_jure_kingdom_changed)
+	Q_PROPERTY(metternich::landed_title* empire READ get_empire NOTIFY empire_changed)
+	Q_PROPERTY(metternich::landed_title* de_jure_empire READ get_de_jure_empire NOTIFY de_jure_empire_changed)
 	Q_PROPERTY(metternich::world_type* type READ get_type WRITE set_type NOTIFY type_changed)
 	Q_PROPERTY(metternich::star_system* star_system READ get_star_system WRITE set_star_system NOTIFY star_system_changed)
 	Q_PROPERTY(QString texture_path READ get_texture_path_qstring CONSTANT)
@@ -110,6 +116,13 @@ public:
 	}
 
 	void set_county(landed_title *county);
+
+	landed_title *get_duchy() const;
+	landed_title *get_de_jure_duchy() const;
+	landed_title *get_kingdom() const;
+	landed_title *get_de_jure_kingdom() const;
+	landed_title *get_empire() const;
+	landed_title *get_de_jure_empire() const;
 
 	world_type *get_type() const
 	{
@@ -464,6 +477,12 @@ private:
 
 signals:
 	void county_changed();
+	void duchy_changed();
+	void de_jure_duchy_changed();
+	void kingdom_changed();
+	void de_jure_kingdom_changed();
+	void empire_changed();
+	void de_jure_empire_changed();
 	void type_changed();
 	void star_system_changed();
 	void astrodistance_changed();

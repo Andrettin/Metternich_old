@@ -209,6 +209,8 @@ public:
 	landed_title *get_de_jure_kingdom() const;
 	landed_title *get_empire() const;
 	landed_title *get_de_jure_empire() const;
+	landed_title *get_cosmic_duchy() const;
+	landed_title *get_de_jure_cosmic_duchy() const;
 	landed_title *get_cosmic_kingdom() const;
 	landed_title *get_de_jure_cosmic_kingdom() const;
 	landed_title *get_cosmic_empire() const;

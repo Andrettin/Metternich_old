@@ -119,6 +119,60 @@ void world::set_county(landed_title *county)
 	emit county_changed();
 }
 
+landed_title *world::get_duchy() const
+{
+	if (this->get_county() != nullptr) {
+		return this->get_county()->get_cosmic_duchy();
+	}
+
+	return nullptr;
+}
+
+landed_title *world::get_de_jure_duchy() const
+{
+	if (this->get_county() != nullptr) {
+		return this->get_county()->get_de_jure_cosmic_duchy();
+	}
+
+	return nullptr;
+}
+
+landed_title *world::get_kingdom() const
+{
+	if (this->get_county() != nullptr) {
+		return this->get_county()->get_cosmic_kingdom();
+	}
+
+	return nullptr;
+}
+
+landed_title *world::get_de_jure_kingdom() const
+{
+	if (this->get_county() != nullptr) {
+		return this->get_county()->get_de_jure_cosmic_kingdom();
+	}
+
+	return nullptr;
+}
+
+landed_title *world::get_empire() const
+{
+	if (this->get_county() != nullptr) {
+		return this->get_county()->get_cosmic_empire();
+	}
+
+	return nullptr;
+}
+
+landed_title *world::get_de_jure_empire() const
+{
+	if (this->get_county() != nullptr) {
+		return this->get_county()->get_de_jure_cosmic_empire();
+	}
+
+	return nullptr;
+}
+
 void world::set_star_system(metternich::star_system *system)
 {
 	if (system == this->get_star_system()) {

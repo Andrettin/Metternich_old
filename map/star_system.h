@@ -72,6 +72,7 @@ public:
 		}
 
 		this->map_mode_color = color;
+		emit map_mode_color_changed();
 	}
 
 	const QColor &get_color_for_map_mode(const map_mode mode) const;

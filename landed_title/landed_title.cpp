@@ -241,7 +241,7 @@ void landed_title::check() const
 		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has a different province and capital province.");
 	}
 
-	if (this->get_tier() >= landed_title_tier::duchy && this->get_tier() < landed_title_tier::cosmic_barony) {
+	if (this->get_tier() >= landed_title_tier::duchy && this->get_tier() != landed_title_tier::cosmic_barony && this->get_tier() != landed_title_tier::cosmic_county) {
 		this->get_flag_path(); //throws an exception if the flag isn't found
 	}
 }
@@ -676,6 +676,16 @@ landed_title *landed_title::get_empire() const
 landed_title *landed_title::get_de_jure_empire() const
 {
 	return this->get_tier_de_jure_title(landed_title_tier::empire);
+}
+
+landed_title *landed_title::get_cosmic_duchy() const
+{
+	return this->get_tier_title(landed_title_tier::cosmic_duchy);
+}
+
+landed_title *landed_title::get_de_jure_cosmic_duchy() const
+{
+	return this->get_tier_de_jure_title(landed_title_tier::cosmic_duchy);
 }
 
 landed_title *landed_title::get_cosmic_kingdom() const
