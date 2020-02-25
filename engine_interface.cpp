@@ -3,6 +3,8 @@
 #include "defines.h"
 #include "game/game.h"
 #include "holding/holding.h"
+#include "landed_title/landed_title.h"
+#include "landed_title/landed_title_tier.h"
 #include "map/map.h"
 #include "map/province.h"
 #include "map/star_system.h"
@@ -56,6 +58,12 @@ QVariantList engine_interface::get_map_worlds() const
 {
 	QVariantList world_list = container::to_qvariant_list(world::get_map_worlds());
 	return world_list;
+}
+
+QVariantList engine_interface::get_cosmic_duchies() const
+{
+	QVariantList title_list = container::to_qvariant_list(landed_title::get_tier_titles(landed_title_tier::cosmic_duchy));
+	return title_list;
 }
 
 province *engine_interface::get_selected_province() const

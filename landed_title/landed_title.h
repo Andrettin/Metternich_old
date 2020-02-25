@@ -29,6 +29,7 @@ class landed_title : public data_entry, public data_type<landed_title>
 
 	Q_PROPERTY(QString titled_name READ get_titled_name_qstring NOTIFY titled_name_changed)
 	Q_PROPERTY(QColor color MEMBER color READ get_color)
+	Q_PROPERTY(metternich::star_system* star_system READ get_star_system CONSTANT)
 	Q_PROPERTY(metternich::character* holder READ get_holder WRITE set_holder NOTIFY holder_changed)
 	Q_PROPERTY(metternich::landed_title* holder_title MEMBER holder_title WRITE set_holder_title)
 	Q_PROPERTY(metternich::landed_title* liege_title MEMBER liege_title)
@@ -78,12 +79,17 @@ public:
 	static constexpr const char *cosmic_king_identifier = "cosmic_king";
 	static constexpr const char *cosmic_emperor_identifier = "cosmic_emperor";
 
+	static const std::vector<landed_title *> &get_tier_titles(const landed_title_tier tier);
 	static landed_title *add(const std::string &identifier);
 
 	static const char *get_tier_identifier(const landed_title_tier tier);
 	static const char *get_tier_holder_identifier(const landed_title_tier tier);
 	static std::string get_tier_name(const landed_title_tier tier);
 
+private:
+	static inline std::map<landed_title_tier, std::vector<landed_title *>> titles_by_tier;
+
+public:
 	landed_title(const std::string &identifier) : data_entry(identifier)
 	{
 		connect(this, &landed_title::government_type_changed, this, &landed_title::titled_name_changed);

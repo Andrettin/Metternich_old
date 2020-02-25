@@ -31,6 +31,18 @@
 
 namespace metternich {
 
+const std::vector<landed_title *> &landed_title::get_tier_titles(const landed_title_tier tier)
+{
+	static std::vector<landed_title *> empty_vector;
+
+	auto find_iterator = landed_title::titles_by_tier.find(tier);
+	if (find_iterator != landed_title::titles_by_tier.end()) {
+		return find_iterator->second;
+	}
+
+	return empty_vector;
+}
+
 landed_title *landed_title::add(const std::string &identifier)
 {
 	landed_title *title = data_type<landed_title>::add(identifier);
@@ -65,6 +77,8 @@ landed_title *landed_title::add(const std::string &identifier)
 	} else {
 		throw std::runtime_error("Invalid identifier for new landed title: \"" + identifier + "\". Landed title identifiers must begin with a valid prefix, which depends on the title's tier.");
 	}
+
+	landed_title::titles_by_tier[title->get_tier()].push_back(title);
 
 	return title;
 }
