@@ -41,55 +41,55 @@ void star_system::initialize()
 
 std::string star_system::get_name() const
 {
-	if (this->get_duchy() != nullptr) {
-		return translator::get()->translate(this->get_duchy()->get_identifier_with_aliases());
+	if (this->get_title() != nullptr) {
+		return translator::get()->translate(this->get_title()->get_identifier_with_aliases());
 	}
 
-	return translator::get()->translate(this->get_identifier_with_aliases()); //star system without a cosmic duchy
+	return translator::get()->translate(this->get_identifier_with_aliases()); //star system without a cosmic landed title
 }
 
-void star_system::set_duchy(landed_title *duchy)
+void star_system::set_title(landed_title *title)
 {
-	if (duchy == this->get_duchy()) {
+	if (title == this->get_title()) {
 		return;
 	}
 
-	this->duchy = duchy;
-	duchy->set_star_system(this);
-	emit duchy_changed();
+	this->title = title;
+	title->set_star_system(this);
+	emit title_changed();
 }
 
-landed_title *star_system::get_kingdom() const
+landed_title *star_system::get_interstellar_empire() const
 {
-	if (this->get_duchy() != nullptr) {
-		return this->get_duchy()->get_cosmic_kingdom();
+	if (this->get_title() != nullptr) {
+		return this->get_title()->get_interstellar_empire();
 	}
 
 	return nullptr;
 }
 
-landed_title *star_system::get_de_jure_kingdom() const
+landed_title *star_system::get_de_jure_interstellar_empire() const
 {
-	if (this->get_duchy() != nullptr) {
-		return this->get_duchy()->get_de_jure_cosmic_kingdom();
+	if (this->get_title() != nullptr) {
+		return this->get_title()->get_de_jure_interstellar_empire();
 	}
 
 	return nullptr;
 }
 
-landed_title *star_system::get_empire() const
+landed_title *star_system::get_galactic_empire() const
 {
-	if (this->get_duchy() != nullptr) {
-		return this->get_duchy()->get_cosmic_empire();
+	if (this->get_title() != nullptr) {
+		return this->get_title()->get_galactic_empire();
 	}
 
 	return nullptr;
 }
 
-landed_title *star_system::get_de_jure_empire() const
+landed_title *star_system::get_de_jure_galactic_empire() const
 {
-	if (this->get_duchy() != nullptr) {
-		return this->get_duchy()->get_de_jure_cosmic_empire();
+	if (this->get_title() != nullptr) {
+		return this->get_title()->get_de_jure_galactic_empire();
 	}
 
 	return nullptr;
@@ -116,33 +116,33 @@ void star_system::calculate_primary_star()
 
 const QColor &star_system::get_color_for_map_mode(const map_mode mode) const
 {
-	if (this->get_duchy() != nullptr) {
+	if (this->get_title() != nullptr) {
 		switch (mode) {
 			case map_mode::country: {
-				const landed_title *realm = this->get_duchy()->get_realm();
+				const landed_title *realm = this->get_title()->get_realm();
 				if (realm != nullptr) {
 					return realm->get_color();
 				}
 				break;
 			}
 			case map_mode::de_jure_empire: {
-				const landed_title *empire = this->get_de_jure_empire();
-				if (empire != nullptr) {
-					return empire->get_color();
+				const landed_title *galactic_empire = this->get_de_jure_galactic_empire();
+				if (galactic_empire != nullptr) {
+					return galactic_empire->get_color();
 				}
 				break;
 			}
 			case map_mode::de_jure_kingdom: {
-				const landed_title *kingdom = this->get_de_jure_kingdom();
-				if (kingdom != nullptr) {
-					return kingdom->get_color();
+				const landed_title *interstellar_empire = this->get_de_jure_interstellar_empire();
+				if (interstellar_empire != nullptr) {
+					return interstellar_empire->get_color();
 				}
 				break;
 			}
 			case map_mode::de_jure_duchy: {
-				const landed_title *duchy = this->get_duchy();
-				if (duchy != nullptr) {
-					return duchy->get_color();
+				const landed_title *title = this->get_title();
+				if (title != nullptr) {
+					return title->get_color();
 				}
 				break;
 			}

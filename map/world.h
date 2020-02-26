@@ -25,13 +25,13 @@ class world : public data_entry, public data_type<world>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(metternich::landed_title* county READ get_county WRITE set_county NOTIFY county_changed)
-	Q_PROPERTY(metternich::landed_title* duchy READ get_duchy NOTIFY duchy_changed)
-	Q_PROPERTY(metternich::landed_title* de_jure_duchy READ get_de_jure_duchy NOTIFY de_jure_duchy_changed)
-	Q_PROPERTY(metternich::landed_title* kingdom READ get_kingdom NOTIFY kingdom_changed)
-	Q_PROPERTY(metternich::landed_title* de_jure_kingdom READ get_de_jure_kingdom NOTIFY de_jure_kingdom_changed)
-	Q_PROPERTY(metternich::landed_title* empire READ get_empire NOTIFY empire_changed)
-	Q_PROPERTY(metternich::landed_title* de_jure_empire READ get_de_jure_empire NOTIFY de_jure_empire_changed)
+	Q_PROPERTY(metternich::landed_title* title READ get_title WRITE set_title NOTIFY title_changed)
+	Q_PROPERTY(metternich::landed_title* star_empire READ get_star_empire NOTIFY star_empire_changed)
+	Q_PROPERTY(metternich::landed_title* de_jure_star_empire READ get_de_jure_star_empire NOTIFY de_jure_star_empire_changed)
+	Q_PROPERTY(metternich::landed_title* interstellar_empire READ get_interstellar_empire NOTIFY interstellar_empire_changed)
+	Q_PROPERTY(metternich::landed_title* de_jure_interstellar_empire READ get_de_jure_interstellar_empire NOTIFY de_jure_interstellar_empire_changed)
+	Q_PROPERTY(metternich::landed_title* galactic_empire READ get_galactic_empire NOTIFY galactic_empire_changed)
+	Q_PROPERTY(metternich::landed_title* de_jure_galactic_empire READ get_de_jure_galactic_empire NOTIFY de_jure_galactic_empire_changed)
 	Q_PROPERTY(metternich::world_type* type READ get_type WRITE set_type NOTIFY type_changed)
 	Q_PROPERTY(metternich::star_system* star_system READ get_star_system WRITE set_star_system NOTIFY star_system_changed)
 	Q_PROPERTY(QString texture_path READ get_texture_path_qstring CONSTANT)
@@ -110,19 +110,19 @@ public:
 
 	virtual std::string get_name() const override;
 
-	landed_title *get_county() const
+	landed_title *get_title() const
 	{
-		return this->county;
+		return this->title;
 	}
 
-	void set_county(landed_title *county);
+	void set_title(landed_title *title);
 
-	landed_title *get_duchy() const;
-	landed_title *get_de_jure_duchy() const;
-	landed_title *get_kingdom() const;
-	landed_title *get_de_jure_kingdom() const;
-	landed_title *get_empire() const;
-	landed_title *get_de_jure_empire() const;
+	landed_title *get_star_empire() const;
+	landed_title *get_de_jure_star_empire() const;
+	landed_title *get_interstellar_empire() const;
+	landed_title *get_de_jure_interstellar_empire() const;
+	landed_title *get_galactic_empire() const;
+	landed_title *get_de_jure_galactic_empire() const;
 
 	world_type *get_type() const
 	{
@@ -476,13 +476,13 @@ private:
 	void add_province(province *province);
 
 signals:
-	void county_changed();
-	void duchy_changed();
-	void de_jure_duchy_changed();
-	void kingdom_changed();
-	void de_jure_kingdom_changed();
-	void empire_changed();
-	void de_jure_empire_changed();
+	void title_changed();
+	void star_empire_changed();
+	void de_jure_star_empire_changed();
+	void interstellar_empire_changed();
+	void de_jure_interstellar_empire_changed();
+	void galactic_empire_changed();
+	void de_jure_galactic_empire_changed();
 	void type_changed();
 	void star_system_changed();
 	void astrodistance_changed();
@@ -490,7 +490,7 @@ signals:
 	void distance_from_orbit_center_changed();
 
 private:
-	landed_title *county = nullptr; //the world's corresponding cosmic county
+	landed_title *title = nullptr; //the world's corresponding landed title
 	world_type *type = nullptr;
 	star_system *star_system = nullptr;
 	QGeoCoordinate astrocoordinate;

@@ -60,9 +60,9 @@ QVariantList engine_interface::get_map_worlds() const
 	return world_list;
 }
 
-QVariantList engine_interface::get_cosmic_duchies() const
+QVariantList engine_interface::get_star_empires() const
 {
-	QVariantList title_list = container::to_qvariant_list(landed_title::get_tier_titles(landed_title_tier::cosmic_duchy));
+	QVariantList title_list = container::to_qvariant_list(landed_title::get_tier_titles(landed_title_tier::star_empire));
 	return title_list;
 }
 

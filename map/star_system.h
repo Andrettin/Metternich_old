@@ -15,11 +15,11 @@ class star_system : public data_entry, public data_type<star_system>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(metternich::landed_title* duchy READ get_duchy WRITE set_duchy NOTIFY duchy_changed)
-	Q_PROPERTY(metternich::landed_title* kingdom READ get_kingdom NOTIFY kingdom_changed)
-	Q_PROPERTY(metternich::landed_title* de_jure_kingdom READ get_de_jure_kingdom NOTIFY de_jure_kingdom_changed)
-	Q_PROPERTY(metternich::landed_title* empire READ get_empire NOTIFY empire_changed)
-	Q_PROPERTY(metternich::landed_title* de_jure_empire READ get_de_jure_empire NOTIFY de_jure_empire_changed)
+	Q_PROPERTY(metternich::landed_title* title READ get_title WRITE set_title NOTIFY title_changed)
+	Q_PROPERTY(metternich::landed_title* interstellar_empire READ get_interstellar_empire NOTIFY interstellar_empire_changed)
+	Q_PROPERTY(metternich::landed_title* de_jure_interstellar_empire READ get_de_jure_interstellar_empire NOTIFY de_jure_interstellar_empire_changed)
+	Q_PROPERTY(metternich::landed_title* galactic_empire READ get_galactic_empire NOTIFY galactic_empire_changed)
+	Q_PROPERTY(metternich::landed_title* de_jure_galactic_empire READ get_de_jure_galactic_empire NOTIFY de_jure_galactic_empire_changed)
 	Q_PROPERTY(metternich::world* primary_star READ get_primary_star CONSTANT)
 	Q_PROPERTY(QVariantList worlds READ get_worlds_qvariant_list CONSTANT)
 	Q_PROPERTY(QVariantList territory_polygon READ get_territory_polygon_qvariant_list CONSTANT)
@@ -41,17 +41,17 @@ public:
 
 	virtual std::string get_name() const override;
 
-	landed_title *get_duchy() const
+	landed_title *get_title() const
 	{
-		return this->duchy;
+		return this->title;
 	}
 
-	void set_duchy(landed_title *duchy);
+	void set_title(landed_title *title);
 
-	landed_title *get_kingdom() const;
-	landed_title *get_de_jure_kingdom() const;
-	landed_title *get_empire() const;
-	landed_title *get_de_jure_empire() const;
+	landed_title *get_interstellar_empire() const;
+	landed_title *get_de_jure_interstellar_empire() const;
+	landed_title *get_galactic_empire() const;
+	landed_title *get_de_jure_galactic_empire() const;
 
 	world *get_primary_star() const
 	{
@@ -113,16 +113,16 @@ public:
 	}
 
 signals:
-	void duchy_changed();
-	void kingdom_changed();
-	void de_jure_kingdom_changed();
-	void empire_changed();
-	void de_jure_empire_changed();
+	void title_changed();
+	void interstellar_empire_changed();
+	void de_jure_interstellar_empire_changed();
+	void galactic_empire_changed();
+	void de_jure_galactic_empire_changed();
 	void map_mode_color_changed();
 	void ethereal_changed();
 
 private:
-	landed_title *duchy = nullptr; //the star system's corresponding cosmic duchy
+	landed_title *title = nullptr; //the star system's corresponding cosmic landed title
 	world *primary_star = nullptr;
 	std::vector<world *> worlds;
 	QPolygonF territory_polygon;
