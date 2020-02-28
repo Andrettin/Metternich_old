@@ -12,8 +12,8 @@ class holding_type;
 class landed_title;
 class religion;
 
-//the base class for territories that have holdings
-class province_base : public data_entry
+//the base class for territories that have holdings, i.e. provinces and worlds
+class territory : public data_entry
 {
 	Q_OBJECT
 
@@ -33,7 +33,7 @@ class province_base : public data_entry
 	Q_PROPERTY(metternich::holding* capital_holding READ get_capital_holding WRITE set_capital_holding)
 
 public:
-	province_base(const std::string &identifier) : data_entry(identifier)
+	territory(const std::string &identifier) : data_entry(identifier)
 	{
 	}
 

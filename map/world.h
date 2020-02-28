@@ -1,7 +1,7 @@
 #pragma once
 
 #include "database/data_type.h"
-#include "map/province_base.h"
+#include "map/territory.h"
 
 #include <QGeoCoordinate>
 #include <QPointF>
@@ -21,7 +21,7 @@ class trade_node;
 class trade_route;
 class world_type;
 
-class world : public province_base, public data_type<world>
+class world : public territory, public data_type<world>
 {
 	Q_OBJECT
 
@@ -100,7 +100,7 @@ public:
 
 		this->get_texture_path(); //throws an exception if the texture isn't found
 
-		province_base::check();
+		territory::check();
 	}
 
 	virtual std::string get_name() const override;

@@ -83,7 +83,7 @@ province *province::add(const std::string &identifier)
 	return data_type<province>::add(identifier);
 }
 
-province::province(const std::string &identifier) : province_base(identifier)
+province::province(const std::string &identifier) : territory(identifier)
 {
 	connect(this, &province::culture_changed, this, &identifiable_data_entry_base::name_changed);
 	connect(this, &province::religion_changed, this, &identifiable_data_entry_base::name_changed);
@@ -274,14 +274,14 @@ void province::initialize()
 		this->area = this->get_world()->get_area_per_pixel() * this->pixel_count;
 	}
 
-	province_base::initialize();
+	territory::initialize();
 }
 
 void province::initialize_history()
 {
 	this->population_units.clear();
 
-	province_base::initialize_history();
+	territory::initialize_history();
 
 	if (this->get_county() != nullptr) {
 		this->calculate_population();
@@ -313,7 +313,11 @@ void province::check() const
 		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no valid color.");
 	}
 
-	province_base::check();
+	territory::check();
+
+	if (static_cast<int>(this->get_settlement_holding_slots().size()) > defines::get()->get_max_settlement_slots_per_province()) {
+		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has " + std::to_string(this->get_settlement_holding_slots().size()) + " settlement slots, but the maximum settlement slots per province is set to " + std::to_string(defines::get()->get_max_settlement_slots_per_province()) + ".");
+	}
 
 	if (static_cast<int>(this->get_palace_holding_slots().size()) > defines::get()->get_max_palace_slots_per_province()) {
 		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has " + std::to_string(this->get_palace_holding_slots().size()) + " palace slots, but the maximum palace slots per province is set to " + std::to_string(defines::get()->get_max_palace_slots_per_province()) + ".");
@@ -344,7 +348,7 @@ void province::check_history() const
 		std::throw_with_nested(std::runtime_error("A wildlife unit in province \"" + this->get_identifier() + "\" is in an invalid state."));
 	}
 
-	province_base::check_history();
+	territory::check_history();
 }
 
 gsml_data province::get_cache_data() const
@@ -439,7 +443,7 @@ void province::set_county(landed_title *county)
 		return;
 	}
 
-	province_base::set_county(county);
+	territory::set_county(county);
 	county->set_province(this);
 }
 
@@ -921,7 +925,7 @@ void province::set_culture(metternich::culture *culture)
 
 	const metternich::culture *old_culture = this->get_culture();
 	metternich::culture_group *old_culture_group = old_culture ? old_culture->get_culture_group() : nullptr;
-	province_base::set_culture(culture);
+	territory::set_culture(culture);
 	metternich::culture_group *culture_group = culture ? culture->get_culture_group() : nullptr;
 
 	this->set_trade_node_recalculation_needed(true);
@@ -946,7 +950,7 @@ void province::set_religion(metternich::religion *religion)
 
 	metternich::religion *old_religion = this->get_religion();
 	metternich::religion_group *old_religion_group = old_religion ? old_religion->get_religion_group() : nullptr;
-	province_base::set_religion(religion);
+	territory::set_religion(religion);
 	metternich::religion_group *religion_group = religion ? religion->get_religion_group() : nullptr;
 
 	this->set_trade_node_recalculation_needed(true);
@@ -1120,7 +1124,7 @@ void province::add_holding_slot(holding_slot *holding_slot)
 {
 	switch (holding_slot->get_type()) {
 		case holding_slot_type::settlement:
-			province_base::add_holding_slot(holding_slot);
+			territory::add_holding_slot(holding_slot);
 			//add the holding slot to its province's regions
 			for (region *region : this->get_regions()) {
 				region->add_holding(holding_slot);
@@ -1167,7 +1171,7 @@ void province::set_capital_holding_slot(holding_slot *holding_slot)
 		}
 	}
 
-	province_base::set_capital_holding_slot(holding_slot);
+	territory::set_capital_holding_slot(holding_slot);
 
 	const QPoint &main_pos = this->get_main_pos();
 

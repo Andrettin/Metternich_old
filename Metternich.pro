@@ -48,12 +48,12 @@ SOURCES += \
         map/map.cpp \
         map/pathfinder.cpp \
         map/province.cpp \
-        map/province_base.cpp \
         map/province_image_provider.cpp \
         map/province_profile.cpp \
         map/region.cpp \
         map/star_system.cpp \
         map/terrain_type.cpp \
+        map/territory.cpp \
         map/world.cpp \
         map/world_type.cpp \
         politics/government_type.cpp \
@@ -162,12 +162,12 @@ HEADERS += \
     map/map_mode.h \
     map/pathfinder.h \
     map/province.h \
-    map/province_base.h \
     map/province_image_provider.h \
     map/province_profile.h \
     map/region.h \
     map/star_system.h \
     map/terrain_type.h \
+    map/territory.h \
     map/world.h \
     map/world_type.h \
     pch.h \

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "database/data_type.h"
-#include "map/province_base.h"
+#include "map/territory.h"
 #include "qunique_ptr.h"
 #include "technology/technology_set.h"
 
@@ -34,7 +34,7 @@ class wildlife_unit;
 class world;
 enum class map_mode : int;
 
-class province : public province_base, public data_type<province>
+class province : public territory, public data_type<province>
 {
 	Q_OBJECT
 

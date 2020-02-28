@@ -22,7 +22,7 @@
 
 namespace metternich {
 
-world::world(const std::string &identifier) : province_base(identifier)
+world::world(const std::string &identifier) : territory(identifier)
 {
 }
 
@@ -96,7 +96,7 @@ void world::initialize()
 
 	std::sort(this->satellites.begin(), this->satellites.end(), satellite_sort_func);
 
-	province_base::initialize();
+	territory::initialize();
 }
 
 std::string world::get_name() const
@@ -114,7 +114,7 @@ void world::set_county(landed_title *county)
 		return;
 	}
 
-	province_base::set_county(county);
+	territory::set_county(county);
 	county->set_world(this);
 }
 
