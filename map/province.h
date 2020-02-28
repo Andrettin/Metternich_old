@@ -1,7 +1,7 @@
 #pragma once
 
-#include "database/data_entry.h"
 #include "database/data_type.h"
+#include "map/province_base.h"
 #include "qunique_ptr.h"
 #include "technology/technology_set.h"
 
@@ -41,7 +41,7 @@ class wildlife_unit;
 class world;
 enum class map_mode : int;
 
-class province : public data_entry, public data_type<province>
+class province : public province_base, public data_type<province>
 {
 	Q_OBJECT
 
@@ -64,10 +64,6 @@ class province : public data_entry, public data_type<province>
 	Q_PROPERTY(metternich::religion* religion READ get_religion WRITE set_religion NOTIFY religion_changed)
 	Q_PROPERTY(int population READ get_population WRITE set_population NOTIFY population_changed)
 	Q_PROPERTY(QVariantList wildlife_units READ get_wildlife_units_qvariant_list NOTIFY wildlife_units_changed)
-	Q_PROPERTY(QVariantList settlement_holding_slots READ get_settlement_holding_slots_qvariant_list NOTIFY settlement_holding_slots_changed)
-	Q_PROPERTY(QVariantList settlement_holdings READ get_settlement_holdings_qvariant_list NOTIFY settlement_holdings_changed)
-	Q_PROPERTY(metternich::holding_slot* capital_holding_slot READ get_capital_holding_slot WRITE set_capital_holding_slot NOTIFY capital_holding_slot_changed)
-	Q_PROPERTY(metternich::holding* capital_holding READ get_capital_holding WRITE set_capital_holding)
 	Q_PROPERTY(QVariantList palace_holding_slots READ get_palace_holding_slots_qvariant_list CONSTANT)
 	Q_PROPERTY(metternich::holding_slot* fort_holding_slot READ get_fort_holding_slot CONSTANT)
 	Q_PROPERTY(metternich::holding_slot* university_holding_slot READ get_university_holding_slot CONSTANT)
@@ -217,7 +213,7 @@ public:
 
 	void set_terrain(terrain_type *terrain);
 
-	character *get_owner() const;
+	virtual character *get_owner() const override;
 
 	metternich::culture *get_culture() const
 	{
@@ -291,34 +287,9 @@ public:
 	void calculate_population_groups();
 
 	holding_slot *get_holding_slot(const std::string &holding_slot_str) const;
-	void add_holding_slot(holding_slot *holding_slot);
+	virtual void add_holding_slot(holding_slot *holding_slot) override;
 
-	const std::vector<holding_slot *> &get_settlement_holding_slots() const
-	{
-		return this->settlement_holding_slots;
-	}
-
-	QVariantList get_settlement_holding_slots_qvariant_list() const;
-
-	const std::vector<holding *> &get_settlement_holdings() const
-	{
-		return this->settlement_holdings;
-	}
-
-	QVariantList get_settlement_holdings_qvariant_list() const;
-
-	void create_holding(holding_slot *holding_slot, holding_type *type);
-	void destroy_holding(holding_slot *holding_slot);
-
-	holding_slot *get_capital_holding_slot() const
-	{
-		return this->capital_holding_slot;
-	}
-
-	void set_capital_holding_slot(holding_slot *holding_slot);
-
-	holding *get_capital_holding() const;
-	void set_capital_holding(holding *holding);
+	virtual void set_capital_holding_slot(holding_slot *holding_slot) override;
 
 	const std::vector<holding_slot *> &get_palace_holding_slots() const
 	{
@@ -685,9 +656,6 @@ signals:
 	void population_changed();
 	void population_groups_changed();
 	void wildlife_units_changed();
-	void settlement_holding_slots_changed();
-	void settlement_holdings_changed();
-	void capital_holding_slot_changed();
 	void main_pos_changed();
 	void trading_post_holding_slot_changed();
 	void technologies_changed();
@@ -712,9 +680,6 @@ private:
 	int population_capacity_additive_modifier = 0; //the population capacity additive modifier which the province provides to its holdings
 	int population_capacity_modifier = 0; //the population capacity modifier which the province provides to its holdings
 	int population_growth_modifier = 0; //the population growth modifier which the province provides to its holdings
-	std::vector<holding_slot *> settlement_holding_slots;
-	std::vector<holding *> settlement_holdings;
-	holding_slot *capital_holding_slot = nullptr;
 	std::vector<holding_slot *> palace_holding_slots;
 	holding_slot *fort_holding_slot = nullptr;
 	holding_slot *university_holding_slot = nullptr;

@@ -48,6 +48,7 @@ SOURCES += \
         map/map.cpp \
         map/pathfinder.cpp \
         map/province.cpp \
+        map/province_base.cpp \
         map/province_image_provider.cpp \
         map/province_profile.cpp \
         map/region.cpp \
@@ -161,6 +162,7 @@ HEADERS += \
     map/map_mode.h \
     map/pathfinder.h \
     map/province.h \
+    map/province_base.h \
     map/province_image_provider.h \
     map/province_profile.h \
     map/region.h \
