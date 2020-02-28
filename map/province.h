@@ -243,7 +243,7 @@ public:
 
 	void calculate_population_groups();
 
-	holding_slot *get_holding_slot(const std::string &holding_slot_str) const;
+	virtual holding_slot *get_holding_slot(const std::string &holding_slot_str) const override;
 	virtual void add_holding_slot(holding_slot *holding_slot) override;
 
 	virtual void set_capital_holding_slot(holding_slot *holding_slot) override;

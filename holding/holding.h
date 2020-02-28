@@ -28,6 +28,7 @@ class population_type;
 class population_unit;
 class province;
 class religion;
+class terrain_type;
 class territory;
 
 class holding : public data_entry
@@ -123,6 +124,8 @@ public:
 
 	territory *get_territory() const;
 	metternich::province *get_province() const;
+
+	const terrain_type *get_terrain() const;
 
 	const std::vector<qunique_ptr<population_unit>> &get_population_units() const
 	{

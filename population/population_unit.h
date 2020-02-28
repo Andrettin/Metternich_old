@@ -15,6 +15,7 @@ class population_type;
 class province;
 class region;
 class religion;
+class terrain_type;
 
 class population_unit : public population_unit_base, public simple_data_type<population_unit>
 {
@@ -219,6 +220,8 @@ public:
 	}
 
 	virtual const std::filesystem::path &get_icon_path() const override;
+
+	const terrain_type *get_terrain() const;
 
 signals:
 	void type_changed();

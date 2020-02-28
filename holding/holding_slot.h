@@ -16,6 +16,7 @@ class holding;
 class landed_title;
 class province;
 class province_profile;
+class terrain_type;
 class territory;
 class world;
 enum class holding_slot_type : int;
@@ -32,6 +33,7 @@ class holding_slot : public data_entry, public data_type<holding_slot>
 	Q_PROPERTY(bool settlement READ is_settlement CONSTANT)
 	Q_PROPERTY(metternich::landed_title* barony READ get_barony WRITE set_barony NOTIFY barony_changed)
 	Q_PROPERTY(metternich::holding* holding READ get_holding NOTIFY holding_changed)
+	Q_PROPERTY(metternich::terrain_type* terrain READ get_terrain WRITE set_terrain NOTIFY terrain_changed)
 	Q_PROPERTY(QGeoCoordinate geocoordinate READ get_geocoordinate WRITE set_geocoordinate)
 	Q_PROPERTY(QPoint pos READ get_pos WRITE set_pos NOTIFY pos_changed)
 	Q_PROPERTY(int holding_size READ get_holding_size WRITE set_holding_size NOTIFY holding_size_changed)
@@ -134,6 +136,13 @@ public:
 
 	void set_world(world *world);
 
+	terrain_type *get_terrain() const
+	{
+		return this->terrain;
+	}
+
+	void set_terrain(terrain_type *terrain);
+
 	const QPoint &get_pos() const
 	{
 		return this->pos;
@@ -207,6 +216,7 @@ public:
 signals:
 	void barony_changed();
 	void holding_changed();
+	void terrain_changed();
 	void pos_changed();
 	void holding_size_changed();
 	void available_commodities_changed();
@@ -219,6 +229,7 @@ private:
 	province *province = nullptr; //to which province this holding slot belongs
 	province_profile *province_profile = nullptr;
 	world *world = nullptr; //to which world this holding slot belongs, if it is a world holding slot
+	terrain_type *terrain = nullptr;
 	QGeoCoordinate geocoordinate;
 	QPoint pos = QPoint(-1, -1);
 	int holding_size = 100; //the holding size, which affects population capacity (100 = normal size)

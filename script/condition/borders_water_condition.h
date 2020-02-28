@@ -29,7 +29,7 @@ public:
 	virtual bool check_equality(const T *scope) const override
 	{
 		const province *province = get_scope_province(scope);
-		return province->borders_water() == this->borders_water;
+		return province != nullptr && province->borders_water() == this->borders_water;
 	}
 
 	virtual std::string get_assignment_string() const override

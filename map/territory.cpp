@@ -12,6 +12,30 @@
 
 namespace metternich {
 
+void territory::process_gsml_scope(const gsml_data &scope)
+{
+	const std::string &tag = scope.get_tag();
+
+	if (tag.substr(0, 2) == holding_slot::prefix) {
+		holding_slot *holding_slot = nullptr;
+		if (scope.get_operator() == gsml_operator::assignment) {
+			holding_slot = holding_slot::add(tag);
+		} else if (scope.get_operator() == gsml_operator::addition) {
+			holding_slot = this->get_holding_slot(tag);
+		} else {
+			throw std::runtime_error("Invalid operator for scope (\"" + tag + "\").");
+		}
+
+		database::process_gsml_data(holding_slot, scope);
+
+		if (scope.get_operator() == gsml_operator::assignment) {
+			this->add_holding_slot(holding_slot);
+		}
+	} else {
+		data_entry_base::process_gsml_scope(scope);
+	}
+}
+
 void territory::initialize()
 {
 	if (this->get_county() != nullptr) {
@@ -163,6 +187,21 @@ void territory::set_religion(metternich::religion *religion)
 
 	this->religion = religion;
 	emit religion_changed();
+}
+
+holding_slot *territory::get_holding_slot(const std::string &holding_slot_str) const
+{
+	if (holding_slot_str.substr(0, 2) == holding_slot::prefix) {
+		holding_slot *holding_slot = holding_slot::get(holding_slot_str);
+
+		if (holding_slot->get_territory() != this) {
+			throw std::runtime_error("Tried to get holding slot \"" + holding_slot->get_identifier() + "\" for territory \"" + this->get_identifier() + "\", but the holding slot belongs to another territory.");
+		}
+
+		return holding_slot;
+	}
+
+	throw std::runtime_error("\"" + holding_slot_str + "\" is not a valid holding slot string for territory data.");
 }
 
 void territory::add_holding_slot(holding_slot *holding_slot)

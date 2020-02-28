@@ -137,23 +137,8 @@ void province::process_gsml_scope(const gsml_data &scope)
 			});
 			this->add_path_pos_list(other_province, std::move(pos_list));
 		});
-	} else if (tag.substr(0, 2) == holding_slot::prefix) {
-		holding_slot *holding_slot = nullptr;
-		if (scope.get_operator() == gsml_operator::assignment) {
-			holding_slot = holding_slot::add(tag);
-		} else if (scope.get_operator() == gsml_operator::addition) {
-			holding_slot = this->get_holding_slot(tag);
-		} else {
-			throw std::runtime_error("Invalid operator for scope (\"" + tag + "\").");
-		}
-
-		database::process_gsml_data(holding_slot, scope);
-
-		if (scope.get_operator() == gsml_operator::assignment) {
-			holding_slot->set_province(this);
-		}
 	} else {
-		data_entry_base::process_gsml_scope(scope);
+		territory::process_gsml_scope(scope);
 	}
 }
 
@@ -164,6 +149,11 @@ void province::process_gsml_dated_property(const gsml_property &property, const 
 	if (property.get_key().substr(0, 2) == holding_slot::prefix || is_holding_slot_type_string(property.get_key())) {
 		//a property related to one of the province's holdings
 		holding_slot *holding_slot = this->get_holding_slot(property.get_key());
+
+		if (holding_slot == nullptr) {
+			throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no holding slot for string \"" + property.get_key() + "\".");
+		}
+
 		holding *holding = holding_slot->get_holding();
 
 		if (property.get_operator() == gsml_operator::assignment) {
@@ -237,7 +227,7 @@ void province::initialize()
 			std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier_without_prefix() + "_fort";
 			holding_slot *holding_slot = holding_slot::add(holding_slot_identifier);
 			holding_slot->set_type(holding_slot_type::fort);
-			holding_slot->set_province(this);
+			this->add_holding_slot(holding_slot);
 		}
 
 		//create a university holding slot for this province if none exists
@@ -245,7 +235,7 @@ void province::initialize()
 			std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier_without_prefix() + "_university";
 			holding_slot *holding_slot = holding_slot::add(holding_slot_identifier);
 			holding_slot->set_type(holding_slot_type::university);
-			holding_slot->set_province(this);
+			this->add_holding_slot(holding_slot);
 		}
 
 		//create a hospital holding slot for this province if none exists
@@ -253,7 +243,7 @@ void province::initialize()
 			std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier_without_prefix() + "_hospital";
 			holding_slot *holding_slot = holding_slot::add(holding_slot_identifier);
 			holding_slot->set_type(holding_slot_type::hospital);
-			holding_slot->set_province(this);
+			this->add_holding_slot(holding_slot);
 		}
 
 		//create a factory holding slot for this province if none exists
@@ -261,7 +251,7 @@ void province::initialize()
 			std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier_without_prefix() + "_factory";
 			holding_slot *holding_slot = holding_slot::add(holding_slot_identifier);
 			holding_slot->set_type(holding_slot_type::factory);
-			holding_slot->set_province(this);
+			this->add_holding_slot(holding_slot);
 		}
 
 		//create a trading post holding slot for this province if none exists
@@ -1088,13 +1078,7 @@ void province::calculate_population_groups()
 holding_slot *province::get_holding_slot(const std::string &holding_slot_str) const
 {
 	if (holding_slot_str.substr(0, 2) == holding_slot::prefix) {
-		holding_slot *holding_slot = holding_slot::get(holding_slot_str);
-
-		if (holding_slot->get_province() != this) {
-			throw std::runtime_error("Tried to get holding slot \"" + holding_slot->get_identifier() + "\" for province \"" + this->get_identifier() + "\", but the holding slot belongs to another province.");
-		}
-
-		return holding_slot;
+		return territory::get_holding_slot(holding_slot_str);
 	} else {
 		holding_slot_type slot_type = string_to_holding_slot_type(holding_slot_str);
 		switch (slot_type) {
@@ -1117,11 +1101,13 @@ holding_slot *province::get_holding_slot(const std::string &holding_slot_str) co
 		}
 	}
 
-	throw std::runtime_error("\"" + holding_slot_str + "\" is not a valid holding slot string for province history.");
+	throw std::runtime_error("\"" + holding_slot_str + "\" is not a valid holding slot string for province data.");
 }
 
 void province::add_holding_slot(holding_slot *holding_slot)
 {
+	holding_slot->set_province(this);
+
 	switch (holding_slot->get_type()) {
 		case holding_slot_type::settlement:
 			territory::add_holding_slot(holding_slot);
@@ -1195,7 +1181,7 @@ void province::create_trading_post_holding_slot()
 	std::string holding_slot_identifier = this->get_trading_post_holding_slot_identifier();
 	holding_slot *holding_slot = holding_slot::add(holding_slot_identifier);
 	holding_slot->set_type(holding_slot_type::trading_post);
-	holding_slot->set_province(this);
+	this->add_holding_slot(holding_slot);
 	emit trading_post_holding_slot_changed();
 }
 

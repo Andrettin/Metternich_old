@@ -38,6 +38,7 @@ public:
 	{
 	}
 
+	virtual void process_gsml_scope(const gsml_data &scope) override;
 	virtual void initialize() override;
 	virtual void initialize_history() override;
 	virtual void check() const override;
@@ -73,6 +74,7 @@ public:
 
 	virtual void set_religion(religion *religion);
 
+	virtual holding_slot *get_holding_slot(const std::string &holding_slot_str) const;
 	virtual void add_holding_slot(holding_slot *holding_slot);
 
 	const std::vector<holding_slot *> &get_settlement_holding_slots() const

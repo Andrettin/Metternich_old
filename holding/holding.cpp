@@ -294,6 +294,12 @@ province *holding::get_province() const
 	return this->get_slot()->get_province();
 }
 
+const terrain_type *holding::get_terrain() const
+{
+	return this->get_slot()->get_terrain();
+}
+
+
 void holding::add_population_unit(qunique_ptr<population_unit> &&population_unit)
 {
 	this->change_population(population_unit->get_size());

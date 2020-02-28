@@ -63,6 +63,8 @@ public:
 	static constexpr int astrodistance_multiplier = 1024;
 	static constexpr int million_km_per_au = 150;
 
+	static std::set<std::string> get_database_dependencies();
+
 	static const std::vector<world *> &get_map_worlds()
 	{
 		return world::map_worlds;
@@ -314,6 +316,8 @@ public:
 	}
 
 	void calculate_cosmic_size();
+
+	virtual void add_holding_slot(holding_slot *holding_slot) override;
 
 	const std::set<province *> &get_provinces() const
 	{

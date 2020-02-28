@@ -462,4 +462,10 @@ const std::filesystem::path &population_unit::get_icon_path() const
 	return icon_path;
 }
 
+const terrain_type *population_unit::get_terrain() const
+{
+	return this->get_holding()->get_terrain();
+}
+
+
 }

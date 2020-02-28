@@ -47,6 +47,10 @@ void holding_slot::initialize()
 		this->province_profile = nullptr;
 	}
 
+	if (this->get_terrain() == nullptr && this->get_province() != nullptr) {
+		this->set_terrain(this->get_province()->get_terrain());
+	}
+
 	if (this->is_settlement()) {
 		if (this->get_available_commodities().empty()) {
 			//generate an available commodity for the holding if it has none
@@ -68,6 +72,10 @@ void holding_slot::initialize_history()
 
 void holding_slot::check() const
 {
+	if (this->get_terrain() == nullptr) {
+		throw std::runtime_error("Holding slot \"" + this->get_identifier() + "\" has no terrain.");
+	}
+
 	if (this->get_territory()->get_county() == nullptr) {
 		throw std::runtime_error("The territory of holding slot \"" + this->get_identifier() + "\" (\"" + this->get_territory()->get_identifier() + "\") has no county.");
 	}
@@ -169,7 +177,6 @@ void holding_slot::set_province(metternich::province *province)
 	}
 
 	this->province = province;
-	province->add_holding_slot(this);
 
 	connect(province, &province::active_trade_routes_changed, this, &holding_slot::active_trade_routes_changed);
 }
@@ -181,7 +188,16 @@ void holding_slot::set_world(metternich::world *world)
 	}
 
 	this->world = world;
-	world->add_holding_slot(this);
+}
+
+void holding_slot::set_terrain(metternich::terrain_type *terrain)
+{
+	if (terrain == this->get_terrain()) {
+		return;
+	}
+
+	this->terrain = terrain;
+	emit terrain_changed();
 }
 
 QVariantList holding_slot::get_available_commodities_qvariant_list() const

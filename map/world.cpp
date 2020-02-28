@@ -22,6 +22,14 @@
 
 namespace metternich {
 
+std::set<std::string> world::get_database_dependencies()
+{
+	return {
+		//so that baronies will be ensured to exist when worlds (and thus holding slots) are processed
+		landed_title::class_identifier,
+	};
+}
+
 world::world(const std::string &identifier) : territory(identifier)
 {
 }
@@ -212,6 +220,12 @@ void world::calculate_cosmic_size()
 			this->cosmic_size = world::default_moon_size;
 		}
 	}
+}
+
+void world::add_holding_slot(holding_slot *holding_slot)
+{
+	holding_slot->set_world(this);
+	territory::add_holding_slot(holding_slot);
 }
 
 QVariantList world::get_provinces_qvariant_list() const
