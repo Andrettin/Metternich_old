@@ -232,8 +232,6 @@ void province::process_gsml_dated_scope(const gsml_data &scope, const QDateTime 
 void province::initialize()
 {
 	if (this->get_county() != nullptr) {
-		connect(this->get_county(), &landed_title::holder_changed, this, &province::owner_changed);
-
 		//create a fort holding slot for this province if none exists
 		if (this->get_fort_holding_slot() == nullptr) {
 			std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier_without_prefix() + "_fort";
@@ -276,24 +274,14 @@ void province::initialize()
 		this->area = this->get_world()->get_area_per_pixel() * this->pixel_count;
 	}
 
-	data_entry_base::initialize();
+	province_base::initialize();
 }
 
 void province::initialize_history()
 {
 	this->population_units.clear();
 
-	if (this->get_capital_holding_slot() == nullptr && !this->get_settlement_holding_slots().empty()) {
-		//set the first settlement holding slot as the capital if none has been set
-		this->set_capital_holding_slot(this->get_settlement_holding_slots().front());
-	}
-
-	//ensure the province's settlement holding slots have been initialized, so that its culture and religion will be calculated correctly
-	for (holding_slot *settlement_holding_slot : this->get_settlement_holding_slots()) {
-		if (!settlement_holding_slot->is_history_initialized()) {
-			settlement_holding_slot->initialize_history();
-		}
-	}
+	province_base::initialize_history();
 
 	if (this->get_county() != nullptr) {
 		this->calculate_population();
@@ -313,8 +301,6 @@ void province::initialize_history()
 			this->destroy_trading_post_holding_slot();
 		}
 	}
-
-	data_entry_base::initialize_history();
 }
 
 void province::check() const
@@ -327,15 +313,7 @@ void province::check() const
 		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no valid color.");
 	}
 
-	if (this->get_county() != nullptr) {
-		if (this->get_settlement_holding_slots().empty()) {
-			throw std::runtime_error("Province \"" + this->get_identifier() + "\" has a county (not being a wasteland or water zone), but has no settlement holding slots.");
-		}
-	}
-
-	if (static_cast<int>(this->get_settlement_holding_slots().size()) > defines::get()->get_max_settlement_slots_per_province()) {
-		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has " + std::to_string(this->get_settlement_holding_slots().size()) + " settlement slots, but the maximum settlement slots per province is set to " + std::to_string(defines::get()->get_max_settlement_slots_per_province()) + ".");
-	}
+	province_base::check();
 
 	if (static_cast<int>(this->get_palace_holding_slots().size()) > defines::get()->get_max_palace_slots_per_province()) {
 		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has " + std::to_string(this->get_palace_holding_slots().size()) + " palace slots, but the maximum palace slots per province is set to " + std::to_string(defines::get()->get_max_palace_slots_per_province()) + ".");
@@ -349,16 +327,6 @@ void province::check_history() const
 		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no border provinces.");
 	}
 	*/
-
-	if (this->get_county() != nullptr && !this->get_settlement_holdings().empty()) {
-		if (this->get_culture() == nullptr) {
-			throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no culture.");
-		}
-
-		if (this->get_religion() == nullptr) {
-			throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no religion.");
-		}
-	}
 
 	if (this->get_trade_node() == nullptr && this->get_owner() != nullptr) {
 		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has an owner, but is not assigned to any trade node.");
@@ -376,7 +344,7 @@ void province::check_history() const
 		std::throw_with_nested(std::runtime_error("A wildlife unit in province \"" + this->get_identifier() + "\" is in an invalid state."));
 	}
 
-	this->check();
+	province_base::check_history();
 }
 
 gsml_data province::get_cache_data() const
@@ -471,78 +439,8 @@ void province::set_county(landed_title *county)
 		return;
 	}
 
-	this->county = county;
+	province_base::set_county(county);
 	county->set_province(this);
-	emit county_changed();
-}
-
-/**
-**	@brief	Get the province's de facto duchy
-**
-**	@return	The province's de facto duchy
-*/
-landed_title *province::get_duchy() const
-{
-	if (this->get_county() != nullptr) {
-		return this->get_county()->get_duchy();
-	}
-
-	return nullptr;
-}
-
-landed_title *province::get_de_jure_duchy() const
-{
-	if (this->get_county() != nullptr) {
-		return this->get_county()->get_de_jure_duchy();
-	}
-
-	return nullptr;
-}
-
-/**
-**	@brief	Get the province's de facto kingdom
-**
-**	@return	The province's de facto kingdom
-*/
-landed_title *province::get_kingdom() const
-{
-	if (this->get_county() != nullptr) {
-		return this->get_county()->get_kingdom();
-	}
-
-	return nullptr;
-}
-
-landed_title *province::get_de_jure_kingdom() const
-{
-	if (this->get_county() != nullptr) {
-		return this->get_county()->get_de_jure_kingdom();
-	}
-
-	return nullptr;
-}
-
-/**
-**	@brief	Get the province's (de facto) empire
-**
-**	@return	The province's (de facto) empire
-*/
-landed_title *province::get_empire() const
-{
-	if (this->get_county() != nullptr) {
-		return this->get_county()->get_empire();
-	}
-
-	return nullptr;
-}
-
-landed_title *province::get_de_jure_empire() const
-{
-	if (this->get_county() != nullptr) {
-		return this->get_county()->get_de_jure_empire();
-	}
-
-	return nullptr;
 }
 
 void province::set_world(metternich::world *world)
@@ -1015,30 +913,15 @@ void province::set_terrain(metternich::terrain_type *terrain)
 	emit terrain_changed();
 }
 
-character *province::get_owner() const
-{
-	if (this->get_county() != nullptr) {
-		return this->get_county()->get_holder();
-	}
-
-	return nullptr;
-}
-
 void province::set_culture(metternich::culture *culture)
 {
 	if (culture == this->get_culture()) {
 		return;
 	}
 
-	if (culture == nullptr && this->get_owner() != nullptr) {
-		throw std::runtime_error("Tried to set the culture of province \"" + this->get_identifier() + "\" to null, despite it having an owner.");
-	}
-
 	const metternich::culture *old_culture = this->get_culture();
 	metternich::culture_group *old_culture_group = old_culture ? old_culture->get_culture_group() : nullptr;
-
-	this->culture = culture;
-	emit culture_changed();
+	province_base::set_culture(culture);
 	metternich::culture_group *culture_group = culture ? culture->get_culture_group() : nullptr;
 
 	this->set_trade_node_recalculation_needed(true);
@@ -1063,9 +946,7 @@ void province::set_religion(metternich::religion *religion)
 
 	metternich::religion *old_religion = this->get_religion();
 	metternich::religion_group *old_religion_group = old_religion ? old_religion->get_religion_group() : nullptr;
-
-	this->religion = religion;
-	emit religion_changed();
+	province_base::set_religion(religion);
 	metternich::religion_group *religion_group = religion ? religion->get_religion_group() : nullptr;
 
 	this->set_trade_node_recalculation_needed(true);

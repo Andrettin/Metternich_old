@@ -49,10 +49,6 @@ public:
 	static constexpr const char *duchy_prefix = "d_";
 	static constexpr const char *kingdom_prefix = "k_";
 	static constexpr const char *empire_prefix = "e_";
-	static constexpr const char *world_empire_prefix = "we_";
-	static constexpr const char *star_empire_prefix = "se_";
-	static constexpr const char *interstellar_empire_prefix = "ie_";
-	static constexpr const char *galactic_empire_prefix = "ge_";
 
 	//string identifiers for landed title tiers
 	static constexpr const char *barony_identifier = "barony";
@@ -60,10 +56,6 @@ public:
 	static constexpr const char *duchy_identifier = "duchy";
 	static constexpr const char *kingdom_identifier = "kingdom";
 	static constexpr const char *empire_identifier = "empire";
-	static constexpr const char *world_empire_identifier = "world_empire";
-	static constexpr const char *star_empire_identifier = "star_empire";
-	static constexpr const char *interstellar_empire_identifier = "interstellar_empire";
-	static constexpr const char *galactic_empire_identifier = "galactic_empire";
 
 	//string identifiers for landed title tier holder title names
 	static constexpr const char *baron_identifier = "baron";
@@ -71,10 +63,6 @@ public:
 	static constexpr const char *duke_identifier = "duke";
 	static constexpr const char *king_identifier = "king";
 	static constexpr const char *emperor_identifier = "emperor";
-	static constexpr const char *world_emperor_identifier = "world_emperor";
-	static constexpr const char *star_emperor_identifier = "star_emperor";
-	static constexpr const char *interstellar_emperor_identifier = "interstellar_emperor";
-	static constexpr const char *galactic_emperor_identifier = "galactic_emperor";
 
 	static const std::vector<landed_title *> &get_tier_titles(const landed_title_tier tier);
 	static landed_title *add(const std::string &identifier);
@@ -212,12 +200,6 @@ public:
 	landed_title *get_de_jure_kingdom() const;
 	landed_title *get_empire() const;
 	landed_title *get_de_jure_empire() const;
-	landed_title *get_star_empire() const;
-	landed_title *get_de_jure_star_empire() const;
-	landed_title *get_interstellar_empire() const;
-	landed_title *get_de_jure_interstellar_empire() const;
-	landed_title *get_galactic_empire() const;
-	landed_title *get_de_jure_galactic_empire() const;
 
 	bool is_titular() const
 	{

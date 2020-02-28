@@ -22,7 +22,7 @@
 
 namespace metternich {
 
-world::world(const std::string &identifier) : data_entry(identifier)
+world::world(const std::string &identifier) : province_base(identifier)
 {
 }
 
@@ -96,81 +96,26 @@ void world::initialize()
 
 	std::sort(this->satellites.begin(), this->satellites.end(), satellite_sort_func);
 
-	data_entry_base::initialize();
+	province_base::initialize();
 }
 
 std::string world::get_name() const
 {
-	if (this->get_title() != nullptr) {
-		return translator::get()->translate(this->get_title()->get_identifier_with_aliases());
+	if (this->get_county() != nullptr) {
+		return translator::get()->translate(this->get_county()->get_identifier_with_aliases());
 	}
 
 	return translator::get()->translate(this->get_identifier_with_aliases()); //world without a cosmic landed title
 }
 
-void world::set_title(landed_title *title)
+void world::set_county(landed_title *county)
 {
-	if (title == this->get_title()) {
+	if (county == this->get_county()) {
 		return;
 	}
 
-	this->title = title;
-	title->set_world(this);
-	emit title_changed();
-}
-
-landed_title *world::get_star_empire() const
-{
-	if (this->get_title() != nullptr) {
-		return this->get_title()->get_star_empire();
-	}
-
-	return nullptr;
-}
-
-landed_title *world::get_de_jure_star_empire() const
-{
-	if (this->get_title() != nullptr) {
-		return this->get_title()->get_de_jure_star_empire();
-	}
-
-	return nullptr;
-}
-
-landed_title *world::get_interstellar_empire() const
-{
-	if (this->get_title() != nullptr) {
-		return this->get_title()->get_interstellar_empire();
-	}
-
-	return nullptr;
-}
-
-landed_title *world::get_de_jure_interstellar_empire() const
-{
-	if (this->get_title() != nullptr) {
-		return this->get_title()->get_de_jure_interstellar_empire();
-	}
-
-	return nullptr;
-}
-
-landed_title *world::get_galactic_empire() const
-{
-	if (this->get_title() != nullptr) {
-		return this->get_title()->get_galactic_empire();
-	}
-
-	return nullptr;
-}
-
-landed_title *world::get_de_jure_galactic_empire() const
-{
-	if (this->get_title() != nullptr) {
-		return this->get_title()->get_de_jure_galactic_empire();
-	}
-
-	return nullptr;
+	province_base::set_county(county);
+	county->set_world(this);
 }
 
 void world::set_star_system(metternich::star_system *system)

@@ -23,16 +23,9 @@
 
 namespace metternich {
 
-class character;
-class culture;
-class holding;
-class holding_slot;
-class holding_type;
-class landed_title;
 class population_type;
 class population_unit;
 class region;
-class religion;
 class technology;
 class terrain_type;
 class trade_node;
@@ -45,13 +38,6 @@ class province : public province_base, public data_type<province>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(metternich::landed_title* county READ get_county WRITE set_county NOTIFY county_changed)
-	Q_PROPERTY(metternich::landed_title* duchy READ get_duchy NOTIFY duchy_changed)
-	Q_PROPERTY(metternich::landed_title* de_jure_duchy READ get_de_jure_duchy NOTIFY de_jure_duchy_changed)
-	Q_PROPERTY(metternich::landed_title* kingdom READ get_kingdom NOTIFY kingdom_changed)
-	Q_PROPERTY(metternich::landed_title* de_jure_kingdom READ get_de_jure_kingdom NOTIFY de_jure_kingdom_changed)
-	Q_PROPERTY(metternich::landed_title* empire READ get_empire NOTIFY empire_changed)
-	Q_PROPERTY(metternich::landed_title* de_jure_empire READ get_de_jure_empire NOTIFY de_jure_empire_changed)
 	Q_PROPERTY(metternich::world* world READ get_world CONSTANT)
 	Q_PROPERTY(metternich::trade_node* trade_node READ get_trade_node NOTIFY trade_node_changed)
 	Q_PROPERTY(int trade_node_trade_cost READ get_trade_node_trade_cost NOTIFY trade_node_trade_cost_changed)
@@ -59,9 +45,6 @@ class province : public province_base, public data_type<province>
 	Q_PROPERTY(QRect rect READ get_rect CONSTANT)
 	Q_PROPERTY(QImage image READ get_image NOTIFY image_changed)
 	Q_PROPERTY(metternich::terrain_type* terrain READ get_terrain WRITE set_terrain NOTIFY terrain_changed)
-	Q_PROPERTY(metternich::character* owner READ get_owner NOTIFY owner_changed)
-	Q_PROPERTY(metternich::culture* culture READ get_culture WRITE set_culture NOTIFY culture_changed)
-	Q_PROPERTY(metternich::religion* religion READ get_religion WRITE set_religion NOTIFY religion_changed)
 	Q_PROPERTY(int population READ get_population WRITE set_population NOTIFY population_changed)
 	Q_PROPERTY(QVariantList wildlife_units READ get_wildlife_units_qvariant_list NOTIFY wildlife_units_changed)
 	Q_PROPERTY(QVariantList palace_holding_slots READ get_palace_holding_slots_qvariant_list CONSTANT)
@@ -130,19 +113,7 @@ public:
 
 	std::vector<std::vector<std::string>> get_tag_suffix_list_with_fallbacks() const;
 
-	landed_title *get_county() const
-	{
-		return this->county;
-	}
-
-	void set_county(landed_title *county);
-
-	landed_title *get_duchy() const;
-	landed_title *get_de_jure_duchy() const;
-	landed_title *get_kingdom() const;
-	landed_title *get_de_jure_kingdom() const;
-	landed_title *get_empire() const;
-	landed_title *get_de_jure_empire() const;
+	virtual void set_county(landed_title *county) override;
 
 	world *get_world() const
 	{
@@ -213,21 +184,8 @@ public:
 
 	void set_terrain(terrain_type *terrain);
 
-	virtual character *get_owner() const override;
-
-	metternich::culture *get_culture() const
-	{
-		return this->culture;
-	}
-
-	void set_culture(culture *culture);
-
-	metternich::religion *get_religion() const
-	{
-		return this->religion;
-	}
-
-	void set_religion(religion *religion);
+	virtual void set_culture(metternich::culture *culture) override;
+	virtual void set_religion(metternich::religion *religion) override;
 
 	int get_area() const
 	{
@@ -639,20 +597,10 @@ public:
 	void set_trade_node_recalculation_needed(const bool recalculation_needed, const bool recalculate_for_dependent_provinces = true);
 
 signals:
-	void county_changed();
-	void duchy_changed();
-	void de_jure_duchy_changed();
-	void kingdom_changed();
-	void de_jure_kingdom_changed();
-	void empire_changed();
-	void de_jure_empire_changed();
 	void trade_node_changed();
 	void trade_node_trade_cost_changed();
 	void image_changed();
 	void terrain_changed();
-	void owner_changed();
-	void culture_changed();
-	void religion_changed();
 	void population_changed();
 	void population_groups_changed();
 	void wildlife_units_changed();
@@ -663,7 +611,6 @@ signals:
 	void selected_changed();
 
 private:
-	landed_title *county = nullptr;
 	world *world = nullptr;
 	trade_node *trade_node = nullptr;
 	QColor color; //the color used to identify the province in the province map
@@ -672,8 +619,6 @@ private:
 	QPoint center_pos;
 	QImage image; //the province's image to be drawn on-screen
 	terrain_type *terrain = nullptr;
-	metternich::culture *culture = nullptr;
-	metternich::religion *religion = nullptr;
 	int pixel_count = 0; //the amount of pixels that the province takes on the map
 	int area = 0; //the area of the province, in square kilometers; used to calculate holding sizes
 	int population = 0; //the sum of the population of all of the province's settlement holdings

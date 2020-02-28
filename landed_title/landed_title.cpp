@@ -64,14 +64,6 @@ landed_title *landed_title::add(const std::string &identifier)
 		title->tier = landed_title_tier::kingdom;
 	} else if (identifier_prefix == landed_title::empire_prefix) {
 		title->tier = landed_title_tier::empire;
-	} else if (identifier_prefix == landed_title::world_empire_prefix) {
-		title->tier = landed_title_tier::world_empire;
-	} else if (identifier_prefix == landed_title::star_empire_prefix) {
-		title->tier = landed_title_tier::star_empire;
-	} else if (identifier_prefix == landed_title::interstellar_empire_prefix) {
-		title->tier = landed_title_tier::interstellar_empire;
-	} else if (identifier_prefix == landed_title::galactic_empire_prefix) {
-		title->tier = landed_title_tier::galactic_empire;
 	} else {
 		throw std::runtime_error("Invalid identifier for new landed title: \"" + identifier + "\". Landed title identifiers must begin with a valid prefix, which depends on the title's tier.");
 	}
@@ -89,10 +81,6 @@ const char *landed_title::get_tier_identifier(const landed_title_tier tier)
 		case landed_title_tier::duchy: return landed_title::duchy_identifier;
 		case landed_title_tier::kingdom: return landed_title::kingdom_identifier;
 		case landed_title_tier::empire: return landed_title::empire_identifier;
-		case landed_title_tier::world_empire: return landed_title::world_empire_identifier;
-		case landed_title_tier::star_empire: return landed_title::star_empire_identifier;
-		case landed_title_tier::interstellar_empire: return landed_title::interstellar_empire_identifier;
-		case landed_title_tier::galactic_empire: return landed_title::galactic_empire_identifier;
 	}
 
 	throw std::runtime_error("Invalid landed title tier enumeration value: " + std::to_string(static_cast<int>(tier)) + ".");
@@ -106,10 +94,6 @@ const char *landed_title::get_tier_holder_identifier(const landed_title_tier tie
 		case landed_title_tier::duchy: return landed_title::duke_identifier;
 		case landed_title_tier::kingdom: return landed_title::king_identifier;
 		case landed_title_tier::empire: return landed_title::emperor_identifier;
-		case landed_title_tier::world_empire: return landed_title::world_emperor_identifier;
-		case landed_title_tier::star_empire: return landed_title::star_emperor_identifier;
-		case landed_title_tier::interstellar_empire: return landed_title::interstellar_emperor_identifier;
-		case landed_title_tier::galactic_empire: return landed_title::galactic_emperor_identifier;
 	}
 
 	throw std::runtime_error("Invalid landed title tier enumeration value: " + std::to_string(static_cast<int>(tier)) + ".");
@@ -180,7 +164,7 @@ void landed_title::initialize()
 		}
 	}
 
-	if (this->get_capital_province() == nullptr && !is_cosmic_landed_title_tier(this->get_tier())) {
+	if (this->get_capital_province() == nullptr) {
 		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has no capital province.");
 	}
 
@@ -243,7 +227,7 @@ void landed_title::initialize_history()
 
 void landed_title::check() const
 {
-	if (this->get_tier() != landed_title_tier::barony && this->get_tier() != landed_title_tier::world_empire && !this->get_color().isValid()) {
+	if (this->get_tier() != landed_title_tier::barony && this->get_world() == nullptr && !this->get_color().isValid()) {
 		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has no valid color.");
 	}
 
@@ -251,14 +235,14 @@ void landed_title::check() const
 		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has a different province and capital province.");
 	}
 
-	if (this->get_tier() >= landed_title_tier::duchy && this->get_tier() != landed_title_tier::world_empire) {
+	if (this->get_tier() >= landed_title_tier::duchy) {
 		this->get_flag_path(); //throws an exception if the flag isn't found
 	}
 }
 
 void landed_title::check_history() const
 {
-	if (this->get_capital_province() == nullptr && !is_cosmic_landed_title_tier(this->get_tier())) {
+	if (this->get_capital_province() == nullptr) {
 		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has no capital province.");
 	}
 
@@ -279,8 +263,8 @@ void landed_title::check_history() const
 	}
 
 	if (this->get_star_system() != nullptr) {
-		if (this->get_tier() != landed_title_tier::star_empire) {
-			throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has been assigned to a star system, but is not a cosmic duchy.");
+		if (this->get_tier() != landed_title_tier::duchy) {
+			throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has been assigned to a star system, but is not a duchy.");
 		}
 	}
 
@@ -686,36 +670,6 @@ landed_title *landed_title::get_empire() const
 landed_title *landed_title::get_de_jure_empire() const
 {
 	return this->get_tier_de_jure_title(landed_title_tier::empire);
-}
-
-landed_title *landed_title::get_star_empire() const
-{
-	return this->get_tier_title(landed_title_tier::star_empire);
-}
-
-landed_title *landed_title::get_de_jure_star_empire() const
-{
-	return this->get_tier_de_jure_title(landed_title_tier::star_empire);
-}
-
-landed_title *landed_title::get_interstellar_empire() const
-{
-	return this->get_tier_title(landed_title_tier::interstellar_empire);
-}
-
-landed_title *landed_title::get_de_jure_interstellar_empire() const
-{
-	return this->get_tier_de_jure_title(landed_title_tier::interstellar_empire);
-}
-
-landed_title *landed_title::get_galactic_empire() const
-{
-	return this->get_tier_title(landed_title_tier::galactic_empire);
-}
-
-landed_title *landed_title::get_de_jure_galactic_empire() const
-{
-	return this->get_tier_de_jure_title(landed_title_tier::galactic_empire);
 }
 
 bool landed_title::is_primary() const
