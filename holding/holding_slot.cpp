@@ -26,8 +26,9 @@ namespace metternich {
 std::set<std::string> holding_slot::get_database_dependencies()
 {
 	return {
-		//so that holding slots will be added to a province after the holding slots within the province's definition have been added to it
-		province::class_identifier
+		//so that holding slots will be added to a province/world after the holding slots within the province's/world's definition have been added to it
+		province::class_identifier,
+		world::class_identifier
 	};
 }
 
@@ -67,12 +68,12 @@ void holding_slot::initialize_history()
 
 void holding_slot::check() const
 {
-	if (this->get_province()->get_county() == nullptr) {
-		throw std::runtime_error("The province of holding slot \"" + this->get_identifier() + "\" (\"" + this->get_province()->get_identifier() + "\") has no county.");
+	if (this->get_territory()->get_county() == nullptr) {
+		throw std::runtime_error("The territory of holding slot \"" + this->get_identifier() + "\" (\"" + this->get_territory()->get_identifier() + "\") has no county.");
 	}
 
-	if (this->get_barony() != nullptr && this->get_barony()->get_de_jure_liege_title() != this->get_province()->get_county()) {
-		throw std::runtime_error("The barony of holding slot \"" + this->get_identifier() + "\" is in county \"" + this->get_barony()->get_de_jure_liege_title()->get_identifier() + "\", but its province belongs to county \"" + this->get_province()->get_county()->get_identifier() + "\".");
+	if (this->get_barony() != nullptr && this->get_barony()->get_de_jure_liege_title() != this->get_territory()->get_county()) {
+		throw std::runtime_error("The barony of holding slot \"" + this->get_identifier() + "\" is in county \"" + this->get_barony()->get_de_jure_liege_title()->get_identifier() + "\", but its territory belongs to county \"" + this->get_territory()->get_county()->get_identifier() + "\".");
 	}
 }
 
@@ -119,12 +120,12 @@ std::vector<std::vector<std::string>> holding_slot::get_tag_suffix_list_with_fal
 		}
 	}
 
-	if (this->get_province()->get_culture() != nullptr) {
-		tag_list_with_fallbacks.push_back({this->get_province()->get_culture()->get_identifier(), this->get_province()->get_culture()->get_culture_group()->get_identifier()});
+	if (this->get_territory()->get_culture() != nullptr) {
+		tag_list_with_fallbacks.push_back({this->get_territory()->get_culture()->get_identifier(), this->get_territory()->get_culture()->get_culture_group()->get_identifier()});
 	}
 
-	if (this->get_province()->get_religion()) {
-		tag_list_with_fallbacks.push_back({this->get_province()->get_religion()->get_identifier(), this->get_province()->get_religion()->get_religion_group()->get_identifier()});
+	if (this->get_territory()->get_religion()) {
+		tag_list_with_fallbacks.push_back({this->get_territory()->get_religion()->get_identifier(), this->get_territory()->get_religion()->get_religion_group()->get_identifier()});
 	}
 
 	return tag_list_with_fallbacks;
@@ -146,6 +147,17 @@ void holding_slot::set_barony(landed_title *barony)
 	emit barony_changed();
 }
 
+territory *holding_slot::get_territory() const
+{
+	if (this->get_province() != nullptr) {
+		return this->get_province();
+	} else if (this->get_world() != nullptr) {
+		return this->get_world();
+	}
+
+	return nullptr;
+}
+
 void holding_slot::set_province(metternich::province *province)
 {
 	if (province == this->get_province()) {
@@ -162,6 +174,16 @@ void holding_slot::set_province(metternich::province *province)
 	connect(province, &province::active_trade_routes_changed, this, &holding_slot::active_trade_routes_changed);
 }
 
+void holding_slot::set_world(metternich::world *world)
+{
+	if (world == this->get_world()) {
+		return;
+	}
+
+	this->world = world;
+	world->add_holding_slot(this);
+}
+
 QVariantList holding_slot::get_available_commodities_qvariant_list() const
 {
 	return container::to_qvariant_list(this->get_available_commodities());
@@ -172,7 +194,7 @@ void holding_slot::set_holding(qunique_ptr<metternich::holding> &&holding)
 	this->holding = std::move(holding);
 	emit holding_changed();
 
-	if (this->get_type() == holding_slot_type::trading_post && map::get()->get_mode() == map_mode::trade_zone) {
+	if (this->get_province() != nullptr && this->get_type() == holding_slot_type::trading_post && map::get()->get_mode() == map_mode::trade_zone) {
 		this->get_province()->update_color_for_map_mode(map::get()->get_mode());
 	}
 }
@@ -192,17 +214,17 @@ void holding_slot::generate_available_commodity()
 
 bool holding_slot::has_any_trade_route() const
 {
-	return this->get_province()->has_any_trade_route();
+	return this->get_province() != nullptr && this->get_province()->has_any_trade_route();
 }
 
 bool holding_slot::has_any_active_trade_route() const
 {
-	return this->get_province()->has_any_active_trade_route();
+	return this->get_province() != nullptr && this->get_province()->has_any_active_trade_route();
 }
 
 bool holding_slot::has_any_trade_route_land_connection() const
 {
-	return this->get_province()->has_any_trade_route_land_connection();
+	return this->get_province() != nullptr && this->get_province()->has_any_trade_route_land_connection();
 }
 
 }

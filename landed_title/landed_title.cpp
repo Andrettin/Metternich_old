@@ -17,6 +17,7 @@
 #include "map/map_mode.h"
 #include "map/province.h"
 #include "map/star_system.h"
+#include "map/world.h"
 #include "politics/government_type.h"
 #include "politics/government_type_group.h"
 #include "politics/law.h"
@@ -152,20 +153,30 @@ void landed_title::initialize()
 				this->get_holding_slot()->initialize();
 			}
 
-			this->capital_province = this->get_holding_slot()->get_province();
+			if (this->get_holding_slot()->get_province() != nullptr) {
+				this->capital_province = this->get_holding_slot()->get_province();
+			} else if (this->get_holding_slot()->get_world() != nullptr) {
+				this->capital_world = this->get_holding_slot()->get_world();
+			} else {
+				throw std::runtime_error("Holding slot \"" + this->get_holding_slot()->get_identifier() + "\" is not located in either a province or a world.");
+			}
 
 			//if a non-titular barony has no de jure liege, set it to be the county of its holding slot's province
 			if (this->get_de_jure_liege_title() == nullptr) {
 				this->set_de_jure_liege_title(this->get_holding_slot()->get_province()->get_county());
 			}
 		} else if (this->get_de_jure_liege_title() != nullptr && !this->get_de_jure_liege_title()->is_titular()) {
-			//set the barony's capital province to its county's province
-			this->capital_province = this->get_de_jure_liege_title()->get_province();
+			//set the barony's capital province to its county's province or world
+			if (this->get_de_jure_liege_title()->get_province() != nullptr) {
+				this->capital_province = this->get_de_jure_liege_title()->get_province();
+			} else if (this->get_de_jure_liege_title()->get_world() != nullptr) {
+				this->capital_world = this->get_de_jure_liege_title()->get_world();
+			}
 		}
 	}
 
-	if (this->get_capital_province() == nullptr) {
-		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has no capital province.");
+	if (this->get_capital_territory() == nullptr) {
+		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has no capital territory.");
 	}
 
 	data_entry_base::initialize();
@@ -185,8 +196,8 @@ void landed_title::initialize_history()
 			culture = this->get_holding()->get_culture();
 			religion = this->get_holding()->get_religion();
 		} else {
-			culture = this->get_capital_province()->get_culture();
-			religion = this->get_capital_province()->get_religion();
+			culture = this->get_capital_territory()->get_culture();
+			religion = this->get_capital_territory()->get_religion();
 		}
 
 		this->set_holder(character::generate(culture, religion));
@@ -235,6 +246,10 @@ void landed_title::check() const
 		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has a different province and capital province.");
 	}
 
+	if (this->get_world() != nullptr && this->get_world() != this->get_capital_world()) {
+		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has a different world and capital world.");
+	}
+
 	if (this->get_tier() >= landed_title_tier::duchy) {
 		this->get_flag_path(); //throws an exception if the flag isn't found
 	}
@@ -242,11 +257,15 @@ void landed_title::check() const
 
 void landed_title::check_history() const
 {
-	if (this->get_capital_province() == nullptr) {
-		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has no capital province.");
+	if (this->get_capital_territory() == nullptr) {
+		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has no capital territory.");
 	}
 
 	if (this->get_holding_slot() != nullptr && this->get_holding_slot()->get_province() != this->get_capital_province()) {
+		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has its holding slot in a different province than its capital province.");
+	}
+
+	if (this->get_holding_slot() != nullptr && this->get_holding_slot()->get_world() != this->get_capital_world()) {
 		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has its holding slot in a different province than its capital province.");
 	}
 
@@ -602,11 +621,6 @@ landed_title *landed_title::get_county() const
 	return this->get_tier_title(landed_title_tier::county);
 }
 
-/**
-**	@brief	Get the title's de jure county
-**
-**	@return	The title's de jure county
-*/
 landed_title *landed_title::get_de_jure_county() const
 {
 	return this->get_tier_de_jure_title(landed_title_tier::county);
@@ -622,11 +636,6 @@ landed_title *landed_title::get_duchy() const
 	return this->get_tier_title(landed_title_tier::duchy);
 }
 
-/**
-**	@brief	Get the title's de jure duchy
-**
-**	@return	The title's de jure duchy
-*/
 landed_title *landed_title::get_de_jure_duchy() const
 {
 	return this->get_tier_de_jure_title(landed_title_tier::duchy);
@@ -642,11 +651,6 @@ landed_title *landed_title::get_kingdom() const
 	return this->get_tier_title(landed_title_tier::kingdom);
 }
 
-/**
-**	@brief	Get the title's de jure kingdom
-**
-**	@return	The title's de jure kingdom
-*/
 landed_title *landed_title::get_de_jure_kingdom() const
 {
 	return this->get_tier_de_jure_title(landed_title_tier::kingdom);
@@ -662,11 +666,6 @@ landed_title *landed_title::get_empire() const
 	return this->get_tier_title(landed_title_tier::empire);
 }
 
-/**
-**	@brief	Get the title's de jure empire
-**
-**	@return	The title's de jure empire
-*/
 landed_title *landed_title::get_de_jure_empire() const
 {
 	return this->get_tier_de_jure_title(landed_title_tier::empire);
@@ -681,14 +680,25 @@ bool landed_title::is_primary() const
 	return this->get_holder()->get_primary_title() == this;
 }
 
+territory *landed_title::get_capital_territory() const
+{
+	if (this->get_capital_province() != nullptr) {
+		return this->get_capital_province();
+	} else if (this->get_capital_world() != nullptr) {
+		return this->get_capital_world();
+	}
+
+	return nullptr;
+}
+
 holding *landed_title::get_capital_holding() const
 {
 	if (this->get_holding() != nullptr) {
 		return this->get_holding();
 	}
 
-	if (this->get_capital_province() != nullptr) {
-		return this->get_capital_province()->get_capital_holding();
+	if (this->get_capital_territory() != nullptr) {
+		return this->get_capital_territory()->get_capital_holding();
 	}
 
 	return nullptr;
@@ -698,8 +708,8 @@ culture *landed_title::get_culture() const
 {
 	if (this->get_holder() != nullptr) {
 		return this->get_holder()->get_culture();
-	} else if (this->get_capital_province() != nullptr) {
-		return this->get_capital_province()->get_culture();
+	} else if (this->get_capital_territory() != nullptr) {
+		return this->get_capital_territory()->get_culture();
 	}
 
 	return nullptr;
@@ -709,8 +719,8 @@ religion *landed_title::get_religion() const
 {
 	if (this->get_holder() != nullptr) {
 		return this->get_holder()->get_religion();
-	} else if (this->get_capital_province() != nullptr) {
-		return this->get_capital_province()->get_religion();
+	} else if (this->get_capital_territory() != nullptr) {
+		return this->get_capital_territory()->get_religion();
 	}
 
 	return nullptr;

@@ -72,16 +72,16 @@ holding::~holding()
 void holding::initialize_history()
 {
 	if (this->get_owner() == nullptr && this->get_barony() == nullptr) {
-		this->set_owner(this->get_province()->get_county()->get_holder());
+		this->set_owner(this->get_territory()->get_county()->get_holder());
 	}
 
 	if (this->is_settlement()) {
 		if (this->get_culture() == nullptr) {
-			this->set_culture(this->get_province()->get_culture());
+			this->set_culture(this->get_territory()->get_culture());
 		}
 
 		if (this->get_religion() == nullptr) {
-			this->set_religion(this->get_province()->get_religion());
+			this->set_religion(this->get_territory()->get_religion());
 		}
 
 		for (const qunique_ptr<population_unit> &population_unit : this->get_population_units()) {
@@ -167,7 +167,7 @@ std::string holding::get_name() const
 		return translator::get()->translate(this->get_barony()->get_identifier_with_aliases(), this->get_tag_suffix_list_with_fallbacks());
 	}
 
-	return this->get_province()->get_name();
+	return this->get_territory()->get_name();
 }
 
 std::string holding::get_type_name() const
@@ -199,14 +199,14 @@ std::vector<std::vector<std::string>> holding::get_tag_suffix_list_with_fallback
 		culture = this->get_culture();
 		religion = this->get_religion();
 	} else {
-		culture = this->get_province()->get_culture();
-		religion = this->get_province()->get_religion();
+		culture = this->get_territory()->get_culture();
+		religion = this->get_territory()->get_religion();
 	}
 
 	tag_list_with_fallbacks.push_back({culture->get_identifier(), culture->get_culture_group()->get_identifier()});
 	tag_list_with_fallbacks.push_back({religion->get_identifier(), religion->get_religion_group()->get_identifier()});
 
-	if (this->get_province()->is_coastal()) {
+	if (this->get_province() != nullptr && this->get_province()->is_coastal()) {
 		tag_list_with_fallbacks.push_back({"coastal"});
 	}
 
@@ -268,8 +268,8 @@ void holding::set_owner(character *new_owner)
 
 	if (this->get_barony() != nullptr && this->get_barony()->get_holder() != new_owner) {
 		throw std::runtime_error("Tried to set the owner of a holding which has a barony to a different character than its barony's holder.");
-	} else if (is_extra_holding_slot_type(this->get_slot()->get_type()) && !is_separately_ownable_extra_holding_slot_type(this->get_slot()->get_type()) && this->get_province()->get_owner() != new_owner) {
-		throw std::runtime_error("Tried to set the owner of an extra holding which is not separately ownable to a different character than its province's owner.");
+	} else if (is_extra_holding_slot_type(this->get_slot()->get_type()) && !is_separately_ownable_extra_holding_slot_type(this->get_slot()->get_type()) && this->get_territory()->get_owner() != new_owner) {
+		throw std::runtime_error("Tried to set the owner of an extra holding which is not separately ownable to a different character than its territory's owner.");
 	}
 
 	this->owner = new_owner;
@@ -279,9 +279,14 @@ void holding::set_owner(character *new_owner)
 		new_owner->add_holding(this);
 	}
 
-	if (this->get_slot()->get_type() == holding_slot_type::trading_post && map::get()->get_mode() == map_mode::trade_zone) {
+	if (this->get_province() != nullptr && this->get_slot()->get_type() == holding_slot_type::trading_post && map::get()->get_mode() == map_mode::trade_zone) {
 		this->get_province()->update_color_for_map_mode(map::get()->get_mode());
 	}
+}
+
+territory *holding::get_territory() const
+{
+	return this->get_slot()->get_territory();
 }
 
 province *holding::get_province() const

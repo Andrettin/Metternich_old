@@ -16,6 +16,8 @@ class holding;
 class landed_title;
 class province;
 class province_profile;
+class territory;
+class world;
 enum class holding_slot_type : int;
 
 class holding_slot : public data_entry, public data_type<holding_slot>
@@ -25,6 +27,7 @@ class holding_slot : public data_entry, public data_type<holding_slot>
 	Q_PROPERTY(QString name READ get_name_qstring NOTIFY name_changed)
 	Q_PROPERTY(metternich::province* province READ get_province WRITE set_province)
 	Q_PROPERTY(metternich::province_profile* province_profile MEMBER province_profile)
+	Q_PROPERTY(metternich::world* world READ get_world WRITE set_world)
 	Q_PROPERTY(metternich::holding_slot_type type READ get_type WRITE set_type)
 	Q_PROPERTY(bool settlement READ is_settlement CONSTANT)
 	Q_PROPERTY(metternich::landed_title* barony READ get_barony WRITE set_barony NOTIFY barony_changed)
@@ -92,8 +95,8 @@ public:
 			return;
 		}
 
-		if (this->get_province() != nullptr) {
-			throw std::runtime_error("Tried to change the type of holding slot \"" + this->get_identifier() + "\" after it had already been added to a province.");
+		if (this->get_territory() != nullptr) {
+			throw std::runtime_error("Tried to change the type of holding slot \"" + this->get_identifier() + "\" after it had already been added to a territory.");
 		}
 
 		this->type = type;
@@ -115,12 +118,21 @@ public:
 
 	void set_holding(qunique_ptr<holding> &&holding);
 
+	territory *get_territory() const;
+
 	province *get_province() const
 	{
 		return this->province;
 	}
 
 	void set_province(province *province);
+
+	world *get_world() const
+	{
+		return this->world;
+	}
+
+	void set_world(world *world);
 
 	const QPoint &get_pos() const
 	{
@@ -206,6 +218,7 @@ private:
 	qunique_ptr<holding> holding; //the holding built on this slot, if any
 	province *province = nullptr; //to which province this holding slot belongs
 	province_profile *province_profile = nullptr;
+	world *world = nullptr; //to which world this holding slot belongs, if it is a world holding slot
 	QGeoCoordinate geocoordinate;
 	QPoint pos = QPoint(-1, -1);
 	int holding_size = 100; //the holding size, which affects population capacity (100 = normal size)

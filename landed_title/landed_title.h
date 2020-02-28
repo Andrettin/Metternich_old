@@ -20,6 +20,7 @@ class law_group;
 class province;
 class religion;
 class star_system;
+class territory;
 class world;
 enum class landed_title_tier;
 
@@ -35,7 +36,9 @@ class landed_title : public data_entry, public data_type<landed_title>
 	Q_PROPERTY(metternich::landed_title* liege_title MEMBER liege_title)
 	Q_PROPERTY(metternich::landed_title* de_jure_liege_title READ get_de_jure_liege_title WRITE set_de_jure_liege_title NOTIFY de_jure_liege_title_changed)
 	Q_PROPERTY(metternich::landed_title* realm READ get_realm NOTIFY realm_changed)
+	Q_PROPERTY(metternich::territory* capital_territory READ get_capital_territory)
 	Q_PROPERTY(metternich::province* capital_province MEMBER capital_province READ get_capital_province)
+	Q_PROPERTY(metternich::world* capital_world MEMBER capital_world READ get_capital_world)
 	Q_PROPERTY(QString flag_tag READ get_flag_tag_qstring WRITE set_flag_tag_qstring)
 	Q_PROPERTY(QString flag_path READ get_flag_path_qstring CONSTANT)
 	Q_PROPERTY(QVariantList laws READ get_laws_qvariant_list NOTIFY laws_changed)
@@ -149,6 +152,7 @@ public:
 		}
 
 		this->world = world;
+		this->capital_world = world;
 	}
 
 	metternich::star_system *get_star_system() const
@@ -209,9 +213,16 @@ public:
 
 	bool is_primary() const;
 
+	territory *get_capital_territory() const;
+
 	metternich::province *get_capital_province() const
 	{
 		return this->capital_province;
+	}
+
+	metternich::world *get_capital_world() const
+	{
+		return this->capital_world;
 	}
 
 	metternich::holding *get_capital_holding() const;
@@ -304,6 +315,7 @@ private:
 	landed_title *de_jure_liege_title = nullptr;
 	std::vector<landed_title *> de_jure_vassal_titles;
 	metternich::province *capital_province = nullptr;
+	metternich::world *capital_world = nullptr;
 	landed_title *holder_title = nullptr; //title of this title's holder; used only for initialization, and set to null afterwards
 	bool random_holder = false; //whether a random holder should be generated for the title upon initialization
 	landed_title *liege_title = nullptr; //title of this title's holder's liege; used only for initialization, and set to null afterwards
