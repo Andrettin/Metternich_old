@@ -55,7 +55,6 @@ class province : public territory, public data_type<province>
 	Q_PROPERTY(metternich::holding_slot* factory_holding_slot READ get_factory_holding_slot CONSTANT)
 	Q_PROPERTY(QVariantList technologies READ get_technologies_qvariant_list NOTIFY technologies_changed)
 	Q_PROPERTY(bool selected READ is_selected WRITE set_selected NOTIFY selected_changed)
-	Q_PROPERTY(bool selectable READ is_selectable CONSTANT)
 	Q_PROPERTY(QGeoCoordinate center_coordinate READ get_center_coordinate CONSTANT)
 	Q_PROPERTY(QPoint center_pos READ get_center_pos CONSTANT)
 	Q_PROPERTY(QPoint main_pos READ get_main_pos NOTIFY main_pos_changed)
@@ -457,7 +456,6 @@ public:
 	}
 
 	void set_selected(const bool selected, const bool notify_engine_interface = true);
-	bool is_selectable() const;
 
 	const std::vector<qunique_ptr<population_unit>> &get_population_units() const
 	{

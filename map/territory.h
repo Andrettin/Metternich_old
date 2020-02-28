@@ -31,6 +31,7 @@ class territory : public data_entry
 	Q_PROPERTY(QVariantList settlement_holdings READ get_settlement_holdings_qvariant_list NOTIFY settlement_holdings_changed)
 	Q_PROPERTY(metternich::holding_slot* capital_holding_slot READ get_capital_holding_slot WRITE set_capital_holding_slot NOTIFY capital_holding_slot_changed)
 	Q_PROPERTY(metternich::holding* capital_holding READ get_capital_holding WRITE set_capital_holding)
+	Q_PROPERTY(bool selectable READ is_selectable CONSTANT)
 
 public:
 	territory(const std::string &identifier) : data_entry(identifier)
@@ -100,6 +101,8 @@ public:
 
 	holding *get_capital_holding() const;
 	void set_capital_holding(holding *holding);
+
+	bool is_selectable() const;
 
 signals:
 	void county_changed();

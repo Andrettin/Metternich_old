@@ -269,4 +269,9 @@ void territory::set_capital_holding(holding *holding)
 	}
 }
 
+bool territory::is_selectable() const
+{
+	return this->get_county() != nullptr;
+}
+
 }

@@ -1422,11 +1422,6 @@ void province::set_selected(const bool selected, const bool notify_engine_interf
 	}
 }
 
-bool province::is_selectable() const
-{
-	return this->get_county() != nullptr;
-}
-
 QVariantList province::get_population_per_type_qvariant_list() const
 {
 	std::shared_lock<std::shared_mutex> lock(this->population_groups_mutex);
