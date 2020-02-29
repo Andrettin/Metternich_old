@@ -294,17 +294,18 @@ void game::generate_missing_title_holders()
 			continue;
 		}
 
-		//generate missing title holders for county associated with provinces, or baronies associated with holdings
-		if ((landed_title->get_province() == nullptr || landed_title->get_province()->get_settlement_holdings().empty()) && landed_title->get_holding() == nullptr) {
+		//generate missing title holders for county associated with territories, or baronies associated with holdings
+		const territory *territory = landed_title->get_territory();
+		if ((territory == nullptr || territory->get_settlement_holdings().empty()) && landed_title->get_holding() == nullptr) {
 			continue;
 		}
 
 		culture *culture = nullptr;
 		religion *religion = nullptr;
 
-		if (landed_title->get_province() != nullptr) {
-			culture = landed_title->get_province()->get_culture();
-			religion = landed_title->get_province()->get_religion();
+		if (territory != nullptr) {
+			culture = territory->get_culture();
+			religion = territory->get_religion();
 		} else if (landed_title->get_holding() != nullptr) {
 			culture = landed_title->get_holding()->get_culture();
 			religion = landed_title->get_holding()->get_religion();
@@ -315,7 +316,7 @@ void game::generate_missing_title_holders()
 
 		//set the county holder as the liege of the generated owner for the holding
 		if (landed_title->get_holding() != nullptr) {
-			character *county_holder = landed_title->get_holding()->get_province()->get_county()->get_holder();
+			character *county_holder = landed_title->get_holding()->get_territory()->get_county()->get_holder();
 			holder->set_liege(county_holder);
 		}
 	}

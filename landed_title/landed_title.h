@@ -129,6 +129,8 @@ public:
 	void set_holding_slot(holding_slot *holding_slot);
 	metternich::holding *get_holding() const;
 
+	territory *get_territory() const;
+
 	metternich::province *get_province() const
 	{
 		return this->province;
@@ -207,8 +209,8 @@ public:
 
 	bool is_titular() const
 	{
-		//a title is not titular if it has de jure vassals, or if it is a county belonging to a province, or a barony belonging to a holding
-		return this->get_de_jure_vassal_titles().empty() && this->get_province() == nullptr && this->get_holding_slot() == nullptr && this->get_world() == nullptr && this->get_star_system() == nullptr;
+		//a title is not titular if it has no de jure vassals, or if it is a county belonging to a province, or a barony belonging to a holding
+		return this->get_de_jure_vassal_titles().empty() && this->get_territory() == nullptr && this->get_holding_slot() == nullptr && this->get_star_system() == nullptr;
 	}
 
 	bool is_primary() const;

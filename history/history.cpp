@@ -9,6 +9,7 @@
 #include "map/province.h"
 #include "map/province_profile.h"
 #include "map/region.h"
+#include "map/world.h"
 #include "population/population_unit.h"
 #include "species/wildlife_unit.h"
 #include "util/string_util.h"
@@ -198,6 +199,7 @@ void history::load()
 	region::parse_history_database();
 	province::parse_history_database();
 	province_profile::parse_history_database();
+	world::parse_history_database();
 	character::parse_history_database();
 	landed_title::parse_history_database();
 	population_unit::parse_history_database();
@@ -208,6 +210,7 @@ void history::load()
 	region::process_history_database(false);
 	province::process_history_database(false);
 	province_profile::process_history_database(false);
+	world::process_history_database(false);
 	character::process_history_database(false);
 	landed_title::process_history_database(false);
 

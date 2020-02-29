@@ -44,9 +44,9 @@ holding::holding(metternich::holding_slot *slot, holding_type *type) : data_entr
 		this->set_owner(this->get_barony()->get_holder());
 	}
 
-	this->change_base_population_capacity(this->get_province()->get_population_capacity_additive_modifier());
-	this->change_population_capacity_modifier(this->get_province()->get_population_capacity_modifier());
-	this->change_base_population_growth(this->get_province()->get_population_growth_modifier());
+	this->change_base_population_capacity(this->get_territory()->get_population_capacity_additive_modifier());
+	this->change_population_capacity_modifier(this->get_territory()->get_population_capacity_modifier());
+	this->change_base_population_growth(this->get_territory()->get_population_growth_modifier());
 
 	if (this->is_settlement()) {
 		if (!slot->get_available_commodities().empty()) {
@@ -423,7 +423,7 @@ void holding::set_population(const int population)
 
 	//change the population count for the province as well
 	const int population_change = population - old_population;
-	this->get_province()->change_population(population_change);
+	this->get_territory()->change_population(population_change);
 }
 
 void holding::calculate_population()

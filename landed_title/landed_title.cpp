@@ -161,9 +161,9 @@ void landed_title::initialize()
 				throw std::runtime_error("Holding slot \"" + this->get_holding_slot()->get_identifier() + "\" is not located in either a province or a world.");
 			}
 
-			//if a non-titular barony has no de jure liege, set it to be the county of its holding slot's province
+			//if a non-titular barony has no de jure liege, set the latter to be the county of the barony's holding slot's territory
 			if (this->get_de_jure_liege_title() == nullptr) {
-				this->set_de_jure_liege_title(this->get_holding_slot()->get_province()->get_county());
+				this->set_de_jure_liege_title(this->get_holding_slot()->get_territory()->get_county());
 			}
 		} else if (this->get_de_jure_liege_title() != nullptr && !this->get_de_jure_liege_title()->is_titular()) {
 			//set the barony's capital province to its county's province or world
@@ -242,12 +242,8 @@ void landed_title::check() const
 		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has no valid color.");
 	}
 
-	if (this->get_province() != nullptr && this->get_province() != this->get_capital_province()) {
-		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has a different province and capital province.");
-	}
-
-	if (this->get_world() != nullptr && this->get_world() != this->get_capital_world()) {
-		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has a different world and capital world.");
+	if (this->get_territory() != nullptr && this->get_territory() != this->get_capital_territory()) {
+		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has a different territory and capital territory.");
 	}
 
 	if (this->get_tier() >= landed_title_tier::duchy) {
@@ -261,7 +257,7 @@ void landed_title::check_history() const
 		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has no capital territory.");
 	}
 
-	if (this->get_holding_slot() != nullptr && this->get_holding_slot()->get_province() != this->get_capital_province()) {
+	if (this->get_holding_slot() != nullptr && this->get_holding_slot()->get_territory() != this->get_capital_territory()) {
 		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has its holding slot in a different province than its capital province.");
 	}
 
@@ -269,9 +265,9 @@ void landed_title::check_history() const
 		throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has its holding slot in a different province than its capital province.");
 	}
 
-	if (this->get_province() != nullptr) {
+	if (this->get_territory() != nullptr) {
 		if (this->get_tier() != landed_title_tier::county) {
-			throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has been assigned to a province, but is not a county.");
+			throw std::runtime_error("Landed title \"" + this->get_identifier() + "\" has been assigned to a territory, but is not a county.");
 		}
 	}
 
@@ -386,35 +382,37 @@ void landed_title::set_holder(character *character)
 
 	const landed_title *realm = this->get_realm();
 
-	if (this->get_province() != nullptr) {
+	if (this->get_territory() != nullptr) {
 		//if this is a non-titular county, then the character holding it must also possess the county's capital holding
-		if (this->get_province()->get_capital_holding() != nullptr) {
-			this->get_province()->get_capital_holding()->get_barony()->set_holder(character);
+		if (this->get_territory()->get_capital_holding() != nullptr) {
+			this->get_territory()->get_capital_holding()->get_barony()->set_holder(character);
 		}
 
 		//if this is a non-titular county, the fort, university and hospital of its province must belong to the county holder
-		holding *fort_holding = this->get_province()->get_fort_holding_slot()->get_holding();
+		holding *fort_holding = this->get_territory()->get_fort_holding_slot()->get_holding();
 		if (fort_holding != nullptr) {
 			fort_holding->set_owner(character);
 		}
 
-		holding *university_holding = this->get_province()->get_university_holding_slot()->get_holding();
+		holding *university_holding = this->get_territory()->get_university_holding_slot()->get_holding();
 		if (university_holding != nullptr) {
 			university_holding->set_owner(character);
 		}
 
-		holding *hospital_holding = this->get_province()->get_hospital_holding_slot()->get_holding();
+		holding *hospital_holding = this->get_territory()->get_hospital_holding_slot()->get_holding();
 		if (hospital_holding != nullptr) {
 			hospital_holding->set_owner(character);
 		}
 
-		if (this->get_province()->get_trading_post_holding_slot() != nullptr) {
-			holding *trading_post_holding = this->get_province()->get_trading_post_holding_slot()->get_holding();
+		if (this->get_territory()->get_trading_post_holding_slot() != nullptr) {
+			holding *trading_post_holding = this->get_territory()->get_trading_post_holding_slot()->get_holding();
 			if (trading_post_holding != nullptr && (trading_post_holding->get_owner() == nullptr || trading_post_holding->get_owner() == old_holder)) {
 				trading_post_holding->set_owner(character);
 			}
 		}
+	}
 
+	if (this->get_province() != nullptr) {
 		if (old_holder == nullptr || character == nullptr) {
 			if (!history::get()->is_loading()) {
 				this->get_province()->calculate_trade_node();
@@ -468,6 +466,17 @@ holding *landed_title::get_holding() const
 {
 	if (this->get_holding_slot() != nullptr) {
 		return this->get_holding_slot()->get_holding();
+	}
+
+	return nullptr;
+}
+
+territory *landed_title::get_territory() const
+{
+	if (this->get_province() != nullptr) {
+		return this->get_province();
+	} else if (this->get_world() != nullptr) {
+		return this->get_world();
 	}
 
 	return nullptr;
