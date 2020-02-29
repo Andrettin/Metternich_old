@@ -459,6 +459,7 @@ signals:
 	void buildings_changed();
 	void under_construction_building_changed();
 	void construction_days_changed();
+	void terrain_changed();
 	void commodity_changed();
 	void culture_changed();
 	void religion_changed();

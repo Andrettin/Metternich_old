@@ -26,6 +26,7 @@ class holding_slot : public data_entry, public data_type<holding_slot>
 	Q_OBJECT
 
 	Q_PROPERTY(QString name READ get_name_qstring NOTIFY name_changed)
+	Q_PROPERTY(metternich::territory* territory READ get_territory CONSTANT)
 	Q_PROPERTY(metternich::province* province READ get_province WRITE set_province)
 	Q_PROPERTY(metternich::province_profile* province_profile MEMBER province_profile)
 	Q_PROPERTY(metternich::world* world READ get_world WRITE set_world)
@@ -136,11 +137,7 @@ public:
 
 	void set_world(world *world);
 
-	terrain_type *get_terrain() const
-	{
-		return this->terrain;
-	}
-
+	terrain_type *get_terrain() const;
 	void set_terrain(terrain_type *terrain);
 
 	const QPoint &get_pos() const

@@ -87,6 +87,7 @@ int main(int argc, char *argv[])
 		qmlRegisterType<province>();
 		qmlRegisterType<religion>();
 		qmlRegisterType<terrain_type>();
+		qmlRegisterType<territory>();
 		qmlRegisterType<trade_node>();
 		qmlRegisterType<world>();
 		engine.rootContext()->setContextProperty("metternich", engine_interface::get());

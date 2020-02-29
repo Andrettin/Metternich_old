@@ -72,6 +72,10 @@ void holding_slot::initialize_history()
 
 void holding_slot::check() const
 {
+	if (this->get_province() != nullptr && this->get_world() != nullptr) {
+		throw std::runtime_error("Holding slot \"" + this->get_identifier() + "\" has both a province and a world.");
+	}
+
 	if (this->get_terrain() == nullptr) {
 		throw std::runtime_error("Holding slot \"" + this->get_identifier() + "\" has no terrain.");
 	}
@@ -174,11 +178,19 @@ void holding_slot::set_province(metternich::province *province)
 
 	if (this->get_province() != nullptr) {
 		disconnect(this->get_province(), &province::active_trade_routes_changed, this, &holding_slot::active_trade_routes_changed);
+
+		if (this->terrain == nullptr) {
+			disconnect(this->get_province(), &province::terrain_changed, this, &holding_slot::terrain_changed);
+		}
 	}
 
 	this->province = province;
 
 	connect(province, &province::active_trade_routes_changed, this, &holding_slot::active_trade_routes_changed);
+
+	if (this->terrain == nullptr) {
+		connect(province, &province::terrain_changed, this, &holding_slot::terrain_changed);
+	}
 }
 
 void holding_slot::set_world(metternich::world *world)
@@ -187,17 +199,54 @@ void holding_slot::set_world(metternich::world *world)
 		return;
 	}
 
+	if (this->get_world() != nullptr && this->terrain == nullptr) {
+		disconnect(this->get_world(), &world::capital_holding_slot_changed, this, &holding_slot::terrain_changed);
+	}
+
 	this->world = world;
+
+	if (this->terrain == nullptr) {
+		connect(world, &world::capital_holding_slot_changed, this, &holding_slot::terrain_changed);
+	}
+}
+
+terrain_type *holding_slot::get_terrain() const
+{
+	if (this->terrain != nullptr) {
+		return this->terrain;
+	} else if (this->get_province() != nullptr) {
+		return this->get_province()->get_terrain();
+	} else if (this->get_territory()->get_capital_holding_slot() != nullptr) {
+		return this->get_territory()->get_capital_holding_slot()->get_terrain();
+	}
+
+	return nullptr;
 }
 
 void holding_slot::set_terrain(metternich::terrain_type *terrain)
 {
-	if (terrain == this->get_terrain()) {
+	if (terrain == this->terrain) {
 		return;
+	}
+
+	if (this->terrain == nullptr) {
+		if (this->get_province() != nullptr) {
+			disconnect(this->get_province(), &province::terrain_changed, this, &holding_slot::terrain_changed);
+		} else if (this->get_world() != nullptr) {
+			disconnect(this->get_world(), &world::capital_holding_slot_changed, this, &holding_slot::terrain_changed);
+		}
 	}
 
 	this->terrain = terrain;
 	emit terrain_changed();
+
+	if (terrain == nullptr) {
+		if (this->get_province() != nullptr) {
+			connect(this->get_province(), &province::terrain_changed, this, &holding_slot::terrain_changed);
+		} else if (this->get_world() != nullptr) {
+			connect(this->get_world(), &world::capital_holding_slot_changed, this, &holding_slot::terrain_changed);
+		}
+	}
 }
 
 QVariantList holding_slot::get_available_commodities_qvariant_list() const

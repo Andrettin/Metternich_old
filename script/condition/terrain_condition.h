@@ -3,6 +3,7 @@
 #include "map/province.h"
 #include "map/terrain_type.h"
 #include "script/condition/condition.h"
+#include "script/condition/condition_check_base.h"
 #include "script/scope_util.h"
 
 namespace metternich {
@@ -33,6 +34,11 @@ public:
 	virtual bool check_equality(const T *scope) const override
 	{
 		return scope->get_terrain() == this->terrain;
+	}
+
+	virtual void bind_condition_check(condition_check_base &check, const T *scope) const override
+	{
+		scope->connect(scope, &T::terrain_changed, scope, [&check](){ check.set_result_recalculation_needed(); }, Qt::ConnectionType::DirectConnection);
 	}
 
 	virtual std::string get_assignment_string() const override

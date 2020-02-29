@@ -229,6 +229,7 @@ signals:
 	void religion_changed();
 	void phenotype_changed();
 	void holding_changed();
+	void terrain_changed();
 	void discount_types_changed();
 	void wealth_changed();
 

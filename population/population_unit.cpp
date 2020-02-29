@@ -245,9 +245,25 @@ void population_unit::set_holding(metternich::holding *holding)
 		return;
 	}
 
+	const terrain_type *old_terrain = this->get_terrain();
+
+	if (this->get_holding() != nullptr) {
+		disconnect(this->get_holding(), &holding::terrain_changed, this, &population_unit::terrain_changed);
+	}
+
 	this->holding = holding;
 	emit holding_changed();
 	this->set_province(holding->get_province());
+
+	const terrain_type *new_terrain = this->get_terrain();
+
+	if (holding != nullptr) {
+		connect(holding, &holding::terrain_changed, this, &population_unit::terrain_changed);
+	}
+
+	if (new_terrain != old_terrain) {
+		emit terrain_changed();
+	}
 }
 
 
@@ -464,7 +480,11 @@ const std::filesystem::path &population_unit::get_icon_path() const
 
 const terrain_type *population_unit::get_terrain() const
 {
-	return this->get_holding()->get_terrain();
+	if (this->get_holding() != nullptr) {
+		return this->get_holding()->get_terrain();
+	}
+
+	return nullptr;
 }
 
 

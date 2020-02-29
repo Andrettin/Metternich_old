@@ -23,7 +23,6 @@
 
 namespace metternich {
 
-class population_type;
 class population_unit;
 class region;
 class technology;
@@ -45,14 +44,7 @@ class province : public territory, public data_type<province>
 	Q_PROPERTY(QRect rect READ get_rect CONSTANT)
 	Q_PROPERTY(QImage image READ get_image NOTIFY image_changed)
 	Q_PROPERTY(metternich::terrain_type* terrain READ get_terrain WRITE set_terrain NOTIFY terrain_changed)
-	Q_PROPERTY(int population READ get_population WRITE set_population NOTIFY population_changed)
 	Q_PROPERTY(QVariantList wildlife_units READ get_wildlife_units_qvariant_list NOTIFY wildlife_units_changed)
-	Q_PROPERTY(QVariantList palace_holding_slots READ get_palace_holding_slots_qvariant_list CONSTANT)
-	Q_PROPERTY(metternich::holding_slot* fort_holding_slot READ get_fort_holding_slot CONSTANT)
-	Q_PROPERTY(metternich::holding_slot* university_holding_slot READ get_university_holding_slot CONSTANT)
-	Q_PROPERTY(metternich::holding_slot* hospital_holding_slot READ get_hospital_holding_slot CONSTANT)
-	Q_PROPERTY(metternich::holding_slot* trading_post_holding_slot READ get_trading_post_holding_slot NOTIFY trading_post_holding_slot_changed)
-	Q_PROPERTY(metternich::holding_slot* factory_holding_slot READ get_factory_holding_slot CONSTANT)
 	Q_PROPERTY(QVariantList technologies READ get_technologies_qvariant_list NOTIFY technologies_changed)
 	Q_PROPERTY(bool selected READ is_selected WRITE set_selected NOTIFY selected_changed)
 	Q_PROPERTY(QGeoCoordinate center_coordinate READ get_center_coordinate CONSTANT)
@@ -91,8 +83,6 @@ public:
 	virtual ~province() override;
 
 	virtual void process_gsml_scope(const gsml_data &scope) override;
-	virtual void process_gsml_dated_property(const gsml_property &property, const QDateTime &date) override;
-	virtual void process_gsml_dated_scope(const gsml_data &scope, const QDateTime &date) override;
 	virtual void initialize() override;
 	virtual void initialize_history() override;
 	virtual void check() const override;
@@ -100,17 +90,13 @@ public:
 	virtual gsml_data get_cache_data() const override;
 
 	void do_day();
-	void do_month();
+	virtual void do_month() override final;
 
-	std::string get_identifier_without_prefix() const
+	virtual std::string get_identifier_without_prefix() const override
 	{
 		const size_t prefix_size = std::string(province::prefix).size();
 		return this->get_identifier().substr(prefix_size, this->get_identifier().size() - prefix_size);
 	}
-
-	virtual std::string get_name() const override;
-
-	std::vector<std::vector<std::string>> get_tag_suffix_list_with_fallbacks() const;
 
 	virtual void set_county(landed_title *county) override;
 
@@ -191,99 +177,9 @@ public:
 		return this->area;
 	}
 
-	int get_population() const
-	{
-		return this->population;
-	}
-
-	void set_population(const int population);
-
-	void change_population(const int change)
-	{
-		this->set_population(this->get_population() + change);
-	}
-
-	void calculate_population();
-
-	int get_population_capacity_additive_modifier() const
-	{
-		return this->population_capacity_additive_modifier;
-	}
-
-	void set_population_capacity_additive_modifier(const int population_capacity_modifier);
-
-	void change_population_capacity_additive_modifier(const int change)
-	{
-		this->set_population_capacity_additive_modifier(this->get_population_capacity_additive_modifier() + change);
-	}
-
-	int get_population_capacity_modifier() const
-	{
-		return this->population_capacity_modifier;
-	}
-
-	void set_population_capacity_modifier(const int population_capacity_modifier);
-
-	void change_population_capacity_modifier(const int change)
-	{
-		this->set_population_capacity_modifier(this->get_population_capacity_modifier() + change);
-	}
-
-	int get_population_growth_modifier() const
-	{
-		return this->population_growth_modifier;
-	}
-
-	void set_population_growth_modifier(const int population_capacity_modifier);
-
-	void change_population_growth_modifier(const int change)
-	{
-		this->set_population_growth_modifier(this->get_population_growth_modifier() + change);
-	}
-
-	void calculate_population_groups();
-
-	virtual holding_slot *get_holding_slot(const std::string &holding_slot_str) const override;
 	virtual void add_holding_slot(holding_slot *holding_slot) override;
 
 	virtual void set_capital_holding_slot(holding_slot *holding_slot) override;
-
-	const std::vector<holding_slot *> &get_palace_holding_slots() const
-	{
-		return this->palace_holding_slots;
-	}
-
-	QVariantList get_palace_holding_slots_qvariant_list() const;
-
-	holding_slot *get_fort_holding_slot() const
-	{
-		return this->fort_holding_slot;
-	}
-
-	holding_slot *get_university_holding_slot() const
-	{
-		return this->university_holding_slot;
-	}
-
-	holding_slot *get_hospital_holding_slot() const
-	{
-		return this->hospital_holding_slot;
-	}
-
-	holding_slot *get_trading_post_holding_slot() const
-	{
-		return this->trading_post_holding_slot;
-	}
-
-	std::string get_trading_post_holding_slot_identifier() const;
-	void create_trading_post_holding_slot();
-	void destroy_trading_post_holding_slot();
-	holding *get_trading_post_holding() const;
-
-	holding_slot *get_factory_holding_slot() const
-	{
-		return this->factory_holding_slot;
-	}
 
 	const std::set<region *> &get_regions() const
 	{
@@ -360,9 +256,9 @@ public:
 		return !this->is_water();
 	}
 
-	bool can_have_trading_post() const
+	virtual bool can_have_trading_post() const override
 	{
-		if (this->get_county() == nullptr) {
+		if (!territory::can_have_trading_post()) {
 			return false;
 		}
 
@@ -463,10 +359,6 @@ public:
 	}
 
 	void add_population_unit(qunique_ptr<population_unit> &&population_unit);
-
-	Q_INVOKABLE QVariantList get_population_per_type_qvariant_list() const;
-	Q_INVOKABLE QVariantList get_population_per_culture_qvariant_list() const;
-	Q_INVOKABLE QVariantList get_population_per_religion_qvariant_list() const;
 
 	const std::vector<qunique_ptr<wildlife_unit>> &get_wildlife_units() const
 	{
@@ -599,11 +491,8 @@ signals:
 	void trade_node_trade_cost_changed();
 	void image_changed();
 	void terrain_changed();
-	void population_changed();
-	void population_groups_changed();
 	void wildlife_units_changed();
 	void main_pos_changed();
-	void trading_post_holding_slot_changed();
 	void technologies_changed();
 	void active_trade_routes_changed();
 	void selected_changed();
@@ -619,16 +508,6 @@ private:
 	terrain_type *terrain = nullptr;
 	int pixel_count = 0; //the amount of pixels that the province takes on the map
 	int area = 0; //the area of the province, in square kilometers; used to calculate holding sizes
-	int population = 0; //the sum of the population of all of the province's settlement holdings
-	int population_capacity_additive_modifier = 0; //the population capacity additive modifier which the province provides to its holdings
-	int population_capacity_modifier = 0; //the population capacity modifier which the province provides to its holdings
-	int population_growth_modifier = 0; //the population growth modifier which the province provides to its holdings
-	std::vector<holding_slot *> palace_holding_slots;
-	holding_slot *fort_holding_slot = nullptr;
-	holding_slot *university_holding_slot = nullptr;
-	holding_slot *hospital_holding_slot = nullptr;
-	holding_slot *trading_post_holding_slot = nullptr;
-	holding_slot *factory_holding_slot = nullptr;
 	std::set<region *> regions; //the regions to which this province belongs
 	std::set<province *> border_provinces; //provinces bordering this one
 	std::set<province *> river_crossings; //provinces bordering this one which are reached by crossing a major river
@@ -637,10 +516,6 @@ private:
 	std::set<trade_route *> active_trade_routes; //the active trade routes going through the province
 	int trade_node_trade_cost = 0;
 	std::vector<qunique_ptr<population_unit>> population_units; //population units set for this province in history, used during initialization to generate population units in the province's settlements
-	std::map<population_type *, int> population_per_type; //the population for each population type
-	std::map<metternich::culture *, int> population_per_culture; //the population for each culture
-	std::map<metternich::religion *, int> population_per_religion; //the population for each religion
-	mutable std::shared_mutex population_groups_mutex;
 	std::vector<qunique_ptr<wildlife_unit>> wildlife_units; //wildlife units set for this province in history
 	std::map<const province *, std::vector<QPoint>> path_pos_map; //lists of the path positions for the paths between this province and its border provinces
 	std::vector<QGeoPolygon> geopolygons;
