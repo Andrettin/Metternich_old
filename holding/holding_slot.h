@@ -216,6 +216,19 @@ public:
 	bool has_any_active_trade_route() const;
 	bool has_any_trade_route_land_connection() const;
 
+	const std::vector<metternich::province *> &get_megalopolis_provinces() const
+	{
+		return this->megalopolis_provinces;
+	}
+
+	void add_megalopolis_province(province *province)
+	{
+		this->megalopolis_provinces.push_back(province);
+	}
+
+	void remove_megalopolis_province(province *province);
+	void amalgamate_megalopolis();
+
 signals:
 	void barony_changed();
 	void holding_changed();
@@ -238,6 +251,7 @@ private:
 	int holding_size = 100; //the holding size, which affects population capacity (100 = normal size)
 	std::vector<metternich::commodity *> available_commodities; //the commodities available for production by the holding (if any)
 	bool population_distribution_allowed = true;
+	std::vector<metternich::province *> megalopolis_provinces; //provinces which pertain to this megalopolis holding slot, if it is one
 };
 
 }

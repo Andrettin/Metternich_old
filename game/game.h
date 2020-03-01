@@ -116,6 +116,7 @@ private:
 
 	void generate_missing_title_holders();
 	void purge_superfluous_characters();
+	void amalgamate_map_inactive_worlds();
 
 signals:
 	void running_changed();

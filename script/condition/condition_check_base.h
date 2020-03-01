@@ -23,7 +23,12 @@ protected:
 	{
 	}
 
-	virtual ~condition_check_base() {}
+	virtual ~condition_check_base()
+	{
+		if (condition_check_base::checks_to_recalculate.contains(this)) {
+			condition_check_base::checks_to_recalculate.erase(this);
+		}
+	}
 
 public:
 	void set_result(const bool result)

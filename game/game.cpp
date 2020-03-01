@@ -37,6 +37,7 @@ void game::start(const timeline *timeline, const QDateTime &start_date)
 	history::get()->load();
 
 	this->generate_missing_title_holders();
+	this->amalgamate_map_inactive_worlds();
 	this->purge_superfluous_characters();
 
 	if (defines::get()->get_player_character_title()->get_holder() != nullptr) {
@@ -348,6 +349,18 @@ void game::purge_superfluous_characters()
 
 	for (character *character : characters_to_remove) {
 		character::remove(character);
+	}
+}
+
+void game::amalgamate_map_inactive_worlds()
+{
+	//for worlds which have a map that has become inactive, amalgamate them
+	for (world *world : world::get_map_worlds()) {
+		if (world->is_map_active()) {
+			continue;
+		}
+
+		world->amalgamate();
 	}
 }
 

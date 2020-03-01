@@ -38,6 +38,7 @@ class province : public territory, public data_type<province>
 	Q_OBJECT
 
 	Q_PROPERTY(metternich::world* world READ get_world CONSTANT)
+	Q_PROPERTY(metternich::holding_slot* megalopolis READ get_megalopolis WRITE set_megalopolis)
 	Q_PROPERTY(metternich::trade_node* trade_node READ get_trade_node NOTIFY trade_node_changed)
 	Q_PROPERTY(int trade_node_trade_cost READ get_trade_node_trade_cost NOTIFY trade_node_trade_cost_changed)
 	Q_PROPERTY(QColor color MEMBER color READ get_color)
@@ -106,6 +107,13 @@ public:
 	}
 
 	void set_world(world *world);
+
+	holding_slot *get_megalopolis() const
+	{
+		return this->megalopolis;
+	}
+
+	void set_megalopolis(holding_slot *megalopolis);
 
 	trade_node *get_trade_node() const
 	{
@@ -492,6 +500,7 @@ signals:
 
 private:
 	world *world = nullptr;
+	holding_slot *megalopolis = nullptr;
 	trade_node *trade_node = nullptr;
 	QColor color; //the color used to identify the province in the province map
 	QColor map_mode_color; //the color used for the province by the current map mode

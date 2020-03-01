@@ -423,6 +423,16 @@ void holding::remove_empty_population_units()
 	}
 }
 
+void holding::move_population_units_to(holding *other_holding)
+{
+	for (const qunique_ptr<population_unit> &population_unit : this->get_population_units()) {
+		other_holding->change_population_size(population_unit->get_type(), population_unit->get_culture(), population_unit->get_religion(), population_unit->get_phenotype(), population_unit->get_size());
+		population_unit->set_size(0);
+	}
+
+	this->remove_empty_population_units();
+}
+
 void holding::set_population(const int population)
 {
 	if (population == this->get_population()) {

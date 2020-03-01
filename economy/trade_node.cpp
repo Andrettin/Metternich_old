@@ -77,7 +77,8 @@ void trade_node::set_active(const bool active)
 				province->set_trade_node_recalculation_needed(true);
 			}
 		} else {
-			for (province *province : this->get_provinces()) {
+			const std::set<province *> provinces = this->get_provinces();
+			for (province *province : provinces) {
 				if (province == this->get_center_of_trade()) {
 					continue;
 				}

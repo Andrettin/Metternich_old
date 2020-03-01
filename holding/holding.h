@@ -142,6 +142,7 @@ public:
 	QVariantList get_population_units_qvariant_list() const;
 	void sort_population_units();
 	void remove_empty_population_units();
+	void move_population_units_to(holding *other_holding);
 
 	int get_population() const
 	{

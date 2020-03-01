@@ -17,6 +17,7 @@
 #include "religion/religion_group.h"
 #include "translator.h"
 #include "util/container_util.h"
+#include "util/vector_util.h"
 
 namespace metternich {
 
@@ -433,6 +434,87 @@ void territory::add_holding_slot(holding_slot *holding_slot)
 	}
 }
 
+void territory::create_holding(holding_slot *holding_slot, holding_type *type)
+{
+	auto new_holding = make_qunique<holding>(holding_slot, type);
+	new_holding->moveToThread(QApplication::instance()->thread());
+	holding_slot->set_holding(std::move(new_holding));
+	switch (holding_slot->get_type()) {
+		case holding_slot_type::settlement:
+			this->settlement_holdings.push_back(holding_slot->get_holding());
+			emit settlement_holdings_changed();
+
+			if (this->get_capital_holding() == nullptr) {
+				this->set_capital_holding(holding_slot->get_holding());
+			}
+
+			break;
+		case holding_slot_type::fort:
+		case holding_slot_type::hospital:
+		case holding_slot_type::university:
+		case holding_slot_type::trading_post:
+		case holding_slot_type::factory:
+			holding_slot->get_holding()->set_owner(this->get_owner());
+			break;
+		default:
+			break;
+	}
+}
+
+void territory::destroy_holding(holding_slot *holding_slot)
+{
+	holding *holding = holding_slot->get_holding();
+
+	if (holding_slot->get_type() == holding_slot_type::settlement) {
+		vector::remove(this->settlement_holdings, holding);
+
+		if (holding == this->get_capital_holding()) {
+			//if the capital holding is being destroyed, set the next holding as the capital, if any exists, or otherwise set the capital holding to null
+			if (!this->settlement_holdings.empty()) {
+				this->set_capital_holding(this->settlement_holdings.front());
+			} else {
+				this->set_capital_holding(nullptr);
+				//if the last settlement holding was destroyed in the territory, make it an empty one
+				this->destroy_special_holdings(); //destroy all remaining holdings
+				this->get_county()->set_holder(nullptr);
+			}
+		}
+
+		emit settlement_holdings_changed();
+	}
+
+	holding_slot->set_holding(nullptr);
+}
+
+void territory::destroy_special_holdings()
+{
+	//destroy non-settlement holdings
+
+	for (holding_slot *holding_slot : this->get_palace_holding_slots()) {
+		holding *holding = holding_slot->get_holding();
+
+		if (holding != nullptr) {
+			this->destroy_holding(holding_slot);
+		}
+	}
+
+	if (this->get_fort_holding_slot()->get_holding() != nullptr) {
+		this->destroy_holding(this->get_fort_holding_slot());
+	}
+	if (this->get_university_holding_slot()->get_holding() != nullptr) {
+		this->destroy_holding(this->get_university_holding_slot());
+	}
+	if (this->get_hospital_holding_slot()->get_holding() != nullptr) {
+		this->destroy_holding(this->get_hospital_holding_slot());
+	}
+	if (this->get_trading_post_holding() != nullptr) {
+		this->destroy_holding(this->get_trading_post_holding_slot());
+	}
+	if (this->get_factory_holding_slot()->get_holding() != nullptr) {
+		this->destroy_holding(this->get_factory_holding_slot());
+	}
+}
+
 QVariantList territory::get_settlement_holding_slots_qvariant_list() const
 {
 	return container::to_qvariant_list(this->get_settlement_holding_slots());
@@ -441,6 +523,15 @@ QVariantList territory::get_settlement_holding_slots_qvariant_list() const
 QVariantList territory::get_settlement_holdings_qvariant_list() const
 {
 	return container::to_qvariant_list(this->get_settlement_holdings());
+}
+
+void territory::destroy_settlement_holdings()
+{
+	std::vector<holding *> settlement_holdings = this->get_settlement_holdings();
+
+	for (holding *holding : settlement_holdings) {
+		this->destroy_holding(holding->get_slot());
+	}
 }
 
 QVariantList territory::get_palace_holding_slots_qvariant_list() const
@@ -478,54 +569,6 @@ holding *territory::get_trading_post_holding() const
 	}
 
 	return nullptr;
-}
-
-void territory::create_holding(holding_slot *holding_slot, holding_type *type)
-{
-	auto new_holding = make_qunique<holding>(holding_slot, type);
-	new_holding->moveToThread(QApplication::instance()->thread());
-	holding_slot->set_holding(std::move(new_holding));
-	switch (holding_slot->get_type()) {
-		case holding_slot_type::settlement:
-			this->settlement_holdings.push_back(holding_slot->get_holding());
-			emit settlement_holdings_changed();
-
-			if (this->get_capital_holding() == nullptr) {
-				this->set_capital_holding(holding_slot->get_holding());
-			}
-
-			break;
-		case holding_slot_type::fort:
-		case holding_slot_type::hospital:
-		case holding_slot_type::university:
-		case holding_slot_type::trading_post:
-		case holding_slot_type::factory:
-			holding_slot->get_holding()->set_owner(this->get_owner());
-			break;
-		default:
-			break;
-	}
-}
-
-void territory::destroy_holding(holding_slot *holding_slot)
-{
-	holding *holding = holding_slot->get_holding();
-
-	if (holding_slot->get_type() == holding_slot_type::settlement) {
-		if (holding == this->get_capital_holding()) {
-			//if the capital holding is being destroyed, set the next holding as the capital, if any exists, or otherwise set the capital holding to null
-			if (this->settlement_holdings.size() > 1) {
-				this->set_capital_holding(this->settlement_holdings.at(1));
-			} else {
-				this->set_capital_holding(nullptr);
-			}
-		}
-
-		this->settlement_holdings.erase(std::remove(this->settlement_holdings.begin(), this->settlement_holdings.end(), holding), this->settlement_holdings.end());
-		emit settlement_holdings_changed();
-	}
-
-	holding_slot->set_holding(nullptr);
 }
 
 void territory::set_capital_holding_slot(holding_slot *holding_slot)

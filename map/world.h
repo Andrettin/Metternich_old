@@ -39,6 +39,7 @@ class world : public territory, public data_type<world>
 	Q_PROPERTY(double cosmic_size READ get_cosmic_size CONSTANT)
 	Q_PROPERTY(bool star READ is_star CONSTANT)
 	Q_PROPERTY(bool map READ has_map WRITE set_map)
+	Q_PROPERTY(bool map_active MEMBER map_active READ is_map_active)
 	Q_PROPERTY(QSize map_size READ get_map_size CONSTANT)
 	Q_PROPERTY(int surface_area MEMBER surface_area READ get_surface_area)
 	Q_PROPERTY(int radius MEMBER radius READ get_radius)
@@ -257,6 +258,11 @@ public:
 
 	void set_map(const bool map);
 
+	bool is_map_active() const
+	{
+		return this->map_active;
+	}
+
 	const QSize &get_map_size() const
 	{
 		return this->map_size;
@@ -461,6 +467,8 @@ public:
 		return this->get_coordinate_pos(coordinate);
 	}
 
+	void amalgamate();
+
 private:
 	void add_province(province *province);
 
@@ -480,6 +488,7 @@ private:
 	world *orbit_center = nullptr; //if none is given, then the center of the star system is assumed
 	double distance_from_orbit_center = 0; //in millions of kilometers
 	bool map = false; //whether the world has a map
+	bool map_active = false; //whether the world's map is active
 	int surface_area = 0; //the world's surface area, in square kilometers
 	int radius = 0; //the world's radius, in kilometers
 	std::vector<world *> satellites;

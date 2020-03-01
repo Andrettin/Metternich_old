@@ -4,6 +4,7 @@
 #include "economy/trade_node.h"
 #include "economy/trade_route.h"
 #include "engine_interface.h"
+#include "holding/holding.h"
 #include "holding/holding_slot.h"
 #include "landed_title/landed_title.h"
 #include "map/map.h"
@@ -168,12 +169,14 @@ void world::set_map(const bool map)
 
 	if (this->has_map()) {
 		vector::remove(world::map_worlds, this);
+		this->map_active = false;
 	}
 
 	this->map = map;
 
 	if (this->has_map()) {
 		world::map_worlds.push_back(this);
+		this->map_active = true;
 	}
 }
 
@@ -788,6 +791,59 @@ void world::add_province(province *province)
 {
 	this->provinces.insert(province);
 	province->set_world(this);
+}
+
+void world::amalgamate()
+{
+	std::map<landed_title *, int> realm_counts;
+	for (province *province : this->get_provinces()) {
+		for (holding *settlement_holding : province->get_settlement_holdings()) {
+			realm_counts[settlement_holding->get_barony()->get_realm()]++;
+		}
+	}
+
+	std::set<landed_title *> holding_realms;
+
+	//amalgamate the world's map elements into ones for the cosmic map
+	for (holding_slot *settlement_slot : this->get_settlement_holding_slots()) {
+		settlement_slot->amalgamate_megalopolis();
+
+		if (settlement_slot->get_holding() != nullptr) {
+			holding_realms.insert(settlement_slot->get_holding()->get_barony()->get_realm());
+		}
+	}
+
+	landed_title *best_realm = nullptr;
+	int best_count = 0;
+	for (landed_title *realm : holding_realms) {
+		const auto find_iterator = realm_counts.find(realm);
+
+		if (find_iterator == realm_counts.end()) {
+			continue;
+		}
+
+		const int count = find_iterator->second;
+		if (count > best_count) {
+			best_realm = realm;
+			best_count = count;
+		}
+	}
+
+	if (best_realm != nullptr) {
+		this->get_county()->set_holder(best_realm->get_holder());
+
+		//set ownership of the star system as well, if it is not owned by anyone yet
+		if (this->get_de_jure_duchy()->get_holder() == nullptr) {
+			this->get_de_jure_duchy()->set_holder(best_realm->get_holder());
+		}
+	}
+
+	for (province *province : this->get_provinces()) {
+		province->destroy_settlement_holdings(); //will also cause the destruction of extra holdings
+	}
+
+	//calculate population groups for the world, so that e.g. its plurality culture will have been calculated
+	this->calculate_population_groups();
 }
 
 }

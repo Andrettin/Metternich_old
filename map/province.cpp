@@ -42,6 +42,8 @@ std::set<std::string> province::get_database_dependencies()
 	return {
 		//so that baronies will be ensured to exist when provinces (and thus holding slots) are processed
 		landed_title::class_identifier,
+		//so that megalopolis holding slots will be ensured to exist when provinces are processed
+		world::class_identifier,
 		//so that the effects of the set_terrain() function can occur properly
 		terrain_type::class_identifier
 	};
@@ -277,6 +279,23 @@ void province::set_world(metternich::world *world)
 	}
 
 	this->world = world;
+}
+
+void province::set_megalopolis(holding_slot *megalopolis)
+{
+	if (megalopolis == this->get_megalopolis()) {
+		return;
+	}
+
+	if (this->get_megalopolis() != nullptr) {
+		this->get_megalopolis()->remove_megalopolis_province(this);
+	}
+
+	this->megalopolis = megalopolis;
+
+	if (megalopolis != nullptr) {
+		megalopolis->add_megalopolis_province(this);
+	}
 }
 
 void province::set_trade_node(metternich::trade_node *trade_node)

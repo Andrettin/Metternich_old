@@ -99,6 +99,10 @@ public:
 	holding_slot *get_holding_slot(const std::string &holding_slot_str) const;
 	virtual void add_holding_slot(holding_slot *holding_slot);
 
+	void create_holding(holding_slot *holding_slot, holding_type *type);
+	void destroy_holding(holding_slot *holding_slot);
+	void destroy_special_holdings();
+
 	const std::vector<holding_slot *> &get_settlement_holding_slots() const
 	{
 		return this->settlement_holding_slots;
@@ -112,19 +116,7 @@ public:
 	}
 
 	QVariantList get_settlement_holdings_qvariant_list() const;
-
-	void create_holding(holding_slot *holding_slot, holding_type *type);
-	void destroy_holding(holding_slot *holding_slot);
-
-	holding_slot *get_capital_holding_slot() const
-	{
-		return this->capital_holding_slot;
-	}
-
-	virtual void set_capital_holding_slot(holding_slot *holding_slot);
-
-	holding *get_capital_holding() const;
-	void set_capital_holding(holding *holding);
+	void destroy_settlement_holdings();
 
 	const std::vector<holding_slot *> &get_palace_holding_slots() const
 	{
@@ -167,6 +159,16 @@ public:
 	{
 		return this->factory_holding_slot;
 	}
+
+	holding_slot *get_capital_holding_slot() const
+	{
+		return this->capital_holding_slot;
+	}
+
+	virtual void set_capital_holding_slot(holding_slot *holding_slot);
+
+	holding *get_capital_holding() const;
+	void set_capital_holding(holding *holding);
 
 	int get_population() const
 	{
@@ -257,13 +259,13 @@ private:
 	metternich::religion *religion = nullptr;
 	std::vector<holding_slot *> settlement_holding_slots;
 	std::vector<holding *> settlement_holdings;
-	holding_slot *capital_holding_slot = nullptr;
 	std::vector<holding_slot *> palace_holding_slots;
 	holding_slot *fort_holding_slot = nullptr;
 	holding_slot *university_holding_slot = nullptr;
 	holding_slot *hospital_holding_slot = nullptr;
 	holding_slot *trading_post_holding_slot = nullptr;
 	holding_slot *factory_holding_slot = nullptr;
+	holding_slot *capital_holding_slot = nullptr;
 	int population = 0; //the sum of the population of all of the territory's settlement holdings
 	int population_capacity_additive_modifier = 0; //the population capacity additive modifier which the territory provides to its holdings
 	int population_capacity_modifier = 0; //the population capacity modifier which the territory provides to its holdings
