@@ -112,6 +112,8 @@ public:
 		return this->ethereal;
 	}
 
+	world *get_capital_world() const;
+
 signals:
 	void duchy_changed();
 	void kingdom_changed();

@@ -30,6 +30,7 @@ class province;
 class religion;
 class terrain_type;
 class territory;
+class world;
 
 class holding : public data_entry
 {
@@ -123,9 +124,12 @@ public:
 	void set_owner(character *new_owner);
 
 	territory *get_territory() const;
-	metternich::province *get_province() const;
+	province *get_province() const;
+	world *get_world() const;
 
 	const terrain_type *get_terrain() const;
+
+	bool is_territory_capital() const;
 
 	const std::vector<qunique_ptr<population_unit>> &get_population_units() const
 	{

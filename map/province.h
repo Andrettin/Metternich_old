@@ -353,13 +353,6 @@ public:
 
 	void set_selected(const bool selected, const bool notify_engine_interface = true);
 
-	const std::vector<qunique_ptr<population_unit>> &get_population_units() const
-	{
-		return this->population_units;
-	}
-
-	void add_population_unit(qunique_ptr<population_unit> &&population_unit);
-
 	const std::vector<qunique_ptr<wildlife_unit>> &get_wildlife_units() const
 	{
 		return this->wildlife_units;
@@ -515,7 +508,6 @@ private:
 	std::set<trade_route *> trade_routes; //the trade routes going through the province
 	std::set<trade_route *> active_trade_routes; //the active trade routes going through the province
 	int trade_node_trade_cost = 0;
-	std::vector<qunique_ptr<population_unit>> population_units; //population units set for this province in history, used during initialization to generate population units in the province's settlements
 	std::vector<qunique_ptr<wildlife_unit>> wildlife_units; //wildlife units set for this province in history
 	std::map<const province *, std::vector<QPoint>> path_pos_map; //lists of the path positions for the paths between this province and its border provinces
 	std::vector<QGeoPolygon> geopolygons;

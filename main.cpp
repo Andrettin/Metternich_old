@@ -42,7 +42,6 @@ namespace metternich {
 			map::get()->load();
 			database::get()->initialize();
 			map::get()->calculate_cosmic_map_bounding_rect();
-			map::get()->set_current_world(defines::get()->get_default_world());
 			game::get()->start(defines::get()->get_default_timeline(), defines::get()->get_start_date());
 		} catch (const std::exception &exception) {
 			exception::report(exception);

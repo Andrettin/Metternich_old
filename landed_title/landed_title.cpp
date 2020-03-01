@@ -154,7 +154,7 @@ void landed_title::initialize()
 			}
 
 			if (this->get_holding_slot()->get_province() != nullptr) {
-				this->capital_province = this->get_holding_slot()->get_province();
+				this->set_capital_province(this->get_holding_slot()->get_province());
 			} else if (this->get_holding_slot()->get_world() != nullptr) {
 				this->capital_world = this->get_holding_slot()->get_world();
 			} else {
@@ -168,7 +168,7 @@ void landed_title::initialize()
 		} else if (this->get_de_jure_liege_title() != nullptr && !this->get_de_jure_liege_title()->is_titular()) {
 			//set the barony's capital province to its county's province or world
 			if (this->get_de_jure_liege_title()->get_province() != nullptr) {
-				this->capital_province = this->get_de_jure_liege_title()->get_province();
+				this->set_capital_province(this->get_de_jure_liege_title()->get_province());
 			} else if (this->get_de_jure_liege_title()->get_world() != nullptr) {
 				this->capital_world = this->get_de_jure_liege_title()->get_world();
 			}
@@ -382,7 +382,12 @@ void landed_title::set_holder(character *character)
 
 	const landed_title *realm = this->get_realm();
 
-	if (this->get_territory() != nullptr) {
+	if (this->get_star_system() != nullptr) {
+		//if this is a star system's duchy, then the character holding it must also possess the duchy's capital world
+		if (this->get_capital_world() != nullptr && this->get_capital_world()->get_county() != nullptr) {
+			this->get_capital_world()->get_county()->set_holder(character);
+		}
+	} else if (this->get_territory() != nullptr) {
 		//if this is a non-titular county, then the character holding it must also possess the county's capital holding
 		if (this->get_territory()->get_capital_holding() != nullptr) {
 			this->get_territory()->get_capital_holding()->get_barony()->set_holder(character);

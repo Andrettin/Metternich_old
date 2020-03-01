@@ -228,6 +228,11 @@ void world::add_holding_slot(holding_slot *holding_slot)
 	territory::add_holding_slot(holding_slot);
 }
 
+bool world::is_system_capital() const
+{
+	return this->get_star_system() != nullptr && this->get_star_system()->get_capital_world() == this;
+}
+
 QVariantList world::get_provinces_qvariant_list() const
 {
 	return container::to_qvariant_list(this->get_provinces());

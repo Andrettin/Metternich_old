@@ -36,18 +36,6 @@ QVariantList engine_interface::get_star_systems() const
 	return star_system_list;
 }
 
-world *engine_interface::get_current_world() const
-{
-	return map::get()->get_current_world();
-}
-
-void engine_interface::set_current_world(world *world)
-{
-	game::get()->post_order([world]() {
-		map::get()->set_current_world(world);
-	});
-}
-
 QVariantList engine_interface::get_worlds() const
 {
 	QVariantList world_list = container::to_qvariant_list(world::get_all());

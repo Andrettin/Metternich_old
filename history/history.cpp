@@ -38,6 +38,20 @@ void history::generate_population_units()
 		}
 	}
 
+	for (world *world : world::get_all()) {
+		for (holding *holding : world->get_settlement_holdings()) {
+			for (const qunique_ptr<population_unit> &population_unit : holding->get_population_units()) {
+				if (population_unit->discounts_existing()) {
+					base_population_units.push_back(population_unit.get());
+				}
+			}
+		}
+
+		for (const qunique_ptr<population_unit> &population_unit : world->get_population_units()) {
+			base_population_units.push_back(population_unit.get());
+		}
+	}
+
 	for (region *region : region::get_all()) {
 		for (const qunique_ptr<population_unit> &population_unit : region->get_population_units()) {
 			base_population_units.push_back(population_unit.get());
@@ -51,11 +65,11 @@ void history::generate_population_units()
 			return a->get_discount_types().size() < b->get_discount_types().size();
 		}
 
-		//give priority to population units located in holdings, then to provinces, then to smaller regions
+		//give priority to population units located in holdings, then to territories, then to smaller regions
 		if ((a->get_holding() != nullptr) != (b->get_holding() != nullptr)) {
 			return a->get_holding() != nullptr;
-		} else if ((a->get_province() != nullptr) != (b->get_province() != nullptr)) {
-			return a->get_province() != nullptr;
+		} else if ((a->get_territory() != nullptr) != (b->get_territory() != nullptr)) {
+			return a->get_territory() != nullptr;
 		} else if (a->get_region() != b->get_region()) {
 			return a->get_region()->get_provinces().size() < b->get_region()->get_provinces().size();
 		}
@@ -84,10 +98,10 @@ void history::generate_population_units()
 			population_unit->subtract_existing_sizes();
 		}
 
-		//distribute province and region population units to the settlement holdings located in them
+		//distribute territory and region population units to the settlement holdings located in them
 		if (population_unit->get_holding() == nullptr) {
-			if (population_unit->get_province() != nullptr) {
-				population_unit->distribute_to_holdings(population_unit->get_province()->get_settlement_holdings());
+			if (population_unit->get_territory() != nullptr) {
+				population_unit->distribute_to_holdings(population_unit->get_territory()->get_settlement_holdings());
 			} else if (population_unit->get_region() != nullptr) {
 				population_unit->distribute_to_holdings(population_unit->get_region()->get_holdings());
 			}
@@ -187,10 +201,6 @@ QDateTime history::string_to_date(const std::string &date_str)
 	return date;
 }
 
-
-/**
-**	@brief	Load history
-*/
 void history::load()
 {
 	this->loading = true;
@@ -214,7 +224,7 @@ void history::load()
 	character::process_history_database(false);
 	landed_title::process_history_database(false);
 
-	//process population units after the province history, so that holdings will have been created
+	//process population units after the province/world history, so that holdings will have been created
 	population_unit::process_history_database();
 	wildlife_unit::process_history_database();
 

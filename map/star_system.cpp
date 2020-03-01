@@ -350,4 +350,13 @@ void star_system::remove_world(world *world)
 	vector::remove(this->worlds, world);
 }
 
+world *star_system::get_capital_world() const
+{
+	if (this->get_duchy() != nullptr) {
+		return this->get_duchy()->get_capital_world();
+	}
+
+	return nullptr;
+}
+
 }

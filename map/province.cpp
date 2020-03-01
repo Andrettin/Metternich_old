@@ -21,7 +21,6 @@
 #include "map/region.h"
 #include "map/terrain_type.h"
 #include "map/world.h"
-#include "population/population_unit.h"
 #include "religion/religion.h"
 #include "religion/religion_group.h"
 #include "script/modifier.h"
@@ -147,8 +146,6 @@ void province::initialize()
 
 void province::initialize_history()
 {
-	this->population_units.clear();
-
 	territory::initialize_history();
 
 	if (this->get_county() != nullptr) {
@@ -821,11 +818,6 @@ void province::set_capital_holding_slot(holding_slot *holding_slot)
 	if (old_main_pos != main_pos) {
 		emit main_pos_changed();
 	}
-}
-
-void province::add_population_unit(qunique_ptr<population_unit> &&population_unit)
-{
-	this->population_units.push_back(std::move(population_unit));
 }
 
 void province::add_wildlife_unit(qunique_ptr<wildlife_unit> &&wildlife_unit)

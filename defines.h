@@ -20,7 +20,6 @@ class defines : public QObject, public singleton<defines>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(metternich::world* default_world MEMBER default_world READ get_default_world)
 	Q_PROPERTY(metternich::timeline* default_timeline MEMBER default_timeline READ get_default_timeline)
 	Q_PROPERTY(QDateTime start_date MEMBER start_date READ get_start_date)
 	Q_PROPERTY(metternich::landed_title* player_character_title MEMBER player_character_title READ get_player_character_title)
@@ -43,11 +42,6 @@ public:
 
 	void load(const std::filesystem::path &base_path);
 	void process_gsml_property(const gsml_property &property);
-
-	world *get_default_world() const
-	{
-		return this->default_world;
-	}
 
 	timeline *get_default_timeline() const
 	{
@@ -130,7 +124,6 @@ public:
 	}
 
 private:
-	world *default_world = nullptr;
 	timeline *default_timeline = nullptr;
 	QDateTime start_date;
 	landed_title *player_character_title = nullptr;

@@ -29,7 +29,6 @@ class engine_interface : public QObject, public singleton<engine_interface>
 
 	Q_PROPERTY(metternich::game* game READ get_game CONSTANT)
 	Q_PROPERTY(QVariantList star_systems READ get_star_systems CONSTANT)
-	Q_PROPERTY(metternich::world* current_world READ get_current_world WRITE set_current_world NOTIFY current_world_changed)
 	Q_PROPERTY(QVariantList worlds READ get_worlds CONSTANT)
 	Q_PROPERTY(QVariantList map_worlds READ get_map_worlds CONSTANT)
 	Q_PROPERTY(QVariantList cosmic_duchies READ get_cosmic_duchies CONSTANT)
@@ -52,8 +51,6 @@ public:
 
 	game *get_game() const;
 	QVariantList get_star_systems() const;
-	world *get_current_world() const;
-	void set_current_world(world *world);
 	QVariantList get_worlds() const;
 	QVariantList get_map_worlds() const;
 	QVariantList get_cosmic_duchies() const;
@@ -151,7 +148,6 @@ public:
 	}
 
 signals:
-	void current_world_changed();
 	void selected_province_changed();
 	void selected_holding_changed();
 	void selected_character_changed();

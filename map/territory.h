@@ -1,6 +1,7 @@
 #pragma once
 
 #include "database/data_entry.h"
+#include "qunique_ptr.h"
 
 namespace metternich {
 
@@ -11,6 +12,7 @@ class holding_slot;
 class holding_type;
 class landed_title;
 class population_type;
+class population_unit;
 class religion;
 
 //the base class for territories that have holdings, i.e. provinces and worlds
@@ -42,9 +44,8 @@ class territory : public data_entry
 	Q_PROPERTY(bool selectable READ is_selectable CONSTANT)
 
 public:
-	territory(const std::string &identifier) : data_entry(identifier)
-	{
-	}
+	territory(const std::string &identifier);
+	virtual ~territory() override;
 
 	virtual void process_gsml_scope(const gsml_data &scope) override;
 	virtual void process_gsml_dated_property(const gsml_property &property, const QDateTime &date) override;
@@ -225,6 +226,13 @@ public:
 
 	bool is_selectable() const;
 
+	const std::vector<qunique_ptr<population_unit>> &get_population_units() const
+	{
+		return this->population_units;
+	}
+
+	void add_population_unit(qunique_ptr<population_unit> &&population_unit);
+
 signals:
 	void county_changed();
 	void duchy_changed();
@@ -264,6 +272,7 @@ private:
 	std::map<metternich::culture *, int> population_per_culture; //the population for each culture
 	std::map<metternich::religion *, int> population_per_religion; //the population for each religion
 	mutable std::shared_mutex population_groups_mutex;
+	std::vector<qunique_ptr<population_unit>> population_units; //population units set for this province in history, used during initialization to generate population units in the province's settlements
 };
 
 }

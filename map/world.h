@@ -319,6 +319,8 @@ public:
 
 	virtual void add_holding_slot(holding_slot *holding_slot) override;
 
+	bool is_system_capital() const;
+
 	const std::set<province *> &get_provinces() const
 	{
 		return this->provinces;

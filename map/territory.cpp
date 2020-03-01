@@ -12,13 +12,21 @@
 #include "politics/government_type.h"
 #include "politics/government_type_group.h"
 #include "population/population_type.h"
-#include "qunique_ptr.h"
+#include "population/population_unit.h"
 #include "religion/religion.h"
 #include "religion/religion_group.h"
 #include "translator.h"
 #include "util/container_util.h"
 
 namespace metternich {
+
+territory::territory(const std::string &identifier) : data_entry(identifier)
+{
+}
+
+territory::~territory()
+{
+}
 
 void territory::process_gsml_scope(const gsml_data &scope)
 {
@@ -169,6 +177,8 @@ void territory::initialize()
 
 void territory::initialize_history()
 {
+	this->population_units.clear();
+
 	//ensure the territory's settlement holding slots have been initialized, so that its culture and religion will be calculated correctly
 	for (holding_slot *settlement_holding_slot : this->get_settlement_holding_slots()) {
 		if (!settlement_holding_slot->is_history_initialized()) {
@@ -735,6 +745,11 @@ QVariantList territory::get_population_per_religion_qvariant_list() const
 bool territory::is_selectable() const
 {
 	return this->get_county() != nullptr;
+}
+
+void territory::add_population_unit(qunique_ptr<population_unit> &&population_unit)
+{
+	this->population_units.push_back(std::move(population_unit));
 }
 
 }

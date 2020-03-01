@@ -47,12 +47,12 @@ void population_unit::process_history_database()
 
 			if (population_unit->get_holding() != nullptr) {
 				population_unit->get_holding()->add_population_unit(std::move(population_unit));
-			} else if (population_unit->get_province() != nullptr) {
-				population_unit->get_province()->add_population_unit(std::move(population_unit));
+			} else if (population_unit->get_territory() != nullptr) {
+				population_unit->get_territory()->add_population_unit(std::move(population_unit));
 			} else if (population_unit->get_region() != nullptr) {
 				population_unit->get_region()->add_population_unit(std::move(population_unit));
 			} else {
-				throw std::runtime_error("Population unit of type \"" + type_identifier + "\" belongs to neither a holding, nor a province, nor a region.");
+				throw std::runtime_error("Population unit of type \"" + type_identifier + "\" belongs to neither a holding, nor a territory, nor a region.");
 			}
 		});
 	}
@@ -253,7 +253,11 @@ void population_unit::set_holding(metternich::holding *holding)
 
 	this->holding = holding;
 	emit holding_changed();
-	this->set_province(holding->get_province());
+	if (holding->get_province() != nullptr) {
+		this->set_province(holding->get_province());
+	} else if (holding->get_world() != nullptr) {
+		this->set_world(holding->get_world());
+	}
 
 	const terrain_type *new_terrain = this->get_terrain();
 
@@ -310,8 +314,8 @@ void population_unit::subtract_existing_sizes()
 {
 	if (this->get_holding() != nullptr) {
 		this->subtract_existing_sizes_in_holding(this->get_holding());
-	} else if (this->get_province() != nullptr) {
-		this->subtract_existing_sizes_in_holdings(this->get_province()->get_settlement_holdings());
+	} else if (this->get_territory() != nullptr) {
+		this->subtract_existing_sizes_in_holdings(this->get_territory()->get_settlement_holdings());
 	} else if (this->get_region() != nullptr) {
 		this->subtract_existing_sizes_in_holdings(this->get_region()->get_holdings());
 	}
@@ -486,6 +490,5 @@ const terrain_type *population_unit::get_terrain() const
 
 	return nullptr;
 }
-
 
 }

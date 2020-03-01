@@ -6,6 +6,8 @@ namespace metternich {
 
 class province;
 class region;
+class territory;
+class world;
 
 class population_unit_base : public data_entry_base
 {
@@ -13,6 +15,7 @@ class population_unit_base : public data_entry_base
 
 	Q_PROPERTY(int size READ get_size WRITE set_size NOTIFY size_changed)
 	Q_PROPERTY(metternich::province* province READ get_province WRITE set_province NOTIFY province_changed)
+	Q_PROPERTY(metternich::world* world READ get_world WRITE set_world NOTIFY world_changed)
 	Q_PROPERTY(metternich::region* region READ get_region WRITE set_region NOTIFY region_changed)
 	Q_PROPERTY(bool discount_existing READ discounts_existing WRITE set_discount_existing NOTIFY discount_existing_changed)
 	Q_PROPERTY(QString icon_path READ get_icon_path_qstring NOTIFY icon_path_changed)
@@ -43,6 +46,8 @@ public:
 		this->set_size(this->get_size() + change);
 	}
 
+	territory *get_territory() const;
+
 	metternich::province *get_province() const
 	{
 		return this->province;
@@ -56,6 +61,21 @@ public:
 
 		this->province = province;
 		emit province_changed();
+	}
+
+	metternich::world *get_world() const
+	{
+		return this->world;
+	}
+
+	void set_world(world *world)
+	{
+		if (world == this->get_world()) {
+			return;
+		}
+
+		this->world = world;
+		emit world_changed();
 	}
 
 	metternich::region *get_region() const
@@ -98,6 +118,7 @@ public:
 signals:
 	void size_changed();
 	void province_changed();
+	void world_changed();
 	void region_changed();
 	void discount_existing_changed();
 	void icon_path_changed();
@@ -105,8 +126,9 @@ signals:
 private:
 	int size = 0; //the size of the population unit, in number of individuals
 	metternich::province *province = nullptr; //the province where this population unit lives; may only be used during initialization to generate population units in settlements in the province
+	metternich::world *world = nullptr; //the world where this population unit lives; may only be used during initialization to generate population units in settlements in the world
 	metternich::region *region = nullptr; //the region where this population unit lives; used only during initialization to generate population units in settlements or provinces in the region
-	bool discount_existing = false; //whether to discount the size of existing population units (in this population unit's holding, province or region) with the appropriate characteristics from that of this one
+	bool discount_existing = false; //whether to discount the size of existing population units (in this population unit's holding, province, world or region) with the appropriate characteristics from that of this one
 };
 
 }

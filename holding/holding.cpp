@@ -300,11 +300,20 @@ province *holding::get_province() const
 	return this->get_slot()->get_province();
 }
 
+world *holding::get_world() const
+{
+	return this->get_slot()->get_world();
+}
+
 const terrain_type *holding::get_terrain() const
 {
 	return this->get_slot()->get_terrain();
 }
 
+bool holding::is_territory_capital() const
+{
+	return this->get_slot()->is_territory_capital();
+}
 
 void holding::add_population_unit(qunique_ptr<population_unit> &&population_unit)
 {

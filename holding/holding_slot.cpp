@@ -220,6 +220,11 @@ void holding_slot::set_terrain(metternich::terrain_type *terrain)
 	}
 }
 
+bool holding_slot::is_territory_capital() const
+{
+	return this->get_territory()->get_capital_holding_slot() == this;
+}
+
 QVariantList holding_slot::get_available_commodities_qvariant_list() const
 {
 	return container::to_qvariant_list(this->get_available_commodities());

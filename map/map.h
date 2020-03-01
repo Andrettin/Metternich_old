@@ -33,13 +33,6 @@ public:
 	map();
 	void load();
 
-	world *get_current_world() const
-	{
-		return this->current_world;
-	}
-
-	void set_current_world(world *world);
-
 	map_mode get_mode() const
 	{
 		return this->mode;
@@ -69,7 +62,6 @@ private:
 	std::map<std::string, std::vector<gsml_data>> geojson_polygon_data; //GeoJSON geopolygon coordinates, mapped to the name of the corresponding feature
 	std::map<std::string, std::vector<gsml_data>> geojson_path_data; //GeoJSON geopath coordinates, mapped to the name of the corresponding feature
 	std::string checksum;
-	world *current_world = nullptr;
 	map_mode mode;
 	QRectF cosmic_map_bounding_rect;
 };

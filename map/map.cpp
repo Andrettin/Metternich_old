@@ -221,16 +221,6 @@ void map::load()
 	}
 }
 
-void map::set_current_world(world *world)
-{
-	if (world == this->get_current_world()) {
-		return;
-	}
-
-	this->current_world = world;
-	emit engine_interface::get()->current_world_changed();
-}
-
 void map::set_mode(const map_mode mode)
 {
 	if (mode == this->get_mode()) {

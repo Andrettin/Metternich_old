@@ -37,7 +37,7 @@ class landed_title : public data_entry, public data_type<landed_title>
 	Q_PROPERTY(metternich::landed_title* de_jure_liege_title READ get_de_jure_liege_title WRITE set_de_jure_liege_title NOTIFY de_jure_liege_title_changed)
 	Q_PROPERTY(metternich::landed_title* realm READ get_realm NOTIFY realm_changed)
 	Q_PROPERTY(metternich::territory* capital_territory READ get_capital_territory)
-	Q_PROPERTY(metternich::province* capital_province MEMBER capital_province READ get_capital_province)
+	Q_PROPERTY(metternich::province* capital_province READ get_capital_province WRITE set_capital_province NOTIFY capital_province_changed)
 	Q_PROPERTY(metternich::world* capital_world MEMBER capital_world READ get_capital_world)
 	Q_PROPERTY(QString flag_tag READ get_flag_tag_qstring WRITE set_flag_tag_qstring)
 	Q_PROPERTY(QString flag_path READ get_flag_path_qstring CONSTANT)
@@ -139,7 +139,7 @@ public:
 	void set_province(province *province)
 	{
 		this->province = province;
-		this->capital_province = province;
+		this->set_capital_province(province);
 	}
 
 	metternich::world *get_world() const
@@ -220,6 +220,16 @@ public:
 	metternich::province *get_capital_province() const
 	{
 		return this->capital_province;
+	}
+
+	void set_capital_province(province *province)
+	{
+		if (province == this->get_capital_province()) {
+			return;
+		}
+
+		this->capital_province = province;
+		emit capital_province_changed();
 	}
 
 	metternich::world *get_capital_world() const
@@ -303,6 +313,7 @@ signals:
 	void holder_changed();
 	void de_jure_liege_title_changed();
 	void realm_changed();
+	void capital_province_changed();
 	void laws_changed();
 	void government_type_changed();
 

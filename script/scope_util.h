@@ -9,6 +9,7 @@ class holding_slot;
 class landed_title;
 class population_unit;
 class province;
+class world;
 
 template <typename T>
 const province *get_scope_province(const T *scope)
@@ -20,6 +21,18 @@ const province *get_scope_province(const T *scope)
 		province = scope->get_province();
 	}
 	return province;
+}
+
+template <typename T>
+const world *get_scope_world(const T *scope)
+{
+	const world *world = nullptr;
+	if constexpr (std::is_same_v<T, metternich::world>) {
+		world = scope;
+	} else {
+		world = scope->get_world();
+	}
+	return world;
 }
 
 template <typename T>

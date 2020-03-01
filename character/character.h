@@ -49,6 +49,7 @@ class character : public data_entry, public data_type<character>
 	Q_PROPERTY(metternich::character* spouse READ get_spouse WRITE set_spouse)
 	Q_PROPERTY(metternich::character* liege READ get_liege WRITE set_liege NOTIFY liege_changed)
 	Q_PROPERTY(metternich::character* employer READ get_liege WRITE set_liege NOTIFY liege_changed)
+	Q_PROPERTY(metternich::province* capital_province READ get_capital_province NOTIFY capital_province_changed)
 	Q_PROPERTY(QVariantList traits READ get_traits_qvariant_list NOTIFY traits_changed)
 	Q_PROPERTY(QVariantList items READ get_items_qvariant_list NOTIFY items_changed)
 	Q_PROPERTY(int prowess READ get_prowess NOTIFY prowess_changed)

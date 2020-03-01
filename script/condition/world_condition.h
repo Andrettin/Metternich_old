@@ -34,8 +34,17 @@ public:
 
 	virtual bool check_equality(const T *scope) const override
 	{
+		const metternich::world *world = get_scope_world(scope);
+		if (world != nullptr) {
+			return world == this->world;
+		}
+
 		const province *province = get_scope_province(scope);
-		return province->get_world() == this->world;
+		if (province != nullptr) {
+			return province->get_world() == this->world;
+		}
+
+		return false;
 	}
 
 	virtual std::string get_assignment_string() const override

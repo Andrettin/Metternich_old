@@ -184,6 +184,8 @@ public:
 		emit holding_size_changed();
 	}
 
+	bool is_territory_capital() const;
+
 	const std::vector<commodity *> &get_available_commodities() const
 	{
 		return this->available_commodities;

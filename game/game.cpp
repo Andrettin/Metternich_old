@@ -11,6 +11,7 @@
 #include "map/map.h"
 #include "map/map_mode.h"
 #include "map/province.h"
+#include "map/world.h"
 #include "script/condition/condition_check_base.h"
 #include "script/event/event_trigger.h"
 
@@ -294,9 +295,14 @@ void game::generate_missing_title_holders()
 			continue;
 		}
 
-		//generate missing title holders for county associated with territories, or baronies associated with holdings
+		//generate missing title holders for counties associated with territories, or baronies associated with holdings
 		const territory *territory = landed_title->get_territory();
-		if ((territory == nullptr || territory->get_settlement_holdings().empty()) && landed_title->get_holding() == nullptr) {
+		const star_system *system = landed_title->get_star_system();
+		if (
+			(territory == nullptr || territory->get_settlement_holdings().empty())
+			&& landed_title->get_holding() == nullptr
+			&& (system == nullptr || landed_title->get_capital_world()->get_settlement_holdings().empty())
+		) {
 			continue;
 		}
 
@@ -309,15 +315,22 @@ void game::generate_missing_title_holders()
 		} else if (landed_title->get_holding() != nullptr) {
 			culture = landed_title->get_holding()->get_culture();
 			religion = landed_title->get_holding()->get_religion();
+		} else if (system != nullptr) {
+			culture = landed_title->get_capital_world()->get_culture();
+			religion = landed_title->get_capital_world()->get_religion();
 		}
 
 		character *holder = character::generate(culture, religion);
 		landed_title->set_holder(holder);
 
-		//set the county holder as the liege of the generated owner for the holding
 		if (landed_title->get_holding() != nullptr) {
+			//set the county holder as the liege of the generated owner for the holding
 			character *county_holder = landed_title->get_holding()->get_territory()->get_county()->get_holder();
 			holder->set_liege(county_holder);
+		} else if (landed_title->get_world() != nullptr) {
+			//set the duchy holder as the liege of the generated owner for the world
+			character *duchy_holder = territory->get_duchy()->get_holder();
+			holder->set_liege(duchy_holder);
 		}
 	}
 }
