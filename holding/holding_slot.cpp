@@ -11,6 +11,7 @@
 #include "map/province.h"
 #include "map/province_profile.h"
 #include "map/region.h"
+#include "map/terrain_type.h"
 #include "map/world.h"
 #include "politics/government_type.h"
 #include "politics/government_type_group.h"
@@ -18,6 +19,7 @@
 #include "religion/religion.h"
 #include "religion/religion_group.h"
 #include "script/chance_util.h"
+#include "script/modifier.h"
 #include "translator.h"
 #include "util/container_util.h"
 
@@ -47,8 +49,13 @@ void holding_slot::initialize()
 		this->province_profile = nullptr;
 	}
 
-	if (this->get_terrain() == nullptr && this->get_province() != nullptr) {
-		this->set_terrain(this->get_province()->get_terrain());
+	if (this->get_terrain() == nullptr) {
+		if (this->get_province() != nullptr) {
+			this->set_terrain(this->get_province()->get_terrain());
+		} else if (!this->get_territory()->get_settlement_holding_slots().empty()) {
+			//set the terrain to that of the territory's first settlement holding slot
+			this->set_terrain(this->get_territory()->get_settlement_holding_slots().front()->get_terrain());
+		}
 	}
 
 	if (this->is_settlement()) {
@@ -178,19 +185,11 @@ void holding_slot::set_province(metternich::province *province)
 
 	if (this->get_province() != nullptr) {
 		disconnect(this->get_province(), &province::active_trade_routes_changed, this, &holding_slot::active_trade_routes_changed);
-
-		if (this->terrain == nullptr) {
-			disconnect(this->get_province(), &province::terrain_changed, this, &holding_slot::terrain_changed);
-		}
 	}
 
 	this->province = province;
 
 	connect(province, &province::active_trade_routes_changed, this, &holding_slot::active_trade_routes_changed);
-
-	if (this->terrain == nullptr) {
-		connect(province, &province::terrain_changed, this, &holding_slot::terrain_changed);
-	}
 }
 
 void holding_slot::set_world(metternich::world *world)
@@ -199,53 +198,25 @@ void holding_slot::set_world(metternich::world *world)
 		return;
 	}
 
-	if (this->get_world() != nullptr && this->terrain == nullptr) {
-		disconnect(this->get_world(), &world::capital_holding_slot_changed, this, &holding_slot::terrain_changed);
-	}
-
 	this->world = world;
-
-	if (this->terrain == nullptr) {
-		connect(world, &world::capital_holding_slot_changed, this, &holding_slot::terrain_changed);
-	}
-}
-
-terrain_type *holding_slot::get_terrain() const
-{
-	if (this->terrain != nullptr) {
-		return this->terrain;
-	} else if (this->get_province() != nullptr) {
-		return this->get_province()->get_terrain();
-	} else if (this->get_territory()->get_capital_holding_slot() != nullptr) {
-		return this->get_territory()->get_capital_holding_slot()->get_terrain();
-	}
-
-	return nullptr;
 }
 
 void holding_slot::set_terrain(metternich::terrain_type *terrain)
 {
-	if (terrain == this->terrain) {
+	if (terrain == this->get_terrain()) {
 		return;
 	}
 
-	if (this->terrain == nullptr) {
-		if (this->get_province() != nullptr) {
-			disconnect(this->get_province(), &province::terrain_changed, this, &holding_slot::terrain_changed);
-		} else if (this->get_world() != nullptr) {
-			disconnect(this->get_world(), &world::capital_holding_slot_changed, this, &holding_slot::terrain_changed);
-		}
+	const metternich::terrain_type *old_terrain = this->get_terrain();
+	if (old_terrain != nullptr && old_terrain->get_holding_modifier() != nullptr && this->get_holding() != nullptr) {
+		old_terrain->get_holding_modifier()->remove(this->get_holding());
 	}
 
 	this->terrain = terrain;
 	emit terrain_changed();
 
-	if (terrain == nullptr) {
-		if (this->get_province() != nullptr) {
-			connect(this->get_province(), &province::terrain_changed, this, &holding_slot::terrain_changed);
-		} else if (this->get_world() != nullptr) {
-			connect(this->get_world(), &world::capital_holding_slot_changed, this, &holding_slot::terrain_changed);
-		}
+	if (terrain != nullptr && terrain->get_holding_modifier() != nullptr && this->get_holding() != nullptr) {
+		terrain->get_holding_modifier()->apply(this->get_holding());
 	}
 }
 

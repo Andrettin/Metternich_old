@@ -727,16 +727,16 @@ void province::set_terrain(metternich::terrain_type *terrain)
 	const metternich::terrain_type *old_terrain = this->get_terrain();
 
 	if (old_terrain != nullptr) {
-		if (old_terrain->get_modifier() != nullptr) {
-			old_terrain->get_modifier()->remove(this);
+		if (old_terrain->get_province_modifier() != nullptr) {
+			old_terrain->get_province_modifier()->remove(this);
 		}
 	}
 
 	this->terrain = terrain;
 
 	if (terrain != nullptr) {
-		if (terrain->get_modifier() != nullptr) {
-			terrain->get_modifier()->apply(this);
+		if (terrain->get_province_modifier() != nullptr) {
+			terrain->get_province_modifier()->apply(this);
 		}
 	}
 

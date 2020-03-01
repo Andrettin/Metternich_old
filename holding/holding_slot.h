@@ -137,7 +137,11 @@ public:
 
 	void set_world(world *world);
 
-	terrain_type *get_terrain() const;
+	terrain_type *get_terrain() const
+	{
+		return this->terrain;
+	}
+
 	void set_terrain(terrain_type *terrain);
 
 	const QPoint &get_pos() const

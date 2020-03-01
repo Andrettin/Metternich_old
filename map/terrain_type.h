@@ -9,6 +9,7 @@
 
 namespace metternich {
 
+class holding;
 class province;
 
 template <typename T>
@@ -94,9 +95,14 @@ public:
 		}
 	}
 
-	const std::unique_ptr<metternich::modifier<province>> &get_modifier() const
+	const std::unique_ptr<metternich::modifier<holding>> &get_holding_modifier() const
 	{
-		return this->modifier;
+		return this->holding_modifier;
+	}
+
+	const std::unique_ptr<metternich::modifier<province>> &get_province_modifier() const
+	{
+		return this->province_modifier;
 	}
 
 signals:
@@ -109,7 +115,8 @@ private:
 	bool ocean = false;
 	bool river = false;
 	int path_width = 0;
-	std::unique_ptr<metternich::modifier<province>> modifier; //the modifier applied to provinces with this terrain
+	std::unique_ptr<metternich::modifier<holding>> holding_modifier; //the modifier applied to holdings with this terrain
+	std::unique_ptr<metternich::modifier<province>> province_modifier; //the modifier applied to provinces with this terrain
 };
 
 }

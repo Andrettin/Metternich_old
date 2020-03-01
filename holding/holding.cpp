@@ -19,6 +19,7 @@
 #include "map/map.h"
 #include "map/map_mode.h"
 #include "map/province.h"
+#include "map/terrain_type.h"
 #include "politics/government_type.h"
 #include "politics/government_type_group.h"
 #include "population/population_type.h"
@@ -42,6 +43,10 @@ holding::holding(metternich::holding_slot *slot, holding_type *type) : data_entr
 
 	if (this->get_barony() != nullptr) {
 		this->set_owner(this->get_barony()->get_holder());
+	}
+
+	if (this->get_terrain() != nullptr && this->get_terrain()->get_holding_modifier() != nullptr) {
+		this->get_terrain()->get_holding_modifier()->apply(this);
 	}
 
 	this->change_base_population_capacity(this->get_territory()->get_population_capacity_additive_modifier());
