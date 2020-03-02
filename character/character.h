@@ -281,30 +281,7 @@ public:
 		return this->liege;
 	}
 
-	void set_liege(character *liege)
-	{
-		if (this->get_liege() == liege) {
-			return;
-		}
-
-		const province *old_capital_province = this->get_capital_province();
-		const province *old_location = this->get_location();
-
-		if (this->get_liege() != nullptr) {
-			this->get_liege()->vassals.erase(std::remove(this->get_liege()->vassals.begin(), this->get_liege()->vassals.end(), this), this->get_liege()->vassals.end());
-		}
-
-		this->liege = liege;
-		liege->vassals.push_back(this);
-		emit liege_changed();
-
-		if (old_capital_province != this->get_capital_province()) {
-			emit capital_province_changed();
-		}
-		if (old_location != this->get_location()) {
-			emit location_changed();
-		}
-	}
+	void set_liege(character *liege);
 
 	character *get_top_liege() const
 	{

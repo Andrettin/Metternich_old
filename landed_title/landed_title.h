@@ -38,11 +38,12 @@ class landed_title : public data_entry, public data_type<landed_title>
 	Q_PROPERTY(metternich::landed_title* realm READ get_realm NOTIFY realm_changed)
 	Q_PROPERTY(metternich::territory* capital_territory READ get_capital_territory)
 	Q_PROPERTY(metternich::province* capital_province READ get_capital_province WRITE set_capital_province NOTIFY capital_province_changed)
-	Q_PROPERTY(metternich::world* capital_world MEMBER capital_world READ get_capital_world)
+	Q_PROPERTY(metternich::world* capital_world MEMBER capital_world READ get_capital_world NOTIFY capital_world_changed)
 	Q_PROPERTY(QString flag_tag READ get_flag_tag_qstring WRITE set_flag_tag_qstring)
 	Q_PROPERTY(QString flag_path READ get_flag_path_qstring CONSTANT)
 	Q_PROPERTY(QVariantList laws READ get_laws_qvariant_list NOTIFY laws_changed)
 	Q_PROPERTY(metternich::government_type* government_type READ get_government_type NOTIFY government_type_changed)
+	Q_PROPERTY(bool active_post_amalgamation MEMBER active_post_amalgamation READ is_active_post_amalgamation)
 
 public:
 	static constexpr const char *class_identifier = "landed_title";
@@ -154,7 +155,7 @@ public:
 		}
 
 		this->world = world;
-		this->capital_world = world;
+		this->set_capital_world(world);
 	}
 
 	metternich::star_system *get_star_system() const
@@ -237,6 +238,16 @@ public:
 		return this->capital_world;
 	}
 
+	void set_capital_world(world *world)
+	{
+		if (world == this->get_capital_world()) {
+			return;
+		}
+
+		this->capital_world = world;
+		emit capital_world_changed();
+	}
+
 	metternich::holding *get_capital_holding() const;
 
 	culture *get_culture() const;
@@ -308,12 +319,18 @@ public:
 
 	government_type *get_government_type() const;
 
+	bool is_active_post_amalgamation() const
+	{
+		return this->active_post_amalgamation;
+	}
+
 signals:
 	void titled_name_changed();
 	void holder_changed();
 	void de_jure_liege_title_changed();
 	void realm_changed();
 	void capital_province_changed();
+	void capital_world_changed();
 	void laws_changed();
 	void government_type_changed();
 
@@ -334,6 +351,7 @@ private:
 	landed_title *liege_title = nullptr; //title of this title's holder's liege; used only for initialization, and set to null afterwards
 	std::string flag_tag;
 	std::map<law_group *, law *> laws; //the laws pertaining to the title, mapped to the respective law group
+	bool active_post_amalgamation = false; //whether the title remains active after the amalgamation of its world
 };
 
 }

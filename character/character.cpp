@@ -287,6 +287,14 @@ void character::set_primary_title(landed_title *title)
 	const province *old_capital_province = this->get_capital_province();
 	const province *old_location = this->get_location();
 
+	if (old_title != nullptr) {
+		disconnect(old_title, &landed_title::capital_province_changed, this, &character::capital_province_changed);
+	} else {
+		if (this->get_liege() != nullptr) {
+			disconnect(this->get_liege(), &character::capital_province_changed, this, &character::capital_province_changed);
+		}
+	}
+
 	this->primary_title = title;
 
 	if (old_title != nullptr) {
@@ -308,15 +316,18 @@ void character::set_primary_title(landed_title *title)
 		}
 	}
 
-	if (old_capital_province != this->get_capital_province()) {
-		emit capital_province_changed();
-
-		for (character *vassal : this->vassals) {
-			if (vassal->get_primary_title() == nullptr) {
-				emit vassal->capital_province_changed();
-			}
+	if (title != nullptr) {
+		connect(title, &landed_title::capital_province_changed, this, &character::capital_province_changed);
+	} else {
+		if (this->get_liege() != nullptr) {
+			connect(this->get_liege(), &character::capital_province_changed, this, &character::capital_province_changed);
 		}
 	}
+
+	if (old_capital_province != this->get_capital_province()) {
+		emit capital_province_changed();
+	}
+
 	if (old_location != this->get_location()) {
 		emit location_changed();
 
@@ -365,6 +376,42 @@ void character::remove_landed_title(landed_title *title)
 void character::remove_holding(holding *holding)
 {
 	vector::remove(this->holdings, holding);
+}
+
+void character::set_liege(character *liege)
+{
+	if (this->get_liege() == liege) {
+		return;
+	}
+
+	const province *old_capital_province = this->get_capital_province();
+	const province *old_location = this->get_location();
+
+	if (this->get_liege() != nullptr) {
+		vector::remove(this->get_liege()->vassals, this);
+
+		if (!this->is_landed()) {
+			disconnect(this->get_liege(), &character::capital_province_changed, this, &character::capital_province_changed);
+		}
+	}
+
+	this->liege = liege;
+	emit liege_changed();
+
+	if (liege != nullptr) {
+		liege->vassals.push_back(this);
+
+		if (!this->is_landed()) {
+			connect(liege, &character::capital_province_changed, this, &character::capital_province_changed);
+		}
+	}
+
+	if (old_capital_province != this->get_capital_province()) {
+		emit capital_province_changed();
+	}
+	if (old_location != this->get_location()) {
+		emit location_changed();
+	}
 }
 
 province *character::get_capital_province() const

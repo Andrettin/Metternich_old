@@ -985,6 +985,23 @@ void world::amalgamate()
 		province->destroy_settlement_holdings(); //will also cause the destruction of extra holdings
 	}
 
+	for (landed_title *title : landed_title::get_all()) {
+		if (title->get_capital_province() == nullptr || title->get_capital_province()->get_world() != this) {
+			continue;
+		}
+
+		if (title->is_active_post_amalgamation()) {
+			title->set_capital_world(title->get_capital_province()->get_world());
+			title->set_capital_province(nullptr);
+			continue;
+		}
+
+		if (title->get_holder() != nullptr) {
+			//destroy landed titles which should only exist in the world map
+			title->set_holder(nullptr);
+		}
+	}
+
 	//calculate population groups for the world, so that e.g. its plurality culture will have been calculated
 	this->calculate_population_groups();
 }

@@ -156,7 +156,7 @@ void landed_title::initialize()
 			if (this->get_holding_slot()->get_province() != nullptr) {
 				this->set_capital_province(this->get_holding_slot()->get_province());
 			} else if (this->get_holding_slot()->get_world() != nullptr) {
-				this->capital_world = this->get_holding_slot()->get_world();
+				this->set_capital_world(this->get_holding_slot()->get_world());
 			} else {
 				throw std::runtime_error("Holding slot \"" + this->get_holding_slot()->get_identifier() + "\" is not located in either a province or a world.");
 			}
