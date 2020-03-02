@@ -417,7 +417,7 @@ void landed_title::set_holder(character *character)
 
 		holding *factory_holding = this->get_territory()->get_factory_holding();
 		if (factory_holding != nullptr && (factory_holding->get_owner() == nullptr || factory_holding->get_owner() == old_holder)) {
-			hospital_holding->set_owner(character);
+			factory_holding->set_owner(character);
 		}
 	}
 
