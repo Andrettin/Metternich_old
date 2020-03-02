@@ -148,7 +148,8 @@ void world::set_star_system(metternich::star_system *system)
 
 const std::filesystem::path &world::get_texture_path() const
 {
-	return this->get_type()->get_texture_path();
+	//returns a random texture for the world
+	return database::get()->get_tagged_texture_path(this->get_type()->get_texture_tag(), {{this->get_identifier()}});
 }
 
 void world::remove_satellite(world *satellite)
@@ -491,6 +492,7 @@ void world::load_province_map()
 		previous_pixel_province = pixel_province;
 	}
 
+	std::map<holding_slot *, std::map<terrain_type *, int>> megalopolis_terrain_counts;
 	for (const auto &province_terrain_count : province_terrain_counts) {
 		province *province = province_terrain_count.first;
 		this->add_province(province);
@@ -511,10 +513,38 @@ void world::load_province_map()
 				best_terrain = terrain;
 				best_terrain_count = count;
 			}
+
+			if (province->get_megalopolis() != nullptr) {
+				megalopolis_terrain_counts[province->get_megalopolis()][terrain] += count;
+			}
 		}
 
 		province->set_terrain(best_terrain);
 		province->set_inner_river(inner_river);
+	}
+
+	//set the terrain of megalopolises which have no set terrain to the one most present in its provinces
+	for (const auto &megalopolis_terrain_count : megalopolis_terrain_counts) {
+		holding_slot *megalopolis = megalopolis_terrain_count.first;
+
+		if (megalopolis->get_terrain() != nullptr) {
+			continue;
+		}
+
+		terrain_type *best_terrain = nullptr;
+		int best_terrain_count = 0;
+
+		for (const auto &kv_pair : megalopolis_terrain_count.second) {
+			terrain_type *terrain = kv_pair.first;
+
+			const int count = kv_pair.second;
+			if (count > best_terrain_count) {
+				best_terrain = terrain;
+				best_terrain_count = count;
+			}
+		}
+
+		megalopolis->set_terrain(best_terrain);
 	}
 
 	for (const auto &kv_pair : province_pixel_indexes) {

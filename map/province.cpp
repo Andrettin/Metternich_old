@@ -181,6 +181,12 @@ void province::check() const
 	if (static_cast<int>(this->get_palace_holding_slots().size()) > defines::get()->get_max_palace_slots_per_province()) {
 		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has " + std::to_string(this->get_palace_holding_slots().size()) + " palace slots, but the maximum palace slots per province is set to " + std::to_string(defines::get()->get_max_palace_slots_per_province()) + ".");
 	}
+
+	if (this->get_county() != nullptr) {
+		if (this->get_megalopolis() == nullptr) {
+			qWarning() << ("Province \"" + this->get_name_qstring() + "\" has no megalopolis holding slot.");
+		}
+	}
 }
 
 void province::check_history() const
