@@ -394,26 +394,30 @@ void landed_title::set_holder(character *character)
 		}
 
 		//if this is a non-titular county, the fort, university and hospital of its province must belong to the county holder
-		holding *fort_holding = this->get_territory()->get_fort_holding_slot()->get_holding();
+		holding *fort_holding = this->get_territory()->get_fort_holding();
 		if (fort_holding != nullptr) {
 			fort_holding->set_owner(character);
 		}
 
-		holding *university_holding = this->get_territory()->get_university_holding_slot()->get_holding();
+		holding *university_holding = this->get_territory()->get_university_holding();
 		if (university_holding != nullptr) {
 			university_holding->set_owner(character);
 		}
 
-		holding *hospital_holding = this->get_territory()->get_hospital_holding_slot()->get_holding();
+		holding *hospital_holding = this->get_territory()->get_hospital_holding();
 		if (hospital_holding != nullptr) {
 			hospital_holding->set_owner(character);
 		}
 
-		if (this->get_territory()->get_trading_post_holding_slot() != nullptr) {
-			holding *trading_post_holding = this->get_territory()->get_trading_post_holding_slot()->get_holding();
-			if (trading_post_holding != nullptr && (trading_post_holding->get_owner() == nullptr || trading_post_holding->get_owner() == old_holder)) {
-				trading_post_holding->set_owner(character);
-			}
+		//transfer trading posts and factories along with counties if the old county holder owned them, or if they had no holder
+		holding *trading_post_holding = this->get_territory()->get_trading_post_holding();
+		if (trading_post_holding != nullptr && (trading_post_holding->get_owner() == nullptr || trading_post_holding->get_owner() == old_holder)) {
+			trading_post_holding->set_owner(character);
+		}
+
+		holding *factory_holding = this->get_territory()->get_factory_holding();
+		if (factory_holding != nullptr && (factory_holding->get_owner() == nullptr || factory_holding->get_owner() == old_holder)) {
+			hospital_holding->set_owner(character);
 		}
 	}
 

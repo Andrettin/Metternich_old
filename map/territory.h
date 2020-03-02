@@ -130,15 +130,21 @@ public:
 		return this->fort_holding_slot;
 	}
 
+	holding *get_fort_holding() const;
+
 	holding_slot *get_university_holding_slot() const
 	{
 		return this->university_holding_slot;
 	}
 
+	holding *get_university_holding() const;
+
 	holding_slot *get_hospital_holding_slot() const
 	{
 		return this->hospital_holding_slot;
 	}
+
+	holding *get_hospital_holding() const;
 
 	holding_slot *get_trading_post_holding_slot() const
 	{
@@ -159,6 +165,8 @@ public:
 	{
 		return this->factory_holding_slot;
 	}
+
+	holding *get_factory_holding() const;
 
 	holding_slot *get_capital_holding_slot() const
 	{

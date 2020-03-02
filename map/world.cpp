@@ -796,9 +796,33 @@ void world::add_province(province *province)
 void world::amalgamate()
 {
 	std::map<landed_title *, int> realm_counts;
+	std::map<holding_type *, int> fort_holding_type_counts;
+	std::map<holding_type *, int> university_holding_type_counts;
+	std::map<holding_type *, int> hospital_holding_type_counts;
+	std::map<landed_title *, int> trading_post_realm_counts;
+	std::map<holding_type *, int> trading_post_holding_type_counts;
+	std::map<holding_type *, int> factory_holding_type_counts;
+
 	for (province *province : this->get_provinces()) {
 		for (holding *settlement_holding : province->get_settlement_holdings()) {
 			realm_counts[settlement_holding->get_barony()->get_realm()]++;
+		}
+
+		if (province->get_fort_holding() != nullptr) {
+			fort_holding_type_counts[province->get_fort_holding()->get_type()]++;
+		}
+		if (province->get_university_holding() != nullptr) {
+			university_holding_type_counts[province->get_university_holding()->get_type()]++;
+		}
+		if (province->get_hospital_holding() != nullptr) {
+			hospital_holding_type_counts[province->get_hospital_holding()->get_type()]++;
+		}
+		if (province->get_trading_post_holding() != nullptr) {
+			trading_post_realm_counts[province->get_trading_post_holding()->get_realm()]++;
+			trading_post_holding_type_counts[province->get_trading_post_holding()->get_type()]++;
+		}
+		if (province->get_factory_holding() != nullptr) {
+			factory_holding_type_counts[province->get_factory_holding()->get_type()]++;
 		}
 	}
 
@@ -813,8 +837,97 @@ void world::amalgamate()
 		}
 	}
 
-	landed_title *best_realm = nullptr;
+	holding_type *best_type = nullptr;
 	int best_count = 0;
+	for (const auto &kv_pair : fort_holding_type_counts) {
+		holding_type *type = kv_pair.first;
+		const int count = kv_pair.second;
+		if (count > best_count) {
+			best_type = type;
+			best_count = count;
+		}
+	}
+	if (best_type != nullptr) {
+		this->create_holding(this->get_fort_holding_slot(), best_type);
+	}
+
+	best_type = nullptr;
+	best_count = 0;
+	for (const auto &kv_pair : university_holding_type_counts) {
+		holding_type *type = kv_pair.first;
+		const int count = kv_pair.second;
+		if (count > best_count) {
+			best_type = type;
+			best_count = count;
+		}
+	}
+	if (best_type != nullptr) {
+		this->create_holding(this->get_university_holding_slot(), best_type);
+	}
+
+	best_type = nullptr;
+	best_count = 0;
+	for (const auto &kv_pair : hospital_holding_type_counts) {
+		holding_type *type = kv_pair.first;
+		const int count = kv_pair.second;
+		if (count > best_count) {
+			best_type = type;
+			best_count = count;
+		}
+	}
+	if (best_type != nullptr) {
+		this->create_holding(this->get_hospital_holding_slot(), best_type);
+	}
+
+	best_type = nullptr;
+	best_count = 0;
+	for (const auto &kv_pair : trading_post_holding_type_counts) {
+		holding_type *type = kv_pair.first;
+		const int count = kv_pair.second;
+		if (count > best_count) {
+			best_type = type;
+			best_count = count;
+		}
+	}
+	if (best_type != nullptr) {
+		this->create_holding(this->get_trading_post_holding_slot(), best_type);
+	}
+
+	landed_title *best_realm = nullptr;
+	best_count = 0;
+	for (landed_title *realm : holding_realms) {
+		const auto find_iterator = trading_post_realm_counts.find(realm);
+
+		if (find_iterator == trading_post_realm_counts.end()) {
+			continue;
+		}
+
+		const int count = find_iterator->second;
+		if (count > best_count) {
+			best_realm = realm;
+			best_count = count;
+		}
+	}
+	if (best_realm != nullptr) {
+		this->get_trading_post_holding()->set_owner(best_realm->get_holder());
+	}
+
+	best_type = nullptr;
+	best_count = 0;
+	for (const auto &kv_pair : factory_holding_type_counts) {
+		holding_type *type = kv_pair.first;
+		const int count = kv_pair.second;
+		if (count > best_count) {
+			best_type = type;
+			best_count = count;
+		}
+	}
+	if (best_type != nullptr) {
+		this->create_holding(this->get_factory_holding_slot(), best_type);
+	}
+
+	best_realm = nullptr;
+	best_count = 0;
 	for (landed_title *realm : holding_realms) {
 		const auto find_iterator = realm_counts.find(realm);
 

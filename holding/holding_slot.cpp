@@ -282,18 +282,51 @@ void holding_slot::amalgamate_megalopolis()
 {
 	//update data for this holding slot based on that of its megalopolis provinces
 
-	if (this->get_holding() != nullptr) {
-		return;
+	if (this->get_holding() == nullptr) {
+		this->create_holding_from_megalopolis_provinces();
+
+		if (this->get_holding() == nullptr) {
+			return;
+		}
 	}
 
-	//create a holding for this holding slot based on the most common one for megalopolis province settlements
-	std::map<holding_type *, int> holding_type_counts;
 	std::map<landed_title *, int> realm_counts;
 
 	for (metternich::province *province : this->get_megalopolis_provinces()) {
 		for (metternich::holding *settlement_holding : province->get_settlement_holdings()) {
-			holding_type_counts[settlement_holding->get_type()]++;
 			realm_counts[settlement_holding->get_barony()->get_realm()]++;
+		}
+	}
+
+	//set the owner of the megalopolis holding to the holder of the realm with most holdings in its megalopolis provinces
+	landed_title *best_realm = nullptr;
+	int best_count = 0;
+	for (const auto &kv_pair : realm_counts) {
+		landed_title *realm = kv_pair.first;
+		const int count = kv_pair.second;
+		if (count > best_count) {
+			best_realm = realm;
+			best_count = count;
+		}
+	}
+
+	if (best_realm != nullptr) {
+		this->get_holding()->get_barony()->set_holder(best_realm->get_holder());
+	}
+
+	if (this->get_holding()->get_population_units().empty()) {
+		this->move_population_from_megalopolis_provinces();
+	}
+}
+
+void holding_slot::create_holding_from_megalopolis_provinces()
+{
+	//create a holding for this holding slot based on the most common one for megalopolis province settlements
+	std::map<holding_type *, int> holding_type_counts;
+
+	for (metternich::province *province : this->get_megalopolis_provinces()) {
+		for (metternich::holding *settlement_holding : province->get_settlement_holdings()) {
+			holding_type_counts[settlement_holding->get_type()]++;
 		}
 	}
 
@@ -313,23 +346,10 @@ void holding_slot::amalgamate_megalopolis()
 	}
 
 	this->get_territory()->create_holding(this, best_type);
+}
 
-	//set the owner of the megalopolis holding to the holder of its realm
-	landed_title *best_realm = nullptr;
-	best_count = 0;
-	for (const auto &kv_pair : realm_counts) {
-		landed_title *realm = kv_pair.first;
-		const int count = kv_pair.second;
-		if (count > best_count) {
-			best_realm = realm;
-			best_count = count;
-		}
-	}
-
-	if (best_realm != nullptr) {
-		this->get_holding()->get_barony()->set_holder(best_realm->get_holder());
-	}
-
+void holding_slot::move_population_from_megalopolis_provinces()
+{
 	//move population units from megalopolis province settlement holdings to this one
 	for (metternich::province *province : this->get_megalopolis_provinces()) {
 		for (metternich::holding *settlement_holding : province->get_settlement_holdings()) {

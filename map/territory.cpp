@@ -498,19 +498,19 @@ void territory::destroy_special_holdings()
 		}
 	}
 
-	if (this->get_fort_holding_slot()->get_holding() != nullptr) {
+	if (this->get_fort_holding() != nullptr) {
 		this->destroy_holding(this->get_fort_holding_slot());
 	}
-	if (this->get_university_holding_slot()->get_holding() != nullptr) {
+	if (this->get_university_holding() != nullptr) {
 		this->destroy_holding(this->get_university_holding_slot());
 	}
-	if (this->get_hospital_holding_slot()->get_holding() != nullptr) {
+	if (this->get_hospital_holding() != nullptr) {
 		this->destroy_holding(this->get_hospital_holding_slot());
 	}
 	if (this->get_trading_post_holding() != nullptr) {
 		this->destroy_holding(this->get_trading_post_holding_slot());
 	}
-	if (this->get_factory_holding_slot()->get_holding() != nullptr) {
+	if (this->get_factory_holding() != nullptr) {
 		this->destroy_holding(this->get_factory_holding_slot());
 	}
 }
@@ -544,6 +544,33 @@ std::string territory::get_trading_post_holding_slot_identifier() const
 	return holding_slot::prefix + this->get_identifier_without_prefix() + "_trading_post";
 }
 
+holding *territory::get_fort_holding() const
+{
+	if (this->get_fort_holding_slot() != nullptr) {
+		return this->get_fort_holding_slot()->get_holding();
+	}
+
+	return nullptr;
+}
+
+holding *territory::get_university_holding() const
+{
+	if (this->get_university_holding_slot() != nullptr) {
+		return this->get_university_holding_slot()->get_holding();
+	}
+
+	return nullptr;
+}
+
+holding *territory::get_hospital_holding() const
+{
+	if (this->get_hospital_holding_slot() != nullptr) {
+		return this->get_hospital_holding_slot()->get_holding();
+	}
+
+	return nullptr;
+}
+
 void territory::create_trading_post_holding_slot()
 {
 	std::string holding_slot_identifier = this->get_trading_post_holding_slot_identifier();
@@ -566,6 +593,15 @@ holding *territory::get_trading_post_holding() const
 {
 	if (this->get_trading_post_holding_slot() != nullptr) {
 		return this->get_trading_post_holding_slot()->get_holding();
+	}
+
+	return nullptr;
+}
+
+holding *territory::get_factory_holding() const
+{
+	if (this->get_factory_holding_slot() != nullptr) {
+		return this->get_factory_holding_slot()->get_holding();
 	}
 
 	return nullptr;

@@ -127,6 +127,8 @@ public:
 	province *get_province() const;
 	world *get_world() const;
 
+	landed_title *get_realm() const;
+
 	const terrain_type *get_terrain() const;
 
 	bool is_territory_capital() const;

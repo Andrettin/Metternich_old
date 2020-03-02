@@ -305,6 +305,15 @@ world *holding::get_world() const
 	return this->get_slot()->get_world();
 }
 
+landed_title *holding::get_realm() const
+{
+	if (this->get_owner() != nullptr) {
+		return this->get_owner()->get_realm();
+	}
+
+	return nullptr;
+}
+
 const terrain_type *holding::get_terrain() const
 {
 	return this->get_slot()->get_terrain();

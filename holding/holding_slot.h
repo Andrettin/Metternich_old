@@ -228,6 +228,8 @@ public:
 
 	void remove_megalopolis_province(province *province);
 	void amalgamate_megalopolis();
+	void create_holding_from_megalopolis_provinces();
+	void move_population_from_megalopolis_provinces();
 
 signals:
 	void barony_changed();
