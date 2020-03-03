@@ -973,6 +973,18 @@ void world::amalgamate()
 	}
 
 	if (best_realm != nullptr) {
+		//set this world's capital holding to a megalopolis holding owned by the world county's new owner, preferentially the one which is the megalopolis of the new owner's current capital
+		if (best_realm->get_capital_province() != nullptr && best_realm->get_capital_province()->get_megalopolis() != nullptr && best_realm->get_capital_province()->get_megalopolis()->get_holding() != nullptr && best_realm->get_capital_province()->get_megalopolis()->get_holding()->get_owner() == best_realm->get_holder()) {
+			this->set_capital_holding_slot(best_realm->get_capital_province()->get_megalopolis());
+		} else {
+			for (holding *megalopolis: this->get_settlement_holdings()) {
+				if (megalopolis->get_owner() == best_realm->get_holder()) {
+					this->set_capital_holding_slot(megalopolis->get_slot());
+					break;
+				}
+			}
+		}
+
 		this->get_county()->set_holder(best_realm->get_holder());
 
 		//set ownership of the star system as well, if it is not owned by anyone yet
