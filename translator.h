@@ -12,7 +12,7 @@
 
 namespace metternich {
 
-class translator : public QTranslator, public singleton<translator>
+class translator final : public QTranslator, public singleton<translator>
 {
 	Q_OBJECT
 

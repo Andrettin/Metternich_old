@@ -18,7 +18,7 @@ class and_condition;
 template <typename T>
 class condition;
 
-class building : public data_entry, public data_type<building>
+class building final : public data_entry, public data_type<building>
 {
 	Q_OBJECT
 

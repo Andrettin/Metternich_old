@@ -21,7 +21,7 @@ class territory;
 class world;
 enum class holding_slot_type : int;
 
-class holding_slot : public data_entry, public data_type<holding_slot>
+class holding_slot final : public data_entry, public data_type<holding_slot>
 {
 	Q_OBJECT
 

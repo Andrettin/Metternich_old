@@ -7,7 +7,7 @@
 namespace metternich {
 
 template <typename T>
-class holding_type_effect : public effect<T>
+class holding_type_effect final : public effect<T>
 {
 public:
 	holding_type_effect(const std::string &value, const gsml_operator effect_operator)

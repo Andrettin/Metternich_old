@@ -11,7 +11,7 @@ namespace metternich {
 
 class species;
 
-class wildlife_unit : public population_unit_base, public simple_data_type<wildlife_unit>
+class wildlife_unit final : public population_unit_base, public simple_data_type<wildlife_unit>
 {
 	Q_OBJECT
 

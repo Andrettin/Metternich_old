@@ -7,7 +7,7 @@
 namespace metternich {
 
 template <typename T>
-class borders_water_condition : public condition<T>
+class borders_water_condition final : public condition<T>
 {
 public:
 	borders_water_condition(const bool borders_water, const gsml_operator effect_operator)

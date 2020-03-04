@@ -7,7 +7,7 @@
 
 namespace metternich {
 
-class law_group : public data_entry, public data_type<law_group>
+class law_group final : public data_entry, public data_type<law_group>
 {
 	Q_OBJECT
 

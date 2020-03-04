@@ -16,7 +16,7 @@ class landed_title;
 enum class landed_title_tier;
 
 template <typename T, landed_title_tier TIER>
-class tier_de_jure_title_condition : public condition<T>
+class tier_de_jure_title_condition final : public condition<T>
 {
 public:
 	tier_de_jure_title_condition(const std::string &title_identifier, const gsml_operator effect_operator)

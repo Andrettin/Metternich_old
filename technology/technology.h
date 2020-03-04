@@ -7,7 +7,7 @@ namespace metternich {
 
 class technology_category;
 
-class technology : public data_entry, public data_type<technology>
+class technology final : public data_entry, public data_type<technology>
 {
 	Q_OBJECT
 

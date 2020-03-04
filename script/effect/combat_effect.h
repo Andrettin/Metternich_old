@@ -13,7 +13,7 @@
 namespace metternich {
 
 template <typename T>
-class combat_effect : public effect<T>
+class combat_effect final : public effect<T>
 {
 public:
 	combat_effect(const gsml_operator effect_operator) : effect<T>(effect_operator)

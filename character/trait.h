@@ -13,7 +13,7 @@ class character;
 template <typename T>
 class modifier;
 
-class trait : public data_entry, public data_type<trait>
+class trait final : public data_entry, public data_type<trait>
 {
 	Q_OBJECT
 

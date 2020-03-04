@@ -7,7 +7,7 @@
 
 namespace metternich {
 
-class species : public data_entry, public data_type<species>
+class species final : public data_entry, public data_type<species>
 {
 	Q_OBJECT
 

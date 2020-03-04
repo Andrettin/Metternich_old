@@ -9,7 +9,7 @@ namespace metternich {
 class item;
 
 template <typename T>
-class has_item_condition : public condition<T>
+class has_item_condition final : public condition<T>
 {
 public:
 	has_item_condition(const std::string &item_identifier, const gsml_operator effect_operator)

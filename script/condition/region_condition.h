@@ -10,7 +10,7 @@ namespace metternich {
 class region;
 
 template <typename T>
-class region_condition : public condition<T>
+class region_condition final : public condition<T>
 {
 public:
 	region_condition(const std::string &region_identifier, const gsml_operator effect_operator)

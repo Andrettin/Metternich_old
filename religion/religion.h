@@ -11,7 +11,7 @@ namespace metternich {
 
 class religion_group;
 
-class religion : public data_entry, public data_type<religion>
+class religion final : public data_entry, public data_type<religion>
 {
 	Q_OBJECT
 

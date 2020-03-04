@@ -33,7 +33,7 @@ class wildlife_unit;
 class world;
 enum class map_mode : int;
 
-class province : public territory, public data_type<province>
+class province final : public territory, public data_type<province>
 {
 	Q_OBJECT
 

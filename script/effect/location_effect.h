@@ -7,7 +7,7 @@ namespace metternich {
 class province;
 
 template <typename T>
-class location_effect : public scope_effect<T, province>
+class location_effect final : public scope_effect<T, province>
 {
 public:
 	location_effect(const gsml_operator effect_operator) : scope_effect<T, province>(effect_operator)

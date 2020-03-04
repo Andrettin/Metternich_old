@@ -7,7 +7,7 @@
 namespace metternich {
 
 template <typename T>
-class has_law_condition : public condition<T>
+class has_law_condition final : public condition<T>
 {
 public:
 	has_law_condition(const std::string &law_identifier, const gsml_operator effect_operator)

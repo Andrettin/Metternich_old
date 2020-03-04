@@ -5,7 +5,7 @@
 
 namespace metternich {
 
-class enemy : public data_entry, public data_type<enemy>
+class enemy final : public data_entry, public data_type<enemy>
 {
 	Q_OBJECT
 

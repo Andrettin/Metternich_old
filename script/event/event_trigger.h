@@ -56,7 +56,7 @@ private:
 
 extern template class event_trigger<character>;
 
-class character_event_trigger : public event_trigger<character>
+class character_event_trigger final : public event_trigger<character>
 {
 public:
 	static inline const event_trigger<character> *game_start = event_trigger::add("game_start");

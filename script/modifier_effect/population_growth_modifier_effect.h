@@ -6,7 +6,7 @@
 namespace metternich {
 
 template <typename T>
-class population_growth_modifier_effect : public modifier_effect<T>
+class population_growth_modifier_effect final : public modifier_effect<T>
 {
 public:
 	population_growth_modifier_effect(const int population_growth)

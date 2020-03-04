@@ -6,7 +6,7 @@
 namespace metternich {
 
 template <typename T>
-class ai_condition : public condition<T>
+class ai_condition final : public condition<T>
 {
 public:
 	ai_condition(const bool ai, const gsml_operator effect_operator) : condition<T>(effect_operator), ai(ai)

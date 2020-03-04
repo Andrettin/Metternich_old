@@ -17,7 +17,7 @@ class region;
 class religion;
 class terrain_type;
 
-class population_unit : public population_unit_base, public simple_data_type<population_unit>
+class population_unit final : public population_unit_base, public simple_data_type<population_unit>
 {
 	Q_OBJECT
 

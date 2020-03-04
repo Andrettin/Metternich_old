@@ -8,7 +8,7 @@ namespace metternich {
 class character;
 
 template <typename T>
-class source_effect : public scope_effect<T, character>
+class source_effect final : public scope_effect<T, character>
 {
 public:
 	source_effect(const gsml_operator effect_operator) : scope_effect<T, character>(effect_operator)

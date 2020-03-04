@@ -5,7 +5,7 @@
 
 namespace metternich {
 
-class culture_group : public culture_base, public data_type<culture_group>
+class culture_group final : public culture_base, public data_type<culture_group>
 {
 	Q_OBJECT
 

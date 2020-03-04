@@ -7,7 +7,7 @@
 namespace metternich {
 
 template <typename T>
-class has_any_trade_route_condition : public condition<T>
+class has_any_trade_route_condition final : public condition<T>
 {
 public:
 	has_any_trade_route_condition(const bool has_any_trade_route, const gsml_operator effect_operator)

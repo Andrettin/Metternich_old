@@ -21,7 +21,7 @@ class trade_node;
 class trade_route;
 class world_type;
 
-class world : public territory, public data_type<world>
+class world final : public territory, public data_type<world>
 {
 	Q_OBJECT
 

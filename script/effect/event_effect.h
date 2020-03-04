@@ -13,7 +13,7 @@ class character;
 class event;
 
 template <typename T>
-class event_effect : public effect<T>
+class event_effect final : public effect<T>
 {
 public:
 	event_effect(const std::string &event_identifier, const gsml_operator effect_operator)

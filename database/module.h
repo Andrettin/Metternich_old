@@ -12,7 +12,7 @@ namespace metternich {
 class gsml_data;
 class gsml_property;
 
-class module : public QObject
+class module final : public QObject
 {
 	Q_OBJECT
 

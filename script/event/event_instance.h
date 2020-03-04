@@ -14,7 +14,7 @@ namespace metternich {
 class event_option_instance;
 
 //an instance of an event to be shown to the player
-class event_instance : public QObject
+class event_instance final : public QObject
 {
 	Q_OBJECT
 	
@@ -35,7 +35,7 @@ private:
 };
 
 //an instance of an event option to be shown to the player
-class event_option_instance : public QObject
+class event_option_instance final : public QObject
 {
 	Q_OBJECT
 	

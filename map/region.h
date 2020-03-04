@@ -19,7 +19,7 @@ class province;
 class technology;
 class wildlife_unit;
 
-class region : public data_entry, public data_type<region>
+class region final : public data_entry, public data_type<region>
 {
 	Q_OBJECT
 

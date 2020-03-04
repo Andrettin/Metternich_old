@@ -5,7 +5,7 @@
 
 namespace metternich {
 
-class religion_group : public data_entry, public data_type<religion_group>
+class religion_group final : public data_entry, public data_type<religion_group>
 {
 	Q_OBJECT
 

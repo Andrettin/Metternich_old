@@ -17,7 +17,7 @@ class terrain_type;
 class world;
 enum class map_mode : int;
 
-class map : public singleton<map>
+class map final : public singleton<map>
 {
 public:
 	static std::vector<QVariantList> parse_geojson_folder(const std::filesystem::path &path);

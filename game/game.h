@@ -18,7 +18,7 @@ class timeline;
 enum class game_speed : int;
 enum class tick_period : int;
 
-class game : public QObject, public singleton<game>
+class game final : public QObject, public singleton<game>
 {
 	Q_OBJECT
 

@@ -7,7 +7,7 @@
 namespace metternich {
 
 template <typename T>
-class wealth_effect : public effect<T>
+class wealth_effect final : public effect<T>
 {
 public:
 	wealth_effect(const std::string &value, const gsml_operator effect_operator)

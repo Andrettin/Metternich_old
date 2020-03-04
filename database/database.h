@@ -20,7 +20,7 @@ class data_entry;
 class data_type_metadata;
 class module;
 
-class database : public singleton<database>
+class database final : public singleton<database>
 {
 public:
 	template <typename T>

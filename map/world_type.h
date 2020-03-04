@@ -5,7 +5,7 @@
 
 namespace metternich {
 
-class world_type : public data_entry, public data_type<world_type>
+class world_type final : public data_entry, public data_type<world_type>
 {
 	Q_OBJECT
 

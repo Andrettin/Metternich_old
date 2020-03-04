@@ -32,7 +32,7 @@ class terrain_type;
 class territory;
 class world;
 
-class holding : public data_entry
+class holding final : public data_entry
 {
 	Q_OBJECT
 

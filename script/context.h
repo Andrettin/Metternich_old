@@ -16,11 +16,11 @@ struct context_base
 	character_ptr current_character = nullptr;
 };
 
-struct context : context_base<false>
+struct context final : context_base<false>
 {
 };
 
-struct read_only_context : context_base<true>
+struct read_only_context final : context_base<true>
 {
 public:
 	read_only_context()

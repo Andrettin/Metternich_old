@@ -13,7 +13,7 @@ class character;
 template <typename T>
 class modifier;
 
-class item : public data_entry, public data_type<item>
+class item final : public data_entry, public data_type<item>
 {
 	Q_OBJECT
 

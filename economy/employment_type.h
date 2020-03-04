@@ -13,7 +13,7 @@ class employment_owner;
 class gsml_data;
 class population_type;
 
-class employment_type : public data_entry, public data_type<employment_type>
+class employment_type final : public data_entry, public data_type<employment_type>
 {
 	Q_OBJECT
 

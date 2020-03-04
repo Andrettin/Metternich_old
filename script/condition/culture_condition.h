@@ -9,7 +9,7 @@ namespace metternich {
 class culture;
 
 template <typename T>
-class culture_condition : public condition<T>
+class culture_condition final : public condition<T>
 {
 public:
 	culture_condition(const std::string &culture_identifier, const gsml_operator effect_operator)

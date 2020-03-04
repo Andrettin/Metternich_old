@@ -4,7 +4,7 @@
 
 namespace metternich {
 
-class empty_image_provider : public QQuickImageProvider
+class empty_image_provider final : public QQuickImageProvider
 {
 public:
 	empty_image_provider() : QQuickImageProvider(QQuickImageProvider::Image) {}

@@ -23,7 +23,7 @@ private:
 };
 
 template <typename T>
-class scoped_flag : public scoped_flag_base, public identifiable_type<scoped_flag<T>>
+class scoped_flag final : public scoped_flag_base, public identifiable_type<scoped_flag<T>>
 {
 public:
 	static constexpr const char *class_identifier = "scoped_flag";

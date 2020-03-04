@@ -31,7 +31,7 @@ class condition_check;
 template <typename T>
 class scoped_flag;
 
-class character : public data_entry, public data_type<character>
+class character final : public data_entry, public data_type<character>
 {
 	Q_OBJECT
 

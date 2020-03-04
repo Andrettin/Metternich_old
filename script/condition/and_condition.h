@@ -9,7 +9,7 @@
 namespace metternich {
 
 template <typename T>
-class and_condition : public condition<T>
+class and_condition final : public condition<T>
 {
 public:
 	and_condition(const gsml_operator effect_operator = gsml_operator::assignment) : condition<T>(effect_operator)

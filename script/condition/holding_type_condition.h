@@ -8,7 +8,7 @@
 namespace metternich {
 
 template <typename T>
-class holding_type_condition : public condition<T>
+class holding_type_condition final : public condition<T>
 {
 public:
 	holding_type_condition(const std::string &holding_type_identifier, const gsml_operator effect_operator)

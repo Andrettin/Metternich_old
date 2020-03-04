@@ -12,7 +12,7 @@ enum class government_type_group;
 template <typename T>
 class condition;
 
-class government_type : public data_entry, public data_type<government_type>
+class government_type final : public data_entry, public data_type<government_type>
 {
 	Q_OBJECT
 

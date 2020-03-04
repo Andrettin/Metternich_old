@@ -9,7 +9,7 @@ namespace metternich {
 class gsml_property;
 class province;
 
-class province_modifier : public data_entry, public data_type<province_modifier>, public modifier<province>
+class province_modifier final : public data_entry, public data_type<province_modifier>, public modifier<province>
 {
 	Q_OBJECT
 

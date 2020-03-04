@@ -11,7 +11,7 @@ namespace metternich {
 
 //a scripted effect which displays a custom tooltip for the effects it encloses
 template <typename T>
-class tooltip_effect : public effect<T>
+class tooltip_effect final : public effect<T>
 {
 public:
 	tooltip_effect(const gsml_operator effect_operator) : effect<T>(effect_operator)

@@ -8,7 +8,7 @@ namespace metternich {
 
 class character;
 
-class character_event : public event, public data_type<character_event>, public scoped_event_base<character>
+class character_event final : public event, public data_type<character_event>, public scoped_event_base<character>
 {
 	Q_OBJECT
 

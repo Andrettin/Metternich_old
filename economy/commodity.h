@@ -15,7 +15,7 @@ class holding_slot;
 template <typename T>
 class chance_factor;
 
-class commodity : public data_entry, public data_type<commodity>
+class commodity final : public data_entry, public data_type<commodity>
 {
 	Q_OBJECT
 

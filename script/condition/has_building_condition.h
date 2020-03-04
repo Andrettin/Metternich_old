@@ -8,7 +8,7 @@
 namespace metternich {
 
 template <typename T>
-class has_building_condition : public condition<T>
+class has_building_condition final : public condition<T>
 {
 public:
 	has_building_condition(const std::string &building_identifier, const gsml_operator effect_operator)

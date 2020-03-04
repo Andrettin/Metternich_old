@@ -9,7 +9,7 @@ namespace metternich {
 
 class culture;
 
-class dynasty : public data_entry, public data_type<dynasty>
+class dynasty final : public data_entry, public data_type<dynasty>
 {
 	Q_OBJECT
 

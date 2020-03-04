@@ -6,7 +6,7 @@
 namespace metternich {
 
 template <typename T>
-class alive_condition : public condition<T>
+class alive_condition final : public condition<T>
 {
 public:
 	alive_condition(const bool alive, const gsml_operator effect_operator) : condition<T>(effect_operator), alive(alive)

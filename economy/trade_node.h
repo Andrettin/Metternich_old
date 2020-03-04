@@ -12,7 +12,7 @@ namespace metternich {
 class province;
 class world;
 
-class trade_node : public data_entry, public data_type<trade_node>
+class trade_node final : public data_entry, public data_type<trade_node>
 {
 	Q_OBJECT
 

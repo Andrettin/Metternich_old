@@ -24,7 +24,7 @@ class territory;
 class world;
 enum class landed_title_tier;
 
-class landed_title : public data_entry, public data_type<landed_title>
+class landed_title final : public data_entry, public data_type<landed_title>
 {
 	Q_OBJECT
 

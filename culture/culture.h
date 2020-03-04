@@ -16,7 +16,7 @@ class population_unit;
 template <typename T>
 class condition;
 
-class culture : public culture_base, public data_type<culture>
+class culture final : public culture_base, public data_type<culture>
 {
 	Q_OBJECT
 

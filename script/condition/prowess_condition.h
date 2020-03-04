@@ -6,7 +6,7 @@
 namespace metternich {
 
 template <typename T>
-class prowess_condition : public condition<T>
+class prowess_condition final : public condition<T>
 {
 public:
 	prowess_condition(const int prowess, const gsml_operator effect_operator)

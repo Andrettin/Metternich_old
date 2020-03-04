@@ -9,7 +9,7 @@ namespace metternich {
 class gsml_property;
 class holding;
 
-class holding_modifier : public data_entry, public data_type<holding_modifier>, public modifier<holding>
+class holding_modifier final : public data_entry, public data_type<holding_modifier>, public modifier<holding>
 {
 	Q_OBJECT
 

@@ -23,7 +23,7 @@ class world;
 /**
 **	@brief	Interface for the engine, to be used in the context of QML
 */
-class engine_interface : public QObject, public singleton<engine_interface>
+class engine_interface final : public QObject, public singleton<engine_interface>
 {
 	Q_OBJECT
 

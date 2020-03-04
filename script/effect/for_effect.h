@@ -8,7 +8,7 @@
 namespace metternich {
 
 template <typename T>
-class for_effect : public effect<T>
+class for_effect final : public effect<T>
 {
 public:
 	for_effect(const gsml_operator effect_operator) : effect<T>(effect_operator)

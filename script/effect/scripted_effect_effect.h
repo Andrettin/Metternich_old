@@ -8,7 +8,7 @@
 namespace metternich {
 
 template <typename T>
-class scripted_effect_effect : public effect<T>
+class scripted_effect_effect final : public effect<T>
 {
 public:
 	scripted_effect_effect(const std::string &effect_identifier, const gsml_operator effect_operator)

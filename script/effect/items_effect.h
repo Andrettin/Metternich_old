@@ -9,7 +9,7 @@ namespace metternich {
 class item;
 
 template <typename T>
-class items_effect : public effect<T>
+class items_effect final : public effect<T>
 {
 public:
 	items_effect(const std::string &item_identifier, const gsml_operator effect_operator)

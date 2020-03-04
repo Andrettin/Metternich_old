@@ -50,7 +50,7 @@ private:
 
 extern template class decision_filter<holding>;
 
-class holding_decision_filter : public decision_filter<holding>
+class holding_decision_filter final : public decision_filter<holding>
 {
 public:
 	static inline const decision_filter<holding> *owned = decision_filter::add("owned");

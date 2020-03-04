@@ -8,7 +8,7 @@
 
 namespace metternich {
 
-class phenotype : public data_entry, public data_type<phenotype>
+class phenotype final : public data_entry, public data_type<phenotype>
 {
 	Q_OBJECT
 

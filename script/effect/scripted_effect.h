@@ -40,7 +40,7 @@ private:
 	effect_list<T> effects;
 };
 
-class character_scripted_effect : public data_entry, public data_type<character_scripted_effect>, public scripted_effect<character>
+class character_scripted_effect final : public data_entry, public data_type<character_scripted_effect>, public scripted_effect<character>
 {
 	Q_OBJECT
 

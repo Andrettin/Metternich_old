@@ -8,7 +8,7 @@
 namespace metternich {
 
 template <typename T>
-class wealth_condition : public condition<T>
+class wealth_condition final : public condition<T>
 {
 public:
 	wealth_condition(const std::string &value, const gsml_operator effect_operator)

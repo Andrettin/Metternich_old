@@ -10,7 +10,7 @@
 
 namespace metternich {
 
-class calendar : public data_entry, public data_type<calendar>
+class calendar final : public data_entry, public data_type<calendar>
 {
 	Q_OBJECT
 

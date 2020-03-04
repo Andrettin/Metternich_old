@@ -9,7 +9,7 @@ namespace metternich {
 class commodity;
 
 template <typename T>
-class commodity_condition : public condition<T>
+class commodity_condition final : public condition<T>
 {
 public:
 	commodity_condition(const std::string &commodity_identifier, const gsml_operator effect_operator)

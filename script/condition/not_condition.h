@@ -8,7 +8,7 @@
 namespace metternich {
 
 template <typename T>
-class not_condition : public condition<T>
+class not_condition final : public condition<T>
 {
 public:
 	not_condition(const gsml_operator effect_operator) : condition<T>(effect_operator)

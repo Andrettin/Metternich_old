@@ -16,7 +16,7 @@ class timeline;
 class world;
 enum class game_speed : int;
 
-class defines : public QObject, public singleton<defines>
+class defines final : public QObject, public singleton<defines>
 {
 	Q_OBJECT
 

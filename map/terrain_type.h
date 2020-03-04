@@ -15,7 +15,7 @@ class province;
 template <typename T>
 class modifier;
 
-class terrain_type : public data_entry, public data_type<terrain_type>
+class terrain_type final : public data_entry, public data_type<terrain_type>
 {
 	Q_OBJECT
 

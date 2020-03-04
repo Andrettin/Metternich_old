@@ -11,7 +11,7 @@ namespace metternich {
 class terrain_type;
 
 template <typename T>
-class terrain_condition : public condition<T>
+class terrain_condition final : public condition<T>
 {
 public:
 	terrain_condition(const std::string &terrain_identifier, const gsml_operator effect_operator)

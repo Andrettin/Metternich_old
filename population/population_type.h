@@ -13,7 +13,7 @@ namespace metternich {
 
 class holding_type;
 
-class population_type : public data_entry, public data_type<population_type>
+class population_type final : public data_entry, public data_type<population_type>
 {
 	Q_OBJECT
 

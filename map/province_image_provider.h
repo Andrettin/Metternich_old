@@ -4,7 +4,7 @@
 
 namespace metternich {
 
-class province_image_provider : public QQuickImageProvider
+class province_image_provider final : public QQuickImageProvider
 {
 public:
 	province_image_provider() : QQuickImageProvider(QQuickImageProvider::Image) {}

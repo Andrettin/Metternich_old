@@ -17,7 +17,7 @@ enum class holding_slot_type : int;
 template <typename T>
 class modifier;
 
-class holding_type : public data_entry, public data_type<holding_type>
+class holding_type final : public data_entry, public data_type<holding_type>
 {
 	Q_OBJECT
 

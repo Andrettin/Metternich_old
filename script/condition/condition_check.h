@@ -13,7 +13,7 @@ class condition;
 **	@brief	A check for a scripted condition
 */
 template <typename T>
-class condition_check : public condition_check_base
+class condition_check final : public condition_check_base
 {
 public:
 	condition_check(const metternich::condition<T> *condition, const T *checked_instance, const std::function<void(bool)> &result_setter)

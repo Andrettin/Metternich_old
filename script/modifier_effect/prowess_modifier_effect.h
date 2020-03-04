@@ -6,7 +6,7 @@
 namespace metternich {
 
 template <typename T>
-class prowess_modifier_effect : public modifier_effect<T>
+class prowess_modifier_effect final : public modifier_effect<T>
 {
 public:
 	prowess_modifier_effect(const int prowess)

@@ -7,7 +7,7 @@
 namespace metternich {
 
 template <typename T>
-class has_flag_condition : public condition<T>
+class has_flag_condition final : public condition<T>
 {
 public:
 	has_flag_condition(const std::string &flag_identifier, const gsml_operator effect_operator)

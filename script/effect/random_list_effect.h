@@ -73,7 +73,7 @@ private:
 };
 
 template <typename T>
-class random_list_effect : public effect<T>
+class random_list_effect final : public effect<T>
 {
 public:
 	random_list_effect(const gsml_operator effect_operator) : effect<T>(effect_operator)

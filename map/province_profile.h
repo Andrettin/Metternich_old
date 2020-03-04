@@ -14,7 +14,7 @@ class province;
 template <typename T>
 class condition;
 
-class province_profile : public data_entry, public data_type<province_profile>
+class province_profile final : public data_entry, public data_type<province_profile>
 {
 	Q_OBJECT
 

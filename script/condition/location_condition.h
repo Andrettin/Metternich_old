@@ -10,7 +10,7 @@ namespace metternich {
 class province;
 
 template <typename T>
-class location_condition : public scope_condition<T, province>
+class location_condition final : public scope_condition<T, province>
 {
 public:
 	location_condition(const gsml_operator effect_operator) : scope_condition<T, province>(effect_operator)

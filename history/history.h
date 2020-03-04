@@ -12,7 +12,7 @@ namespace metternich {
 
 class timeline;
 
-class history : public singleton<history>
+class history final : public singleton<history>
 {
 public:
 	static void generate_population_units();

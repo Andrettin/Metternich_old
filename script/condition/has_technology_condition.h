@@ -8,7 +8,7 @@ namespace metternich {
 class technology;
 
 template <typename T>
-class has_technology_condition : public condition<T>
+class has_technology_condition final : public condition<T>
 {
 public:
 	has_technology_condition(const std::string &technology_identifier, const gsml_operator effect_operator);

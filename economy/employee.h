@@ -10,7 +10,7 @@ class gsml_data;
 class gsml_property;
 class population_type;
 
-class employee : public QObject
+class employee final : public QObject
 {
 	Q_OBJECT
 

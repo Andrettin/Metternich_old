@@ -8,7 +8,7 @@
 namespace metternich {
 
 template <typename T>
-class or_condition : public condition<T>
+class or_condition final : public condition<T>
 {
 public:
 	or_condition(const gsml_operator effect_operator) : condition<T>(effect_operator)

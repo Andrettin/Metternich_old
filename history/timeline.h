@@ -10,7 +10,7 @@
 
 namespace metternich {
 
-class timeline : public data_entry, public data_type<timeline>
+class timeline final : public data_entry, public data_type<timeline>
 {
 	Q_OBJECT
 

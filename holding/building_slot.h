@@ -13,7 +13,7 @@ class condition_check;
 /**
 **	@brief	The slot for a given building in a holding
 */
-class building_slot : public QObject
+class building_slot final : public QObject
 {
 	Q_OBJECT
 

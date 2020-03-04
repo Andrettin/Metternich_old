@@ -11,7 +11,7 @@ class landed_title;
 class world;
 enum class map_mode;
 
-class star_system : public data_entry, public data_type<star_system>
+class star_system final : public data_entry, public data_type<star_system>
 {
 	Q_OBJECT
 

@@ -12,7 +12,7 @@ namespace metternich {
 class world;
 
 template <typename T>
-class world_condition : public condition<T>
+class world_condition final : public condition<T>
 {
 public:
 	world_condition(const std::string &world_identifier, const gsml_operator effect_operator)

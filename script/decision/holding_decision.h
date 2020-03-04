@@ -8,7 +8,7 @@ namespace metternich {
 
 class holding;
 
-class holding_decision : public decision, public data_type<holding_decision>, public scoped_decision<holding>
+class holding_decision final : public decision, public data_type<holding_decision>, public scoped_decision<holding>
 {
 	Q_OBJECT
 

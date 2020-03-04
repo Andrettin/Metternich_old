@@ -10,7 +10,7 @@
 namespace metternich {
 
 template <typename T>
-class if_effect : public effect<T>
+class if_effect final : public effect<T>
 {
 public:
 	if_effect(const gsml_operator effect_operator) : effect<T>(effect_operator)

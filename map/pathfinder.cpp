@@ -36,7 +36,7 @@ private:
 };
 
 template <class graph, class cost>
-class trade_path_heuristic : public boost::astar_heuristic<graph, cost>
+class trade_path_heuristic final : public boost::astar_heuristic<graph, cost>
 {
 public:
 	using vertex = typename boost::graph_traits<graph>::vertex_descriptor;
@@ -56,7 +56,7 @@ private:
 };
 
 template <class vertex>
-class astar_visitor : public boost::default_astar_visitor
+class astar_visitor final : public boost::default_astar_visitor
 {
 public:
 	astar_visitor(vertex goal) : goal(goal)
