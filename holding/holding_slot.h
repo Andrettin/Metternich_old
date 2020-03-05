@@ -38,6 +38,7 @@ class holding_slot final : public data_entry, public data_type<holding_slot>
 	Q_PROPERTY(metternich::terrain_type* terrain READ get_terrain WRITE set_terrain NOTIFY terrain_changed)
 	Q_PROPERTY(QGeoCoordinate geocoordinate READ get_geocoordinate WRITE set_geocoordinate)
 	Q_PROPERTY(QPoint pos READ get_pos WRITE set_pos NOTIFY pos_changed)
+	Q_PROPERTY(int default_holding_size READ get_default_holding_size CONSTANT)
 	Q_PROPERTY(int holding_size READ get_holding_size WRITE set_holding_size NOTIFY holding_size_changed)
 	Q_PROPERTY(QVariantList available_commodities READ get_available_commodities_qvariant_list NOTIFY available_commodities_changed)
 	Q_PROPERTY(bool population_distribution_allowed MEMBER population_distribution_allowed READ is_population_distribution_allowed)
@@ -46,6 +47,8 @@ public:
 	static constexpr const char *class_identifier = "holding_slot";
 	static constexpr const char *database_folder = "holding_slots";
 	static constexpr const char *prefix = "h_";
+	static constexpr int default_holding_size = 100;
+	static constexpr int default_megalopolis_holding_size = holding_slot::default_holding_size * 200;
 
 	static std::set<std::string> get_database_dependencies();
 
@@ -175,6 +178,15 @@ public:
 		this->geocoordinate = geocoordinate;
 	}
 
+	int get_default_holding_size() const
+	{
+		if (this->is_megalopolis()) {
+			return holding_slot::default_megalopolis_holding_size;
+		}
+
+		return holding_slot::default_holding_size;
+	}
+
 	int get_holding_size() const
 	{
 		return this->holding_size;
@@ -256,7 +268,7 @@ private:
 	terrain_type *terrain = nullptr;
 	QGeoCoordinate geocoordinate;
 	QPoint pos = QPoint(-1, -1);
-	int holding_size = 100; //the holding size, which affects population capacity (100 = normal size)
+	int holding_size = 0; //the holding size, which affects population capacity
 	std::vector<metternich::commodity *> available_commodities; //the commodities available for production by the holding (if any)
 	bool population_distribution_allowed = true;
 	std::vector<metternich::province *> megalopolis_provinces; //provinces which pertain to this megalopolis holding slot, if it is one

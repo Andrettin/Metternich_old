@@ -49,6 +49,10 @@ void holding_slot::initialize()
 		this->province_profile = nullptr;
 	}
 
+	if (this->get_holding_size() == 0) {
+		this->set_holding_size(this->get_default_holding_size());
+	}
+
 	if (this->get_terrain() == nullptr) {
 		if (this->get_province() != nullptr) {
 			this->set_terrain(this->get_province()->get_terrain());

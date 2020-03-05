@@ -216,15 +216,7 @@ public:
 		this->calculate_population_growth(); //population growth depends on the population capacity
 	}
 
-	void calculate_population_capacity()
-	{
-		int population_capacity = this->get_base_population_capacity();
-		population_capacity *= this->get_population_capacity_modifier();
-		population_capacity /= 100;
-		population_capacity *= this->get_holding_size();
-		population_capacity /= 100;
-		this->set_population_capacity(population_capacity);
-	}
+	void calculate_population_capacity();
 
 	int get_base_population_growth() const
 	{

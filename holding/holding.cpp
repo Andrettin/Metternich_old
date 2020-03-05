@@ -468,6 +468,16 @@ void holding::calculate_population()
 	this->set_population(population);
 }
 
+void holding::calculate_population_capacity()
+{
+	long long int population_capacity = this->get_base_population_capacity();
+	population_capacity *= this->get_population_capacity_modifier();
+	population_capacity /= 100;
+	population_capacity *= this->get_holding_size();
+	population_capacity /= holding_slot::default_holding_size;
+	this->set_population_capacity(static_cast<int>(population_capacity));
+}
+
 void holding::do_population_growth()
 {
 	const int population_growth = this->get_population_growth();
