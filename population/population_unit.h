@@ -13,7 +13,6 @@ class holding;
 class phenotype;
 class population_type;
 class province;
-class region;
 class religion;
 class terrain_type;
 

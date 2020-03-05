@@ -3,18 +3,21 @@
 #include "culture/culture.h"
 #include "culture/culture_group.h"
 #include "defines.h"
+#include "history/history.h"
 #include "holding/building.h"
 #include "holding/holding.h"
 #include "holding/holding_slot.h"
 #include "holding/holding_slot_type.h"
 #include "holding/holding_type.h"
 #include "landed_title/landed_title.h"
+#include "map/region.h"
 #include "politics/government_type.h"
 #include "politics/government_type_group.h"
 #include "population/population_type.h"
 #include "population/population_unit.h"
 #include "religion/religion.h"
 #include "religion/religion_group.h"
+#include "technology/technology.h"
 #include "translator.h"
 #include "util/container_util.h"
 #include "util/vector_util.h"
@@ -409,6 +412,10 @@ void territory::add_holding_slot(holding_slot *holding_slot)
 			if (this->get_capital_holding_slot() == nullptr) {
 				//set the first settlement holding slot as the capital if none has been set
 				this->set_capital_holding_slot(holding_slot);
+			}
+			//add the holding slot to its territory's regions
+			for (region *region : this->get_regions()) {
+				region->add_holding(holding_slot);
 			}
 			break;
 		case holding_slot_type::palace:
@@ -819,6 +826,32 @@ QVariantList territory::get_population_per_religion_qvariant_list() const
 	}
 
 	return population_per_religion;
+}
+
+QVariantList territory::get_technologies_qvariant_list() const
+{
+	return container::to_qvariant_list(this->get_technologies());
+}
+
+void territory::add_technology(technology *technology)
+{
+	if (history::get()->is_loading()) {
+		//if is loading history, automatically add all prerequisites when adding a technology
+		for (metternich::technology *required_technology : technology->get_required_technologies()) {
+			if (!this->has_technology(required_technology)) {
+				this->add_technology(required_technology);
+			}
+		}
+	}
+
+	this->technologies.insert(technology);
+	emit technologies_changed();
+}
+
+void territory::remove_technology(technology *technology)
+{
+	this->technologies.erase(technology);
+	emit technologies_changed();
 }
 
 bool territory::is_selectable() const

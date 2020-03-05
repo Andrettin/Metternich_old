@@ -17,7 +17,9 @@ class landed_title;
 class population_unit;
 class province;
 class technology;
+class territory;
 class wildlife_unit;
+class world;
 
 class region final : public data_entry, public data_type<region>
 {
@@ -25,22 +27,13 @@ class region final : public data_entry, public data_type<region>
 
 	Q_PROPERTY(QVariantList holdings READ get_holdings_qvariant_list)
 	Q_PROPERTY(QVariantList provinces READ get_provinces_qvariant_list)
+	Q_PROPERTY(QVariantList worlds READ get_worlds_qvariant_list)
 	Q_PROPERTY(QVariantList subregions READ get_subregions_qvariant_list)
 	Q_PROPERTY(QVariantList technologies READ get_technologies_qvariant_list)
 
 public:
 	static constexpr const char *class_identifier = "region";
 	static constexpr const char *database_folder = "regions";
-	static constexpr const char *prefix = "r_";
-
-	static region *add(const std::string &identifier)
-	{
-		if (identifier.substr(0, 2) != region::prefix) {
-			throw std::runtime_error("Invalid identifier for new region: \"" + identifier + "\". Region identifiers must begin with \"" + region::prefix + "\".");
-		}
-
-		return data_type<region>::add(identifier);
-	}
 
 	static std::set<std::string> get_database_dependencies();
 
@@ -49,6 +42,14 @@ public:
 	virtual ~region() override;
 
 	virtual void initialize_history() override;
+
+	const std::set<territory *> &get_territories() const
+	{
+		return this->territories;
+	}
+
+	void add_territory(territory *territory);
+	void remove_territory(territory *territory);
 
 	const std::set<province *> &get_provinces() const
 	{
@@ -59,6 +60,15 @@ public:
 	Q_INVOKABLE void add_province(province *province);
 	Q_INVOKABLE void remove_province(province *province);
 
+	const std::set<world *> &get_worlds() const
+	{
+		return this->worlds;
+	}
+
+	QVariantList get_worlds_qvariant_list() const;
+	Q_INVOKABLE void add_world(world *world);
+	Q_INVOKABLE void remove_world(world *world);
+
 	QVariantList get_subregions_qvariant_list() const;
 
 	Q_INVOKABLE void add_subregion(metternich::region *subregion)
@@ -68,6 +78,10 @@ public:
 
 		for (province *province : subregion->get_provinces()) {
 			this->add_province(province);
+		}
+
+		for (world *world : subregion->get_worlds()) {
+			this->add_world(world);
 		}
 
 		for (holding_slot *holding_slot : subregion->holding_slots) {
@@ -82,6 +96,10 @@ public:
 
 		for (province *province : subregion->get_provinces()) {
 			this->remove_province(province);
+		}
+
+		for (world *world : subregion->get_worlds()) {
+			this->remove_world(world);
 		}
 
 		for (holding_slot *holding_slot : subregion->holding_slots) {
@@ -139,15 +157,18 @@ public:
 
 signals:
 	void provinces_changed();
+	void worlds_changed();
 
 private:
 	std::set<province *> provinces;
+	std::set<world *> worlds;
+	std::set<territory *> territories;
 	std::set<holding_slot *> holding_slots; //the slots for the holdings contained by this region
 	std::set<region *> subregions; //subregions of this region
 	std::set<region *> superregions; //regions for which this region is a subregion
-	std::set<technology *> technologies; //technologies to be applied to this region's provinces
+	std::set<technology *> technologies; //technologies to be applied to this region's territories
 	std::vector<qunique_ptr<population_unit>> population_units; //population units set for this region in history, used during initialization to generate population units in the region's settlements
-	std::vector<qunique_ptr<wildlife_unit>> wildlife_units; //wildlife units set for this region in history, used during initialization to generate wildlife units in the region's provinces
+	std::vector<qunique_ptr<wildlife_unit>> wildlife_units; //wildlife units set for this region in history, used during initialization to generate wildlife units in the region's territories
 };
 
 }

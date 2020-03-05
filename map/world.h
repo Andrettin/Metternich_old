@@ -44,6 +44,7 @@ class world final : public territory, public data_type<world>
 	Q_PROPERTY(int surface_area MEMBER surface_area READ get_surface_area)
 	Q_PROPERTY(int radius MEMBER radius READ get_radius)
 	Q_PROPERTY(int solar_radius READ get_solar_radius WRITE set_solar_radius)
+	Q_PROPERTY(int jovian_radius READ get_jovian_radius WRITE set_jovian_radius)
 	Q_PROPERTY(QVariantList provinces READ get_provinces_qvariant_list CONSTANT)
 	Q_PROPERTY(QVariantList trade_nodes READ get_trade_nodes_qvariant_list CONSTANT)
 	Q_PROPERTY(QVariantList trade_routes READ get_trade_routes_qvariant_list CONSTANT)
@@ -56,6 +57,7 @@ public:
 	static constexpr double default_planet_size = 32;
 	static constexpr double default_star_size = 128;
 	static constexpr int solar_radius = 695700; //in kilometers
+	static constexpr int jovian_radius = 69911; //in kilometers
 	static constexpr int solar_absolute_magnitude = 483; //4.83
 	static constexpr int million_km_per_pixel = 1;
 	static constexpr int light_years_per_hundred_parsecs = 326; //1 parsec = 3.26 light years
@@ -295,6 +297,22 @@ public:
 	{
 		long long int radius = solar_radius;
 		radius *= world::solar_radius;
+		radius /= 10000;
+		this->radius = static_cast<int>(radius);
+	}
+
+	int get_jovian_radius() const
+	{
+		long long int jovian_radius = this->get_radius();
+		jovian_radius *= 10000;
+		jovian_radius /= world::jovian_radius;
+		return static_cast<int>(jovian_radius);
+	}
+
+	void set_jovian_radius(const int jovian_radius)
+	{
+		long long int radius = jovian_radius;
+		radius *= world::jovian_radius;
 		radius /= 10000;
 		this->radius = static_cast<int>(radius);
 	}

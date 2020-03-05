@@ -10,7 +10,6 @@
 #include "economy/trade_route.h"
 #include "engine_interface.h"
 #include "game/game.h"
-#include "history/history.h"
 #include "holding/holding.h"
 #include "holding/holding_slot.h"
 #include "holding/holding_slot_type.h"
@@ -18,14 +17,12 @@
 #include "map/map.h"
 #include "map/map_mode.h"
 #include "map/pathfinder.h"
-#include "map/region.h"
 #include "map/terrain_type.h"
 #include "map/world.h"
 #include "religion/religion.h"
 #include "religion/religion_group.h"
 #include "script/modifier.h"
 #include "species/wildlife_unit.h"
-#include "technology/technology.h"
 #include "util/container_util.h"
 #include "util/geocoordinate_util.h"
 #include "util/point_util.h"
@@ -815,17 +812,6 @@ void province::add_holding_slot(holding_slot *holding_slot)
 {
 	holding_slot->set_province(this);
 	territory::add_holding_slot(holding_slot);
-
-	switch (holding_slot->get_type()) {
-		case holding_slot_type::settlement:
-			//add the holding slot to its province's regions
-			for (region *region : this->get_regions()) {
-				region->add_holding(holding_slot);
-			}
-			break;
-		default:
-			break;
-	}
 }
 
 void province::set_capital_holding_slot(holding_slot *holding_slot)
@@ -941,32 +927,6 @@ bool province::is_ocean() const
 bool province::is_river() const
 {
 	return this->get_terrain() != nullptr && this->get_terrain()->is_river();
-}
-
-QVariantList province::get_technologies_qvariant_list() const
-{
-	return container::to_qvariant_list(this->get_technologies());
-}
-
-void province::add_technology(technology *technology)
-{
-	if (history::get()->is_loading()) {
-		//if is loading history, automatically add all prerequisites when adding a technology
-		for (metternich::technology *required_technology : technology->get_required_technologies()) {
-			if (!this->has_technology(required_technology)) {
-				this->add_technology(required_technology);
-			}
-		}
-	}
-
-	this->technologies.insert(technology);
-	emit technologies_changed();
-}
-
-void province::remove_technology(technology *technology)
-{
-	this->technologies.erase(technology);
-	emit technologies_changed();
 }
 
 bool province::is_center_of_trade() const

@@ -10,7 +10,6 @@
 #include "map/map_mode.h"
 #include "map/province.h"
 #include "map/province_profile.h"
-#include "map/region.h"
 #include "map/terrain_type.h"
 #include "map/world.h"
 #include "politics/government_type.h"

@@ -3,7 +3,6 @@
 #include "database/data_type.h"
 #include "map/territory.h"
 #include "qunique_ptr.h"
-#include "technology/technology_set.h"
 
 #include <QColor>
 #include <QGeoCoordinate>
@@ -24,14 +23,12 @@
 namespace metternich {
 
 class population_unit;
-class region;
-class technology;
 class terrain_type;
 class trade_node;
 class trade_route;
 class wildlife_unit;
 class world;
-enum class map_mode : int;
+enum class map_mode;
 
 class province final : public territory, public data_type<province>
 {
@@ -46,7 +43,6 @@ class province final : public territory, public data_type<province>
 	Q_PROPERTY(QImage image READ get_image NOTIFY image_changed)
 	Q_PROPERTY(metternich::terrain_type* terrain READ get_terrain WRITE set_terrain NOTIFY terrain_changed)
 	Q_PROPERTY(QVariantList wildlife_units READ get_wildlife_units_qvariant_list NOTIFY wildlife_units_changed)
-	Q_PROPERTY(QVariantList technologies READ get_technologies_qvariant_list NOTIFY technologies_changed)
 	Q_PROPERTY(bool selected READ is_selected WRITE set_selected NOTIFY selected_changed)
 	Q_PROPERTY(QGeoCoordinate center_coordinate READ get_center_coordinate CONSTANT)
 	Q_PROPERTY(QPoint center_pos READ get_center_pos CONSTANT)
@@ -189,26 +185,6 @@ public:
 
 	virtual void set_capital_holding_slot(holding_slot *holding_slot) override;
 
-	const std::set<region *> &get_regions() const
-	{
-		return this->regions;
-	}
-
-	void add_region(region *region)
-	{
-		this->regions.insert(region);
-	}
-
-	void remove_region(region *region)
-	{
-		this->regions.erase(region);
-	}
-
-	bool is_in_region(region *region) const
-	{
-		return this->regions.contains(region);
-	}
-
 	const std::set<province *> &get_border_provinces() const
 	{
 		return this->border_provinces;
@@ -272,21 +248,6 @@ public:
 
 		return this->is_coastal() || this->has_any_active_trade_route();
 	}
-
-	const technology_set &get_technologies() const
-	{
-		return this->technologies;
-	}
-
-	QVariantList get_technologies_qvariant_list() const;
-
-	bool has_technology(technology *technology) const
-	{
-		return this->technologies.contains(technology);
-	}
-
-	Q_INVOKABLE void add_technology(technology *technology);
-	Q_INVOKABLE void remove_technology(technology *technology);
 
 	bool is_center_of_trade() const;
 
@@ -494,7 +455,6 @@ signals:
 	void terrain_changed();
 	void wildlife_units_changed();
 	void main_pos_changed();
-	void technologies_changed();
 	void active_trade_routes_changed();
 	void selected_changed();
 
@@ -510,10 +470,8 @@ private:
 	terrain_type *terrain = nullptr;
 	int pixel_count = 0; //the amount of pixels that the province takes on the map
 	int area = 0; //the area of the province, in square kilometers; used to calculate holding sizes
-	std::set<region *> regions; //the regions to which this province belongs
 	std::set<province *> border_provinces; //provinces bordering this one
 	std::set<province *> river_crossings; //provinces bordering this one which are reached by crossing a major river
-	technology_set technologies; //the technologies acquired for the province
 	std::set<trade_route *> trade_routes; //the trade routes going through the province
 	std::set<trade_route *> active_trade_routes; //the active trade routes going through the province
 	int trade_node_trade_cost = 0;

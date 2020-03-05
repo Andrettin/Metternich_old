@@ -5,6 +5,7 @@
 #include "engine_interface.h"
 #include "history/timeline.h"
 #include "holding/holding.h"
+#include "holding/holding_slot.h"
 #include "landed_title/landed_title.h"
 #include "map/province.h"
 #include "map/province_profile.h"
@@ -17,13 +18,13 @@
 namespace metternich {
 
 /**
-**	@brief	Create population units, based on population history for regions, provinces and settlement holdings
+**	@brief	Create population units, based on population history for regions, territories and settlement holdings
 */
 void history::generate_population_units()
 {
 	std::vector<population_unit *> base_population_units;
 
-	//add population units with discount existing enabled to the vector of population units used for generation (holding-level population units with that enabled are not used for generation per se, but generated population units may still be discounted from their size), as well as any population units in provinces or regions
+	//add population units with discount existing enabled to the vector of population units used for generation (holding-level population units with that enabled are not used for generation per se, but generated population units may still be discounted from their size), as well as any population units in territories or regions
 	for (province *province : province::get_all()) {
 		for (holding *holding : province->get_settlement_holdings()) {
 			for (const qunique_ptr<population_unit> &population_unit : holding->get_population_units()) {
@@ -58,7 +59,7 @@ void history::generate_population_units()
 		}
 	}
 
-	//sort regions so that ones with less provinces are applied first
+	//sort regions so that ones with less territories are applied first
 	std::sort(base_population_units.begin(), base_population_units.end(), [](population_unit *a, population_unit *b) {
 		//give priority to population units which discount less types
 		if (a->get_discount_types().size() != b->get_discount_types().size()) {
@@ -71,7 +72,7 @@ void history::generate_population_units()
 		} else if ((a->get_territory() != nullptr) != (b->get_territory() != nullptr)) {
 			return a->get_territory() != nullptr;
 		} else if (a->get_region() != b->get_region()) {
-			return a->get_region()->get_provinces().size() < b->get_region()->get_provinces().size();
+			return a->get_region()->get_territories().size() < b->get_region()->get_territories().size();
 		}
 
 		//give priority to population units with a culture

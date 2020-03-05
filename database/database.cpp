@@ -137,6 +137,9 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 			} else if (property.get_key() == "traits") {
 				trait *trait_value = trait::get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(trait *, trait_value));
+			} else if (property.get_key() == "worlds") {
+				world *world_value = world::get(property.get_value());
+				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(world *, world_value));
 			} else {
 				throw std::runtime_error("Unknown type for list property \"" + std::string(property_name) + "\" (in class \"" + class_name + "\").");
 			}
@@ -178,7 +181,7 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 
 		if (property.get_key() == "efficiency" || property.get_key() == "output_value" || property.get_key() == "output_modifier" || property.get_key() == "workforce_proportion" || property.get_key() == "proportion_to_workforce" || property.get_key() == "income_share" || property.get_key() == "base_price" || property.get_key() == "trade_node_score_realm_modifier" || property.get_key() == "trade_node_score_culture_modifier" || property.get_key() == "trade_node_score_culture_group_modifier" || property.get_key() == "trade_node_score_religion_modifier" || property.get_key() == "trade_node_score_religion_group_modifier" || property.get_key() == "holding_size" || property.get_key() == "astrodistance" || property.get_key() == "astrodistance_pc") {
 			value = parse::centesimal_number_string_to_int(property.get_value());
-		} else if (property.get_key() == "base_population_growth" || property.get_key() == "cultural_derivation_factor" || property.get_key() == "trade_cost_modifier_per_distance" || property.get_key() == "base_port_trade_cost_modifier" || property.get_key() == "solar_radius") {
+		} else if (property.get_key() == "base_population_growth" || property.get_key() == "cultural_derivation_factor" || property.get_key() == "trade_cost_modifier_per_distance" || property.get_key() == "base_port_trade_cost_modifier" || property.get_key() == "solar_radius" || property.get_key() == "jovian_radius") {
 			value = parse::fractional_number_string_to_int<4>(property.get_value());
 		} else {
 			value = std::stoi(property.get_value());

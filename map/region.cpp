@@ -4,6 +4,7 @@
 #include "holding/holding_slot.h"
 #include "landed_title/landed_title.h"
 #include "map/province.h"
+#include "map/world.h"
 #include "population/population_unit.h"
 #include "species/wildlife_unit.h"
 #include "technology/technology.h"
@@ -14,9 +15,10 @@ namespace metternich {
 std::set<std::string> region::get_database_dependencies()
 {
 	return {
-		//so that when regions are processed provinces already have their holding slots set
+		//so that when regions are processed provinces and worlds already have their holding slots set
 		province::class_identifier,
-		holding_slot::class_identifier
+		holding_slot::class_identifier,
+		world::class_identifier
 	};
 }
 
@@ -34,13 +36,35 @@ void region::initialize_history()
 	this->wildlife_units.clear();
 
 	for (technology *technology : this->technologies) {
-		for (province *province : this->provinces) {
-			province->add_technology(technology);
+		for (territory *territory : this->territories) {
+			territory->add_technology(technology);
 		}
 	}
 	this->technologies.clear();
 
 	data_entry_base::initialize_history();
+}
+
+void region::add_territory(territory *territory)
+{
+	this->territories.insert(territory);
+	territory->add_region(this);
+
+	//add the holdings belonging to the territory to the region
+	for (holding_slot *holding_slot : territory->get_settlement_holding_slots()) {
+		this->add_holding(holding_slot);
+	}
+}
+
+void region::remove_territory(territory *territory)
+{
+	this->territories.erase(territory);
+	territory->remove_region(this);
+
+	//remove the holdings belonging to the territory from the region
+	for (holding_slot *holding_slot : territory->get_settlement_holding_slots()) {
+		this->remove_holding(holding_slot);
+	}
 }
 
 QVariantList region::get_provinces_qvariant_list() const
@@ -51,12 +75,7 @@ QVariantList region::get_provinces_qvariant_list() const
 void region::add_province(province *province)
 {
 	this->provinces.insert(province);
-	province->add_region(this);
-
-	//add the holdings belonging to the province to the region
-	for (holding_slot *holding_slot : province->get_settlement_holding_slots()) {
-		this->add_holding(holding_slot);
-	}
+	this->add_territory(province);
 
 	for (region *superregion : this->superregions) {
 		superregion->add_province(province);
@@ -66,15 +85,35 @@ void region::add_province(province *province)
 void region::remove_province(province *province)
 {
 	this->provinces.erase(province);
-	province->remove_region(this);
-
-	//remove the holdings belonging to the province from the region
-	for (holding_slot *holding_slot : province->get_settlement_holding_slots()) {
-		this->remove_holding(holding_slot);
-	}
+	this->remove_territory(province);
 
 	for (region *superregion : this->superregions) {
 		superregion->remove_province(province);
+	}
+}
+
+QVariantList region::get_worlds_qvariant_list() const
+{
+	return container::to_qvariant_list(this->get_worlds());
+}
+
+void region::add_world(world *world)
+{
+	this->worlds.insert(world);
+	this->add_territory(world);
+
+	for (region *superregion : this->superregions) {
+		superregion->add_world(world);
+	}
+}
+
+void region::remove_world(world *world)
+{
+	this->worlds.erase(world);
+	this->remove_territory(world);
+
+	for (region *superregion : this->superregions) {
+		superregion->remove_world(world);
 	}
 }
 

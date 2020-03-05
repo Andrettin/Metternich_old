@@ -454,7 +454,7 @@ void holding::set_population(const int population)
 
 	this->calculate_population_growth(); //population growth depends on the current population
 
-	//change the population count for the province as well
+	//change the population count for the territory as well
 	const int population_change = population - old_population;
 	this->get_territory()->change_population(population_change);
 }
@@ -621,10 +621,10 @@ bool holding::has_building(building *building) const
 void holding::add_building(building *building)
 {
 	if (history::get()->is_loading()) {
-		//if is loading history, automatically add all required technologies to the province when adding a building
+		//if is loading history, automatically add all required technologies to the territory when adding a building
 		for (technology *required_technology : building->get_required_technologies()) {
-			if (!this->get_province()->has_technology(required_technology)) {
-				this->get_province()->add_technology(required_technology);
+			if (!this->get_territory()->has_technology(required_technology)) {
+				this->get_territory()->add_technology(required_technology);
 			}
 		}
 	}
