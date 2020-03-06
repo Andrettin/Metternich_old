@@ -11,6 +11,7 @@
 #include "map/map.h"
 #include "map/map_mode.h"
 #include "map/province.h"
+#include "map/star_system.h"
 #include "map/world.h"
 #include "script/condition/condition_check_base.h"
 #include "script/event/event_trigger.h"
@@ -167,64 +168,11 @@ void game::do_day()
 	const size_t current_day = static_cast<size_t>(date.day());
 	const size_t current_year_day = static_cast<size_t>(date.dayOfYear());
 
-	const std::vector<holding_slot *> &holding_slots = holding_slot::get_all();
-	//process the monthly actions of different ones on each day of the month, for the sake of performance
-	for (size_t i = (current_day - 1); i < holding_slots.size(); i += days_in_month) {
-		holding_slot *holding_slot = holding_slots[i];
-
-		if (holding_slot->get_holding() == nullptr) {
-			continue;
-		}
-
-		holding_slot->get_holding()->do_month();
-	}
-
-	for (holding_slot *holding_slot : holding_slots) {
-		if (holding_slot->get_holding() == nullptr) {
-			continue;
-		}
-
-		holding_slot->get_holding()->do_day();
-	}
-
-	const std::vector<province *> &provinces = province::get_all();
-	for (size_t i = (current_day - 1); i < provinces.size(); i += days_in_month) {
-		province *province = provinces[i];
-
-		if (province->get_county() == nullptr) {
-			continue;
-		}
-
-		province->do_month();
-	}
-
-	for (province *province : provinces) {
-		if (province->get_county() == nullptr) {
-			continue;
-		}
-
-		province->do_day();
-	}
-
-	const std::vector<character *> &living_characters = character::get_all_living();
-	for (size_t i = (current_year_day - 1); i < living_characters.size(); i += days_in_year) {
-		character *character = living_characters[i];
-
-		if (character == nullptr) {
-			continue;
-		}
-
-		character->do_year();
-	}
-
-	for (size_t i = (current_day - 1); i < living_characters.size(); i += days_in_month) {
-		character *character = living_characters[i];
-		if (character == nullptr) {
-			continue;
-		}
-
-		character->do_month();
-	}
+	this->do_day_for_type<holding_slot>(days_in_month, days_in_year, current_day, current_year_day);
+	this->do_day_for_type<province>(days_in_month, days_in_year, current_day, current_year_day);
+	this->do_day_for_type<world>(days_in_month, days_in_year, current_day, current_year_day);
+	this->do_day_for_type<star_system>(days_in_month, days_in_year, current_day, current_year_day);
+	this->do_day_for_type<character, false>(days_in_month, days_in_year, current_day, current_year_day);
 }
 
 void game::do_month()

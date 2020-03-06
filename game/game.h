@@ -118,6 +118,43 @@ private:
 	void purge_superfluous_characters();
 	void amalgamate_map_inactive_worlds();
 
+	template <typename type, bool do_day = true>
+	void do_day_for_type(const size_t days_in_month, const size_t days_in_year, const size_t current_day, const size_t current_year_day)
+	{
+		const std::vector<type *> &instances = type::get_all_active();
+
+		for (size_t i = (current_year_day - 1); i < instances.size(); i += days_in_year) {
+			type *instance = instances[i];
+
+			if (instance == nullptr) {
+				continue;
+			}
+
+			instance->do_year();
+		}
+
+		//process the monthly actions of different ones on each day of the month, for the sake of performance
+		for (size_t i = (current_day - 1); i < instances.size(); i += days_in_month) {
+			type *instance = instances[i];
+
+			if (instance == nullptr) {
+				continue;
+			}
+
+			instance->do_month();
+		}
+
+		if constexpr (do_day) {
+			for (type *instance : instances) {
+				if (instance == nullptr) {
+					continue;
+				}
+
+				instance->do_day();
+			}
+		}
+	}
+
 signals:
 	void running_changed();
 	void paused_changed();

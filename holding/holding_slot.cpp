@@ -124,6 +124,24 @@ gsml_data holding_slot::get_cache_data() const
 	return cache_data;
 }
 
+void holding_slot::do_day()
+{
+	if (this->get_holding() != nullptr) {
+		this->get_holding()->do_day();
+	}
+}
+
+void holding_slot::do_month()
+{
+	if (this->get_holding() != nullptr) {
+		this->get_holding()->do_month();
+	}
+}
+
+void holding_slot::do_year()
+{
+}
+
 std::string holding_slot::get_name() const
 {
 	if (this->get_barony() != nullptr) {

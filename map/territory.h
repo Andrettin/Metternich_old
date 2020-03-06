@@ -59,7 +59,9 @@ public:
 	virtual void check() const override;
 	virtual void check_history() const override;
 
+	void do_day();
 	virtual void do_month();
+	void do_year();
 
 	virtual std::string get_identifier_without_prefix() const
 	{
@@ -255,7 +257,19 @@ public:
 	void calculate_population_groups();
 
 	Q_INVOKABLE QVariantList get_population_per_type_qvariant_list() const;
+
+	const std::map<metternich::culture *, int> &get_population_per_culture() const
+	{
+		return this->population_per_culture;
+	}
+
 	Q_INVOKABLE QVariantList get_population_per_culture_qvariant_list() const;
+
+	const std::map<metternich::religion *, int> &get_population_per_religion() const
+	{
+		return this->population_per_religion;
+	}
+
 	Q_INVOKABLE QVariantList get_population_per_religion_qvariant_list() const;
 
 	const technology_set &get_technologies() const

@@ -231,9 +231,19 @@ void territory::check_history() const
 	this->check();
 }
 
+void territory::do_day()
+{
+}
+
 void territory::do_month()
 {
-	this->calculate_population_groups();
+	if (this->get_owner() != nullptr) {
+		this->calculate_population_groups();
+	}
+}
+
+void territory::do_year()
+{
 }
 
 std::string territory::get_name() const
@@ -338,7 +348,6 @@ character *territory::get_owner() const
 
 	return nullptr;
 }
-
 
 void territory::set_culture(metternich::culture *culture)
 {
@@ -755,7 +764,7 @@ void territory::calculate_population_groups()
 	metternich::culture *plurality_culture = nullptr;
 	int plurality_culture_size = 0;
 
-	for (const auto &kv_pair : this->population_per_culture) {
+	for (const auto &kv_pair : this->get_population_per_culture()) {
 		metternich::culture *culture = kv_pair.first;
 		const int culture_size = kv_pair.second;
 		if (plurality_culture == nullptr || culture_size > plurality_culture_size) {
@@ -767,7 +776,7 @@ void territory::calculate_population_groups()
 	metternich::religion *plurality_religion = nullptr;
 	int plurality_religion_size = 0;
 
-	for (const auto &kv_pair : this->population_per_religion) {
+	for (const auto &kv_pair : this->get_population_per_religion()) {
 		metternich::religion *religion = kv_pair.first;
 		const int religion_size = kv_pair.second;
 		if (plurality_religion == nullptr || religion_size > plurality_religion_size) {
@@ -802,7 +811,7 @@ QVariantList territory::get_population_per_culture_qvariant_list() const
 
 	QVariantList population_per_culture;
 
-	for (const auto &kv_pair : this->population_per_culture) {
+	for (const auto &kv_pair : this->get_population_per_culture()) {
 		QVariantMap culture_population;
 		culture_population["culture"] = QVariant::fromValue(kv_pair.first);
 		culture_population["population"] = QVariant::fromValue(kv_pair.second);
@@ -818,7 +827,7 @@ QVariantList territory::get_population_per_religion_qvariant_list() const
 
 	QVariantList population_per_religion;
 
-	for (const auto &kv_pair : this->population_per_religion) {
+	for (const auto &kv_pair : this->get_population_per_religion()) {
 		QVariantMap religion_population;
 		religion_population["religion"] = QVariant::fromValue(kv_pair.first);
 		religion_population["population"] = QVariant::fromValue(kv_pair.second);

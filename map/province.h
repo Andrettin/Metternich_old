@@ -86,7 +86,6 @@ public:
 	virtual void check_history() const override;
 	virtual gsml_data get_cache_data() const override;
 
-	void do_day();
 	virtual void do_month() override final;
 
 	virtual std::string get_identifier_without_prefix() const override

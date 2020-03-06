@@ -82,6 +82,10 @@ public:
 	virtual void check_history() const override;
 	virtual gsml_data get_cache_data() const override;
 
+	void do_day();
+	void do_month();
+	void do_year();
+
 	virtual std::string get_name() const override;
 
 	QString get_name_qstring() const

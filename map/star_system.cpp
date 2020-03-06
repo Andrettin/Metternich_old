@@ -1,10 +1,14 @@
 #include "map/star_system.h"
 
+#include "culture/culture.h"
+#include "culture/culture_group.h"
 #include "engine_interface.h"
 #include "landed_title/landed_title.h"
 #include "map/map.h"
 #include "map/map_mode.h"
 #include "map/world.h"
+#include "religion/religion.h"
+#include "religion/religion_group.h"
 #include "translator.h"
 #include "util/container_util.h"
 #include "util/point_util.h"
@@ -37,6 +41,35 @@ void star_system::initialize()
 	if (this->get_primary_star() == nullptr) {
 		this->calculate_primary_star();
 	}
+}
+
+void star_system::initialize_history()
+{
+	if (this->get_duchy() != nullptr) {
+		for (world *world : this->get_worlds()) {
+			if (!world->is_history_initialized()) {
+				//ensure that worlds have had their population calculated, so that the system's will be calculated correctly as well
+				world->initialize_history();
+			}
+		}
+
+		this->calculate_population_groups();
+	}
+}
+
+void star_system::do_day()
+{
+}
+
+void star_system::do_month()
+{
+	if (this->get_owner() != nullptr) {
+		this->calculate_population_groups();
+	}
+}
+
+void star_system::do_year()
+{
 }
 
 std::string star_system::get_name() const
@@ -95,6 +128,15 @@ landed_title *star_system::get_de_jure_empire() const
 	return nullptr;
 }
 
+character *star_system::get_owner() const
+{
+	if (this->get_duchy() != nullptr) {
+		return this->get_duchy()->get_holder();
+	}
+
+	return nullptr;
+}
+
 void star_system::calculate_primary_star()
 {
 	this->primary_star = nullptr;
@@ -133,7 +175,7 @@ const QColor &star_system::get_color_for_map_mode(const map_mode mode) const
 				break;
 			}
 			case map_mode::de_jure_kingdom: {
-				const landed_title *kingdom = this->get_de_jure_empire();
+				const landed_title *kingdom = this->get_de_jure_kingdom();
 				if (kingdom != nullptr) {
 					return kingdom->get_color();
 				}
@@ -146,7 +188,6 @@ const QColor &star_system::get_color_for_map_mode(const map_mode mode) const
 				}
 				break;
 			}
-			/*
 			case map_mode::culture: {
 				if (this->get_culture() != nullptr) {
 					return this->get_culture()->get_color();
@@ -171,6 +212,7 @@ const QColor &star_system::get_color_for_map_mode(const map_mode mode) const
 				}
 				break;
 			}
+			/*
 			case map_mode::trade_node: {
 				if (this->get_trade_node() != nullptr && this->get_owner() != nullptr) {
 					return this->get_trade_node()->get_color();
@@ -357,6 +399,54 @@ world *star_system::get_capital_world() const
 	}
 
 	return nullptr;
+}
+
+void star_system::calculate_population_groups()
+{
+	std::map<metternich::culture *, int> population_per_culture;
+	std::map<metternich::religion *, int> population_per_religion;
+
+	for (const world *world : this->get_worlds()) {
+		if (world->get_county() == nullptr || world->get_county()->get_holder() == nullptr) {
+			continue;
+		}
+
+		for (const auto &kv_pair : world->get_population_per_culture()) {
+			population_per_culture[kv_pair.first] += kv_pair.second;
+		}
+		for (const auto &kv_pair : world->get_population_per_religion()) {
+			population_per_religion[kv_pair.first] += kv_pair.second;
+		}
+	}
+
+	//update the system's main culture and religion
+
+	metternich::culture *plurality_culture = nullptr;
+	int plurality_culture_size = 0;
+
+	for (const auto &kv_pair : population_per_culture) {
+		metternich::culture *culture = kv_pair.first;
+		const int culture_size = kv_pair.second;
+		if (plurality_culture == nullptr || culture_size > plurality_culture_size) {
+			plurality_culture = culture;
+			plurality_culture_size = culture_size;
+		}
+	}
+
+	metternich::religion *plurality_religion = nullptr;
+	int plurality_religion_size = 0;
+
+	for (const auto &kv_pair : population_per_religion) {
+		metternich::religion *religion = kv_pair.first;
+		const int religion_size = kv_pair.second;
+		if (plurality_religion == nullptr || religion_size > plurality_religion_size) {
+			plurality_religion = religion;
+			plurality_religion_size = religion_size;
+		}
+	}
+
+	this->set_culture(plurality_culture);
+	this->set_religion(plurality_religion);
 }
 
 }

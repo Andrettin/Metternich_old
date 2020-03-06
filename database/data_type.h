@@ -59,6 +59,12 @@ public:
 		return data_type::instances;
 	}
 
+	//all instances which are active, e.g. for the purposes of having a tick be processed
+	static const std::vector<T *> &get_all_active()
+	{
+		return data_type::get_all();
+	}
+
 	static bool exists(const std::string &identifier)
 	{
 		return identifiable_type<T>::exists(identifier) || data_type::instances_by_alias.contains(identifier);

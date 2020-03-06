@@ -251,17 +251,15 @@ gsml_data province::get_cache_data() const
 	return cache_data;
 }
 
-void province::do_day()
-{
-}
-
 void province::do_month()
 {
 	territory::do_month();
 
-	if (this->trade_node_recalculation_needed) {
-		this->calculate_trade_node();
-		this->set_trade_node_recalculation_needed(false);
+	if (this->get_county() != nullptr) {
+		if (this->trade_node_recalculation_needed) {
+			this->calculate_trade_node();
+			this->set_trade_node_recalculation_needed(false);
+		}
 	}
 }
 

@@ -69,6 +69,11 @@ public:
 		return character::living_characters;
 	}
 
+	static const std::vector<character *> &get_all_active()
+	{
+		return character::get_all_living();
+	}
+
 	static void purge_null_characters();
 
 	static character *generate(culture *culture, religion *religion, phenotype *phenotype = nullptr);

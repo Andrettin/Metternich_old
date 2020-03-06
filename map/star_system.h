@@ -7,7 +7,10 @@
 
 namespace metternich {
 
+class character;
+class culture;
 class landed_title;
+class religion;
 class world;
 enum class map_mode;
 
@@ -26,6 +29,8 @@ class star_system final : public data_entry, public data_type<star_system>
 	Q_PROPERTY(QRectF territory_bounding_rect READ get_territory_bounding_rect CONSTANT)
 	Q_PROPERTY(QColor map_mode_color READ get_map_mode_color NOTIFY map_mode_color_changed)
 	Q_PROPERTY(bool ethereal MEMBER ethereal READ is_ethereal NOTIFY ethereal_changed)
+	Q_PROPERTY(metternich::culture* culture READ get_culture NOTIFY culture_changed)
+	Q_PROPERTY(metternich::religion* religion READ get_religion NOTIFY religion_changed)
 
 public:
 	static constexpr const char *class_identifier = "star_system";
@@ -38,6 +43,11 @@ public:
 	star_system(const std::string &identifier);
 
 	virtual void initialize() override;
+	virtual void initialize_history() override;
+
+	void do_day();
+	void do_month();
+	void do_year();
 
 	virtual std::string get_name() const override;
 
@@ -52,6 +62,8 @@ public:
 	landed_title *get_de_jure_kingdom() const;
 	landed_title *get_empire() const;
 	landed_title *get_de_jure_empire() const;
+
+	character *get_owner() const;
 
 	world *get_primary_star() const
 	{
@@ -107,12 +119,44 @@ public:
 
 	void remove_world(world *world);
 
+	world *get_capital_world() const;
+
 	bool is_ethereal() const
 	{
 		return this->ethereal;
 	}
 
-	world *get_capital_world() const;
+	metternich::culture *get_culture() const
+	{
+		return this->culture;
+	}
+
+	void set_culture(culture *culture)
+	{
+		if (culture == this->get_culture()) {
+			return;
+		}
+
+		this->culture = culture;
+		emit culture_changed();
+	}
+
+	metternich::religion *get_religion() const
+	{
+		return this->religion;
+	}
+
+	void set_religion(religion *religion)
+	{
+		if (religion == this->get_religion()) {
+			return;
+		}
+
+		this->religion = religion;
+		emit religion_changed();
+	}
+
+	void calculate_population_groups();
 
 signals:
 	void duchy_changed();
@@ -122,6 +166,8 @@ signals:
 	void de_jure_empire_changed();
 	void map_mode_color_changed();
 	void ethereal_changed();
+	void culture_changed();
+	void religion_changed();
 
 private:
 	landed_title *duchy = nullptr; //the star system's corresponding duchy
@@ -130,6 +176,8 @@ private:
 	QPolygonF territory_polygon;
 	QColor map_mode_color; //the color used for the system by the current map mode
 	bool ethereal = false; //whether the star system is an ethereal one (i.e. Asgard's system); ethereal systems can only be entered by ethereal beings, who cannot enter non-ethereal systems, either; these impediments could be surpassed by technological or magical developments
+	metternich::culture *culture = nullptr;
+	metternich::religion *religion = nullptr;
 };
 
 }
