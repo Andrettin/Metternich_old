@@ -209,7 +209,7 @@ void landed_title::initialize_history()
 		}
 
 		if (this->holder_title->get_holder() == nullptr) {
-			throw std::runtime_error("Tried to set the \"" + this->holder_title->get_identifier() + "\" holder title for \"" + this->get_identifier() + "\", but the former has no holder.");
+			qWarning() << ("Tried to set the \"" + this->holder_title->get_identifier_qstring() + "\" holder title for \"" + this->get_identifier_qstring() + "\", but the former has no holder.");
 		}
 
 		this->set_holder(this->holder_title->get_holder());

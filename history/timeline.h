@@ -50,12 +50,12 @@ public:
 	{
 		if (timeline == this) {
 			return true;
-		} else if (this->get_parent_timeline() == nullptr) {
+		} else if (this->get_parent_timeline() == nullptr && timeline != nullptr) {
 			return false;
 		}
 
 		if (timeline == this->get_parent_timeline()) {
-			return date < point_of_divergence;
+			return date < this->point_of_divergence;
 		}
 
 		return this->get_parent_timeline()->contains_timeline_date(timeline, date);
