@@ -27,6 +27,11 @@ public:
 		}
 	}
 
+	static double generate_degree_angle()
+	{
+		return random::generate(360.);
+	}
+
 	static double generate_radian_angle();
 	static QPointF generate_circle_position();
 

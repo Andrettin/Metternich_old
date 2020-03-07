@@ -29,13 +29,14 @@ class world final : public territory, public data_type<world>
 	Q_PROPERTY(metternich::star_system* star_system READ get_star_system WRITE set_star_system NOTIFY star_system_changed)
 	Q_PROPERTY(QString texture_path READ get_texture_path_qstring CONSTANT)
 	Q_PROPERTY(QGeoCoordinate astrocoordinate READ get_astrocoordinate CONSTANT)
-	Q_PROPERTY(int astrodistance MEMBER astrodistance READ get_astrodistance NOTIFY astrodistance_changed)
+	Q_PROPERTY(int astrodistance READ get_astrodistance WRITE set_astrodistance NOTIFY astrodistance_changed)
 	Q_PROPERTY(int astrodistance_pc READ get_astrodistance_pc WRITE set_astrodistance_pc NOTIFY astrodistance_changed)
-	Q_PROPERTY(QPointF orbit_position READ get_orbit_position CONSTANT)
+	Q_PROPERTY(QPointF orbit_position READ get_orbit_position NOTIFY orbit_position_changed)
 	Q_PROPERTY(metternich::world* orbit_center READ get_orbit_center WRITE set_orbit_center NOTIFY orbit_center_changed)
 	Q_PROPERTY(double distance_from_orbit_center READ get_distance_from_orbit_center WRITE set_distance_from_orbit_center NOTIFY distance_from_orbit_center_changed)
 	Q_PROPERTY(double distance_from_orbit_center_au READ get_distance_from_orbit_center_au WRITE set_distance_from_orbit_center_au NOTIFY distance_from_orbit_center_changed)
-	Q_PROPERTY(QPointF cosmic_map_pos READ get_cosmic_map_pos CONSTANT)
+	Q_PROPERTY(double rotation READ get_rotation WRITE set_rotation NOTIFY rotation_changed)
+	Q_PROPERTY(QPointF cosmic_map_pos READ get_cosmic_map_pos NOTIFY cosmic_map_pos_changed)
 	Q_PROPERTY(double cosmic_size READ get_cosmic_size CONSTANT)
 	Q_PROPERTY(bool star READ is_star CONSTANT)
 	Q_PROPERTY(bool map READ has_map WRITE set_map)
@@ -65,6 +66,7 @@ public:
 	static constexpr int max_orbit_distance = 64; //maximum distance between an orbit and the next one in the system
 	static constexpr int astrodistance_multiplier = 1024;
 	static constexpr int million_km_per_au = 150;
+	static constexpr bool revolution_enabled = false;
 
 	static std::set<std::string> get_database_dependencies();
 
@@ -81,7 +83,7 @@ public:
 		world *world = world::get(world_identifier.toStdString());
 
 		const QGeoCircle geocircle = feature.value("data").value<QGeoCircle>();
-		world->astrocoordinate = geocircle.center();
+		world->set_astrocoordinate(geocircle.center());
 	}
 
 private:
@@ -107,6 +109,8 @@ public:
 
 		territory::check();
 	}
+
+	void do_day() override;
 
 	virtual std::string get_name() const override;
 
@@ -146,9 +150,30 @@ public:
 		return this->astrocoordinate;
 	}
 
+	void set_astrocoordinate(const QGeoCoordinate &astrocoordinate)
+	{
+		if (astrocoordinate == this->get_astrocoordinate()) {
+			return;
+		}
+
+		this->astrocoordinate = astrocoordinate;
+		this->calculate_cosmic_map_pos();
+	}
+
 	int get_astrodistance() const
 	{
 		return this->astrodistance;
+	}
+
+	void set_astrodistance(const int astrodistance)
+	{
+		if (astrodistance == this->get_astrodistance()) {
+			return;
+		}
+
+		this->astrodistance = astrodistance;
+		emit astrodistance_changed();
+		this->calculate_cosmic_map_pos();
 	}
 
 	int get_astrodistance_pc() const
@@ -164,12 +189,35 @@ public:
 		long long int astrodistance = astrodistance_pc;
 		astrodistance *= world::light_years_per_hundred_parsecs;
 		astrodistance /= 100;
-		this->astrodistance = static_cast<int>(astrodistance);
+		this->set_astrodistance(static_cast<int>(astrodistance));
+	}
+
+	void set_orbit_angle(const double angle);
+
+	void increment_orbit_angle()
+	{
+		const double increment = 1. * world::min_orbit_distance / this->get_distance_from_orbit_center();
+		double angle = this->orbit_angle + increment;
+		if (angle >= 360.) {
+			angle -= 360.;
+		}
+		this->set_orbit_angle(angle);
 	}
 
 	const QPointF &get_orbit_position() const
 	{
 		return this->orbit_position;
+	}
+
+	void set_orbit_position(const QPointF &position)
+	{
+		if (position == this->get_orbit_position()) {
+			return;
+		}
+
+		this->orbit_position = position;
+		emit orbit_position_changed();
+		this->calculate_cosmic_map_pos();
 	}
 
 	world *get_orbit_center() const
@@ -194,6 +242,8 @@ public:
 		}
 
 		emit orbit_center_changed();
+
+		this->calculate_cosmic_map_pos();
 	}
 
 	bool is_any_orbit_center_of(const world *other_world) const
@@ -229,6 +279,7 @@ public:
 
 		this->distance_from_orbit_center = distance;
 		emit distance_from_orbit_center_changed();
+		this->calculate_cosmic_map_pos();
 	}
 
 	double get_distance_from_orbit_center_au() const
@@ -322,11 +373,66 @@ public:
 		return this->get_radius() * 2;
 	}
 
-	QPointF get_cosmic_map_pos() const;
+	double get_rotation() const
+	{
+		return this->rotation;
+	}
+
+	void set_rotation(const double rotation)
+	{
+		if (rotation == this->get_rotation()) {
+			return;
+		}
+
+		this->rotation = rotation;
+		emit rotation_changed();
+	}
+
+	void rotate()
+	{
+		//rotate the world on its own axis
+		const double increment = 1.;
+		double angle = this->get_rotation() + increment;
+		if (angle >= 360.) {
+			angle -= 360.;
+		}
+		this->set_rotation(angle);
+	}
+
+	const QPointF &get_cosmic_map_pos() const
+	{
+		return this->cosmic_map_pos;
+	}
+
+	void set_cosmic_map_pos(const QPointF &pos)
+	{
+		if (pos == this->get_cosmic_map_pos()) {
+			return;
+		}
+
+		this->cosmic_map_pos = pos;
+		emit cosmic_map_pos_changed();
+
+		for (world *satellite : this->satellites) {
+			satellite->calculate_cosmic_map_pos();
+		}
+	}
+
+	void calculate_cosmic_map_pos();
 
 	double get_cosmic_size() const
 	{
 		return this->cosmic_size;
+	}
+
+	void set_cosmic_size(const double cosmic_size)
+	{
+		if (cosmic_size == this->get_cosmic_size()) {
+			return;
+		}
+
+		this->cosmic_size = cosmic_size;
+		this->calculate_cosmic_map_pos();
 	}
 
 	double get_cosmic_size_with_satellites() const
@@ -340,6 +446,19 @@ public:
 	}
 
 	void calculate_cosmic_size();
+
+	double get_default_cosmic_size() const
+	{
+		if (this->is_star()) {
+			return world::default_star_size;
+		} else if (this->is_planet()) {
+			return world::default_planet_size;
+		} else if (this->is_moon()) {
+			return world::default_moon_size;
+		}
+
+		return 0.;
+	}
 
 	virtual void add_holding_slot(holding_slot *holding_slot) override;
 
@@ -496,14 +615,20 @@ signals:
 	void astrodistance_changed();
 	void orbit_center_changed();
 	void distance_from_orbit_center_changed();
+	void orbit_position_changed();
+	void rotation_changed();
+	void cosmic_map_pos_changed();
 
 private:
 	world_type *type = nullptr;
 	star_system *star_system = nullptr;
 	QGeoCoordinate astrocoordinate;
 	int astrodistance = 0;
+	double orbit_angle = 0; //in degrees
 	QPointF orbit_position;
 	world *orbit_center = nullptr; //if none is given, then the center of the star system is assumed
+	double rotation = 0.; //the rotation of the world on its own axis
+	QPointF cosmic_map_pos;
 	double distance_from_orbit_center = 0; //in millions of kilometers
 	bool map = false; //whether the world has a map
 	bool map_active = false; //whether the world's map is active

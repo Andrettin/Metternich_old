@@ -63,8 +63,11 @@ void world::initialize()
 		}
 	}
 
-	this->orbit_position = random::generate_circle_position();
+	if (this->get_orbit_center() != nullptr) {
+		this->set_orbit_angle(random::generate_degree_angle());
+	}
 	this->calculate_cosmic_size();
+	this->set_rotation(random::generate_degree_angle());
 
 	for (world *satellite : this->satellites) {
 		if (!satellite->is_initialized()) {
@@ -106,6 +109,23 @@ void world::initialize()
 	std::sort(this->satellites.begin(), this->satellites.end(), satellite_sort_func);
 
 	territory::initialize();
+}
+
+void world::do_day()
+{
+	if constexpr (world::revolution_enabled) {
+		//move the world along its orbit
+		if (this->get_orbit_center() != nullptr) {
+			this->increment_orbit_angle();
+		}
+	}
+
+	//rotate the world on its axis
+	if (!this->is_star()) { //stars don't need to rotate, as it makes no difference for them graphically
+		this->rotate();
+	}
+
+	territory::do_day();
 }
 
 std::string world::get_name() const
@@ -152,6 +172,16 @@ const std::filesystem::path &world::get_texture_path() const
 	return database::get()->get_tagged_texture_path(this->get_type()->get_texture_tag(), {{this->get_identifier()}});
 }
 
+void world::set_orbit_angle(const double angle)
+{
+	if (angle == this->orbit_angle) {
+		return;
+	}
+
+	this->orbit_angle = angle;
+	this->set_orbit_position(point::get_degree_angle_direction(this->orbit_angle));
+}
+
 void world::remove_satellite(world *satellite)
 {
 	vector::remove(this->satellites, satellite);
@@ -181,11 +211,12 @@ void world::set_map(const bool map)
 	}
 }
 
-QPointF world::get_cosmic_map_pos() const
+void world::calculate_cosmic_map_pos()
 {
 	if (this->get_astrocoordinate().isValid()) {
 		if (this->get_astrocoordinate() == QGeoCoordinate(0, 0)) {
-			return QPointF(0, 0);
+			this->set_cosmic_map_pos(QPointF(0, 0));
+			return;
 		}
 
 		QPointF direction_pos = geocoordinate::to_circle_edge_point(this->get_astrocoordinate());
@@ -195,35 +226,35 @@ QPointF world::get_cosmic_map_pos() const
 		astrodistance *= world::astrodistance_multiplier;
 		const double x = direction_pos.x() * astrodistance;
 		const double y = direction_pos.y() * astrodistance;
-		QPointF pos(x, y);
+		const QPointF pos(x, y);
 
 		if (this->get_orbit_center() == nullptr || point::distance_to(pos, this->get_orbit_center()->get_cosmic_map_pos()) >= ((this->get_cosmic_size() / 2) + world::min_orbit_distance)) {
-			return pos;
+			this->set_cosmic_map_pos(pos);
+			return;
 		}
 	}
 
 	if (this->get_orbit_center() != nullptr) {
-		return this->get_orbit_center()->get_cosmic_map_pos() + QPointF(this->get_orbit_position().x() * this->get_distance_from_orbit_center(), this->get_orbit_position().y() * this->get_distance_from_orbit_center());
+		this->set_cosmic_map_pos(this->get_orbit_center()->get_cosmic_map_pos() + QPointF(this->get_orbit_position().x() * this->get_distance_from_orbit_center(), this->get_orbit_position().y() * this->get_distance_from_orbit_center()));
+		return;
 	}
 
-	return QPointF(0, 0);
+	this->set_cosmic_map_pos(QPointF(0, 0));
 }
 
 void world::calculate_cosmic_size()
 {
+	double cosmic_size = 0;
+
 	if (this->get_diameter() > 0) {
-		this->cosmic_size = cbrt(this->get_diameter());
+		cosmic_size = cbrt(this->get_diameter());
 	}
 
-	if (this->cosmic_size == 0.) {
-		if (this->is_star()) {
-			this->cosmic_size = world::default_star_size;
-		} else if (this->is_planet()) {
-			this->cosmic_size = world::default_planet_size;
-		} else if (this->is_moon()) {
-			this->cosmic_size = world::default_moon_size;
-		}
+	if (cosmic_size == 0.) {
+		cosmic_size = this->get_default_cosmic_size();
 	}
+
+	this->set_cosmic_size(cosmic_size);
 }
 
 void world::add_holding_slot(holding_slot *holding_slot)

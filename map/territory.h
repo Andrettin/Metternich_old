@@ -59,7 +59,7 @@ public:
 	virtual void check() const override;
 	virtual void check_history() const override;
 
-	void do_day();
+	virtual void do_day();
 	virtual void do_month();
 	void do_year();
 
