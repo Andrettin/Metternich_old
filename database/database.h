@@ -112,6 +112,7 @@ public:
 	void process_modules();
 	void process_modules_at_dir(const std::filesystem::path &path, module *parent_module = nullptr);
 	std::vector<std::filesystem::path> get_module_paths() const;
+	std::vector<std::pair<std::filesystem::path, const module *>> get_module_paths_with_module() const;
 
 	module *get_module(const std::string &identifier) const
 	{
@@ -134,11 +135,34 @@ public:
 		return base_paths;
 	}
 
+	std::vector<std::pair<std::filesystem::path, const module *>> get_base_paths_with_module() const
+	{
+		std::vector<std::pair<std::filesystem::path, const module *>> base_paths;
+		base_paths.emplace_back(database::get_root_path(), nullptr);
+
+		std::vector<std::pair<std::filesystem::path, const module *>> module_paths = this->get_module_paths_with_module();
+		base_paths.insert(base_paths.end(), module_paths.begin(), module_paths.end());
+
+		return base_paths;
+	}
+
 	std::vector<std::filesystem::path> get_data_paths() const
 	{
 		std::vector<std::filesystem::path> paths = this->get_base_paths();
 
 		for (std::filesystem::path &path : paths) {
+			path /= "data";
+		}
+
+		return paths;
+	}
+
+	std::vector<std::pair<std::filesystem::path, const module *>> get_data_paths_with_module() const
+	{
+		std::vector<std::pair<std::filesystem::path, const module *>> paths = this->get_base_paths_with_module();
+
+		for (auto &kv_pair : paths) {
+			std::filesystem::path &path = kv_pair.first;
 			path /= "data";
 		}
 

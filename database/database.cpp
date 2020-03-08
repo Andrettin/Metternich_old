@@ -394,7 +394,7 @@ database::~database()
 
 void database::load()
 {
-	engine_interface::get()->set_loading_message("Loading Database...");
+	engine_interface::get()->set_loading_message("Loading Image Paths...");
 
 	this->process_icon_paths();
 	this->process_holding_portrait_paths();
@@ -412,10 +412,27 @@ void database::load()
 		return a->get_database_dependency_count() < b->get_database_dependency_count();
 	});
 
-	for (const std::filesystem::path &path : database::get()->get_data_paths()) {
+	engine_interface::get()->set_loading_message("Loading Database...");
+
+	for (const auto &kv_pair : database::get()->get_data_paths_with_module()) {
+		const std::filesystem::path &path = kv_pair.first;
+		const module *module = kv_pair.second;
+
+		if (module != nullptr) {
+			engine_interface::get()->set_loading_message("Parsing \"" + QString::fromStdString(module->get_identifier()) + "\" Module Database...");
+		} else {
+			engine_interface::get()->set_loading_message("Parsing Database...");
+		}
+
 		//parse the files in each data type's folder
 		for (const std::unique_ptr<data_type_metadata> &metadata : this->metadata) {
 			metadata->get_parsing_function()(path);
+		}
+
+		if (module != nullptr) {
+			engine_interface::get()->set_loading_message("Processing \"" + QString::fromStdString(module->get_identifier()) + "\" Module Database...");
+		} else {
+			engine_interface::get()->set_loading_message("Processing Database...");
 		}
 
 		//create data entries for each data type
@@ -523,6 +540,17 @@ std::vector<std::filesystem::path> database::get_module_paths() const
 
 	for (const qunique_ptr<module> &module : this->modules) {
 		module_paths.push_back(module->get_path());
+	}
+
+	return module_paths;
+}
+
+std::vector<std::pair<std::filesystem::path, const module *>> database::get_module_paths_with_module() const
+{
+	std::vector<std::pair<std::filesystem::path, const module *>> module_paths;
+
+	for (const qunique_ptr<module> &module : this->modules) {
+		module_paths.emplace_back(module->get_path(), module.get());
 	}
 
 	return module_paths;
