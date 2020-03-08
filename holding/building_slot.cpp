@@ -23,9 +23,7 @@ building_slot::~building_slot()
 
 void building_slot::initialize_history()
 {
-	//create the condition checks only when initializing history, so that their result won't be calculated until history is ready
-	this->precondition_check = std::make_unique<metternich::condition_check<metternich::holding>>(this->get_building()->get_preconditions(), this->holding, [this](bool result){ this->set_available(result); });
-	this->condition_check = std::make_unique<metternich::condition_check<metternich::holding>>(this->get_building()->get_conditions(), this->holding, [this](bool result){ this->set_buildable(result); });
+	this->create_condition_checks();
 }
 
 const std::filesystem::path &building_slot::get_icon_path() const
@@ -66,6 +64,13 @@ void building_slot::set_built(const bool built)
 
 	this->holding->apply_building_effects(this->get_building(), built ? 1 : -1);
 	emit built_changed();
+}
+
+void building_slot::create_condition_checks()
+{
+	//create the condition checks only when initializing history, so that their result won't be calculated until history is ready
+	this->precondition_check = std::make_unique<metternich::condition_check<metternich::holding>>(this->get_building()->get_preconditions(), this->holding, [this](bool result){ this->set_available(result); });
+	this->condition_check = std::make_unique<metternich::condition_check<metternich::holding>>(this->get_building()->get_conditions(), this->holding, [this](bool result){ this->set_buildable(result); });
 }
 
 }

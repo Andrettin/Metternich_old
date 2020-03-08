@@ -70,6 +70,8 @@ public:
 
 	void set_built(const bool built);
 
+	void create_condition_checks();
+
 signals:
 	void available_changed();
 	void buildable_changed();

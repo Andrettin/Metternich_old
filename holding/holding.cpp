@@ -689,6 +689,10 @@ void holding::calculate_building_slots()
 		//to update the sorting of building slots
 		connect(new_building_slot.get(), &building_slot::built_changed, this, &holding::building_slots_changed);
 
+		if (!history::get()->is_loading()) {
+			new_building_slot->create_condition_checks();
+		}
+
 		this->building_slots[building] = std::move(new_building_slot);
 	}
 
