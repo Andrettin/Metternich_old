@@ -44,11 +44,6 @@ extern QPointF to_circle_edge_point(const QGeoCoordinate &coordinate);
 
 /**
 **	@brief	Get whether a coordinate is in a georectangle (presuming the rectangle is valid)
-**
-**	@param	coordinate		The geocoordinate
-**	@param	georectangle	The georectangle
-**
-**	@return	True if the coordinate is in the georectangle, or false otherwise
 */
 inline bool is_in_georectangle(const QGeoCoordinate &coordinate, const QGeoRectangle &georectangle)
 {
@@ -57,6 +52,30 @@ inline bool is_in_georectangle(const QGeoCoordinate &coordinate, const QGeoRecta
 	const QGeoCoordinate bottom_left = georectangle.bottomLeft();
 	const QGeoCoordinate top_right = georectangle.topRight();
 	return lat >= bottom_left.latitude() && lat <= top_right.latitude() && lon >= bottom_left.longitude() && lon <= top_right.longitude();
+}
+
+template <typename T>
+inline QString path_to_svg_string(const T &geocoordinate_path, const double lon_per_pixel, const double lat_per_pixel, const QRect &bounding_rect)
+{
+	static_assert(std::is_same_v<T::value_type, QGeoCoordinate>);
+
+	QString svg;
+
+	for (int i = 0; i < geocoordinate_path.size(); ++i) {
+		const QGeoCoordinate &geocoordinate = geocoordinate_path[i];
+
+		if (i == 0) {
+			svg += "M ";
+		} else {
+			svg += "L ";
+		}
+
+		const QPoint pos = geocoordinate::to_point(geocoordinate, lon_per_pixel, lat_per_pixel) - bounding_rect.topLeft();
+		svg += QString::number(pos.x()) + " ";
+		svg += QString::number(pos.y()) + " ";
+	}
+
+	return svg;
 }
 
 }

@@ -520,6 +520,16 @@ public:
 	QPoint get_pixel_pos(const int index) const;
 	QPoint get_coordinate_pos(const QGeoCoordinate &coordinate) const;
 
+	double get_lon_per_pixel() const
+	{
+		return 360.0 / static_cast<double>(this->get_map_size().width());
+	}
+
+	double get_lat_per_pixel() const
+	{
+		return 180.0 / static_cast<double>(this->get_map_size().height());
+	}
+
 	QRect get_georectangle_rect(const QGeoRectangle &georectangle) const
 	{
 		const QPoint top_left = this->get_coordinate_pos(georectangle.topLeft());

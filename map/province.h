@@ -47,6 +47,9 @@ class province final : public territory, public data_type<province>
 	Q_PROPERTY(QGeoCoordinate center_coordinate READ get_center_coordinate CONSTANT)
 	Q_PROPERTY(QPoint center_pos READ get_center_pos CONSTANT)
 	Q_PROPERTY(QPoint main_pos READ get_main_pos NOTIFY main_pos_changed)
+	Q_PROPERTY(QColor map_mode_color READ get_map_mode_color NOTIFY map_mode_color_changed)
+	Q_PROPERTY(QRect polygons_bounding_rect READ get_polygons_bounding_rect CONSTANT)
+	Q_PROPERTY(QString polygons_svg READ get_polygons_svg CONSTANT)
 	Q_PROPERTY(QVariantList geopolygons READ get_geopolygons_qvariant_list CONSTANT)
 	Q_PROPERTY(QVariantList geopaths READ get_geopaths_qvariant_list CONSTANT)
 	Q_PROPERTY(bool always_write_geodata MEMBER always_write_geodata READ always_writes_geodata)
@@ -136,6 +139,7 @@ public:
 		}
 
 		this->map_mode_color = color;
+		emit map_mode_color_changed();
 		this->update_image();
 	}
 
@@ -331,6 +335,9 @@ public:
 	void sort_wildlife_units();
 	void remove_empty_wildlife_units();
 
+	QRect get_polygons_bounding_rect() const;
+	QString get_polygons_svg() const;
+
 	const std::vector<QGeoPolygon> &get_geopolygons() const
 	{
 		return this->geopolygons;
@@ -455,6 +462,7 @@ signals:
 	void wildlife_units_changed();
 	void main_pos_changed();
 	void active_trade_routes_changed();
+	void map_mode_color_changed();
 	void selected_changed();
 
 private:

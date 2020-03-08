@@ -1003,6 +1003,55 @@ void province::set_selected(const bool selected, const bool notify_engine_interf
 	}
 }
 
+QRect province::get_polygons_bounding_rect() const
+{
+	QPoint top_left(-1, -1);
+	QPoint bottom_right(-1, -1);
+
+	for (const QGeoPolygon &geopolygon : this->get_geopolygons()) {
+		for (const QGeoCoordinate &geocoordinate : geopolygon.path()) {
+			const QPoint pos = this->get_world()->get_coordinate_pos(geocoordinate);
+
+			if (top_left.x() == -1 || pos.x() < top_left.x()) {
+				top_left.setX(pos.x());
+			}
+
+			if (top_left.y() == -1 || pos.y() < top_left.y()) {
+				top_left.setY(pos.y());
+			}
+
+			if (bottom_right.x() == -1 || pos.x() > bottom_right.x()) {
+				bottom_right.setX(pos.x());
+			}
+
+			if (bottom_right.y() == -1 || pos.y() > bottom_right.y()) {
+				bottom_right.setY(pos.y());
+			}
+		}
+	}
+
+	return QRect(top_left, bottom_right);
+}
+
+QString province::get_polygons_svg() const
+{
+	const QRect bounding_rect = this->get_polygons_bounding_rect();
+
+	QString svg;
+
+	for (const QGeoPolygon &geopolygon : this->get_geopolygons()) {
+		const QList<QGeoCoordinate> &geopolygon_path = geopolygon.path();
+		svg += geocoordinate::path_to_svg_string(geopolygon_path, this->get_world()->get_lon_per_pixel(), this->get_world()->get_lat_per_pixel(), bounding_rect);
+
+		for (int i = 0; i < geopolygon.holesCount(); ++i) {
+			const QList<QGeoCoordinate> hole_path = geopolygon.holePath(i);
+			svg += geocoordinate::path_to_svg_string(hole_path, this->get_world()->get_lon_per_pixel(), this->get_world()->get_lat_per_pixel(), bounding_rect);
+		}
+	}
+
+	return svg;
+}
+
 QVariantList province::get_geopolygons_qvariant_list() const
 {
 	return container::to_qvariant_list(this->get_geopolygons());

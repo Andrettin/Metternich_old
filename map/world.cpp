@@ -290,9 +290,7 @@ QPoint world::get_pixel_pos(const int index) const
 
 QPoint world::get_coordinate_pos(const QGeoCoordinate &coordinate) const
 {
-	const double lon_per_pixel = 360.0 / static_cast<double>(this->get_map_size().width());
-	const double lat_per_pixel = 180.0 / static_cast<double>(this->get_map_size().height());
-	return geocoordinate::to_point(coordinate, lon_per_pixel, lat_per_pixel);
+	return geocoordinate::to_point(coordinate, this->get_lon_per_pixel(), this->get_lat_per_pixel());
 }
 
 QGeoCoordinate world::get_pixel_pos_coordinate(const QPoint &pixel_pos) const

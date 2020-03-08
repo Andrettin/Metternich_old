@@ -148,12 +148,12 @@ void map::load()
 		std::filesystem::create_directories(cache_path);
 	}
 
-	if (!cache_valid) {
-		for (world *world : world::get_map_worlds()) {
-			//load map data for provinces
-			world->process_province_map_database();
-		}
+	for (world *world : world::get_map_worlds()) {
+		//load map data for provinces
+		world->process_province_map_database();
+	}
 
+	if (!cache_valid) {
 		for (world *world : world::get_map_worlds()) {
 			//load map data
 			world->process_data_type_map_geojson_database<holding_slot>();
