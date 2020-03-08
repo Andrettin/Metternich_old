@@ -39,6 +39,8 @@ class world final : public territory, public data_type<world>
 	Q_PROPERTY(QPointF cosmic_map_pos READ get_cosmic_map_pos NOTIFY cosmic_map_pos_changed)
 	Q_PROPERTY(double cosmic_size READ get_cosmic_size CONSTANT)
 	Q_PROPERTY(bool star READ is_star CONSTANT)
+	Q_PROPERTY(bool planet READ is_planet CONSTANT)
+	Q_PROPERTY(bool moon READ is_moon CONSTANT)
 	Q_PROPERTY(bool map READ has_map WRITE set_map)
 	Q_PROPERTY(bool map_active MEMBER map_active READ is_map_active)
 	Q_PROPERTY(QSize map_size READ get_map_size CONSTANT)
