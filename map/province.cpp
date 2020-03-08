@@ -1003,14 +1003,14 @@ void province::set_selected(const bool selected, const bool notify_engine_interf
 	}
 }
 
-QRect province::get_polygons_bounding_rect() const
+QRectF province::get_polygons_bounding_rect() const
 {
-	QPoint top_left(-1, -1);
-	QPoint bottom_right(-1, -1);
+	QPointF top_left(-1, -1);
+	QPointF bottom_right(-1, -1);
 
 	for (const QGeoPolygon &geopolygon : this->get_geopolygons()) {
 		for (const QGeoCoordinate &geocoordinate : geopolygon.path()) {
-			const QPoint pos = this->get_world()->get_coordinate_pos(geocoordinate);
+			const QPointF pos = this->get_world()->get_coordinate_posf(geocoordinate);
 
 			if (top_left.x() == -1 || pos.x() < top_left.x()) {
 				top_left.setX(pos.x());
@@ -1030,12 +1030,12 @@ QRect province::get_polygons_bounding_rect() const
 		}
 	}
 
-	return QRect(top_left, bottom_right);
+	return QRectF(top_left, bottom_right);
 }
 
 QString province::get_polygons_svg() const
 {
-	const QRect bounding_rect = this->get_polygons_bounding_rect();
+	const QRectF bounding_rect = this->get_polygons_bounding_rect();
 
 	QString svg;
 

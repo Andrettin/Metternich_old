@@ -18,21 +18,42 @@ inline double latitude_to_pixel_latitude(const double latitude, const double lat
 	return std::round(latitude / lat_per_pixel) * lat_per_pixel;
 }
 
-inline int longitude_to_x(const double longitude, const double lon_per_pixel)
+template <typename number_type = int>
+inline number_type longitude_to_x(const double longitude, const double lon_per_pixel)
 {
-	return static_cast<int>(std::round((longitude + 180.0) / lon_per_pixel));
+	const double x = (longitude + 180.0) / lon_per_pixel;
+
+	if constexpr (std::is_integral_v<number_type>) {
+		return static_cast<number_type>(std::round(x));
+	} else {
+		return x;
+	}
 }
 
-inline int latitude_to_y(const double latitude, const double lat_per_pixel)
+template <typename number_type = int>
+inline number_type latitude_to_y(const double latitude, const double lat_per_pixel)
 {
-	return static_cast<int>(std::round((latitude * -1 + 90.0) / lat_per_pixel));
+	const double y = (latitude * -1 + 90.0) / lat_per_pixel;
+
+	if constexpr (std::is_integral_v<number_type>) {
+		return static_cast<number_type>(std::round(y));
+	} else {
+		return y;
+	}
 }
 
-inline QPoint to_point(const QGeoCoordinate &coordinate, const double lon_per_pixel, const double lat_per_pixel)
+template <typename point_type = QPoint>
+inline point_type to_point(const QGeoCoordinate &coordinate, const double lon_per_pixel, const double lat_per_pixel)
 {
-	const int x = longitude_to_x(coordinate.longitude(), lon_per_pixel);
-	const int y = latitude_to_y(coordinate.latitude(), lat_per_pixel);
-	return QPoint(x, y);
+	using underlying_type = std::result_of_t<decltype(&point_type::x)(point_type)>;
+	const underlying_type x = geocoordinate::longitude_to_x<underlying_type>(coordinate.longitude(), lon_per_pixel);
+	const underlying_type y = geocoordinate::latitude_to_y<underlying_type>(coordinate.latitude(), lat_per_pixel);
+	return point_type(x, y);
+}
+
+inline QPointF to_pointf(const QGeoCoordinate &coordinate, const double lon_per_pixel, const double lat_per_pixel)
+{
+	return geocoordinate::to_point<QPointF>(coordinate, lon_per_pixel, lat_per_pixel);
 }
 
 inline QPointF to_circle_point(const QGeoCoordinate &coordinate)
@@ -55,7 +76,7 @@ inline bool is_in_georectangle(const QGeoCoordinate &coordinate, const QGeoRecta
 }
 
 template <typename T>
-inline QString path_to_svg_string(const T &geocoordinate_path, const double lon_per_pixel, const double lat_per_pixel, const QRect &bounding_rect)
+inline QString path_to_svg_string(const T &geocoordinate_path, const double lon_per_pixel, const double lat_per_pixel, const QRectF &bounding_rect)
 {
 	static_assert(std::is_same_v<T::value_type, QGeoCoordinate>);
 
@@ -70,7 +91,7 @@ inline QString path_to_svg_string(const T &geocoordinate_path, const double lon_
 			svg += "L ";
 		}
 
-		const QPoint pos = geocoordinate::to_point(geocoordinate, lon_per_pixel, lat_per_pixel) - bounding_rect.topLeft();
+		const QPointF pos = geocoordinate::to_pointf(geocoordinate, lon_per_pixel, lat_per_pixel) - bounding_rect.topLeft();
 		svg += QString::number(pos.x()) + " ";
 		svg += QString::number(pos.y()) + " ";
 	}

@@ -519,6 +519,7 @@ public:
 
 	QPoint get_pixel_pos(const int index) const;
 	QPoint get_coordinate_pos(const QGeoCoordinate &coordinate) const;
+	QPointF get_coordinate_posf(const QGeoCoordinate &coordinate) const;
 
 	double get_lon_per_pixel() const
 	{

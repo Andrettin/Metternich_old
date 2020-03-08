@@ -293,6 +293,11 @@ QPoint world::get_coordinate_pos(const QGeoCoordinate &coordinate) const
 	return geocoordinate::to_point(coordinate, this->get_lon_per_pixel(), this->get_lat_per_pixel());
 }
 
+QPointF world::get_coordinate_posf(const QGeoCoordinate &coordinate) const
+{
+	return geocoordinate::to_pointf(coordinate, this->get_lon_per_pixel(), this->get_lat_per_pixel());
+}
+
 QGeoCoordinate world::get_pixel_pos_coordinate(const QPoint &pixel_pos) const
 {
 	return point::to_geocoordinate(pixel_pos, this->get_map_size());
