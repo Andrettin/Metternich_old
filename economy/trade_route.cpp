@@ -81,7 +81,7 @@ private:
 	std::set<path_element *> next; //path elements immediately succeeding this one
 };
 
-void trade_route::add_path_points_to_qvariantlist(QVariantList &point_list, const std::vector<const province *> &path_provinces, const QPoint &start_map_pos)
+void trade_route::add_path_points_to_qvariantlist(QVariantList &point_list, const std::vector<const province *> &path_provinces, const QPointF &start_map_pos)
 {
 	QVariantList path_point_list;
 
@@ -90,9 +90,9 @@ void trade_route::add_path_points_to_qvariantlist(QVariantList &point_list, cons
 		if ((i + 1) < path_provinces.size()) {
 			const province *next_path_province = path_provinces[i + 1];
 
-			const std::vector<QPoint> &path_pos_list = path_province->get_path_pos_list(next_path_province);
+			const std::vector<QPointF> &path_pos_list = path_province->get_path_pos_list(next_path_province);
 			if (!path_pos_list.empty()) {
-				for (const QPoint &path_pos : path_pos_list) {
+				for (const QPointF &path_pos : path_pos_list) {
 					path_point_list.append(path_pos - start_map_pos);
 				}
 
@@ -105,7 +105,7 @@ void trade_route::add_path_points_to_qvariantlist(QVariantList &point_list, cons
 			}
 		}
 
-		const QPoint &main_pos = path_province->get_main_pos();
+		const QPointF &main_pos = path_province->get_main_pos();
 		path_point_list.append(main_pos - start_map_pos);
 	}
 
@@ -186,12 +186,12 @@ void trade_route::initialize()
 	}
 
 	if (!this->get_rect().isValid()) {
-		QPoint top_left(-1, -1);
-		QPoint bottom_right(-1, -1);
+		QPointF top_left(-1, -1);
+		QPointF bottom_right(-1, -1);
 
 		for (const auto &kv_pair : this->path) {
 			const province *path_province = kv_pair.first;
-			const QRect &province_rect = path_province->get_rect();
+			const QRectF &province_rect = path_province->get_rect();
 
 			if (top_left.x() == -1 || province_rect.x() < top_left.x()) {
 				top_left.setX(province_rect.x());
@@ -210,7 +210,7 @@ void trade_route::initialize()
 			}
 		}
 
-		this->rect = QRect(top_left, bottom_right);
+		this->rect = QRectF(top_left, bottom_right);
 	}
 }
 

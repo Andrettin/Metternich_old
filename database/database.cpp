@@ -357,6 +357,12 @@ QVariant database::process_gsml_scope_value(const gsml_data &scope, const QMetaP
 		}
 
 		new_property_value = scope.to_point();
+	} else if (property_type == QVariant::PointF) {
+		if (scope.get_operator() != gsml_operator::assignment) {
+			throw std::runtime_error("Only the assignment operator is available for point properties.");
+		}
+
+		new_property_value = scope.to_pointf();
 	} else if (property_class_name == "QGeoCoordinate") {
 		if (scope.get_operator() != gsml_operator::assignment) {
 			throw std::runtime_error("Only the assignment operator is available for geocoordinate properties.");

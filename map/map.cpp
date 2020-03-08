@@ -184,23 +184,12 @@ void map::load()
 		const QGeoPath &geopath = kv_pair.second;
 		const world *world = start_province->get_world();
 
-		std::vector<QPoint> path;
+		std::vector<QPointF> path;
 		for (const QGeoCoordinate &geocoordinate : geopath.path()) {
-			QPoint path_pos = world->get_coordinate_pos(geocoordinate);
-
-			if (!start_province->is_pos_valid(path_pos) && !end_province->is_pos_valid(path_pos) && !start_province->has_river_crossing_with(end_province)) {
-				const QPoint start_province_nearest_pos = start_province->get_nearest_valid_pos(path_pos);
-				const QPoint end_province_nearest_pos = end_province->get_nearest_valid_pos(path_pos);
-
-				if (point::distance_to(start_province_nearest_pos, path_pos) <= point::distance_to(end_province_nearest_pos, path_pos)) {
-					path_pos = start_province_nearest_pos;
-				} else {
-					path_pos = end_province_nearest_pos;
-				}
-			}
+			QPointF path_pos = world->get_coordinate_posf(geocoordinate);
 
 			if (path.empty() || path_pos != path.back()) {
-				if (path.empty() && world->get_pos_province(path_pos) == end_province) {
+				if (path.empty() && end_province->contains_geocoordinate(geocoordinate) && !start_province->contains_geocoordinate(geocoordinate)) {
 					qWarning() << QString::fromStdString("The starting position of the path between the provinces of \"" + start_province->get_identifier() + "\" and \"" + end_province->get_identifier() + "\" is in the end province instead of in the start one.");
 				}
 
@@ -208,7 +197,7 @@ void map::load()
 			}
 		}
 
-		std::vector<QPoint> reversed_path = path;
+		std::vector<QPointF> reversed_path = path;
 		std::reverse(reversed_path.begin(), reversed_path.end());
 
 		start_province->add_path_pos_list(end_province, std::move(path));

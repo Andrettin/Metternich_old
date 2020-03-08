@@ -19,14 +19,14 @@ class trade_route final : public data_entry, public data_type<trade_route>
 	Q_PROPERTY(QVariantList path READ get_path_qvariant_list CONSTANT)
 	Q_PROPERTY(QVariantList path_branch_points READ get_path_branch_points_qvariant_list NOTIFY path_branch_points_changed)
 	Q_PROPERTY(QString path_branch_points_svg READ get_path_branch_points_svg NOTIFY path_branch_points_changed)
-	Q_PROPERTY(QRect rect MEMBER rect READ get_rect CONSTANT)
+	Q_PROPERTY(QRectF rect MEMBER rect READ get_rect CONSTANT)
 	Q_PROPERTY(bool active READ is_active NOTIFY active_changed)
 
 public:
 	static constexpr const char *class_identifier = "trade_route";
 	static constexpr const char *database_folder = "trade_routes";
 
-	static void add_path_points_to_qvariantlist(QVariantList &point_list, const std::vector<const province *> &path_provinces, const QPoint &start_map_pos);
+	static void add_path_points_to_qvariantlist(QVariantList &point_list, const std::vector<const province *> &path_provinces, const QPointF &start_map_pos);
 
 	trade_route(const std::string &identifier);
 	virtual ~trade_route() override;
@@ -57,7 +57,7 @@ public:
 	bool has_connection_between(const province *source_province, const province *target_province) const;
 	bool has_any_land_connection_for_province(const province *province) const;
 
-	const QRect &get_rect() const
+	const QRectF &get_rect() const
 	{
 		return this->rect;
 	}
@@ -92,7 +92,7 @@ private:
 	std::map<const province *, std::unique_ptr<path_element>> path;
 	std::set<const province *> path_endpoints;
 	std::vector<std::vector<const province *>> path_branch_provinces; //used to draw the trade route
-	QRect rect;
+	QRectF rect;
 	bool active = false; //whether the trade route is active
 };
 

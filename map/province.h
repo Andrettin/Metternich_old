@@ -8,7 +8,6 @@
 #include <QGeoCoordinate>
 #include <QGeoPath>
 #include <QGeoPolygon>
-#include <QImage>
 #include <QObject>
 #include <QRect>
 #include <QVariant>
@@ -39,16 +38,14 @@ class province final : public territory, public data_type<province>
 	Q_PROPERTY(metternich::trade_node* trade_node READ get_trade_node NOTIFY trade_node_changed)
 	Q_PROPERTY(int trade_node_trade_cost READ get_trade_node_trade_cost NOTIFY trade_node_trade_cost_changed)
 	Q_PROPERTY(QColor color MEMBER color READ get_color)
-	Q_PROPERTY(QRect rect READ get_rect CONSTANT)
-	Q_PROPERTY(QImage image READ get_image NOTIFY image_changed)
+	Q_PROPERTY(QRectF rect READ get_rect CONSTANT)
 	Q_PROPERTY(metternich::terrain_type* terrain READ get_terrain WRITE set_terrain NOTIFY terrain_changed)
 	Q_PROPERTY(QVariantList wildlife_units READ get_wildlife_units_qvariant_list NOTIFY wildlife_units_changed)
 	Q_PROPERTY(bool selected READ is_selected WRITE set_selected NOTIFY selected_changed)
-	Q_PROPERTY(QGeoCoordinate center_coordinate READ get_center_coordinate CONSTANT)
-	Q_PROPERTY(QPoint center_pos READ get_center_pos CONSTANT)
-	Q_PROPERTY(QPoint main_pos READ get_main_pos NOTIFY main_pos_changed)
+	Q_PROPERTY(QGeoCoordinate center_geocoordinate READ get_center_geocoordinate CONSTANT)
+	Q_PROPERTY(QPointF center_pos READ get_center_pos CONSTANT)
+	Q_PROPERTY(QPointF main_pos READ get_main_pos NOTIFY main_pos_changed)
 	Q_PROPERTY(QColor map_mode_color READ get_map_mode_color NOTIFY map_mode_color_changed)
-	Q_PROPERTY(QRectF polygons_bounding_rect READ get_polygons_bounding_rect CONSTANT)
 	Q_PROPERTY(QString polygons_svg READ get_polygons_svg CONSTANT)
 	Q_PROPERTY(QVariantList geopolygons READ get_geopolygons_qvariant_list CONSTANT)
 	Q_PROPERTY(QVariantList geopaths READ get_geopaths_qvariant_list CONSTANT)
@@ -140,7 +137,6 @@ public:
 
 		this->map_mode_color = color;
 		emit map_mode_color_changed();
-		this->update_image();
 	}
 
 	const QColor &get_color_for_map_mode(const map_mode mode) const;
@@ -151,23 +147,17 @@ public:
 		this->set_map_mode_color(color);
 	}
 
-	const QRect &get_rect() const
+	const QRectF &get_rect() const
 	{
 		return this->rect;
 	}
 
-	void create_image(const std::vector<int> &pixel_indexes);
-	void set_border_pixels(const std::vector<int> &pixel_indexes);
-	void update_image();
+	void calculate_rect();
+
 	void write_geodata_to_image(QImage &image, QImage &terrain_image) const;
 	void write_geopath_endpoints_to_image(QImage &image, QImage &terrain_image) const;
 	void write_geoshape_to_image(QImage &image, const QGeoShape &geoshape, QImage &terrain_image) const;
 	void write_geojson() const;
-
-	const QImage &get_image() const
-	{
-		return this->image;
-	}
 
 	terrain_type *get_terrain() const
 	{
@@ -175,6 +165,7 @@ public:
 	}
 
 	void set_terrain(terrain_type *terrain);
+	void calculate_terrain();
 
 	virtual void set_culture(metternich::culture *culture) override;
 	virtual void set_religion(metternich::religion *religion) override;
@@ -310,7 +301,7 @@ public:
 
 	long long int get_meters_distance_to(const province *other_province) const
 	{
-		return static_cast<long long int>(this->get_center_coordinate().distanceTo(other_province->get_center_coordinate()));
+		return static_cast<long long int>(this->get_center_geocoordinate().distanceTo(other_province->get_center_geocoordinate()));
 	}
 
 	int get_kilometers_distance_to(const province *other_province) const
@@ -335,7 +326,6 @@ public:
 	void sort_wildlife_units();
 	void remove_empty_wildlife_units();
 
-	QRectF get_polygons_bounding_rect() const;
 	QString get_polygons_svg() const;
 
 	const std::vector<QGeoPolygon> &get_geopolygons() const
@@ -352,7 +342,7 @@ public:
 
 	QVariantList get_geopaths_qvariant_list() const;
 
-	bool contains_coordinate(const QGeoCoordinate &coordinate) const
+	bool contains_geocoordinate(const QGeoCoordinate &coordinate) const
 	{
 		//get whether a coordinate is located in the province
 		for (const QGeoPolygon &geopolygon : this->geopolygons) {
@@ -370,26 +360,55 @@ public:
 		return false;
 	}
 
-	QGeoCoordinate get_center_coordinate() const;
+	const QGeoShape &get_main_geoshape() const
+	{
+		static const QGeoShape empty_geoshape;
 
-	const QPoint &get_center_pos() const
+		const QGeoShape *best_geoshape = nullptr;
+		double best_bounding_area = 0.;
+
+		for (const QGeoPolygon &geopolygon : this->get_geopolygons()) {
+			const QGeoRectangle bounding_georectangle = geopolygon.boundingGeoRectangle();
+			const double bounding_area = bounding_georectangle.width() * bounding_georectangle.height();
+			if (bounding_area > best_bounding_area) {
+				best_geoshape = &geopolygon;
+				best_bounding_area = bounding_area;
+			}
+		}
+
+		for (const QGeoPath &geopath : this->get_geopaths()) {
+			const QGeoRectangle bounding_georectangle = geopath.boundingGeoRectangle();
+			const double bounding_area = bounding_georectangle.width() * bounding_georectangle.height();
+			if (bounding_area > best_bounding_area) {
+				best_geoshape = &geopath;
+				best_bounding_area = area;
+			}
+		}
+
+		if (best_geoshape != nullptr) {
+			return *best_geoshape;
+		}
+
+		return empty_geoshape;
+	}
+
+	const QGeoCoordinate &get_center_geocoordinate() const
+	{
+		return this->center_geocoordinate;
+	}
+
+	const QPointF &get_center_pos() const
 	{
 		return this->center_pos;
 	}
 
-	const QPoint &get_main_pos() const;
+	void calculate_center_pos();
 
-	bool is_pos_valid(const QPoint &pos) const
+	const QPointF &get_main_pos() const;
+
+	const std::vector<QPointF> &get_path_pos_list(const province *other_province) const
 	{
-		//whether the position is a valid one in the province
-		return this->rect.contains(pos) && this->image.pixel(pos - this->rect.topLeft()) != qRgba(0, 0, 0, 0);
-	}
-
-	QPoint get_nearest_valid_pos(const QPoint &pos) const;
-
-	const std::vector<QPoint> &get_path_pos_list(const province *other_province) const
-	{
-		static std::vector<QPoint> empty_list;
+		static std::vector<QPointF> empty_list;
 
 		auto find_iterator = this->path_pos_map.find(other_province);
 		if (find_iterator != this->path_pos_map.end()) {
@@ -399,47 +418,9 @@ public:
 		return empty_list;
 	}
 
-	void add_path_pos_list(const province *other_province, std::vector<QPoint> &&path_pos_list)
+	void add_path_pos_list(const province *other_province, std::vector<QPointF> &&path_pos_list)
 	{
 		this->path_pos_map[other_province] = std::move(path_pos_list);
-	}
-
-	bool is_line_to_valid(const QPoint &start_pos, const QPoint &target_pos, const province *other_province) const
-	{
-		//check if every point on a line from the given position to the target point is on either province
-		const QPoint diff(std::abs(start_pos.x() - target_pos.x()), std::abs(start_pos.y() - target_pos.y()));
-		const QPoint multiplier(start_pos.x() < target_pos.x() ? 1 : -1, start_pos.y() < target_pos.y() ? 1 : -1);
-		if (diff.x() >= diff.y()) {
-			const int y_modulo = diff.y() != 0 ? diff.x() / diff.y() : 0;
-
-			QPoint offset(1, 0);
-			for (; offset.x() <= diff.x(); offset.rx()++) {
-				if (y_modulo != 0 && offset.x() % y_modulo == 0) {
-					offset.ry()++;
-				}
-
-				const QPoint line_pos = start_pos + QPoint(offset.x() * multiplier.x(), offset.y() * multiplier.y());
-				if (!this->is_pos_valid(line_pos) && !other_province->is_pos_valid(line_pos)) {
-					return false;
-				}
-			}
-		} else {
-			const int x_modulo = diff.x() != 0 ? diff.y() / diff.x() : 0;
-
-			QPoint offset(0, 1);
-			for (; offset.y() <= diff.y(); offset.ry()++) {
-				if (x_modulo != 0 && offset.y() % x_modulo == 0) {
-					offset.rx()++;
-				}
-
-				const QPoint line_pos = start_pos + QPoint(offset.x() * multiplier.x(), offset.y() * multiplier.y());
-				if (!this->is_pos_valid(line_pos) && !other_province->is_pos_valid(line_pos)) {
-					return false;
-				}
-			}
-		}
-
-		return true;
 	}
 
 	bool always_writes_geodata() const
@@ -457,7 +438,6 @@ public:
 signals:
 	void trade_node_changed();
 	void trade_node_trade_cost_changed();
-	void image_changed();
 	void terrain_changed();
 	void wildlife_units_changed();
 	void main_pos_changed();
@@ -471,9 +451,9 @@ private:
 	trade_node *trade_node = nullptr;
 	QColor color; //the color used to identify the province in the province map
 	QColor map_mode_color; //the color used for the province by the current map mode
-	QRect rect; //the rectangle that the province occupies
-	QPoint center_pos;
-	QImage image; //the province's image to be drawn on-screen
+	QRectF rect; //the rectangle that the province occupies
+	QGeoCoordinate center_geocoordinate;
+	QPointF center_pos;
 	terrain_type *terrain = nullptr;
 	int pixel_count = 0; //the amount of pixels that the province takes on the map
 	int area = 0; //the area of the province, in square kilometers; used to calculate holding sizes
@@ -483,7 +463,7 @@ private:
 	std::set<trade_route *> active_trade_routes; //the active trade routes going through the province
 	int trade_node_trade_cost = 0;
 	std::vector<qunique_ptr<wildlife_unit>> wildlife_units; //wildlife units set for this province in history
-	std::map<const province *, std::vector<QPoint>> path_pos_map; //lists of the path positions for the paths between this province and its border provinces
+	std::map<const province *, std::vector<QPointF>> path_pos_map; //lists of the path positions for the paths between this province and its border provinces
 	std::vector<QGeoPolygon> geopolygons;
 	std::vector<QGeoPath> geopaths;
 	bool inner_river = false; //whether the province has a minor river flowing through it

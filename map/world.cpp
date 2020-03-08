@@ -355,7 +355,7 @@ province *world::get_coordinate_province(const QGeoCoordinate &coordinate) const
 			continue;
 		}
 
-		if (province->contains_coordinate(coordinate)) {
+		if (province->contains_geocoordinate(coordinate)) {
 			return province;
 		}
 	}
@@ -469,11 +469,8 @@ void world::load_province_map()
 
 	this->province_image = QImage(QString::fromStdString(province_image_path.string()));
 
-	this->map_size = this->province_image.size(); //set the world's pixel size to that of its province map
 	const int pixel_count = this->province_image.width() * this->province_image.height();
 
-	std::map<province *, std::vector<int>> province_pixel_indexes;
-	std::map<province *, std::vector<int>> province_border_pixel_indexes;
 	std::map<province *, std::map<terrain_type *, int>> province_terrain_counts;
 
 	const QRgb *rgb_data = reinterpret_cast<const QRgb *>(this->province_image.constBits());
@@ -495,11 +492,7 @@ void world::load_province_map()
 
 		province *pixel_province = province::get_by_rgb(pixel_rgb, false);
 		if (pixel_province != nullptr) {
-			province_pixel_indexes[pixel_province].push_back(i);
-
 			if (previous_pixel_province != pixel_province && previous_pixel_province != nullptr) {
-				province_border_pixel_indexes[pixel_province].push_back(i);
-				province_border_pixel_indexes[previous_pixel_province].push_back(i - 1);
 				pixel_province->add_border_province(previous_pixel_province);
 				previous_pixel_province->add_border_province(pixel_province);
 			}
@@ -510,8 +503,6 @@ void world::load_province_map()
 				const QRgb &previous_vertical_pixel_rgb = rgb_data[adjacent_pixel_index];
 				province *previous_vertical_pixel_province = province::get_by_rgb(previous_vertical_pixel_rgb, false);
 				if (previous_vertical_pixel_province != pixel_province && previous_vertical_pixel_province != nullptr) {
-					province_border_pixel_indexes[pixel_province].push_back(i);
-						province_border_pixel_indexes[previous_vertical_pixel_province].push_back(adjacent_pixel_index);
 					pixel_province->add_border_province(previous_vertical_pixel_province);
 					previous_vertical_pixel_province->add_border_province(pixel_province);
 				}
@@ -526,69 +517,20 @@ void world::load_province_map()
 		previous_pixel_province = pixel_province;
 	}
 
-	std::map<holding_slot *, std::map<terrain_type *, int>> megalopolis_terrain_counts;
 	for (const auto &province_terrain_count : province_terrain_counts) {
 		province *province = province_terrain_count.first;
 		this->add_province(province);
 
-		terrain_type *best_terrain = nullptr;
-		int best_terrain_count = 0;
 		bool inner_river = false;
-
 		for (const auto &kv_pair : province_terrain_count.second) {
 			terrain_type *terrain = kv_pair.first;
 
 			if (terrain != nullptr && terrain->is_river() && !inner_river) {
 				inner_river = true;
 			}
-
-			const int count = kv_pair.second;
-			if (count > best_terrain_count) {
-				best_terrain = terrain;
-				best_terrain_count = count;
-			}
-
-			if (province->get_megalopolis() != nullptr) {
-				megalopolis_terrain_counts[province->get_megalopolis()][terrain] += count;
-			}
 		}
 
-		province->set_terrain(best_terrain);
 		province->set_inner_river(inner_river);
-	}
-
-	//set the terrain of megalopolises which have no set terrain to the one most present in its provinces
-	for (const auto &megalopolis_terrain_count : megalopolis_terrain_counts) {
-		holding_slot *megalopolis = megalopolis_terrain_count.first;
-
-		if (megalopolis->get_terrain() != nullptr) {
-			continue;
-		}
-
-		terrain_type *best_terrain = nullptr;
-		int best_terrain_count = 0;
-
-		for (const auto &kv_pair : megalopolis_terrain_count.second) {
-			terrain_type *terrain = kv_pair.first;
-
-			const int count = kv_pair.second;
-			if (count > best_terrain_count) {
-				best_terrain = terrain;
-				best_terrain_count = count;
-			}
-		}
-
-		megalopolis->set_terrain(best_terrain);
-	}
-
-	for (const auto &kv_pair : province_pixel_indexes) {
-		province *province = kv_pair.first;
-		province->create_image(kv_pair.second);
-	}
-
-	for (const auto &kv_pair : province_border_pixel_indexes) {
-		province *province = kv_pair.first;
-		province->set_border_pixels(kv_pair.second);
 	}
 
 	for (province *world_province : this->get_provinces()) {
@@ -614,22 +556,14 @@ void world::load_province_map()
 				}
 			}
 		}
+	}
 
-		//transform holding slot geocoordinates into positions
-		for (holding_slot *slot : world_province->get_settlement_holding_slots()) {
-			if (slot->get_geocoordinate().isValid()) {
-				QPoint pos = this->get_coordinate_pos(slot->get_geocoordinate());
-				pos = slot->get_province()->get_nearest_valid_pos(pos);
-				slot->set_pos(pos);
-			}
-		}
+	for (province *province : this->get_provinces()) {
+		province->calculate_rect();
+		province->calculate_center_pos();
 
-		//add geopath coordinates to the province's path position list (for e.g. rivers)
-		for (const QGeoPath &geopath : world_province->get_geopaths()) {
-			for (const QGeoCoordinate &geocoordinate : geopath.path()) {
-				QPoint path_pos = this->get_coordinate_pos(geocoordinate);
-				path_pos = world_province->get_nearest_valid_pos(path_pos);
-			}
+		if (province->get_terrain() == nullptr) {
+			province->calculate_terrain();
 		}
 	}
 }
@@ -644,6 +578,7 @@ void world::load_terrain_map()
 
 	engine_interface::get()->set_loading_message("Loading " + this->get_loading_message_name() + " Terrain...");
 	this->terrain_image = QImage(QString::fromStdString(terrain_image_path.string()));
+	this->map_size = this->terrain_image.size(); //set the world's pixel size to that of its terrain map
 }
 
 void world::write_geodata_to_image()

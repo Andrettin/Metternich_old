@@ -27,7 +27,8 @@ class gsml_parser;
 class gsml_data
 {
 public:
-	static gsml_data from_point(const QPoint &point, const std::string &tag = std::string())
+	template <typename point_type>
+	static gsml_data from_point(const point_type &point, const std::string &tag = std::string())
 	{
 		gsml_data point_data(tag);
 		point_data.add_value(std::to_string(point.x()));
@@ -242,6 +243,17 @@ public:
 		const int x = std::stoi(this->get_values()[0]);
 		const int y = std::stoi(this->get_values()[1]);
 		return QPoint(x, y);
+	}
+
+	QPointF to_pointf() const
+	{
+		if (this->get_values().size() != 2) {
+			throw std::runtime_error("Point scopes need to contain exactly two values.");
+		}
+
+		const double x = std::stod(this->get_values()[0]);
+		const double y = std::stod(this->get_values()[1]);
+		return QPointF(x, y);
 	}
 
 	QGeoCoordinate to_geocoordinate() const

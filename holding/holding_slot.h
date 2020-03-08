@@ -37,7 +37,7 @@ class holding_slot final : public data_entry, public data_type<holding_slot>
 	Q_PROPERTY(bool megalopolis READ is_megalopolis CONSTANT)
 	Q_PROPERTY(metternich::terrain_type* terrain READ get_terrain WRITE set_terrain NOTIFY terrain_changed)
 	Q_PROPERTY(QGeoCoordinate geocoordinate READ get_geocoordinate WRITE set_geocoordinate)
-	Q_PROPERTY(QPoint pos READ get_pos WRITE set_pos NOTIFY pos_changed)
+	Q_PROPERTY(QPointF pos READ get_pos WRITE set_pos NOTIFY pos_changed)
 	Q_PROPERTY(int default_holding_size READ get_default_holding_size CONSTANT)
 	Q_PROPERTY(int holding_size READ get_holding_size WRITE set_holding_size NOTIFY holding_size_changed)
 	Q_PROPERTY(QVariantList available_commodities READ get_available_commodities_qvariant_list NOTIFY available_commodities_changed)
@@ -157,12 +157,12 @@ public:
 
 	void set_terrain(terrain_type *terrain);
 
-	const QPoint &get_pos() const
+	const QPointF &get_pos() const
 	{
 		return this->pos;
 	}
 
-	void set_pos(const QPoint &pos)
+	void set_pos(const QPointF &pos)
 	{
 		if (pos == this->get_pos()) {
 			return;
@@ -177,10 +177,7 @@ public:
 		return this->geocoordinate;
 	}
 
-	void set_geocoordinate(const QGeoCoordinate &geocoordinate)
-	{
-		this->geocoordinate = geocoordinate;
-	}
+	void set_geocoordinate(const QGeoCoordinate &geocoordinate);
 
 	int get_default_holding_size() const
 	{
@@ -271,7 +268,7 @@ private:
 	world *world = nullptr; //to which world this holding slot belongs, if it is a world holding slot
 	terrain_type *terrain = nullptr;
 	QGeoCoordinate geocoordinate;
-	QPoint pos = QPoint(-1, -1);
+	QPointF pos = QPointF(-1, -1);
 	int holding_size = 0; //the holding size, which affects population capacity
 	std::vector<metternich::commodity *> available_commodities; //the commodities available for production by the holding (if any)
 	bool population_distribution_allowed = true;

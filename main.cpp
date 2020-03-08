@@ -15,7 +15,6 @@
 #include "landed_title/landed_title.h"
 #include "map/map.h"
 #include "map/province.h"
-#include "map/province_image_provider.h"
 #include "map/region.h"
 #include "map/terrain_type.h"
 #include "map/world.h"
@@ -90,7 +89,6 @@ int main(int argc, char *argv[])
 		qmlRegisterType<trade_node>();
 		qmlRegisterType<world>();
 		engine.rootContext()->setContextProperty("metternich", engine_interface::get());
-		engine.addImageProvider(QLatin1String("provinces"), new province_image_provider);
 		engine.addImageProvider(QLatin1String("empty"), new empty_image_provider);
 
 		const QUrl url(QStringLiteral("./interface/main.qml"));

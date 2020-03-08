@@ -79,7 +79,6 @@ province::province(const std::string &identifier) : territory(identifier)
 {
 	connect(this, &province::culture_changed, this, &identifiable_data_entry_base::name_changed);
 	connect(this, &province::religion_changed, this, &identifiable_data_entry_base::name_changed);
-	connect(game::get(), &game::running_changed, this, &province::update_image);
 }
 
 province::~province()
@@ -123,7 +122,7 @@ void province::process_gsml_scope(const gsml_data &scope)
 	} else if (tag == "path_pos_map") {
 		scope.for_each_child([&](const gsml_data &pos_list_data) {
 			const province *other_province = province::get(pos_list_data.get_tag());
-			std::vector<QPoint> pos_list;
+			std::vector<QPointF> pos_list;
 			pos_list_data.for_each_child([&](const gsml_data &pos_data) {
 				pos_list.push_back(pos_data.to_point());
 			});
@@ -240,7 +239,7 @@ gsml_data province::get_cache_data() const
 		gsml_data path_pos_map_data("path_pos_map");
 		for (const auto &kv_pair : this->path_pos_map) {
 			gsml_data path_pos_list_data(kv_pair.first->get_identifier());
-			for (const QPoint &path_pos : kv_pair.second) {
+			for (const QPointF &path_pos : kv_pair.second) {
 				path_pos_list_data.add_child(gsml_data::from_point(path_pos));
 			}
 			path_pos_map_data.add_child(std::move(path_pos_list_data));
@@ -507,80 +506,34 @@ const QColor &province::get_color_for_map_mode(const map_mode mode) const
 	}
 }
 
-void province::create_image(const std::vector<int> &pixel_indexes)
+void province::calculate_rect()
 {
-	this->pixel_count = static_cast<int>(pixel_indexes.size());
+	QPointF top_left(-1, -1);
+	QPointF bottom_right(-1, -1);
 
-	QPoint start_pos(-1, -1);
-	QPoint end_pos(-1, -1);
-	long long int center_x = 0;
-	long long int center_y = 0;
+	for (const QGeoPolygon &geopolygon : this->get_geopolygons()) {
+		for (const QGeoCoordinate &geocoordinate : geopolygon.path()) {
+			const QPointF pos = this->get_world()->get_coordinate_posf(geocoordinate);
 
-	for (const int index : pixel_indexes) {
-		QPoint pixel_pos = this->get_world()->get_pixel_pos(index);
+			if (top_left.x() == -1 || pos.x() < top_left.x()) {
+				top_left.setX(pos.x());
+			}
 
-		if (start_pos.x() == -1 || pixel_pos.x() < start_pos.x()) {
-			start_pos.setX(pixel_pos.x());
-		}
-		if (start_pos.y() == -1 || pixel_pos.y() < start_pos.y()) {
-			start_pos.setY(pixel_pos.y());
-		}
-		if (end_pos.x() == -1 || pixel_pos.x() > end_pos.x()) {
-			end_pos.setX(pixel_pos.x());
-		}
-		if (end_pos.y() == -1 || pixel_pos.y() > end_pos.y()) {
-			end_pos.setY(pixel_pos.y());
-		}
+			if (top_left.y() == -1 || pos.y() < top_left.y()) {
+				top_left.setY(pos.y());
+			}
 
-		center_x += pixel_pos.x();
-		center_y += pixel_pos.y();
+			if (bottom_right.x() == -1 || pos.x() > bottom_right.x()) {
+				bottom_right.setX(pos.x());
+			}
+
+			if (bottom_right.y() == -1 || pos.y() > bottom_right.y()) {
+				bottom_right.setY(pos.y());
+			}
+		}
 	}
 
-	center_x /= this->pixel_count;
-	center_y /= this->pixel_count;
-	QPoint center_pos(static_cast<int>(center_x), static_cast<int>(center_y));
-
-	this->rect = QRect(start_pos, end_pos);
-
-	this->image = QImage(this->rect.size(), QImage::Format_Indexed8);
-
-	//index 0 = transparency, index 1 = the main color for the province, index 2 = province border
-	this->image.setColorTable({qRgba(0, 0, 0, 0), this->get_color().rgb(), QColor(Qt::darkGray).rgb()});
-	this->image.fill(0);
-
-	for (const int index : pixel_indexes) {
-		QPoint pixel_pos = this->get_world()->get_pixel_pos(index) - this->rect.topLeft();
-		this->image.setPixel(pixel_pos, 1);
-	}
-
-	//if the center pos is outside the actual pixels of the province, change it to the nearest pixel actually in the province
-	this->center_pos = this->get_nearest_valid_pos(center_pos);
-}
-
-void province::set_border_pixels(const std::vector<int> &pixel_indexes)
-{
-	for (const int index : pixel_indexes) {
-		QPoint pixel_pos = this->get_world()->get_pixel_pos(index) - this->rect.topLeft();
-		this->image.setPixel(pixel_pos, 2);
-	}
-}
-
-void province::update_image()
-{
-	const QColor &province_color = this->get_map_mode_color();
-
-	QColor border_color;
-	if (this->is_selected()) {
-		//if the province is selected, highlight its border pixels
-		border_color = QColor(Qt::yellow);
-	} else {
-		border_color = QColor(Qt::black);
-	}
-
-	this->image.setColor(1, province_color.rgb());
-	this->image.setColor(2, border_color.rgb());
-
-	emit image_changed();
+	this->rect = QRectF(top_left, bottom_right);
 }
 
 void province::write_geodata_to_image(QImage &image, QImage &terrain_image) const
@@ -760,6 +713,42 @@ void province::set_terrain(metternich::terrain_type *terrain)
 	emit terrain_changed();
 }
 
+void province::calculate_terrain()
+{
+	std::map<terrain_type *, int> terrain_counts;
+
+	for (holding_slot *slot : this->get_settlement_holding_slots()) {
+		if (slot->get_geocoordinate().isValid()) {
+			terrain_counts[this->get_world()->get_coordinate_terrain(slot->get_geocoordinate())]++;
+		}
+	}
+
+	if (terrain_counts.empty()) {
+		const QGeoCoordinate &center_geocoordinate = this->get_center_geocoordinate();
+		terrain_counts[this->get_world()->get_coordinate_terrain(center_geocoordinate)]++;
+	}
+
+	terrain_type *best_terrain_type = nullptr;
+	int best_count = 0;
+	for (const auto &kv_pair : terrain_counts) {
+		terrain_type *terrain_type = kv_pair.first;
+
+		if (terrain_type == nullptr) {
+			continue;
+		}
+
+		const int count = kv_pair.second;
+		if (count > best_count) {
+			best_terrain_type = terrain_type;
+			best_count = count;
+		}
+	}
+
+	if (best_terrain_type != nullptr) {
+		this->set_terrain(best_terrain_type);
+	}
+}
+
 void province::set_culture(metternich::culture *culture)
 {
 	if (culture == this->get_culture()) {
@@ -818,11 +807,11 @@ void province::set_capital_holding_slot(holding_slot *holding_slot)
 		return;
 	}
 
-	const QPoint &old_main_pos = this->get_main_pos();
+	const QPointF &old_main_pos = this->get_main_pos();
 
 	territory::set_capital_holding_slot(holding_slot);
 
-	const QPoint &main_pos = this->get_main_pos();
+	const QPointF &main_pos = this->get_main_pos();
 
 	if (old_main_pos != main_pos) {
 		emit main_pos_changed();
@@ -996,46 +985,14 @@ void province::set_selected(const bool selected, const bool notify_engine_interf
 	this->selected = selected;
 	emit selected_changed();
 
-	this->update_image();
-
 	if (notify_engine_interface) {
 		engine_interface::get()->emit selected_province_changed();
 	}
 }
 
-QRectF province::get_polygons_bounding_rect() const
-{
-	QPointF top_left(-1, -1);
-	QPointF bottom_right(-1, -1);
-
-	for (const QGeoPolygon &geopolygon : this->get_geopolygons()) {
-		for (const QGeoCoordinate &geocoordinate : geopolygon.path()) {
-			const QPointF pos = this->get_world()->get_coordinate_posf(geocoordinate);
-
-			if (top_left.x() == -1 || pos.x() < top_left.x()) {
-				top_left.setX(pos.x());
-			}
-
-			if (top_left.y() == -1 || pos.y() < top_left.y()) {
-				top_left.setY(pos.y());
-			}
-
-			if (bottom_right.x() == -1 || pos.x() > bottom_right.x()) {
-				bottom_right.setX(pos.x());
-			}
-
-			if (bottom_right.y() == -1 || pos.y() > bottom_right.y()) {
-				bottom_right.setY(pos.y());
-			}
-		}
-	}
-
-	return QRectF(top_left, bottom_right);
-}
-
 QString province::get_polygons_svg() const
 {
-	const QRectF bounding_rect = this->get_polygons_bounding_rect();
+	const QRectF bounding_rect = this->get_rect();
 
 	QString svg;
 
@@ -1062,60 +1019,20 @@ QVariantList province::get_geopaths_qvariant_list() const
 	return container::to_qvariant_list(this->geopaths);
 }
 
-QGeoCoordinate province::get_center_coordinate() const
+void province::calculate_center_pos()
 {
-	return this->get_world()->get_pixel_pos_coordinate(this->get_center_pos());
+	const QGeoShape &main_geoshape = this->get_main_geoshape();
+	this->center_geocoordinate = main_geoshape.center();
+	this->center_pos = this->get_world()->get_coordinate_posf(this->center_geocoordinate);
 }
 
-const QPoint &province::get_main_pos() const
+const QPointF &province::get_main_pos() const
 {
 	if (this->get_capital_holding_slot() != nullptr && this->get_capital_holding_slot()->get_pos().x() != -1 && this->get_capital_holding_slot()->get_pos().y() != -1) {
 		return this->get_capital_holding_slot()->get_pos();
 	}
 
 	return this->get_center_pos();
-}
-
-QPoint province::get_nearest_valid_pos(const QPoint &pos) const
-{
-	if (this->image.isNull()) {
-		throw std::runtime_error("Tried to get the nearest valid position for point (" + std::to_string(pos.x()) + ", " + std::to_string(pos.y()) + ") in province \"" + this->get_identifier() + "\", but the latter has no valid image to check the position of pixels with.");
-	}
-
-	if (this->is_pos_valid(pos)) {
-		return pos; //the pos itself is already a valid position, so return the pos itself
-	}
-
-	//get the nearest position to a point that is actually a position inside the province
-
-	QRect check_rect(pos, QSize(1, 1));
-
-	bool checked_valid_pos = true;
-	while (checked_valid_pos) {
-		checked_valid_pos = false;
-		check_rect.adjust(-1, -1, 1, 1);
-
-		QPoint result_pos(-1, -1);
-
-		rect::for_each_perimeter_point_until(check_rect, [&](const QPoint &pos) {
-			if (this->is_pos_valid(pos)) {
-				result_pos = pos;
-				return true;
-			}
-
-			if (this->get_world()->is_pos_valid(pos)) {
-				checked_valid_pos = true;
-			}
-
-			return false;
-		});
-
-		if (result_pos.x() != -1 && result_pos.y() != -1) {
-			return result_pos;
-		}
-	}
-
-	throw std::runtime_error("Could not find a nearest valid position for point (" + std::to_string(pos.x()) + ", " + std::to_string(pos.y()) + ") in province \"" + this->get_identifier() + "\".");
 }
 
 void province::set_trade_node_recalculation_needed(const bool recalculation_needed, const bool recalculate_for_dependent_provinces)

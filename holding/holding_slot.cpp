@@ -49,6 +49,29 @@ void holding_slot::initialize()
 		this->province_profile = nullptr;
 	}
 
+	if (this->is_megalopolis() && this->get_terrain() == nullptr) {
+		//set the terrain of megalopolises which have no set terrain to the one most present in its provinces
+		std::map<terrain_type *, int> megalopolis_terrain_counts;
+		for (metternich::province *province : this->get_megalopolis_provinces()) {
+			megalopolis_terrain_counts[province->get_terrain()]++;
+		}
+
+		terrain_type *best_terrain = nullptr;
+		int best_terrain_count = 0;
+
+		for (const auto &kv_pair : megalopolis_terrain_counts) {
+			terrain_type *terrain = kv_pair.first;
+
+			const int count = kv_pair.second;
+			if (count > best_terrain_count) {
+				best_terrain = terrain;
+				best_terrain_count = count;
+			}
+		}
+
+		this->set_terrain(best_terrain);
+	}
+
 	if (this->get_holding_size() == 0) {
 		this->set_holding_size(this->get_default_holding_size());
 	}
@@ -240,6 +263,16 @@ void holding_slot::set_terrain(metternich::terrain_type *terrain)
 	if (terrain != nullptr && terrain->get_holding_modifier() != nullptr && this->get_holding() != nullptr) {
 		terrain->get_holding_modifier()->apply(this->get_holding());
 	}
+}
+
+void holding_slot::set_geocoordinate(const QGeoCoordinate &geocoordinate)
+{
+	if (geocoordinate == this->get_geocoordinate()) {
+		return;
+	}
+
+	this->geocoordinate = geocoordinate;
+	this->set_pos(this->get_province()->get_world()->get_coordinate_posf(geocoordinate));
 }
 
 bool holding_slot::is_territory_capital() const
