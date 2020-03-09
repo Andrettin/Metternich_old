@@ -168,6 +168,10 @@ void province::check() const
 		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no valid color.");
 	}
 
+	if (this->get_geopolygons().empty() && this->get_geopaths().empty()) {
+		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has neither geopolygons nor geopaths.");
+	}
+
 	territory::check();
 
 	if (static_cast<int>(this->get_settlement_holding_slots().size()) > defines::get()->get_max_settlement_slots_per_province()) {
@@ -180,8 +184,16 @@ void province::check() const
 
 	if (this->get_county() != nullptr) {
 		if (this->get_megalopolis() == nullptr) {
-			qWarning() << ("Province \"" + this->get_name_qstring() + "\" has no megalopolis holding slot.");
+			qWarning() << ("Province \"" + this->get_identifier_qstring() + "\" has no megalopolis holding slot.");
 		}
+	}
+
+	if (!this->get_center_geocoordinate().isValid()) {
+		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has an invalid center geocoordinate.");
+	}
+
+	if (!this->get_world()->is_pos_valid(this->get_center_pos())) {
+		throw std::runtime_error("Invalid center position for province \"" + this->get_identifier() + "\": (" + std::to_string(this->get_center_pos().x()) + ", " + std::to_string(this->get_center_pos().y()));
 	}
 }
 
@@ -708,7 +720,10 @@ void province::calculate_terrain()
 
 	for (holding_slot *slot : this->get_settlement_holding_slots()) {
 		if (slot->get_geocoordinate().isValid()) {
-			terrain_counts[this->get_world()->get_coordinate_terrain(slot->get_geocoordinate())]++;
+			terrain_type *terrain = this->get_world()->get_coordinate_terrain(slot->get_geocoordinate());
+			if (terrain != nullptr && !terrain->is_river()) {
+				terrain_counts[terrain]++;
+			}
 		}
 	}
 
@@ -737,7 +752,8 @@ void province::calculate_terrain()
 	for (const auto &kv_pair : terrain_counts) {
 		terrain_type *terrain_type = kv_pair.first;
 
-		if (terrain_type == nullptr) {
+		if (terrain_type == nullptr || terrain_type->is_river()) {
+			//rivers should be set explicitly as the terrain of river provinces
 			continue;
 		}
 
@@ -1032,7 +1048,7 @@ void province::calculate_center_pos()
 
 const QPointF &province::get_main_pos() const
 {
-	if (this->get_capital_holding_slot() != nullptr && this->get_capital_holding_slot()->get_pos().x() != -1 && this->get_capital_holding_slot()->get_pos().y() != -1) {
+	if (this->get_capital_holding_slot() != nullptr && this->get_capital_holding_slot()->get_geocoordinate().isValid()) {
 		return this->get_capital_holding_slot()->get_pos();
 	}
 

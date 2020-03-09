@@ -267,7 +267,7 @@ private:
 	world *world = nullptr; //to which world this holding slot belongs, if it is a world holding slot
 	terrain_type *terrain = nullptr;
 	QGeoCoordinate geocoordinate;
-	QPointF pos = QPointF(-1, -1);
+	QPointF pos = QPointF(0, 0);
 	int holding_size = 0; //the holding size, which affects population capacity
 	std::vector<metternich::commodity *> available_commodities; //the commodities available for production by the holding (if any)
 	bool population_distribution_allowed = true;

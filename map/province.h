@@ -362,8 +362,6 @@ public:
 
 	const QGeoShape &get_main_geoshape() const
 	{
-		static const QGeoShape empty_geoshape;
-
 		const QGeoShape *best_geoshape = nullptr;
 		double best_bounding_area = 0.;
 
@@ -381,7 +379,7 @@ public:
 			const double bounding_area = bounding_georectangle.width() * bounding_georectangle.height();
 			if (bounding_area > best_bounding_area) {
 				best_geoshape = &geopath;
-				best_bounding_area = area;
+				best_bounding_area = bounding_area;
 			}
 		}
 
@@ -389,7 +387,7 @@ public:
 			return *best_geoshape;
 		}
 
-		return empty_geoshape;
+		throw std::runtime_error("Province \"" + this->get_identifier() + "\" has no main geoshape.");
 	}
 
 	const QGeoCoordinate &get_center_geocoordinate() const

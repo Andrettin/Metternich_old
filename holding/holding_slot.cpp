@@ -44,6 +44,10 @@ holding_slot::~holding_slot()
 
 void holding_slot::initialize()
 {
+	if (this->get_geocoordinate().isValid()) {
+		this->set_pos(this->get_province()->get_world()->get_coordinate_posf(this->get_geocoordinate()));
+	}
+
 	if (this->province_profile != nullptr) {
 		this->set_province(this->province_profile->get_province());
 		this->province_profile = nullptr;
@@ -261,7 +265,6 @@ void holding_slot::set_geocoordinate(const QGeoCoordinate &geocoordinate)
 	}
 
 	this->geocoordinate = geocoordinate;
-	this->set_pos(this->get_province()->get_world()->get_coordinate_posf(geocoordinate));
 }
 
 bool holding_slot::is_territory_capital() const

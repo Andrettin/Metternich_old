@@ -512,7 +512,8 @@ public:
 		return "file:///" + QString::fromStdString(this->get_cache_path().string());
 	}
 
-	bool is_pos_valid(const QPoint &pos) const
+	template <typename point_type>
+	bool is_pos_valid(const point_type &pos) const
 	{
 		return pos.x() > 0 && pos.y() > 0 && pos.x() < this->get_map_size().width() && pos.y() < this->get_map_size().height();
 	}
