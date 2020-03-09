@@ -136,17 +136,6 @@ void holding_slot::check_history() const
 	this->check();
 }
 
-gsml_data holding_slot::get_cache_data() const
-{
-	gsml_data cache_data(this->get_identifier(), gsml_operator::addition);
-
-	if (this->get_pos().x() != -1 && this->get_pos().y() != -1) {
-		cache_data.add_child(gsml_data::from_point(this->get_pos(), "pos"));
-	}
-
-	return cache_data;
-}
-
 void holding_slot::do_day()
 {
 	if (this->get_holding() != nullptr) {

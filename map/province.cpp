@@ -227,14 +227,6 @@ gsml_data province::get_cache_data() const
 	}
 	cache_data.add_child(std::move(river_crossings));
 
-	for (const holding_slot *slot : this->get_settlement_holding_slots()) {
-		gsml_data slot_cache_data = slot->get_cache_data();
-
-		if (!slot_cache_data.is_empty()) {
-			cache_data.add_child(std::move(slot_cache_data));
-		}
-	}
-
 	if (!this->path_pos_map.empty()) {
 		gsml_data path_pos_map_data("path_pos_map");
 		for (const auto &kv_pair : this->path_pos_map) {
