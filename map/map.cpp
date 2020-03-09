@@ -152,12 +152,12 @@ void map::load()
 		//load map data for provinces
 		world->process_province_map_database();
 		world->process_data_type_map_geojson_database<holding_slot>();
+		world->process_terrain_map_database();
 	}
 
 	if (!cache_valid) {
 		for (world *world : world::get_map_worlds()) {
 			//load map data
-			world->process_terrain_map_database();
 			world->process_data_type_map_geojson_database<path>();
 
 			world->write_geodata_to_image();

@@ -211,9 +211,6 @@ void province::check_history() const
 gsml_data province::get_cache_data() const
 {
 	gsml_data cache_data(this->get_identifier());
-	if (this->get_terrain() != nullptr) {
-		cache_data.add_property("terrain", this->get_terrain()->get_identifier());
-	}
 
 	gsml_data border_provinces("border_provinces");
 	for (const province *province : this->border_provinces) {
@@ -716,8 +713,23 @@ void province::calculate_terrain()
 	}
 
 	if (terrain_counts.empty()) {
-		const QGeoCoordinate &center_geocoordinate = this->get_center_geocoordinate();
-		terrain_counts[this->get_world()->get_coordinate_terrain(center_geocoordinate)]++;
+		for (const QGeoPolygon &geopolygon : this->get_geopolygons()) {
+			const QGeoCoordinate &center_geocoordinate = geopolygon.center();
+
+			if (geopolygon.contains(center_geocoordinate)) {
+				terrain_counts[this->get_world()->get_coordinate_terrain(center_geocoordinate)]++;
+			}
+
+			for (const QGeoCoordinate &geocoordinate : geopolygon.path()) {
+				const double mid_latitude = (center_geocoordinate.latitude() + geocoordinate.latitude()) / 2;
+				const double mid_longitude = (center_geocoordinate.longitude() + geocoordinate.longitude()) / 2;
+				const QGeoCoordinate mid_geocoordinate(mid_latitude, mid_longitude);
+
+				if (geopolygon.contains(mid_geocoordinate)) {
+					terrain_counts[this->get_world()->get_coordinate_terrain(mid_geocoordinate)]++;
+				}
+			}
+		}
 	}
 
 	terrain_type *best_terrain_type = nullptr;

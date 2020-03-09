@@ -314,55 +314,6 @@ terrain_type *world::get_coordinate_terrain(const QGeoCoordinate &coordinate) co
 	return terrain_type::get_by_rgb(rgb);
 }
 
-province *world::get_pos_province(const QPoint &pos) const
-{
-	if (this->province_image.isNull()) {
-		throw std::runtime_error("Cannot get a position's province after clearing the province image from memory.");
-	}
-
-	QRgb rgb = this->province_image.pixel(pos);
-	return province::get_by_rgb(rgb);
-}
-
-province *world::get_coordinate_province(const QGeoCoordinate &coordinate) const
-{
-	//check the province in the pixel corresponding to the coordinate, but also adjacent provinces, to avoid accuracy errors
-	const QPoint pixel_pos = this->get_coordinate_pos(coordinate);
-	province *pixel_province = this->get_pos_province(pixel_pos);
-	std::set<province *> checked_provinces;
-	checked_provinces.insert(pixel_province);
-
-	for (int x_offset = -1; x_offset <= -1; ++x_offset) {
-		for (int y_offset = -1; y_offset <= -1; ++y_offset) {
-			if (x_offset == 0 && y_offset == 0) {
-				continue;
-			}
-
-			const QPoint adjacent_pos = pixel_pos + QPoint(x_offset, y_offset);
-
-			if (!this->is_pos_valid(adjacent_pos)) {
-				continue;
-			}
-
-			province *adjacent_province = this->get_pos_province(adjacent_pos);
-			checked_provinces.insert(adjacent_province);
-
-		}
-	}
-
-	for (province *province : checked_provinces) {
-		if (province == nullptr) {
-			continue;
-		}
-
-		if (province->contains_geocoordinate(coordinate)) {
-			return province;
-		}
-	}
-
-	return nullptr;
-}
-
 std::vector<QVariantList> world::parse_geojson_folder(const std::string_view &folder) const
 {
 	std::vector<QVariantList> geojson_data_list;
@@ -519,7 +470,6 @@ void world::load_province_map()
 
 	for (const auto &province_terrain_count : province_terrain_counts) {
 		province *province = province_terrain_count.first;
-		this->add_province(province);
 
 		bool inner_river = false;
 		for (const auto &kv_pair : province_terrain_count.second) {

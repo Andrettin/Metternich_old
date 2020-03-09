@@ -541,8 +541,6 @@ public:
 
 	QGeoCoordinate get_pixel_pos_coordinate(const QPoint &pos) const;
 	terrain_type *get_coordinate_terrain(const QGeoCoordinate &coordinate) const;
-	province *get_pos_province(const QPoint &pos) const;
-	province *get_coordinate_province(const QGeoCoordinate &coordinate) const;
 
 	const pathfinder *get_pathfinder() const
 	{
