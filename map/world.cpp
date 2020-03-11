@@ -254,6 +254,22 @@ void world::calculate_cosmic_size()
 		cosmic_size = this->get_default_cosmic_size();
 	}
 
+	if (this->is_star()) {
+		if (cosmic_size < world::min_star_size) {
+			cosmic_size = world::min_star_size;
+		} else if (cosmic_size > world::max_star_size) {
+			cosmic_size = world::max_star_size;
+		}
+	} else if (this->is_planet()) {
+		if (cosmic_size < world::min_planet_size) {
+			cosmic_size = world::min_planet_size;
+		}
+	} else if (this->is_moon()) {
+		if (cosmic_size < world::min_moon_size) {
+			cosmic_size = world::min_moon_size;
+		}
+	}
+
 	this->set_cosmic_size(cosmic_size);
 }
 

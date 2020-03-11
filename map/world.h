@@ -56,9 +56,13 @@ class world final : public territory, public data_type<world>
 public:
 	static constexpr const char *class_identifier = "world";
 	static constexpr const char *database_folder = "worlds";
+	static constexpr double min_moon_size = 16;
 	static constexpr double default_moon_size = 16;
+	static constexpr double min_planet_size = 32;
 	static constexpr double default_planet_size = 32;
 	static constexpr double default_star_size = 128;
+	static constexpr double min_star_size = 128;
+	static constexpr double max_star_size = 256;
 	static constexpr int solar_radius = 695700; //in kilometers
 	static constexpr int jovian_radius = 69911; //in kilometers
 	static constexpr int solar_absolute_magnitude = 483; //4.83
