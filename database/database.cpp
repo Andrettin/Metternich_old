@@ -116,7 +116,7 @@ void database::process_gsml_property_for_object(QObject *object, const gsml_prop
 			} else if (property.get_key() == "laws" || property.get_key() == "default_laws") {
 				law *law_value = law::get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(law *, law_value));
-			} else if (property.get_key() == "discount_types") {
+			} else if (property.get_key() == "discount_types" || property.get_key() == "equivalent_types") {
 				population_type *population_type_value = population_type::get(property.get_value());
 				success = QMetaObject::invokeMethod(object, method_name.c_str(), Qt::ConnectionType::DirectConnection, Q_ARG(population_type *, population_type_value));
 			} else if (property.get_key() == "items") {

@@ -20,7 +20,7 @@ class population_unit final : public population_unit_base, public simple_data_ty
 {
 	Q_OBJECT
 
-	Q_PROPERTY(metternich::population_type* type MEMBER type READ get_type NOTIFY type_changed)
+	Q_PROPERTY(metternich::population_type* type READ get_type WRITE set_type NOTIFY type_changed)
 	Q_PROPERTY(metternich::culture* culture READ get_culture WRITE set_culture NOTIFY culture_changed)
 	Q_PROPERTY(metternich::religion* religion READ get_religion WRITE set_religion NOTIFY religion_changed)
 	Q_PROPERTY(metternich::phenotype* phenotype READ get_phenotype WRITE set_phenotype NOTIFY phenotype_changed)
@@ -73,6 +73,16 @@ public:
 	population_type *get_type() const
 	{
 		return this->type;
+	}
+
+	void set_type(population_type *type)
+	{
+		if (type == this->get_type()) {
+			return;
+		}
+
+		this->type = type;
+		emit type_changed();
 	}
 
 	metternich::culture *get_culture() const

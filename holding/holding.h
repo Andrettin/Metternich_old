@@ -134,6 +134,9 @@ public:
 
 	bool is_territory_capital() const;
 
+	bool can_have_population_type(const population_type *population_type) const;
+	population_type *get_equivalent_population_type(const population_type *population_type) const;
+
 	const std::vector<qunique_ptr<population_unit>> &get_population_units() const
 	{
 		return this->population_units;
@@ -146,6 +149,7 @@ public:
 	void sort_population_units();
 	void remove_empty_population_units();
 	void move_population_units_to(holding *other_holding);
+	void update_population_types();
 
 	int get_population() const
 	{

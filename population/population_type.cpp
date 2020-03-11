@@ -12,6 +12,11 @@ void population_type::check() const
 	}
 }
 
+QVariantList population_type::get_equivalent_types_qvariant_list() const
+{
+	return container::to_qvariant_list(this->get_equivalent_types());
+}
+
 QVariantList population_type::get_holding_types_qvariant_list() const
 {
 	return container::to_qvariant_list(this->get_holding_types());

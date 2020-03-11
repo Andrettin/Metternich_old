@@ -19,6 +19,7 @@ class population_type final : public data_entry, public data_type<population_typ
 
 	Q_PROPERTY(QColor color MEMBER color READ get_color)
 	Q_PROPERTY(QString icon_tag READ get_icon_tag_qstring WRITE set_icon_tag_qstring)
+	Q_PROPERTY(QVariantList equivalent_types READ get_equivalent_types_qvariant_list)
 	Q_PROPERTY(QVariantList holding_types READ get_holding_types_qvariant_list)
 
 public:
@@ -63,6 +64,23 @@ public:
 		this->set_icon_tag(icon_tag.toStdString());
 	}
 
+	const std::set<population_type *> &get_equivalent_types() const
+	{
+		return this->equivalent_types;
+	}
+
+	QVariantList get_equivalent_types_qvariant_list() const;
+
+	Q_INVOKABLE void add_equivalent_type(population_type *type)
+	{
+		this->equivalent_types.insert(type);
+	}
+
+	Q_INVOKABLE void remove_equivalent_type(population_type *type)
+	{
+		this->equivalent_types.erase(type);
+	}
+
 	const std::set<holding_type *> &get_holding_types() const
 	{
 		return this->holding_types;
@@ -83,6 +101,7 @@ public:
 private:
 	QColor color;
 	std::string icon_tag;
+	std::set<population_type *> equivalent_types; //the population types which are equivalent to this one
 	std::set<holding_type *> holding_types; //the holding types where this population type can live
 };
 

@@ -375,8 +375,11 @@ bool population_unit::can_distribute_to_holding(const metternich::holding *holdi
 		return false;
 	}
 
-	if (this->get_type()->get_holding_types().find(holding->get_type()) == this->get_type()->get_holding_types().end()) {
-		return false;
+	if (!holding->can_have_population_type(this->get_type())) {
+		const population_type *valid_equivalent_type = holding->get_equivalent_population_type(this->get_type());
+		if (valid_equivalent_type == nullptr) {
+			return false;
+		}
 	}
 
 	if (this->discounts_existing()) {
@@ -437,7 +440,11 @@ void population_unit::distribute_to_holdings(const std::vector<metternich::holdi
 			continue;
 		}
 
-		auto population_unit = make_qunique<metternich::population_unit>(this->get_type());
+		population_type *type = this->get_type();
+		if (!holding->can_have_population_type(type)) {
+			type = holding->get_equivalent_population_type(type);
+		}
+		auto population_unit = make_qunique<metternich::population_unit>(type);
 		population_unit->moveToThread(QApplication::instance()->thread());
 		population_unit->set_holding(holding);
 		population_unit->set_size(size_per_holding);

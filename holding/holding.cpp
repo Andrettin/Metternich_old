@@ -248,6 +248,7 @@ void holding::set_type(holding_type *type)
 
 	emit type_changed();
 	this->calculate_building_slots();
+	this->update_population_types();
 }
 
 bool holding::is_settlement() const
@@ -328,6 +329,23 @@ const terrain_type *holding::get_terrain() const
 bool holding::is_territory_capital() const
 {
 	return this->get_slot()->is_territory_capital();
+}
+
+bool holding::can_have_population_type(const population_type *population_type) const
+{
+	return population_type->get_holding_types().contains(this->get_type());
+}
+
+population_type *holding::get_equivalent_population_type(const population_type *population_type) const
+{
+	//for the given population type, get an equivalent population type that is valid for the holding
+	for (metternich::population_type *equivalent_type : population_type->get_equivalent_types()) {
+		if (this->can_have_population_type(equivalent_type)) {
+			return equivalent_type;
+		}
+	}
+
+	return nullptr;
 }
 
 void holding::add_population_unit(qunique_ptr<population_unit> &&population_unit)
@@ -446,6 +464,19 @@ void holding::move_population_units_to(holding *other_holding)
 	}
 
 	this->remove_empty_population_units();
+}
+
+void holding::update_population_types()
+{
+	//convert the types of population units if they have become invalid to valid equivalent types
+	for (const qunique_ptr<population_unit> &population_unit : this->get_population_units()) {
+		if (!this->can_have_population_type(population_unit->get_type())) {
+			population_type *equivalent_type = this->get_equivalent_population_type(population_unit->get_type());
+			if (equivalent_type != nullptr) {
+				population_unit->set_type(equivalent_type);
+			}
+		}
+	}
 }
 
 void holding::set_population(const int population)
