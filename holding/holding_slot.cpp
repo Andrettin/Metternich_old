@@ -160,6 +160,9 @@ void holding_slot::do_month()
 
 void holding_slot::do_year()
 {
+	if (this->get_holding() != nullptr) {
+		this->get_holding()->do_year();
+	}
 }
 
 std::string holding_slot::get_name() const

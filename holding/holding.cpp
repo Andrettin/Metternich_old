@@ -168,6 +168,11 @@ void holding::do_month()
 	}
 }
 
+void holding::do_year()
+{
+	this->sort_population_units();
+}
+
 std::string holding::get_name() const
 {
 	if (this->get_barony() != nullptr) {

@@ -75,6 +75,7 @@ public:
 
 	void do_day();
 	void do_month();
+	void do_year();
 
 	virtual std::string get_name() const override;
 
