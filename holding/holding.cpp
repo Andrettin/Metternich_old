@@ -3,6 +3,7 @@
 #include "character/character.h"
 #include "culture/culture.h"
 #include "culture/culture_group.h"
+#include "culture/culture_supergroup.h"
 #include "defines.h"
 #include "economy/commodity.h"
 #include "economy/employment.h"
@@ -215,8 +216,8 @@ std::vector<std::vector<std::string>> holding::get_tag_suffix_list_with_fallback
 		religion = this->get_territory()->get_religion();
 	}
 
-	tag_list_with_fallbacks.push_back({culture->get_identifier(), culture->get_culture_group()->get_identifier()});
-	tag_list_with_fallbacks.push_back({religion->get_identifier(), religion->get_religion_group()->get_identifier()});
+	tag_list_with_fallbacks.push_back({culture->get_identifier(), culture->get_group()->get_identifier(), culture->get_supergroup()->get_identifier()});
+	tag_list_with_fallbacks.push_back({religion->get_identifier(), religion->get_group()->get_identifier()});
 
 	if (this->get_province() != nullptr && this->get_province()->is_coastal()) {
 		tag_list_with_fallbacks.push_back({"coastal"});

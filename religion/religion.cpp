@@ -6,7 +6,7 @@ namespace metternich {
 
 void religion::check() const
 {
-	if (this->get_religion_group() == nullptr) {
+	if (this->get_group() == nullptr) {
 		throw std::runtime_error("Religion \"" + this->get_identifier() + "\" has no religion group.");
 	}
 

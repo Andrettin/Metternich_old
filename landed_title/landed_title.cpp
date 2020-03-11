@@ -4,6 +4,7 @@
 #include "character/dynasty.h"
 #include "culture/culture.h"
 #include "culture/culture_group.h"
+#include "culture/culture_supergroup.h"
 #include "defines.h"
 #include "economy/trade_node.h"
 #include "economy/trade_route.h"
@@ -336,12 +337,12 @@ std::vector<std::vector<std::string>> landed_title::get_tag_suffix_list_with_fal
 
 	const culture *culture = this->get_culture();
 	if (culture != nullptr) {
-		tag_list_with_fallbacks.push_back({culture->get_identifier(), culture->get_culture_group()->get_identifier()});
+		tag_list_with_fallbacks.push_back({culture->get_identifier(), culture->get_group()->get_identifier(), culture->get_supergroup()->get_identifier()});
 	}
 
 	const religion *religion = this->get_religion();
 	if (religion != nullptr) {
-		tag_list_with_fallbacks.push_back({religion->get_identifier(), religion->get_religion_group()->get_identifier()});
+		tag_list_with_fallbacks.push_back({religion->get_identifier(), religion->get_group()->get_identifier()});
 	}
 
 	if (this->get_holder() != nullptr && this->get_holder()->get_dynasty() != nullptr) {

@@ -10,6 +10,7 @@
 namespace metternich {
 
 class culture_group;
+class culture_supergroup;
 class dynasty;
 class population_unit;
 
@@ -20,7 +21,7 @@ class culture final : public culture_base, public data_type<culture>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(metternich::culture_group* culture_group MEMBER culture_group READ get_culture_group NOTIFY culture_group_changed)
+	Q_PROPERTY(metternich::culture_group* group MEMBER group READ get_group NOTIFY group_changed)
 	Q_PROPERTY(QVariantList derived_cultures READ get_derived_cultures_qvariant_list)
 
 public:
@@ -34,10 +35,12 @@ public:
 	virtual void initialize() override;
 	virtual void check() const override;
 
-	metternich::culture_group *get_culture_group() const
+	culture_group *get_group() const
 	{
-		return this->culture_group;
+		return this->group;
 	}
+
+	culture_supergroup *get_supergroup() const;
 
 	const std::set<culture *> &get_derived_cultures() const
 	{
@@ -66,10 +69,10 @@ public:
 	std::string generate_dynasty_name() const;
 
 signals:
-	void culture_group_changed();
+	void group_changed();
 
 private:
-	metternich::culture_group *culture_group = nullptr;
+	culture_group *group = nullptr;
 	std::set<culture *> derived_cultures;
 	std::unique_ptr<condition<population_unit>> derivation_conditions;
 };

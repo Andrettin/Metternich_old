@@ -388,7 +388,7 @@ std::pair<trade_node *, int> province::get_best_trade_node_from_list(const std::
 			score_modifier += defines::get()->get_trade_node_score_culture_modifier();
 		}
 
-		if (this->get_culture()->get_culture_group() != center_of_trade->get_culture()->get_culture_group()) {
+		if (this->get_culture()->get_group() != center_of_trade->get_culture()->get_group()) {
 			score_modifier += defines::get()->get_trade_node_score_culture_group_modifier();
 		}
 
@@ -396,7 +396,7 @@ std::pair<trade_node *, int> province::get_best_trade_node_from_list(const std::
 			score_modifier += defines::get()->get_trade_node_score_religion_modifier();
 		}
 
-		if (this->get_religion()->get_religion_group() != center_of_trade->get_religion()->get_religion_group()) {
+		if (this->get_religion()->get_group() != center_of_trade->get_religion()->get_group()) {
 			score_modifier += defines::get()->get_trade_node_score_religion_group_modifier();
 		}
 
@@ -455,7 +455,7 @@ const QColor &province::get_color_for_map_mode(const map_mode mode) const
 			}
 			case map_mode::culture_group: {
 				if (this->get_culture() != nullptr) {
-					return this->get_culture()->get_culture_group()->get_color();
+					return this->get_culture()->get_group()->get_color();
 				}
 				break;
 			}
@@ -467,7 +467,7 @@ const QColor &province::get_color_for_map_mode(const map_mode mode) const
 			}
 			case map_mode::religion_group: {
 				if (this->get_religion() != nullptr) {
-					return this->get_religion()->get_religion_group()->get_color();
+					return this->get_religion()->get_group()->get_color();
 				}
 				break;
 			}
@@ -776,9 +776,9 @@ void province::set_culture(metternich::culture *culture)
 	}
 
 	const metternich::culture *old_culture = this->get_culture();
-	metternich::culture_group *old_culture_group = old_culture ? old_culture->get_culture_group() : nullptr;
+	metternich::culture_group *old_culture_group = old_culture ? old_culture->get_group() : nullptr;
 	territory::set_culture(culture);
-	metternich::culture_group *culture_group = culture ? culture->get_culture_group() : nullptr;
+	metternich::culture_group *culture_group = culture ? culture->get_group() : nullptr;
 
 	this->set_trade_node_recalculation_needed(true);
 
@@ -801,9 +801,9 @@ void province::set_religion(metternich::religion *religion)
 	}
 
 	metternich::religion *old_religion = this->get_religion();
-	metternich::religion_group *old_religion_group = old_religion ? old_religion->get_religion_group() : nullptr;
+	metternich::religion_group *old_religion_group = old_religion ? old_religion->get_group() : nullptr;
 	territory::set_religion(religion);
-	metternich::religion_group *religion_group = religion ? religion->get_religion_group() : nullptr;
+	metternich::religion_group *religion_group = religion ? religion->get_group() : nullptr;
 
 	this->set_trade_node_recalculation_needed(true);
 

@@ -20,6 +20,7 @@ SOURCES += \
         character/trait.cpp \
         culture/culture.cpp \
         culture/culture_base.cpp \
+        culture/culture_group.cpp \
         database/csv_data.cpp \
         database/data_entry.cpp \
         database/database.cpp \
@@ -117,6 +118,7 @@ HEADERS += \
     culture/culture.h \
     culture/culture_base.h \
     culture/culture_group.h \
+    culture/culture_supergroup.h \
     database/csv_data.h \
     database/data_entry.h \
     database/data_type.h \

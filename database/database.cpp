@@ -6,6 +6,7 @@
 #include "character/trait.h"
 #include "culture/culture.h"
 #include "culture/culture_group.h"
+#include "culture/culture_supergroup.h"
 #include "database/data_type_metadata.h"
 #include "database/gsml_data.h"
 #include "database/gsml_operator.h"
@@ -239,6 +240,8 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 			new_property_value = QVariant::fromValue(culture::get(property.get_value()));
 		} else if (property_class_name == "metternich::culture_group*") {
 			new_property_value = QVariant::fromValue(culture_group::get(property.get_value()));
+		} else if (property_class_name == "metternich::culture_supergroup*") {
+			new_property_value = QVariant::fromValue(culture_supergroup::get(property.get_value()));
 		} else if (property_class_name == "metternich::dynasty*") {
 			new_property_value = QVariant::fromValue(dynasty::get(property.get_value()));
 		} else if (property_class_name == "metternich::employment_type*") {

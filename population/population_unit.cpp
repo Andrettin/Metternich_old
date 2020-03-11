@@ -2,6 +2,7 @@
 
 #include "culture/culture.h"
 #include "culture/culture_group.h"
+#include "culture/culture_supergroup.h"
 #include "database/gsml_data.h"
 #include "defines.h"
 #include "economy/employment.h"
@@ -143,8 +144,8 @@ std::vector<std::vector<std::string>> population_unit::get_tag_suffix_list_with_
 {
 	std::vector<std::vector<std::string>> tag_list_with_fallbacks;
 
-	tag_list_with_fallbacks.push_back({this->get_culture()->get_identifier(), this->get_culture()->get_culture_group()->get_identifier()});
-	tag_list_with_fallbacks.push_back({this->get_religion()->get_identifier(), this->get_religion()->get_religion_group()->get_identifier()});
+	tag_list_with_fallbacks.push_back({this->get_culture()->get_identifier(), this->get_culture()->get_group()->get_identifier(), this->get_culture()->get_supergroup()->get_identifier()});
+	tag_list_with_fallbacks.push_back({this->get_religion()->get_identifier(), this->get_religion()->get_group()->get_identifier()});
 
 	std::vector<std::string> phenotype_tag_with_fallbacks;
 	phenotype_tag_with_fallbacks.push_back(this->get_phenotype()->get_identifier());

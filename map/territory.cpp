@@ -2,6 +2,7 @@
 
 #include "culture/culture.h"
 #include "culture/culture_group.h"
+#include "culture/culture_supergroup.h"
 #include "defines.h"
 #include "history/history.h"
 #include "holding/building.h"
@@ -266,11 +267,11 @@ std::vector<std::vector<std::string>> territory::get_tag_suffix_list_with_fallba
 	}
 
 	if (this->get_culture() != nullptr) {
-		tag_list_with_fallbacks.push_back({this->get_culture()->get_identifier(), this->get_culture()->get_culture_group()->get_identifier()});
+		tag_list_with_fallbacks.push_back({this->get_culture()->get_identifier(), this->get_culture()->get_group()->get_identifier(), this->get_culture()->get_supergroup()->get_identifier()});
 	}
 
 	if (this->get_religion() != nullptr) {
-		tag_list_with_fallbacks.push_back({this->get_religion()->get_identifier(), this->get_religion()->get_religion_group()->get_identifier()});
+		tag_list_with_fallbacks.push_back({this->get_religion()->get_identifier(), this->get_religion()->get_group()->get_identifier()});
 	}
 
 	return tag_list_with_fallbacks;

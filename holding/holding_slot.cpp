@@ -2,6 +2,7 @@
 
 #include "culture/culture.h"
 #include "culture/culture_group.h"
+#include "culture/culture_supergroup.h"
 #include "economy/commodity.h"
 #include "holding/holding.h"
 #include "holding/holding_slot_type.h"
@@ -184,12 +185,13 @@ std::vector<std::vector<std::string>> holding_slot::get_tag_suffix_list_with_fal
 		}
 	}
 
-	if (this->get_territory()->get_culture() != nullptr) {
-		tag_list_with_fallbacks.push_back({this->get_territory()->get_culture()->get_identifier(), this->get_territory()->get_culture()->get_culture_group()->get_identifier()});
+	const culture *culture = this->get_territory()->get_culture();
+	if (culture != nullptr) {
+		tag_list_with_fallbacks.push_back({culture->get_identifier(), culture->get_group()->get_identifier(), culture->get_supergroup()->get_identifier()});
 	}
 
 	if (this->get_territory()->get_religion()) {
-		tag_list_with_fallbacks.push_back({this->get_territory()->get_religion()->get_identifier(), this->get_territory()->get_religion()->get_religion_group()->get_identifier()});
+		tag_list_with_fallbacks.push_back({this->get_territory()->get_religion()->get_identifier(), this->get_territory()->get_religion()->get_group()->get_identifier()});
 	}
 
 	return tag_list_with_fallbacks;

@@ -5,6 +5,7 @@
 #include "character/trait.h"
 #include "culture/culture.h"
 #include "culture/culture_group.h"
+#include "culture/culture_supergroup.h"
 #include "database/gsml_operator.h"
 #include "database/gsml_property.h"
 #include "engine_interface.h"
@@ -156,10 +157,12 @@ void character::initialize_history()
 			//add the character's name to its culture's name list
 			if (this->is_female()) {
 				this->get_culture()->add_female_name(this->name);
-				this->get_culture()->get_culture_group()->add_female_name(this->name);
+				this->get_culture()->get_group()->add_female_name(this->name);
+				this->get_culture()->get_supergroup()->add_female_name(this->name);
 			} else {
 				this->get_culture()->add_male_name(this->name);
-				this->get_culture()->get_culture_group()->add_male_name(this->name);
+				this->get_culture()->get_group()->add_male_name(this->name);
+				this->get_culture()->get_supergroup()->add_male_name(this->name);
 			}
 		}
 	}

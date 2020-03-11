@@ -196,7 +196,7 @@ const QColor &star_system::get_color_for_map_mode(const map_mode mode) const
 			}
 			case map_mode::culture_group: {
 				if (this->get_culture() != nullptr) {
-					return this->get_culture()->get_culture_group()->get_color();
+					return this->get_culture()->get_group()->get_color();
 				}
 				break;
 			}
@@ -208,7 +208,7 @@ const QColor &star_system::get_color_for_map_mode(const map_mode mode) const
 			}
 			case map_mode::religion_group: {
 				if (this->get_religion() != nullptr) {
-					return this->get_religion()->get_religion_group()->get_color();
+					return this->get_religion()->get_group()->get_color();
 				}
 				break;
 			}

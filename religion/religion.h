@@ -15,7 +15,7 @@ class religion final : public data_entry, public data_type<religion>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(metternich::religion_group* religion_group MEMBER religion_group READ get_religion_group NOTIFY religion_group_changed)
+	Q_PROPERTY(metternich::religion_group* group MEMBER group READ get_group NOTIFY group_changed)
 	Q_PROPERTY(QColor color MEMBER color READ get_color)
 
 public:
@@ -26,9 +26,9 @@ public:
 
 	virtual void check() const override;
 
-	metternich::religion_group *get_religion_group() const
+	religion_group *get_group() const
 	{
-		return this->religion_group;
+		return this->group;
 	}
 
 	const QColor &get_color() const
@@ -37,10 +37,10 @@ public:
 	}
 
 signals:
-	void religion_group_changed();
+	void group_changed();
 
 private:
-	metternich::religion_group *religion_group = nullptr;
+	religion_group *group = nullptr;
 	QColor color;
 };
 

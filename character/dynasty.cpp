@@ -2,6 +2,7 @@
 
 #include "culture/culture.h"
 #include "culture/culture_group.h"
+#include "culture/culture_supergroup.h"
 #include "history/history.h"
 
 namespace metternich {
@@ -23,8 +24,14 @@ dynasty *dynasty::generate(metternich::culture *culture)
 void dynasty::initialize()
 {
 	if (this->get_culture() != nullptr) {
-		this->get_culture()->add_dynasty_name(this->get_name());
-		this->get_culture()->get_culture_group()->add_dynasty_name(this->get_name());
+		if (!this->get_culture()->is_initialized()) {
+			this->get_culture()->initialize(); //ensure the culture and its culture group are initialized, so that they don't add the dynasty name upwards again during initialization
+		}
+
+		const std::string name = this->get_name();
+		this->get_culture()->add_dynasty_name(name);
+		this->get_culture()->get_group()->add_dynasty_name(name);
+		this->get_culture()->get_supergroup()->add_dynasty_name(name);
 	}
 
 	data_entry_base::initialize();
