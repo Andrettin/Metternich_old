@@ -17,7 +17,7 @@ void culture_base::process_gsml_scope(const gsml_data &scope)
 				this->male_names = values;
 				break;
 			case gsml_operator::addition:
-				vector::merge(this->male_names, values);
+				this->add_male_names(values);
 				break;
 			default:
 				throw std::runtime_error("Invalid operator for scope (\"" + tag + "\").");
@@ -28,7 +28,7 @@ void culture_base::process_gsml_scope(const gsml_data &scope)
 				this->female_names = values;
 				break;
 			case gsml_operator::addition:
-				vector::merge(this->female_names, values);
+				this->add_female_names(values);
 				break;
 			default:
 				throw std::runtime_error("Invalid operator for scope (\"" + tag + "\").");
@@ -39,7 +39,7 @@ void culture_base::process_gsml_scope(const gsml_data &scope)
 				this->dynasty_names = values;
 				break;
 			case gsml_operator::addition:
-				vector::merge(this->dynasty_names, values);
+				this->add_dynasty_names(values);
 				break;
 			default:
 				throw std::runtime_error("Invalid operator for scope (\"" + tag + "\").");
@@ -54,6 +54,21 @@ void culture_base::check() const
 	if (!this->get_color().isValid()) {
 		throw std::runtime_error("Culture \"" + this->get_identifier() + "\" has no valid color.");
 	}
+}
+
+void culture_base::add_male_names(const std::vector<std::string> &names)
+{
+	vector::merge(this->male_names, names);
+}
+
+void culture_base::add_female_names(const std::vector<std::string> &names)
+{
+	vector::merge(this->female_names, names);
+}
+
+void culture_base::add_dynasty_names(const std::vector<std::string> &names)
+{
+	vector::merge(this->dynasty_names, names);
 }
 
 }

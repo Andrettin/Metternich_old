@@ -29,6 +29,10 @@ void culture::process_gsml_scope(const gsml_data &scope)
 
 void culture::initialize()
 {
+	if (this->get_culture_group() == nullptr) {
+		throw std::runtime_error("Culture \"" + this->get_identifier() + "\" has no culture group.");
+	}
+
 	if (this->get_species() == nullptr) {
 		this->set_species(this->get_culture_group()->get_species());
 	}
@@ -37,15 +41,23 @@ void culture::initialize()
 		this->set_default_phenotype(this->get_culture_group()->get_default_phenotype());
 	}
 
+	if (!this->get_male_names().empty()) {
+		this->get_culture_group()->add_male_names(this->get_male_names());
+	}
+
+	if (!this->get_female_names().empty()) {
+		this->get_culture_group()->add_female_names(this->get_female_names());
+	}
+
+	if (!this->get_dynasty_names().empty()) {
+		this->get_culture_group()->add_dynasty_names(this->get_dynasty_names());
+	}
+
 	data_entry_base::initialize();
 }
 
 void culture::check() const
 {
-	if (this->get_culture_group() == nullptr) {
-		throw std::runtime_error("Culture \"" + this->get_identifier() + "\" has no culture group.");
-	}
-
 	if (this->get_species() == nullptr) {
 		throw std::runtime_error("Culture \"" + this->get_identifier() + "\" has no species.");
 	}

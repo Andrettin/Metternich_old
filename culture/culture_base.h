@@ -51,6 +51,8 @@ public:
 		this->male_names.push_back(name);
 	}
 
+	void add_male_names(const std::vector<std::string> &names);
+
 	const std::vector<std::string> &get_female_names() const
 	{
 		return this->female_names;
@@ -61,6 +63,8 @@ public:
 		this->female_names.push_back(name);
 	}
 
+	void add_female_names(const std::vector<std::string> &names);
+
 	const std::vector<std::string> &get_dynasty_names() const
 	{
 		return this->dynasty_names;
@@ -70,6 +74,8 @@ public:
 	{
 		this->dynasty_names.push_back(name);
 	}
+
+	void add_dynasty_names(const std::vector<std::string> &names);
 
 protected:
 	void set_species(species *species)
