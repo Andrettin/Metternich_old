@@ -63,11 +63,28 @@ public:
 			return true;
 		}
 
+		for (const metternich::module *dependency : this->dependencies) {
+			if (dependency->depends_on(module)) {
+				return true;
+			}
+		}
+
 		if (this->parent_module != nullptr) {
 			return this->parent_module->depends_on(module);
 		}
 
 		return false;
+	}
+
+	size_t get_dependency_count() const
+	{
+		size_t count = this->dependencies.size();
+
+		for (const metternich::module *dependency : this->dependencies) {
+			count += dependency->get_dependency_count();
+		}
+
+		return count;
 	}
 
 private:

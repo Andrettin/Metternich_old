@@ -510,7 +510,7 @@ void database::process_modules()
 			return true;
 		}
 
-		return a->get_identifier() < b->get_identifier();
+		return a->get_dependency_count() < b->get_dependency_count();
 	});
 }
 
