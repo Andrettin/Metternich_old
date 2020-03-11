@@ -25,6 +25,7 @@
 #include "util/container_util.h"
 #include "util/string_util.h"
 #include "util/vector_util.h"
+#include "util/vector_random_util.h"
 
 #include <QVariant>
 
@@ -51,7 +52,6 @@ void character::purge_null_characters()
 {
 	vector::remove(character::living_characters, nullptr);
 }
-
 
 character *character::generate(metternich::culture *culture, metternich::religion *religion, metternich::phenotype *phenotype)
 {
@@ -95,11 +95,11 @@ character::~character()
 {
 	//remove references from other characters to his one; necessary since this character could be purged e.g. if it was born after the start date
 	if (this->get_father() != nullptr) {
-		this->get_father()->children.erase(std::remove(this->get_father()->children.begin(), this->get_father()->children.end(), this), this->get_father()->children.end());
+		vector::remove(this->get_father()->children, this);
 	}
 
 	if (this->get_mother() != nullptr) {
-		this->get_mother()->children.erase(std::remove(this->get_mother()->children.begin(), this->get_mother()->children.end(), this), this->get_mother()->children.end());
+		vector::remove(this->get_mother()->children, this);
 	}
 
 	if (this->get_spouse() != nullptr) {
@@ -115,7 +115,7 @@ character::~character()
 	}
 
 	if (this->get_liege() != nullptr) {
-		this->get_liege()->vassals.erase(std::remove(this->get_liege()->vassals.begin(), this->get_liege()->vassals.end(), this), this->get_liege()->vassals.end());
+		vector::remove(this->get_liege()->vassals, this);
 	}
 
 	for (character *vassal : this->vassals) {
@@ -378,6 +378,34 @@ void character::remove_holding(holding *holding)
 	vector::remove(this->holdings, holding);
 }
 
+void character::set_father(character *father)
+{
+	if (this->get_father() == father) {
+		return;
+	}
+
+	if (this->get_father() != nullptr) {
+		vector::remove(this->get_father()->children, this);
+	}
+
+	this->father = father;
+	father->children.push_back(this);
+}
+
+void character::set_mother(character *mother)
+{
+	if (this->get_mother() == mother) {
+		return;
+	}
+
+	if (this->get_mother() != nullptr) {
+		vector::remove(this->get_mother()->children, this);
+	}
+
+	this->mother = mother;
+	mother->children.push_back(this);
+}
+
 void character::set_liege(character *liege)
 {
 	if (this->get_liege() == liege) {
@@ -487,7 +515,7 @@ void character::generate_personality_trait()
 		throw std::runtime_error("Could not generate personality trait for character \"" + this->get_identifier() + "\".");
 	}
 
-	trait *chosen_trait = potential_traits[random::generate(potential_traits.size())];
+	trait *chosen_trait = vector::get_random(potential_traits);
 	this->add_trait(chosen_trait);
 }
 

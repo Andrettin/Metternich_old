@@ -6,6 +6,7 @@
 #include "script/effect/effect.h"
 #include "script/effect/effect_list.h"
 #include "script/factor_modifier.h"
+#include "util/vector_random_util.h"
 
 #include <memory>
 #include <vector>
@@ -96,7 +97,7 @@ public:
 		const std::vector<const random_list_entry<T> *> weighted_entries = this->get_weighted_entries(scope, ctx);
 
 		if (!weighted_entries.empty()) {
-			const random_list_entry<T> *chosen_entry = weighted_entries[random::generate(weighted_entries.size())];
+			const random_list_entry<T> *chosen_entry = vector::get_random(weighted_entries);
 			chosen_entry->do_effects(scope, ctx);
 		}
 	}

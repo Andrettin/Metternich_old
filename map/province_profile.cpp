@@ -4,6 +4,7 @@
 #include "random.h"
 #include "script/condition/and_condition.h"
 #include "script/context.h"
+#include "util/vector_random_util.h"
 
 namespace metternich {
 
@@ -68,7 +69,7 @@ province *province_profile::get_province()
 		throw std::runtime_error("No provinces fulfill the condition for province profile \"" + this->get_identifier() + "\".");
 	}
 
-	this->province = potential_provinces[random::generate(potential_provinces.size())];
+	this->province = vector::get_random(potential_provinces);
 	return this->province;
 }
 

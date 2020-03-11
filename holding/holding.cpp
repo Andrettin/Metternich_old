@@ -31,6 +31,7 @@
 #include "script/modifier.h"
 #include "translator.h"
 #include "util/container_util.h"
+#include "util/vector_random_util.h"
 
 #include <utility>
 
@@ -55,7 +56,7 @@ holding::holding(metternich::holding_slot *slot, holding_type *type) : data_entr
 
 	if (this->is_settlement()) {
 		if (!slot->get_available_commodities().empty()) {
-			metternich::commodity *commodity = slot->get_available_commodities()[random::generate(slot->get_available_commodities().size())];
+			metternich::commodity *commodity = vector::get_random(slot->get_available_commodities());
 			this->set_commodity(commodity);
 		} else {
 			throw std::runtime_error("Holding slot \"" + slot->get_identifier() + "\" has no available commodities to produce.");

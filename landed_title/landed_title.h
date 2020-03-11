@@ -192,10 +192,7 @@ public:
 		this->de_jure_vassal_titles.push_back(title);
 	}
 
-	void remove_de_jure_vassal_title(landed_title *title)
-	{
-		this->de_jure_vassal_titles.erase(std::remove(this->de_jure_vassal_titles.begin(), this->de_jure_vassal_titles.end(), title), this->de_jure_vassal_titles.end());
-	}
+	void remove_de_jure_vassal_title(landed_title *title);
 
 	landed_title *get_tier_title(const landed_title_tier tier) const;
 	landed_title *get_tier_de_jure_title(const landed_title_tier tier) const;

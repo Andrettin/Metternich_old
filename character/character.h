@@ -219,38 +219,14 @@ public:
 		return this->father;
 	}
 
-	void set_father(character *father)
-	{
-		if (this->get_father() == father) {
-			return;
-		}
-
-		if (this->get_father() != nullptr) {
-			this->get_father()->children.erase(std::remove(this->get_father()->children.begin(), this->get_father()->children.end(), this), this->get_father()->children.end());
-		}
-
-		this->father = father;
-		father->children.push_back(this);
-	}
+	void set_father(character *father);
 
 	character *get_mother() const
 	{
 		return this->mother;
 	}
 
-	void set_mother(character *mother)
-	{
-		if (this->get_mother() == mother) {
-			return;
-		}
-
-		if (this->get_mother() != nullptr) {
-			this->get_mother()->children.erase(std::remove(this->get_mother()->children.begin(), this->get_mother()->children.end(), this), this->get_mother()->children.end());
-		}
-
-		this->mother = mother;
-		mother->children.push_back(this);
-	}
+	void set_mother(character *mother);
 
 	character *get_spouse() const
 	{

@@ -217,12 +217,7 @@ public:
 		emit available_commodities_changed();
 	}
 
-	Q_INVOKABLE void remove_available_commodity(commodity *commodity)
-	{
-		this->available_commodities.erase(std::remove(this->available_commodities.begin(), this->available_commodities.end(), commodity), this->available_commodities.end());
-		emit available_commodities_changed();
-	}
-
+	Q_INVOKABLE void remove_available_commodity(commodity *commodity);
 	void generate_available_commodity();
 
 	bool is_population_distribution_allowed() const

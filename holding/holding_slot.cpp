@@ -291,6 +291,12 @@ void holding_slot::set_holding(qunique_ptr<metternich::holding> &&holding)
 	}
 }
 
+void holding_slot::remove_available_commodity(commodity *commodity)
+{
+	vector::remove(this->available_commodities, commodity);
+	emit available_commodities_changed();
+}
+
 void holding_slot::generate_available_commodity()
 {
 	std::map<metternich::commodity *, const chance_factor<holding_slot> *> commodity_chances;

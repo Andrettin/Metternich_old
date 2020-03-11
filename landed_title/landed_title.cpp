@@ -27,6 +27,7 @@
 #include "translator.h"
 #include "util/container_util.h"
 #include "util/map_util.h"
+#include "util/vector_util.h"
 
 #include <stdexcept>
 
@@ -571,6 +572,11 @@ void landed_title::set_de_jure_liege_title(landed_title *title)
 	}
 
 	emit de_jure_liege_title_changed();
+}
+
+void landed_title::remove_de_jure_vassal_title(landed_title *title)
+{
+	vector::remove(this->de_jure_vassal_titles, title);
 }
 
 /**

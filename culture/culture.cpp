@@ -5,6 +5,7 @@
 #include "random.h"
 #include "script/condition/and_condition.h"
 #include "util/container_util.h"
+#include "util/vector_random_util.h"
 
 namespace metternich {
 
@@ -76,11 +77,11 @@ QVariantList culture::get_derived_cultures_qvariant_list() const
 std::string culture::generate_male_name() const
 {
 	if (!this->get_male_names().empty()) {
-		return this->get_male_names()[random::generate(this->get_male_names().size())];
+		return vector::get_random(this->get_male_names());
 	}
 
 	if (!this->get_culture_group()->get_male_names().empty()) {
-		return this->get_culture_group()->get_male_names()[random::generate(this->get_culture_group()->get_male_names().size())];
+		return vector::get_random(this->get_culture_group()->get_male_names());
 	}
 
 	throw std::runtime_error("No male name could be generated for culture \"" + this->get_identifier() + "\"");
@@ -89,11 +90,11 @@ std::string culture::generate_male_name() const
 std::string culture::generate_female_name() const
 {
 	if (!this->get_female_names().empty()) {
-		return this->get_female_names()[random::generate(this->get_female_names().size())];
+		return vector::get_random(this->get_female_names());
 	}
 
 	if (!this->get_culture_group()->get_female_names().empty()) {
-		return this->get_culture_group()->get_female_names()[random::generate(this->get_culture_group()->get_female_names().size())];
+		return vector::get_random(this->get_culture_group()->get_female_names());
 	}
 
 	throw std::runtime_error("No female name could be generated for culture \"" + this->get_identifier() + "\"");
