@@ -180,7 +180,7 @@ public:
 
 		while (identifier.empty() || data_type::try_get(identifier) != nullptr) {
 			QUuid uuid = QUuid::createUuid();
-			identifier = uuid.toString(QUuid::WithoutBraces).toStdString();
+			identifier = std::string(T::class_identifier) + "_" + uuid.toString(QUuid::WithoutBraces).toStdString();
 		}
 
 		return identifier;
