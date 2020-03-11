@@ -103,6 +103,7 @@ public:
 	virtual void set_religion(religion *religion);
 
 	holding_slot *get_holding_slot(const std::string &holding_slot_str) const;
+	bool has_holding_slot(const holding_slot *holding_slot) const;
 	virtual void add_holding_slot(holding_slot *holding_slot);
 
 	void create_holding(holding_slot *holding_slot, holding_type *type);

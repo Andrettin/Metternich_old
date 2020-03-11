@@ -99,19 +99,7 @@ public:
 		return this->type;
 	}
 
-	void set_type(const holding_slot_type type)
-	{
-		if (type == this->get_type()) {
-			return;
-		}
-
-		if (this->get_territory() != nullptr) {
-			throw std::runtime_error("Tried to change the type of holding slot \"" + this->get_identifier() + "\" after it had already been added to a territory.");
-		}
-
-		this->type = type;
-	}
-
+	void set_type(const holding_slot_type type);
 	bool is_settlement() const;
 
 	landed_title *get_barony() const

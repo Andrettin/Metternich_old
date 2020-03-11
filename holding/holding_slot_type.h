@@ -4,6 +4,7 @@ namespace metternich {
 
 enum class holding_slot_type : int
 {
+	none,
 	settlement,
 	palace,
 	temple,

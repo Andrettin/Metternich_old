@@ -34,7 +34,7 @@ std::set<std::string> holding_slot::get_database_dependencies()
 	};
 }
 
-holding_slot::holding_slot(const std::string &identifier) : data_entry(identifier)
+holding_slot::holding_slot(const std::string &identifier) : data_entry(identifier), type(holding_slot_type::none)
 {
 }
 
@@ -51,6 +51,10 @@ void holding_slot::initialize()
 	if (this->province_profile != nullptr) {
 		this->set_province(this->province_profile->get_province());
 		this->province_profile = nullptr;
+	}
+
+	if (!this->get_territory()->has_holding_slot(this)) {
+		this->get_territory()->add_holding_slot(this);
 	}
 
 	if (this->is_megalopolis() && this->get_terrain() == nullptr) {
@@ -186,6 +190,19 @@ std::vector<std::vector<std::string>> holding_slot::get_tag_suffix_list_with_fal
 	}
 
 	return tag_list_with_fallbacks;
+}
+
+void holding_slot::set_type(const holding_slot_type type)
+{
+	if (type == this->get_type()) {
+		return;
+	}
+
+	if (this->get_territory() != nullptr && this->get_territory()->has_holding_slot(this)) {
+		throw std::runtime_error("Tried to change the type of holding slot \"" + this->get_identifier() + "\" after it had already been added to a territory.");
+	}
+
+	this->type = type;
 }
 
 bool holding_slot::is_settlement() const

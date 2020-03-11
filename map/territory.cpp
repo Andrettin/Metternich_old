@@ -412,6 +412,30 @@ holding_slot *territory::get_holding_slot(const std::string &holding_slot_str) c
 	throw std::runtime_error("\"" + holding_slot_str + "\" is not a valid holding slot string for territory data.");
 }
 
+bool territory::has_holding_slot(const holding_slot *holding_slot) const
+{
+	switch (holding_slot->get_type()) {
+		case holding_slot_type::none:
+			return false;
+		case holding_slot_type::settlement:
+			return vector::contains(this->get_settlement_holding_slots(), holding_slot);
+		case holding_slot_type::palace:
+			return vector::contains(this->get_palace_holding_slots(), holding_slot);
+		case holding_slot_type::fort:
+			return this->get_fort_holding_slot() == holding_slot;
+		case holding_slot_type::university:
+			return this->get_university_holding_slot() == holding_slot;
+		case holding_slot_type::hospital:
+			return this->get_hospital_holding_slot() == holding_slot;
+		case holding_slot_type::trading_post:
+			return this->get_trading_post_holding_slot() == holding_slot;
+		case holding_slot_type::factory:
+			return this->get_factory_holding_slot() == holding_slot;
+		default:
+			throw std::runtime_error("Holding slot \"" + holding_slot->get_identifier() + "\" has an invalid type (" + std::to_string(static_cast<int>(holding_slot->get_type())) + ").");
+	}
+}
+
 void territory::add_holding_slot(holding_slot *holding_slot)
 {
 	switch (holding_slot->get_type()) {
