@@ -441,16 +441,24 @@ void database::load()
 			engine_interface::get()->set_loading_message("Processing Database...");
 		}
 
-		//create data entries for each data type
-		for (const std::unique_ptr<data_type_metadata> &metadata : this->metadata) {
-			metadata->get_processing_function()(true);
-		}
+		try {
+			//create data entries for each data type
+			for (const std::unique_ptr<data_type_metadata> &metadata : this->metadata) {
+				metadata->get_processing_function()(true);
+			}
 
-		defines::get()->load(path); //load the defines here so that they can refer to data entries
+			defines::get()->load(path); //load the defines here so that they can refer to data entries
 
-		//actually define the data entries for each data type
-		for (const std::unique_ptr<data_type_metadata> &metadata : this->metadata) {
-			metadata->get_processing_function()(false);
+			//actually define the data entries for each data type
+			for (const std::unique_ptr<data_type_metadata> &metadata : this->metadata) {
+				metadata->get_processing_function()(false);
+			}
+		} catch (...) {
+			if (module != nullptr) {
+				std::throw_with_nested(std::runtime_error("Failed to process database for the \"" + module->get_identifier() + "\" module."));
+			} else {
+				std::throw_with_nested(std::runtime_error("Failed to process database."));
+			}
 		}
 	}
 }
