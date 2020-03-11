@@ -70,6 +70,7 @@ character *character::generate(metternich::culture *culture, metternich::religio
 	if (phenotype != nullptr) {
 		character->phenotype = phenotype;
 	}
+	character->dynasty = dynasty::generate(culture); //generate a new dynasty for the character
 
 	//generate the character's birth date to be between 60 and 20 years before the current date
 	const QDateTime &current_date = game::get()->get_current_date();

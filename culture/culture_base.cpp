@@ -33,6 +33,17 @@ void culture_base::process_gsml_scope(const gsml_data &scope)
 			default:
 				throw std::runtime_error("Invalid operator for scope (\"" + tag + "\").");
 		}
+	} else if (tag == "dynasty_names") {
+		switch (scope.get_operator()) {
+			case gsml_operator::assignment:
+				this->dynasty_names = values;
+				break;
+			case gsml_operator::addition:
+				vector::merge(this->dynasty_names, values);
+				break;
+			default:
+				throw std::runtime_error("Invalid operator for scope (\"" + tag + "\").");
+		}
 	} else {
 		data_entry_base::process_gsml_scope(scope);
 	}

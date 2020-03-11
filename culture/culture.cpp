@@ -66,6 +66,10 @@ void culture::check() const
 		throw std::runtime_error("Culture \"" + this->get_identifier() + "\" has no female names, and nor does its culture group.");
 	}
 
+	if (this->get_dynasty_names().empty() && this->get_culture_group()->get_dynasty_names().empty()) {
+		throw std::runtime_error("Culture \"" + this->get_identifier() + "\" has no dynasty names, and nor does its culture group.");
+	}
+
 	culture_base::check();
 }
 
@@ -102,8 +106,12 @@ std::string culture::generate_female_name() const
 
 std::string culture::generate_dynasty_name() const
 {
-	if (!this->dynasties.empty()) {
-		return this->dynasties[random::generate(this->dynasties.size())]->get_name();
+	if (!this->get_dynasty_names().empty()) {
+		return vector::get_random(this->get_dynasty_names());
+	}
+
+	if (!this->get_culture_group()->get_dynasty_names().empty()) {
+		return vector::get_random(this->get_culture_group()->get_dynasty_names());
 	}
 
 	throw std::runtime_error("No dynasty name could be generated for culture \"" + this->get_identifier() + "\"");

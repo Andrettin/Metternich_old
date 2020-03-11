@@ -1,13 +1,33 @@
 #include "character/dynasty.h"
 
 #include "culture/culture.h"
+#include "culture/culture_group.h"
+#include "history/history.h"
 
 namespace metternich {
 
-void dynasty::set_culture(metternich::culture *culture)
+dynasty *dynasty::generate(metternich::culture *culture)
 {
-	this->culture = culture;
-	culture->add_dynasty(this);
+	if (culture == nullptr) {
+		throw std::runtime_error("Tried to generate a dynasty with no culture.");
+	}
+
+	const std::string identifier = dynasty::generate_identifier();
+	dynasty *dynasty = dynasty::add(identifier);
+	dynasty->name = culture->generate_dynasty_name();
+	dynasty->culture = culture;
+
+	return dynasty;
+}
+
+void dynasty::initialize()
+{
+	if (this->get_culture() != nullptr) {
+		this->get_culture()->add_dynasty_name(this->get_name());
+		this->get_culture()->get_culture_group()->add_dynasty_name(this->get_name());
+	}
+
+	data_entry_base::initialize();
 }
 
 }

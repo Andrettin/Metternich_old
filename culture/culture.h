@@ -61,11 +61,6 @@ public:
 		return this->derivation_conditions.get();
 	}
 
-	void add_dynasty(dynasty *dynasty)
-	{
-		this->dynasties.push_back(dynasty);
-	}
-
 	std::string generate_male_name() const;
 	std::string generate_female_name() const;
 	std::string generate_dynasty_name() const;
@@ -77,7 +72,6 @@ private:
 	metternich::culture_group *culture_group = nullptr;
 	std::set<culture *> derived_cultures;
 	std::unique_ptr<condition<population_unit>> derivation_conditions;
-	std::vector<dynasty *> dynasties;
 };
 
 }

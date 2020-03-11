@@ -61,6 +61,16 @@ public:
 		this->female_names.push_back(name);
 	}
 
+	const std::vector<std::string> &get_dynasty_names() const
+	{
+		return this->dynasty_names;
+	}
+
+	void add_dynasty_name(const std::string &name)
+	{
+		this->dynasty_names.push_back(name);
+	}
+
 protected:
 	void set_species(species *species)
 	{
@@ -78,6 +88,7 @@ private:
 	phenotype *default_phenotype = nullptr;
 	std::vector<std::string> male_names;
 	std::vector<std::string> female_names;
+	std::vector<std::string> dynasty_names;
 };
 
 }
