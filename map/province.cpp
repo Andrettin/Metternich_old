@@ -77,8 +77,6 @@ province *province::add(const std::string &identifier)
 
 province::province(const std::string &identifier) : territory(identifier)
 {
-	connect(this, &province::culture_changed, this, &identifiable_data_entry_base::name_changed);
-	connect(this, &province::religion_changed, this, &identifiable_data_entry_base::name_changed);
 }
 
 province::~province()

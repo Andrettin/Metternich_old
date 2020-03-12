@@ -50,6 +50,7 @@ public:
 	void do_year();
 
 	virtual std::string get_name() const override;
+	std::vector<std::vector<std::string>> get_tag_suffix_list_with_fallbacks() const;
 
 	landed_title *get_duchy() const
 	{

@@ -428,7 +428,7 @@ void database::load()
 		const module *module = kv_pair.second;
 
 		if (module != nullptr) {
-			engine_interface::get()->set_loading_message("Parsing \"" + QString::fromStdString(module->get_identifier()) + "\" Module Database...");
+			engine_interface::get()->set_loading_message("Parsing Database for the \"" + QString::fromStdString(module->get_identifier()) + "\" Module...");
 		} else {
 			engine_interface::get()->set_loading_message("Parsing Database...");
 		}
@@ -439,7 +439,7 @@ void database::load()
 		}
 
 		if (module != nullptr) {
-			engine_interface::get()->set_loading_message("Processing \"" + QString::fromStdString(module->get_identifier()) + "\" Module Database...");
+			engine_interface::get()->set_loading_message("Processing Database for the \"" + QString::fromStdString(module->get_identifier()) + "\" Module...");
 		} else {
 			engine_interface::get()->set_loading_message("Processing Database...");
 		}

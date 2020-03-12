@@ -2,11 +2,14 @@
 
 #include "culture/culture.h"
 #include "culture/culture_group.h"
+#include "culture/culture_supergroup.h"
 #include "engine_interface.h"
 #include "landed_title/landed_title.h"
 #include "map/map.h"
 #include "map/map_mode.h"
 #include "map/world.h"
+#include "politics/government_type.h"
+#include "politics/government_type_group.h"
 #include "religion/religion.h"
 #include "religion/religion_group.h"
 #include "translator.h"
@@ -34,12 +37,18 @@ void star_system::calculate_territory_polygons()
 
 star_system::star_system(const std::string &identifier) : data_entry(identifier)
 {
+	connect(this, &star_system::culture_changed, this, &identifiable_data_entry_base::name_changed);
+	connect(this, &star_system::religion_changed, this, &identifiable_data_entry_base::name_changed);
 }
 
 void star_system::initialize()
 {
 	if (this->get_primary_star() == nullptr) {
 		this->calculate_primary_star();
+	}
+
+	if (this->get_duchy() != nullptr) {
+		connect(this->get_duchy(), &landed_title::government_type_changed, this, &identifiable_data_entry_base::name_changed);
 	}
 }
 
@@ -75,10 +84,31 @@ void star_system::do_year()
 std::string star_system::get_name() const
 {
 	if (this->get_duchy() != nullptr) {
-		return translator::get()->translate(this->get_duchy()->get_identifier_with_aliases());
+		return translator::get()->translate(this->get_duchy()->get_identifier_with_aliases(), this->get_tag_suffix_list_with_fallbacks());
 	}
 
 	return translator::get()->translate(this->get_identifier_with_aliases()); //star system without a duchy
+}
+
+std::vector<std::vector<std::string>> star_system::get_tag_suffix_list_with_fallbacks() const
+{
+	std::vector<std::vector<std::string>> tag_list_with_fallbacks;
+
+	if (this->get_duchy() != nullptr) {
+		if (this->get_duchy()->get_government_type() != nullptr) {
+			tag_list_with_fallbacks.push_back({this->get_duchy()->get_government_type()->get_identifier(), government_type_group_to_string(this->get_duchy()->get_government_type()->get_group())});
+		}
+	}
+
+	if (this->get_culture() != nullptr) {
+		tag_list_with_fallbacks.push_back({this->get_culture()->get_identifier(), this->get_culture()->get_group()->get_identifier(), this->get_culture()->get_supergroup()->get_identifier()});
+	}
+
+	if (this->get_religion() != nullptr) {
+		tag_list_with_fallbacks.push_back({this->get_religion()->get_identifier(), this->get_religion()->get_group()->get_identifier()});
+	}
+
+	return tag_list_with_fallbacks;
 }
 
 void star_system::set_duchy(landed_title *duchy)

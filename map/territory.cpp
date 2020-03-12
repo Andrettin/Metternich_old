@@ -27,6 +27,8 @@ namespace metternich {
 
 territory::territory(const std::string &identifier) : data_entry(identifier)
 {
+	connect(this, &territory::culture_changed, this, &identifiable_data_entry_base::name_changed);
+	connect(this, &territory::religion_changed, this, &identifiable_data_entry_base::name_changed);
 }
 
 territory::~territory()
@@ -137,6 +139,7 @@ void territory::process_gsml_dated_scope(const gsml_data &scope, const QDateTime
 void territory::initialize()
 {
 	if (this->get_county() != nullptr) {
+		connect(this->get_county(), &landed_title::government_type_changed, this, &identifiable_data_entry_base::name_changed);
 		connect(this->get_county(), &landed_title::holder_changed, this, &territory::owner_changed);
 
 		//create a fort holding slot for this territory if none exists

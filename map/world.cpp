@@ -108,6 +108,12 @@ void world::initialize()
 
 	std::sort(this->satellites.begin(), this->satellites.end(), satellite_sort_func);
 
+	connect(this, &world::owner_changed, this, &identifiable_data_entry_base::name_changed); //if the owner changes, whether the world uses its own tag list suffix or that of its system can change
+
+	if (this->get_star_system() != nullptr) {
+		connect(this->get_star_system(), &star_system::name_changed, this, &identifiable_data_entry_base::name_changed); //if the tag suffix list of the star system changes, the world's can, too
+	}
+
 	territory::initialize();
 }
 
@@ -130,11 +136,18 @@ void world::do_day()
 
 std::string world::get_name() const
 {
-	if (this->get_county() != nullptr) {
-		return translator::get()->translate(this->get_county()->get_identifier_with_aliases());
+	std::vector<std::vector<std::string>> tag_list_with_fallbacks;
+	if (this->get_owner() != nullptr) {
+		tag_list_with_fallbacks = this->get_tag_suffix_list_with_fallbacks();
+	} else if (this->get_star_system() != nullptr) {
+		tag_list_with_fallbacks = this->get_star_system()->get_tag_suffix_list_with_fallbacks();
 	}
 
-	return translator::get()->translate(this->get_identifier_with_aliases()); //world without a cosmic landed title
+	if (this->get_county() != nullptr) {
+		return translator::get()->translate(this->get_county()->get_identifier_with_aliases(), tag_list_with_fallbacks);
+	}
+
+	return translator::get()->translate(this->get_identifier_with_aliases(), tag_list_with_fallbacks); //world without a cosmic landed title
 }
 
 void world::set_county(landed_title *county)
@@ -255,8 +268,8 @@ void world::calculate_cosmic_size()
 	}
 
 	if (this->is_star()) {
-		if (cosmic_size < world::min_star_size) {
-			cosmic_size = world::min_star_size;
+		if (cosmic_size < world::min_star_size && this->get_orbit_center() == nullptr) {
+			cosmic_size = world::min_star_size; //only apply the star minimum size to system primary stars
 		} else if (cosmic_size > world::max_star_size) {
 			cosmic_size = world::max_star_size;
 		}
