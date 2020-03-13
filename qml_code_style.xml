@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE QtCreatorCodeStyle>
+<!-- Written by QtCreator 4.11.1, 2020-03-13T22:23:22. -->
+<qtcreator>
+ <data>
+  <variable>CodeStyleData</variable>
+  <valuemap type="QVariantMap">
+   <value type="bool" key="AutoSpacesForTabs">false</value>
+   <value type="int" key="IndentSize">4</value>
+   <value type="int" key="PaddingMode">2</value>
+   <value type="bool" key="SpacesForTabs">false</value>
+   <value type="int" key="TabSize">4</value>
+  </valuemap>
+ </data>
+ <data>
+  <variable>DisplayName</variable>
+  <value type="QString">Metternich</value>
+ </data>
+</qtcreator>
