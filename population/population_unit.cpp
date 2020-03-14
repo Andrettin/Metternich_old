@@ -392,6 +392,15 @@ bool population_unit::can_distribute_to_holding(const metternich::holding *holdi
 
 			if (this->get_culture() != nullptr && population_unit->get_culture() != this->get_culture()) {
 				continue;
+			} else if (this->get_culture() == nullptr) {
+				const metternich::culture *holding_culture = holding->get_culture();
+				if (holding_culture == nullptr) {
+					holding_culture = holding->get_territory()->get_culture();
+				}
+
+				if (holding_culture != nullptr && population_unit->get_culture() != holding_culture) {
+					continue;
+				}
 			}
 
 			if (this->get_religion() != nullptr && population_unit->get_religion() != this->get_religion()) {
