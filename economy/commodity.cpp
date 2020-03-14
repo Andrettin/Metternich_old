@@ -27,4 +27,11 @@ void commodity::process_gsml_scope(const gsml_data &scope)
 	}
 }
 
+const std::filesystem::path &commodity::get_icon_path() const
+{
+	std::string base_tag = this->get_icon_tag();
+	const std::filesystem::path &icon_path = database::get()->get_tagged_icon_path(base_tag);
+	return icon_path;
+}
+
 }

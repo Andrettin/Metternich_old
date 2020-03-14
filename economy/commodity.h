@@ -20,8 +20,8 @@ class commodity final : public data_entry, public data_type<commodity>
 	Q_OBJECT
 
 	Q_PROPERTY(int base_price MEMBER base_price READ get_base_price)
-	Q_PROPERTY(QString icon READ get_icon_path_qstring WRITE set_icon_path_qstring NOTIFY icon_path_changed)
-	Q_PROPERTY(QString icon_path READ get_icon_path_qstring WRITE set_icon_path_qstring NOTIFY icon_path_changed)
+	Q_PROPERTY(QString icon_tag READ get_icon_tag_qstring WRITE set_icon_tag_qstring)
+	Q_PROPERTY(QString icon_path READ get_icon_path_qstring CONSTANT)
 
 public:
 	static constexpr const char *class_identifier = "commodity";
@@ -38,6 +38,8 @@ public:
 		if (this->get_base_price() == 0) {
 			throw std::runtime_error("Commodity \"" + this->get_identifier() + "\" has no base price.");
 		}
+
+		this->get_icon_path(); //throws an exception if the icon isn't found
 	}
 
 	int get_base_price() const
@@ -45,29 +47,39 @@ public:
 		return this->base_price;
 	}
 
-	const std::string &get_icon_path() const
+	const std::string &get_icon_tag() const
 	{
-		return this->icon_path;
+		if (this->icon_tag.empty()) {
+			return this->get_identifier();
+		}
+
+		return this->icon_tag;
 	}
 
-	QString get_icon_path_qstring() const
+	void set_icon_tag(const std::string &icon_tag)
 	{
-		return QString::fromStdString(this->icon_path);
-	}
-
-	void set_icon_path(const std::string &icon_path)
-	{
-		if (icon_path == this->get_icon_path()) {
+		if (icon_tag == this->get_icon_tag()) {
 			return;
 		}
 
-		this->icon_path = icon_path;
-		emit icon_path_changed();
+		this->icon_tag = icon_tag;
 	}
 
-	void set_icon_path_qstring(const QString &icon_path)
+	QString get_icon_tag_qstring() const
 	{
-		this->set_icon_path(icon_path.toStdString());
+		return QString::fromStdString(this->get_icon_tag());
+	}
+
+	void set_icon_tag_qstring(const QString &icon_tag)
+	{
+		this->set_icon_tag(icon_tag.toStdString());
+	}
+
+	const std::filesystem::path &get_icon_path() const;
+
+	QString get_icon_path_qstring() const
+	{
+		return "file:///" + QString::fromStdString(this->get_icon_path().string());
 	}
 
 	const chance_factor<holding_slot> *get_chance_factor() const
@@ -75,12 +87,9 @@ public:
 		return this->chance.get();
 	}
 
-signals:
-	void icon_path_changed();
-
 private:
 	int base_price = 0; //the commodity's base price
-	std::string icon_path;
+	std::string icon_tag;
 	std::unique_ptr<chance_factor<holding_slot>> chance; //the chance of the commodity being picked as the one for a given settlement holding
 };
 
