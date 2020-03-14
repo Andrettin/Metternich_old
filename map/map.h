@@ -15,7 +15,7 @@ namespace metternich {
 class province;
 class terrain_type;
 class world;
-enum class map_mode : int;
+enum class map_mode;
 
 class map final : public singleton<map>
 {

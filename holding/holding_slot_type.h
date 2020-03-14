@@ -2,7 +2,7 @@
 
 namespace metternich {
 
-enum class holding_slot_type : int
+enum class holding_slot_type
 {
 	none,
 	settlement,

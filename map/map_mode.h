@@ -2,7 +2,7 @@
 
 namespace metternich {
 
-enum class map_mode : int
+enum class map_mode
 {
 	none,
 	country,

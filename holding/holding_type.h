@@ -12,7 +12,7 @@ class building;
 class holding;
 class law;
 class law_group;
-enum class holding_slot_type : int;
+enum class holding_slot_type;
 
 template <typename T>
 class modifier;

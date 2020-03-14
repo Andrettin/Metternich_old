@@ -19,7 +19,7 @@ class province_profile;
 class terrain_type;
 class territory;
 class world;
-enum class holding_slot_type : int;
+enum class holding_slot_type;
 
 class holding_slot final : public data_entry, public data_type<holding_slot>
 {

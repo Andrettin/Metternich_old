@@ -2,7 +2,7 @@
 
 namespace metternich {
 
-enum class tick_period : int
+enum class tick_period
 {
 	millenium,
 	day

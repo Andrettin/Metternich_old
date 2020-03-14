@@ -15,8 +15,8 @@ namespace metternich {
 
 class character;
 class timeline;
-enum class game_speed : int;
-enum class tick_period : int;
+enum class game_speed;
+enum class tick_period;
 
 class game final : public QObject, public singleton<game>
 {

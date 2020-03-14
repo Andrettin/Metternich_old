@@ -14,7 +14,7 @@ class landed_title;
 class law_group;
 class timeline;
 class world;
-enum class game_speed : int;
+enum class game_speed;
 
 class defines final : public QObject, public singleton<defines>
 {

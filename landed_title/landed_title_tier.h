@@ -2,7 +2,7 @@
 
 namespace metternich {
 
-enum class landed_title_tier : int
+enum class landed_title_tier
 {
 	barony, //holding
 	county, //province or world
