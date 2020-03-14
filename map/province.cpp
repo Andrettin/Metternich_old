@@ -66,15 +66,6 @@ province *province::get_by_rgb(const QRgb &rgb, const bool should_find)
 	return nullptr;
 }
 
-province *province::add(const std::string &identifier)
-{
-	if (identifier.substr(0, 2) != province::prefix) {
-		throw std::runtime_error("Invalid identifier for new province: \"" + identifier + "\". Province identifiers must begin with \"" + province::prefix + "\".");
-	}
-
-	return data_type<province>::add(identifier);
-}
-
 province::province(const std::string &identifier) : territory(identifier)
 {
 }

@@ -55,7 +55,6 @@ class province final : public territory, public data_type<province>
 public:
 	static constexpr const char *class_identifier = "province";
 	static constexpr const char *database_folder = "provinces";
-	static constexpr const char *prefix = "p_";
 	static constexpr QRgb empty_rgb = qRgb(0, 0, 0);
 	static const inline QColor water_province_color = QColor("#4682b4"); //steel blue
 	static const inline QColor wasteland_province_color = QColor(Qt::darkGray);
@@ -63,7 +62,6 @@ public:
 	static constexpr int base_distance = 100; //in kilometers; distance used as the base unit for e.g. the trade cost modifier per distance
 
 	static std::set<std::string> get_database_dependencies();
-	static province *add(const std::string &identifier);
 	static province *get_by_rgb(const QRgb &rgb, const bool should_find = true);
 
 	static province *get_selected_province()
@@ -87,12 +85,6 @@ public:
 	virtual gsml_data get_cache_data() const override;
 
 	virtual void do_month() override final;
-
-	virtual std::string get_identifier_without_prefix() const override
-	{
-		const size_t prefix_size = std::string(province::prefix).size();
-		return this->get_identifier().substr(prefix_size, this->get_identifier().size() - prefix_size);
-	}
 
 	virtual void set_county(landed_title *county) override;
 

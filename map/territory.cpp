@@ -144,7 +144,7 @@ void territory::initialize()
 
 		//create a fort holding slot for this territory if none exists
 		if (this->get_fort_holding_slot() == nullptr) {
-			std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier_without_prefix() + "_fort";
+			std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier() + "_fort";
 			holding_slot *holding_slot = holding_slot::add(holding_slot_identifier);
 			holding_slot->set_type(holding_slot_type::fort);
 			this->add_holding_slot(holding_slot);
@@ -152,7 +152,7 @@ void territory::initialize()
 
 		//create a university holding slot for this territory if none exists
 		if (this->get_university_holding_slot() == nullptr) {
-			std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier_without_prefix() + "_university";
+			std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier() + "_university";
 			holding_slot *holding_slot = holding_slot::add(holding_slot_identifier);
 			holding_slot->set_type(holding_slot_type::university);
 			this->add_holding_slot(holding_slot);
@@ -160,7 +160,7 @@ void territory::initialize()
 
 		//create a hospital holding slot for this territory if none exists
 		if (this->get_hospital_holding_slot() == nullptr) {
-			std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier_without_prefix() + "_hospital";
+			std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier() + "_hospital";
 			holding_slot *holding_slot = holding_slot::add(holding_slot_identifier);
 			holding_slot->set_type(holding_slot_type::hospital);
 			this->add_holding_slot(holding_slot);
@@ -168,7 +168,7 @@ void territory::initialize()
 
 		//create a factory holding slot for this territory if none exists
 		if (this->get_factory_holding_slot() == nullptr) {
-			std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier_without_prefix() + "_factory";
+			std::string holding_slot_identifier = holding_slot::prefix + this->get_identifier() + "_factory";
 			holding_slot *holding_slot = holding_slot::add(holding_slot_identifier);
 			holding_slot->set_type(holding_slot_type::factory);
 			this->add_holding_slot(holding_slot);
@@ -585,7 +585,7 @@ QVariantList territory::get_palace_holding_slots_qvariant_list() const
 
 std::string territory::get_trading_post_holding_slot_identifier() const
 {
-	return holding_slot::prefix + this->get_identifier_without_prefix() + "_trading_post";
+	return holding_slot::prefix + this->get_identifier() + "_trading_post";
 }
 
 holding *territory::get_fort_holding() const

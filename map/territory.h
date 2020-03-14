@@ -63,11 +63,6 @@ public:
 	virtual void do_month();
 	void do_year();
 
-	virtual std::string get_identifier_without_prefix() const
-	{
-		return this->get_identifier();
-	}
-
 	virtual std::string get_name() const override;
 
 	std::vector<std::vector<std::string>> get_tag_suffix_list_with_fallbacks() const;
