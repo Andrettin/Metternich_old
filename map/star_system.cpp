@@ -3,7 +3,7 @@
 #include "culture/culture.h"
 #include "culture/culture_group.h"
 #include "culture/culture_supergroup.h"
-#include "engine_interface.h"
+#include "game/engine_interface.h"
 #include "landed_title/landed_title.h"
 #include "map/map.h"
 #include "map/map_mode.h"
@@ -12,10 +12,10 @@
 #include "politics/government_type_group.h"
 #include "religion/religion.h"
 #include "religion/religion_group.h"
-#include "translator.h"
 #include "util/container_util.h"
 #include "util/point_util.h"
 #include "util/polygon_util.h"
+#include "util/translator.h"
 #include "util/vector_util.h"
 
 namespace metternich {

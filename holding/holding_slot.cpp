@@ -15,13 +15,13 @@
 #include "map/world.h"
 #include "politics/government_type.h"
 #include "politics/government_type_group.h"
-#include "random.h"
 #include "religion/religion.h"
 #include "religion/religion_group.h"
 #include "script/chance_util.h"
 #include "script/modifier.h"
-#include "translator.h"
 #include "util/container_util.h"
+#include "util/random.h"
+#include "util/translator.h"
 #include "util/vector_util.h"
 
 namespace metternich {

@@ -2,7 +2,7 @@
 
 #include "database/data_entry.h"
 #include "database/data_type.h"
-#include "qunique_ptr.h"
+#include "util/qunique_ptr.h"
 
 #include <QVariant>
 

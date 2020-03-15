@@ -1,7 +1,7 @@
 #include "game/game.h"
 
 #include "character/character.h"
-#include "defines.h"
+#include "database/defines.h"
 #include "game/game_speed.h"
 #include "game/tick_period.h"
 #include "history/history.h"

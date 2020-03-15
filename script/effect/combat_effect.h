@@ -4,10 +4,10 @@
 #include "database/database.h"
 #include "database/gsml_data.h"
 #include "database/gsml_property.h"
-#include "effect_list.h"
-#include "engine_interface.h"
-#include "random.h"
+#include "game/engine_interface.h"
 #include "script/effect/effect.h"
+#include "script/effect/effect_list.h"
+#include "util/random.h"
 #include "util/string_util.h"
 
 namespace metternich {

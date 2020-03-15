@@ -1,6 +1,6 @@
 #include "map/pathfinder.h"
 
-#include "defines.h"
+#include "database/defines.h"
 #include "map/province.h"
 #include "util/container_util.h"
 

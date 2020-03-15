@@ -5,8 +5,8 @@
 #include "history/calendar.h"
 #include "history/history.h"
 #include "history/timeline.h"
-#include "translator.h"
 #include "util/string_util.h"
+#include "util/translator.h"
 
 namespace metternich {
 

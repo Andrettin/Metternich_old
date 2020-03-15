@@ -3,8 +3,8 @@
 #include "culture/culture.h"
 #include "culture/culture_group.h"
 #include "culture/culture_supergroup.h"
+#include "database/defines.h"
 #include "database/gsml_data.h"
-#include "defines.h"
 #include "economy/employment.h"
 #include "economy/employment_type.h"
 #include "game/game.h"
@@ -12,14 +12,14 @@
 #include "holding/holding_slot.h"
 #include "map/province.h"
 #include "map/region.h"
-#include "phenotype.h"
 #include "population/population_type.h"
-#include "random.h"
 #include "religion/religion.h"
 #include "religion/religion_group.h"
 #include "script/condition/condition.h"
 #include "script/context.h"
+#include "species/phenotype.h"
 #include "util/container_util.h"
+#include "util/random.h"
 
 #include <QApplication>
 

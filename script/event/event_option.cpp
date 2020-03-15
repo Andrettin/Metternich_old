@@ -6,7 +6,7 @@
 #include "script/chance_factor.h"
 #include "script/effect/effect.h"
 #include "script/effect/effect_list.h"
-#include "translator.h"
+#include "util/translator.h"
 
 namespace metternich {
 

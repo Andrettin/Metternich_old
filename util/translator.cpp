@@ -1,4 +1,4 @@
-#include "translator.h"
+#include "util/translator.h"
 
 #include "database/database.h"
 #include "database/gsml_data.h"

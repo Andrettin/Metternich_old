@@ -1,7 +1,7 @@
 #include "map/terrain_type.h"
 
 #include "database/gsml_data.h"
-#include "engine_interface.h"
+#include "game/engine_interface.h"
 #include "script/modifier.h"
 #include "util/geocoordinate_util.h"
 #include "util/point_util.h"

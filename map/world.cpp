@@ -3,7 +3,7 @@
 #include "database/gsml_data.h"
 #include "economy/trade_node.h"
 #include "economy/trade_route.h"
-#include "engine_interface.h"
+#include "game/engine_interface.h"
 #include "holding/holding.h"
 #include "holding/holding_slot.h"
 #include "landed_title/landed_title.h"
@@ -13,12 +13,12 @@
 #include "map/star_system.h"
 #include "map/terrain_type.h"
 #include "map/world_type.h"
-#include "random.h"
-#include "translator.h"
 #include "util/container_util.h"
 #include "util/geocoordinate_util.h"
 #include "util/image_util.h"
 #include "util/point_util.h"
+#include "util/random.h"
+#include "util/translator.h"
 #include "util/vector_util.h"
 
 namespace metternich {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "database/data_entry.h"
-#include "qunique_ptr.h"
+#include "util/qunique_ptr.h"
 
 #include <QVariant>
 

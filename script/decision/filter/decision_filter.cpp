@@ -1,8 +1,8 @@
 #include "script/decision/filter/decision_filter.h"
 
-#include "random.h"
 #include "script/context.h"
 #include "script/decision/scoped_decision.h"
+#include "util/random.h"
 
 namespace metternich {
 

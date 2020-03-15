@@ -1,7 +1,7 @@
 #pragma once
 
 #include "database/gsml_data.h"
-#include "singleton.h"
+#include "util/singleton.h"
 
 #include <QGeoCoordinate>
 #include <QPoint>

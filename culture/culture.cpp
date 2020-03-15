@@ -3,9 +3,9 @@
 #include "character/dynasty.h"
 #include "culture/culture_group.h"
 #include "culture/culture_supergroup.h"
-#include "random.h"
 #include "script/condition/and_condition.h"
 #include "util/container_util.h"
+#include "util/random.h"
 #include "util/vector_random_util.h"
 
 namespace metternich {

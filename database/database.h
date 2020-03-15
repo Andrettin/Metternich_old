@@ -1,9 +1,9 @@
 #pragma once
 
 #include "database/gsml_data.h"
-#include "singleton.h"
-#include "type_traits.h"
-#include "qunique_ptr.h"
+#include "util/qunique_ptr.h"
+#include "util/singleton.h"
+#include "util/type_traits.h"
 
 #include <QStandardPaths>
 

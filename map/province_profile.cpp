@@ -1,9 +1,9 @@
 #include "map/province_profile.h"
 
 #include "map/province.h"
-#include "random.h"
 #include "script/condition/and_condition.h"
 #include "script/context.h"
+#include "util/random.h"
 #include "util/vector_random_util.h"
 
 namespace metternich {

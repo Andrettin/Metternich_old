@@ -24,11 +24,11 @@ SOURCES += \
         database/csv_data.cpp \
         database/data_entry.cpp \
         database/database.cpp \
+        database/defines.cpp \
         database/gsml_data.cpp \
         database/gsml_parser.cpp \
         database/gsml_property.cpp \
         database/module.cpp \
-        defines.cpp \
         economy/commodity.cpp \
         economy/employee.cpp \
         economy/employment.cpp \
@@ -36,7 +36,7 @@ SOURCES += \
         economy/employment_type.cpp \
         economy/trade_node.cpp \
         economy/trade_route.cpp \
-        engine_interface.cpp \
+        game/engine_interface.cpp \
         game/game.cpp \
         history/history.cpp \
         holding/building.cpp \
@@ -60,7 +60,6 @@ SOURCES += \
         population/population_type.cpp \
         population/population_unit.cpp \
         population/population_unit_base.cpp \
-        random.cpp \
         religion/religion.cpp \
         religion/religion_group.cpp \
         script/chance_factor.cpp \
@@ -84,13 +83,14 @@ SOURCES += \
         technology/technology.cpp \
         technology/technology_set.cpp \
         third_party/maskedmousearea/maskedmousearea.cpp \
-        translator.cpp \
         util/geocoordinate_util.cpp \
         util/image_util.cpp \
         util/number_util.cpp \
         util/point_container.cpp \
         util/point_util.cpp \
-        util/polygon_util.cpp
+        util/polygon_util.cpp \
+        util/random.cpp \
+        util/translator.cpp \
 
 RESOURCES += qml.qrc
 
@@ -125,6 +125,7 @@ HEADERS += \
     database/data_type_base.h \
     database/data_type_metadata.h \
     database/database.h \
+    database/defines.h \
     database/gsml_data.h \
     database/gsml_data_visitor.h \
     database/gsml_element_visitor.h \
@@ -135,7 +136,6 @@ HEADERS += \
     database/identifiable_type.h \
     database/module.h \
     database/simple_data_type.h \
-    defines.h \
     economy/commodity.h \
     economy/employee.h \
     economy/employment.h \
@@ -143,8 +143,7 @@ HEADERS += \
     economy/employment_type.h \
     economy/trade_node.h \
     economy/trade_route.h \
-    empty_image_provider.h \
-    engine_interface.h \
+    game/engine_interface.h \
     game/game.h \
     game/game_speed.h \
     game/tick_period.h \
@@ -172,7 +171,6 @@ HEADERS += \
     map/world.h \
     map/world_type.h \
     pch.h \
-    phenotype.h \
     politics/government_type.h \
     politics/government_type_group.h \
     politics/law.h \
@@ -180,8 +178,6 @@ HEADERS += \
     population/population_type.h \
     population/population_unit.h \
     population/population_unit_base.h \
-    qunique_ptr.h \
-    random.h \
     religion/religion.h \
     religion/religion_group.h \
     script/chance_factor.h \
@@ -255,16 +251,15 @@ HEADERS += \
     script/modifier_effect/prowess_modifier_effect.h \
     script/province_modifier.h \
     script/scope_util.h \
-    singleton.h \
+    species/phenotype.h \
     species/species.h \
     species/wildlife_unit.h \
     technology/technology.h \
     technology/technology_category.h \
     technology/technology_set.h \
     third_party/maskedmousearea/maskedmousearea.h \
-    translator.h \
-    type_traits.h \
     util/container_util.h \
+    util/empty_image_provider.h \
     util/exception_util.h \
     util/filesystem_util.h \
     util/geocoordinate_util.h \
@@ -275,11 +270,16 @@ HEADERS += \
     util/point_container.h \
     util/point_util.h \
     util/polygon_util.h \
+    util/qunique_ptr.h \
+    util/random.h \
     util/rect_util.h \
     util/set_util.h \
+    util/singleton.h \
     util/string_util.h \
+    util/translator.h \
+    util/type_traits.h \
     util/vector_random_util.h \
-    util/vector_util.h
+    util/vector_util.h \
 
 win32 {
     INCLUDEPATH += C:/Boost

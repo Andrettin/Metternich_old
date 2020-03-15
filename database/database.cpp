@@ -8,15 +8,15 @@
 #include "culture/culture_group.h"
 #include "culture/culture_supergroup.h"
 #include "database/data_type_metadata.h"
+#include "database/defines.h"
 #include "database/gsml_data.h"
 #include "database/gsml_operator.h"
 #include "database/gsml_property.h"
 #include "database/module.h"
-#include "defines.h"
 #include "economy/commodity.h"
 #include "economy/employment_type.h"
 #include "economy/trade_node.h"
-#include "engine_interface.h"
+#include "game/engine_interface.h"
 #include "game/game.h"
 #include "history/calendar.h"
 #include "history/history.h"
@@ -34,23 +34,25 @@
 #include "map/terrain_type.h"
 #include "map/world.h"
 #include "map/world_type.h"
-#include "phenotype.h"
 #include "politics/government_type.h"
 #include "politics/government_type_group.h"
 #include "politics/law.h"
 #include "politics/law_group.h"
 #include "population/population_type.h"
-#include "qunique_ptr.h"
-#include "random.h"
 #include "religion/religion.h"
 #include "religion/religion_group.h"
+#include "species/phenotype.h"
 #include "species/species.h"
 #include "technology/technology.h"
 #include "technology/technology_category.h"
-#include "translator.h"
 #include "util/parse_util.h"
+#include "util/qunique_ptr.h"
+#include "util/random.h"
 #include "util/string_util.h"
+#include "util/translator.h"
 #include "util/vector_random_util.h"
+#include "warfare/troop_category.h"
+#include "warfare/troop_type.h"
 
 #include <QMetaProperty>
 #include <QObject>
@@ -301,6 +303,10 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 			new_property_value = QVariant::fromValue(trade_node::get(property.get_value()));
 		} else if (property_class_name == "metternich::trait*") {
 			new_property_value = QVariant::fromValue(trait::get(property.get_value()));
+		} else if (property_class_name == "metternich::troop_type*") {
+			new_property_value = QVariant::fromValue(troop_type::get(property.get_value()));
+		} else if (property_class_name == "metternich::troop_category") {
+			new_property_value = QVariant::fromValue(string_to_troop_category(property.get_value()));
 		} else if (property_class_name == "metternich::world*") {
 			new_property_value = QVariant::fromValue(world::get(property.get_value()));
 		} else if (property_class_name == "metternich::world_type*") {

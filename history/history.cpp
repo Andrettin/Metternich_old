@@ -2,7 +2,7 @@
 
 #include "character/character.h"
 #include "database/database.h"
-#include "engine_interface.h"
+#include "game/engine_interface.h"
 #include "history/timeline.h"
 #include "holding/holding.h"
 #include "holding/holding_slot.h"

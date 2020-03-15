@@ -1,6 +1,6 @@
 #include "character/enemy.h"
 
-#include "translator.h"
+#include "util/translator.h"
 
 namespace metternich {
 

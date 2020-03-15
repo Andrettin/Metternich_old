@@ -1,6 +1,6 @@
 #pragma once
 
-#include "random.h"
+#include "util/random.h"
 
 #include "util/point_util.h"
 

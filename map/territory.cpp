@@ -3,7 +3,7 @@
 #include "culture/culture.h"
 #include "culture/culture_group.h"
 #include "culture/culture_supergroup.h"
-#include "defines.h"
+#include "database/defines.h"
 #include "history/history.h"
 #include "holding/building.h"
 #include "holding/holding.h"
@@ -19,8 +19,8 @@
 #include "religion/religion.h"
 #include "religion/religion_group.h"
 #include "technology/technology.h"
-#include "translator.h"
 #include "util/container_util.h"
+#include "util/translator.h"
 #include "util/vector_util.h"
 
 namespace metternich {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "singleton.h"
+#include "util/singleton.h"
 
 #include <QDateTime>
 #include <QLocale>

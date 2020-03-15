@@ -1,8 +1,8 @@
 #pragma once
 
-#include "chance_factor.h"
-#include "random.h"
+#include "script/chance_factor.h"
 #include "script/context.h"
+#include "util/random.h"
 
 #include <map>
 #include <utility>

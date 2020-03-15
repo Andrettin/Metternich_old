@@ -1,6 +1,6 @@
-#include "engine_interface.h"
+#include "game/engine_interface.h"
 
-#include "defines.h"
+#include "database/defines.h"
 #include "game/game.h"
 #include "holding/holding.h"
 #include "landed_title/landed_title.h"

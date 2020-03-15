@@ -2,7 +2,7 @@
 
 #include "database/data_type.h"
 #include "map/territory.h"
-#include "qunique_ptr.h"
+#include "util/qunique_ptr.h"
 
 #include <QColor>
 #include <QGeoCoordinate>

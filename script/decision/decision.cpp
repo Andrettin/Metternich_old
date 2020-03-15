@@ -1,6 +1,6 @@
 #include "script/decision/decision.h"
 
-#include "translator.h"
+#include "util/translator.h"
 
 namespace metternich {
 

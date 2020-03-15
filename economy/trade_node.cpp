@@ -4,8 +4,8 @@
 #include "map/pathfinder.h"
 #include "map/province.h"
 #include "map/world.h"
-#include "translator.h"
 #include "util/map_util.h"
+#include "util/translator.h"
 
 namespace metternich {
 

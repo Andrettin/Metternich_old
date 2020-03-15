@@ -5,7 +5,7 @@
 #include "database/gsml_property.h"
 #include "script/effect/effect.h"
 #include "script/effect/effect_list.h"
-#include "translator.h"
+#include "util/translator.h"
 
 namespace metternich {
 

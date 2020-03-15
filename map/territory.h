@@ -1,8 +1,8 @@
 #pragma once
 
 #include "database/data_entry.h"
-#include "qunique_ptr.h"
 #include "technology/technology_set.h"
+#include "util/qunique_ptr.h"
 
 namespace metternich {
 

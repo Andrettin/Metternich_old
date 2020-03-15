@@ -1,6 +1,6 @@
 #pragma once
 
-#include "qunique_ptr.h"
+#include "util/qunique_ptr.h"
 
 #include <QObject>
 #include <QString>

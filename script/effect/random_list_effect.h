@@ -2,10 +2,10 @@
 
 #include "database/database.h"
 #include "database/gsml_data.h"
-#include "random.h"
 #include "script/effect/effect.h"
 #include "script/effect/effect_list.h"
 #include "script/factor_modifier.h"
+#include "util/random.h"
 #include "util/vector_random_util.h"
 
 #include <memory>

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "qunique_ptr.h"
-#include "singleton.h"
+#include "util/qunique_ptr.h"
+#include "util/singleton.h"
 
 #include <QObject>
 #include <QString>

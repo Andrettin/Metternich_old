@@ -5,7 +5,7 @@
 #include "culture/culture.h"
 #include "culture/culture_group.h"
 #include "culture/culture_supergroup.h"
-#include "defines.h"
+#include "database/defines.h"
 #include "economy/trade_node.h"
 #include "economy/trade_route.h"
 #include "game/game.h"
@@ -25,9 +25,9 @@
 #include "politics/law_group.h"
 #include "religion/religion.h"
 #include "religion/religion_group.h"
-#include "translator.h"
 #include "util/container_util.h"
 #include "util/map_util.h"
+#include "util/translator.h"
 #include "util/vector_util.h"
 
 #include <stdexcept>

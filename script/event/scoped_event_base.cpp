@@ -3,8 +3,7 @@
 #include "character/character.h"
 #include "database/database.h"
 #include "database/gsml_data.h"
-#include "engine_interface.h"
-#include "random.h"
+#include "game/engine_interface.h"
 #include "script/chance_util.h"
 #include "script/condition/and_condition.h"
 #include "script/context.h"
@@ -13,8 +12,9 @@
 #include "script/event/event_instance.h"
 #include "script/event/event_option.h"
 #include "script/event/event_trigger.h"
-#include "translator.h"
+#include "util/random.h"
 #include "util/string_util.h"
+#include "util/translator.h"
 
 #include <QString>
 

@@ -57,6 +57,8 @@ inline std::string holding_slot_type_to_string(const holding_slot_type type)
 			return "university";
 		case holding_slot_type::factory:
 			return "factory";
+		default:
+			break;
 	}
 
 	throw std::runtime_error("Invalid holding slot type: \"" + std::to_string(static_cast<int>(type)) + "\".");
