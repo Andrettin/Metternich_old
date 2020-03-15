@@ -1,8 +1,12 @@
 #include "holding/building_slot.h"
 
+#include "economy/employment_type.h"
 #include "holding/building.h"
 #include "holding/holding.h"
+#include "holding/holding_slot.h"
 #include "script/condition/condition_check.h"
+#include "util/number_util.h"
+#include "util/string_util.h"
 
 namespace metternich {
 
@@ -71,6 +75,24 @@ void building_slot::create_condition_checks()
 	//create the condition checks only when initializing history, so that their result won't be calculated until history is ready
 	this->precondition_check = std::make_unique<metternich::condition_check<metternich::holding>>(this->get_building()->get_preconditions(), this->holding, [this](bool result){ this->set_available(result); });
 	this->condition_check = std::make_unique<metternich::condition_check<metternich::holding>>(this->get_building()->get_conditions(), this->holding, [this](bool result){ this->set_buildable(result); });
+}
+
+QString building_slot::get_effects_string() const
+{
+	std::string effects_str;
+
+	if (this->get_building()->get_employment_type() != nullptr) {
+		long long int workforce = this->get_building()->get_workforce();
+		workforce *= this->holding->get_holding_size();
+		workforce /= holding_slot::default_holding_size;
+		effects_str += this->get_building()->get_employment_type()->get_name() + " Employment Capacity: " + number::to_signed_string(static_cast<int>(workforce));
+	}
+
+	if (!effects_str.empty()) {
+		return string::to_tooltip(effects_str);
+	}
+
+	return QString();
 }
 
 }

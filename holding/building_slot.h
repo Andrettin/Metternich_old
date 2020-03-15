@@ -22,6 +22,7 @@ class building_slot final : public QObject
 	Q_PROPERTY(bool available READ is_available NOTIFY available_changed)
 	Q_PROPERTY(bool buildable READ is_buildable NOTIFY buildable_changed)
 	Q_PROPERTY(bool built READ is_built NOTIFY built_changed)
+	Q_PROPERTY(QString effects_string READ get_effects_string CONSTANT)
 
 public:
 	building_slot(building *building, holding *holding);
@@ -71,6 +72,8 @@ public:
 	void set_built(const bool built);
 
 	void create_condition_checks();
+
+	QString get_effects_string() const;
 
 signals:
 	void available_changed();

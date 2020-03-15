@@ -74,7 +74,12 @@ inline std::string to_signed_string(const int number)
 	if (number >= 0) {
 		number_str += "+";
 	}
-	number_str += std::to_string(number);
+	if (number >= 10000) {
+		QLocale english_locale(QLocale::English);
+		number_str += english_locale.toString(number).toStdString();
+	} else {
+		number_str += std::to_string(number);
+	}
 	return number_str;
 }
 
