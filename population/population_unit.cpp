@@ -214,14 +214,15 @@ void population_unit::set_size(const int size)
 		this->change_unemployed_size(size_change);
 	} else {
 		int total_employment_size_change = size_change;
-		if (this->get_unemployed_size()) {
+		if (this->get_unemployed_size() > 0) {
 			const int unemployed_size_change = -std::min(this->get_unemployed_size(), abs(total_employment_size_change));
 			this->change_unemployed_size(unemployed_size_change);
 			total_employment_size_change -= unemployed_size_change;
 		}
 
 		if (total_employment_size_change != 0) {
-			for (employment *employment : this->employments) {
+			const std::set<employment *> employments = this->employments;
+			for (employment *employment : employments) {
 				int employment_size = employment->get_employee_size(this);
 				const int employment_size_change = -std::min(employment_size, abs(total_employment_size_change));
 				employment->change_employee_size(this, employment_size_change);
@@ -471,9 +472,6 @@ void population_unit::distribute_to_holdings(const std::vector<metternich::holdi
 	}
 }
 
-/**
-**	@brief	Seek employment for the population unit
-*/
 void population_unit::seek_employment()
 {
 	for (auto &kv_pair : this->get_holding()->get_employments()) {
@@ -483,6 +481,7 @@ void population_unit::seek_employment()
 			const int unused_employment_capacity = employment->get_unused_workforce_capacity();
 			const int employee_size_change = std::min(this->get_unemployed_size(), unused_employment_capacity);
 			employment->change_employee_size(this, employee_size_change);
+			this->change_unemployed_size(-employee_size_change);
 
 			if (this->get_unemployed_size() == 0) {
 				break;

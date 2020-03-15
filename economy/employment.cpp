@@ -62,13 +62,17 @@ void employment::set_employee_size(population_unit *employee, const int size)
 
 	if (size == 0) {
 		this->employee_sizes.erase(employee);
+		employee->remove_employment(this);
 	} else {
 		this->employee_sizes[employee] = size;
+
+		if (old_size == 0) {
+			employee->add_employment(this);
+		}
 	}
 
 	const int diff = size - old_size;
 	this->workforce += diff;
-	employee->change_unemployed_size(-diff);
 }
 
 bool employment::can_employ_population_unit(const population_unit *population_unit) const
