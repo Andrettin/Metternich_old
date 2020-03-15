@@ -91,6 +91,7 @@ SOURCES += \
         util/polygon_util.cpp \
         util/random.cpp \
         util/translator.cpp \
+        warfare/troop_type.cpp
 
 RESOURCES += qml.qrc
 
@@ -280,6 +281,8 @@ HEADERS += \
     util/type_traits.h \
     util/vector_random_util.h \
     util/vector_util.h \
+    warfare/troop_category.h \
+    warfare/troop_type.h
 
 win32 {
     INCLUDEPATH += C:/Boost

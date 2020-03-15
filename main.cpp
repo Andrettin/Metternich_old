@@ -54,8 +54,6 @@ int main(int argc, char *argv[])
 	using namespace metternich;
 
 	try {
-		QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-
 		QApplication app(argc, argv);
 
 		database::get()->process_modules();
