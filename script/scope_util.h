@@ -16,7 +16,7 @@ template <typename T>
 const territory *get_scope_territory(const T *scope)
 {
 	const territory *territory = nullptr;
-	if constexpr (std::is_base_of_v<territory, T>) {
+	if constexpr (std::is_base_of_v<metternich::territory, T>) {
 		territory = scope;
 	} else {
 		territory = scope->get_territory();
