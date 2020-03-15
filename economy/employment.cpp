@@ -4,12 +4,24 @@
 #include "economy/employment_type.h"
 #include "population/population_type.h"
 #include "population/population_unit.h"
+#include "script/modifier.h"
 
 namespace metternich {
 
+employment::~employment()
+{
+	if (this->modifier_multiplier != 0) {
+		this->get_type()->get_modifier()->remove(this->holding, this->modifier_multiplier);
+	}
+}
+
 void employment::do_day()
 {
-	for (auto &kv_pair : this->employee_sizes) {
+	if (this->get_type()->get_output_commodity() == nullptr) {
+		return;
+	}
+
+	for (const auto &kv_pair : this->employee_sizes) {
 		population_unit *population_unit = kv_pair.first;
 		const int pop_current_employment = kv_pair.second;
 
@@ -73,6 +85,7 @@ void employment::set_employee_size(population_unit *employee, const int size)
 
 	const int diff = size - old_size;
 	this->workforce += diff;
+	this->calculate_modifier_multiplier();
 }
 
 bool employment::can_employ_population_unit(const population_unit *population_unit) const
@@ -117,6 +130,49 @@ void employment::remove_excess_employees()
 	for (population_unit *population_unit : population_units_to_remove) {
 		this->employee_sizes.erase(population_unit);
 	}
+
+	this->calculate_modifier_multiplier();
+}
+
+void employment::set_modifier_multiplier(const int multiplier)
+{
+	if (multiplier == this->modifier_multiplier) {
+		return;
+	}
+
+	if (this->modifier_multiplier != 0) {
+		this->get_type()->get_modifier()->remove(this->holding, this->modifier_multiplier);
+	}
+
+	this->modifier_multiplier = multiplier;
+
+	if (this->modifier_multiplier != 0) {
+		this->get_type()->get_modifier()->apply(this->holding, this->modifier_multiplier);
+	}
+}
+
+void employment::calculate_modifier_multiplier()
+{
+	if (this->get_type()->get_modifier() == nullptr) {
+		return;
+	}
+
+	int modifier_percent = 0;
+
+	for (const auto &kv_pair : this->employee_sizes) {
+		population_unit *population_unit = kv_pair.first;
+		const int pop_current_employment = kv_pair.second;
+
+		long long int pop_modifier_percent = 100;
+		pop_modifier_percent *= pop_current_employment;
+		pop_modifier_percent /= this->get_type()->get_workforce();
+		pop_modifier_percent *= this->get_type()->get_employee_efficiency(population_unit->get_type());
+		pop_modifier_percent /= 100;
+
+		modifier_percent += static_cast<int>(pop_modifier_percent);
+	}
+
+	this->set_modifier_multiplier(modifier_percent / 100);
 }
 
 }

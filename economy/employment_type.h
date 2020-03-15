@@ -11,7 +11,11 @@ class commodity;
 class employee;
 class employment_owner;
 class gsml_data;
+class holding;
 class population_type;
+
+template <typename T>
+class modifier;
 
 class employment_type final : public data_entry, public data_type<employment_type>
 {
@@ -51,6 +55,11 @@ public:
 	int get_employee_efficiency(const population_type *population_type) const;
 	bool can_employ_population_type(const population_type *population_type) const;
 
+	const std::unique_ptr<metternich::modifier<holding>> &get_modifier() const
+	{
+		return this->modifier;
+	}
+
 private:
 	employment_type *template_type = nullptr;
 	std::vector<qunique_ptr<employee>> employees;
@@ -59,6 +68,7 @@ private:
 	commodity *output_commodity = nullptr;
 	int output_value = 0; //how much of the output commodity is produced
 	std::map<commodity *, int> input_commodities; //the input commodities, mapped to how much of them is necessary for the production
+	std::unique_ptr<modifier<holding>> modifier; //the modifier applied to the employment's holding
 };
 
 }

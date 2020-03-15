@@ -31,8 +31,8 @@ public:
 		Q_UNUSED(scope)
 	}
 
-	void apply(T *scope) const;
-	void remove(T *scope) const;
+	void apply(T *scope, const int multiplier = 1) const;
+	void remove(T *scope, const int multiplier = 1) const;
 	std::string get_string() const;
 
 private:

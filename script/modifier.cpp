@@ -23,18 +23,18 @@ void modifier<T>::process_gsml_property(const gsml_property &property)
 }
 
 template <typename T>
-void modifier<T>::apply(T *scope) const
+void modifier<T>::apply(T *scope, const int multiplier) const
 {
 	for (const std::unique_ptr<modifier_effect<T>> &modifier_effect : this->modifier_effects) {
-		modifier_effect->apply(scope, 1);
+		modifier_effect->apply(scope, 1 * multiplier);
 	}
 }
 
 template <typename T>
-void modifier<T>::remove(T *scope) const
+void modifier<T>::remove(T *scope, const int multiplier) const
 {
 	for (const std::unique_ptr<modifier_effect<T>> &modifier_effect : this->modifier_effects) {
-		modifier_effect->apply(scope, -1);
+		modifier_effect->apply(scope, -1 * multiplier);
 	}
 }
 

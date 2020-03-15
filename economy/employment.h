@@ -9,7 +9,12 @@ class population_unit;
 class employment
 {
 public:
-	employment(const employment_type *type) : type(type) {}
+	employment(const employment_type *type, holding *holding)
+		: type(type), holding(holding)
+	{
+	}
+
+	~employment();
 
 	void do_day();
 
@@ -55,12 +60,16 @@ public:
 	bool can_employ_population_unit(const population_unit *population_unit) const;
 	void remove_excess_employees();
 
+	void set_modifier_multiplier(const int multiplier);
+	void calculate_modifier_multiplier();
+
 private:
 	const employment_type *type = nullptr; //the employment type
 	int workforce = 0; //the current workforce for the employment
 	int workforce_capacity = 0; //the maximum workforce for the employment
-	const holding *holding = nullptr; //the holding where the employment is located
+	holding *holding = nullptr; //the holding where the employment is located
 	std::map<population_unit *, int> employee_sizes; //the employed population units, mapped to the quantity of people each of them has assigned for this employment
+	int modifier_multiplier = 0;
 };
 
 }

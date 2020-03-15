@@ -5,6 +5,7 @@
 #include "economy/commodity.h"
 #include "economy/employee.h"
 #include "economy/employment_owner.h"
+#include "script/modifier.h"
 
 namespace metternich {
 
@@ -53,6 +54,9 @@ void employment_type::process_gsml_scope(const gsml_data &scope)
 			qunique_ptr<employment_owner> owner = employment_owner::from_gsml_scope(owner_scope);
 			this->owners.push_back(std::move(owner));
 		});
+	} else if (tag == "modifier") {
+		this->modifier = std::make_unique<metternich::modifier<holding>>();
+		database::process_gsml_data(this->modifier, scope);
 	} else {
 		data_entry_base::process_gsml_scope(scope);
 	}

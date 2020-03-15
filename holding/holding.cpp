@@ -792,7 +792,7 @@ void holding::set_employment_workforce(const employment_type *employment_type, c
 		this->employments.erase(employment_type);
 	} else {
 		if (this->employments.find(employment_type) == this->employments.end()) {
-			this->employments[employment_type] = std::make_unique<employment>(employment_type);
+			this->employments[employment_type] = std::make_unique<employment>(employment_type, this);
 		}
 
 		this->employments[employment_type]->set_workforce_capacity(workforce);
