@@ -20,15 +20,15 @@ has_technology_condition<T>::has_technology_condition(const std::string &technol
 template <typename T>
 bool has_technology_condition<T>::check_assignment(const T *scope) const
 {
-	const province *province = get_scope_province(scope);
-	return province != nullptr && province->has_technology(this->technology);
+	const territory *territory = get_scope_territory(scope);
+	return territory != nullptr && territory->has_technology(this->technology);
 }
 
 template <typename T>
 void has_technology_condition<T>::bind_condition_check(condition_check_base &check, const T *scope) const {
-	const province *province = get_scope_province(scope);
-	if (province != nullptr) {
-		scope->connect(province, &province::technologies_changed, scope, [&check](){ check.set_result_recalculation_needed(); }, Qt::ConnectionType::DirectConnection);
+	const territory *territory = get_scope_territory(scope);
+	if (territory != nullptr) {
+		scope->connect(territory, &territory::technologies_changed, scope, [&check](){ check.set_result_recalculation_needed(); }, Qt::ConnectionType::DirectConnection);
 	}
 }
 

@@ -9,7 +9,20 @@ class holding_slot;
 class landed_title;
 class population_unit;
 class province;
+class territory;
 class world;
+
+template <typename T>
+const territory *get_scope_territory(const T *scope)
+{
+	const territory *territory = nullptr;
+	if constexpr (std::is_base_of_v<territory, T>) {
+		territory = scope;
+	} else {
+		territory = scope->get_territory();
+	}
+	return territory;
+}
 
 template <typename T>
 const province *get_scope_province(const T *scope)

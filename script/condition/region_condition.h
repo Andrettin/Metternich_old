@@ -27,8 +27,8 @@ public:
 
 	virtual bool check_assignment(const T *scope) const override
 	{
-		const province *province = get_scope_province(scope);
-		return province != nullptr && province->is_in_region(this->region);
+		const territory *territory = get_scope_territory(scope);
+		return territory != nullptr && territory->is_in_region(this->region);
 	}
 
 	virtual std::string get_assignment_string() const override
