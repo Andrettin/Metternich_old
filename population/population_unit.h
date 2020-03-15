@@ -25,6 +25,7 @@ class population_unit final : public population_unit_base, public simple_data_ty
 	Q_PROPERTY(metternich::religion* religion READ get_religion WRITE set_religion NOTIFY religion_changed)
 	Q_PROPERTY(metternich::phenotype* phenotype READ get_phenotype WRITE set_phenotype NOTIFY phenotype_changed)
 	Q_PROPERTY(metternich::holding* holding READ get_holding WRITE set_holding NOTIFY holding_changed)
+	Q_PROPERTY(int unemployed_size READ get_unemployed_size NOTIFY unemployed_size_changed)
 	Q_PROPERTY(int wealth READ get_wealth NOTIFY wealth_changed)
 	Q_PROPERTY(bool discount_any_type READ discounts_any_type WRITE set_discount_any_type NOTIFY discount_types_changed)
 	Q_PROPERTY(QVariantList discount_types READ get_discount_types_qvariant_list NOTIFY discount_types_changed)
@@ -189,6 +190,7 @@ public:
 		}
 
 		this->unemployed_size = size;
+		emit unemployed_size_changed();
 	}
 
 	void change_unemployed_size(const int change)
@@ -240,6 +242,7 @@ signals:
 	void holding_changed();
 	void terrain_changed();
 	void discount_types_changed();
+	void unemployed_size_changed();
 	void wealth_changed();
 
 private:
