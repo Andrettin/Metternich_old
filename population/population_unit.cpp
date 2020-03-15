@@ -166,7 +166,7 @@ void population_unit::set_culture(metternich::culture *culture)
 	this->culture = culture;
 	emit culture_changed();
 
-	if (this->get_phenotype() == nullptr) {
+	if (culture != nullptr && this->get_phenotype() == nullptr) {
 		metternich::phenotype *phenotype = culture->get_default_phenotype();
 		this->set_phenotype(phenotype);
 	}
@@ -455,20 +455,7 @@ void population_unit::distribute_to_holdings(const std::vector<metternich::holdi
 		if (!holding->can_have_population_type(type)) {
 			type = holding->get_equivalent_population_type(type);
 		}
-		auto population_unit = make_qunique<metternich::population_unit>(type);
-		population_unit->moveToThread(QApplication::instance()->thread());
-		population_unit->set_holding(holding);
-		population_unit->set_size(size_per_holding);
-		if (this->get_culture() != nullptr) {
-			population_unit->set_culture(this->get_culture());
-		}
-		if (this->get_religion() != nullptr) {
-			population_unit->set_religion(this->get_religion());
-		}
-		if (this->get_phenotype() != nullptr) {
-			population_unit->set_phenotype(this->get_phenotype());
-		}
-		holding->add_population_unit(std::move(population_unit));
+		holding->change_population_size(type, this->get_culture(), this->get_religion(), this->get_phenotype(), size_per_holding);
 	}
 }
 
