@@ -13,7 +13,11 @@ enum class troop_category
 	heavy_cavalry,
 	light_artillery,
 	heavy_artillery,
-	combat_engineers
+	combat_engineers,
+	light_warship,
+	heavy_warship,
+	light_transport_ship,
+	heavy_transport_ship
 };
 
 inline troop_category string_to_troop_category(const std::string &str)
@@ -36,9 +40,30 @@ inline troop_category string_to_troop_category(const std::string &str)
 		return troop_category::heavy_artillery;
 	} else if (str == "combat_engineers") {
 		return troop_category::combat_engineers;
+	} else if (str == "light_warship") {
+		return troop_category::light_warship;
+	} else if (str == "heavy_warship") {
+		return troop_category::heavy_warship;
+	} else if (str == "light_transport_ship") {
+		return troop_category::light_transport_ship;
+	} else if (str == "heavy_transport_ship") {
+		return troop_category::heavy_transport_ship;
 	}
 
 	throw std::runtime_error("Invalid troop category: \"" + str + "\".");
+}
+
+inline bool is_ship_troop_category(const troop_category category)
+{
+	switch (category) {
+		case troop_category::light_warship:
+		case troop_category::heavy_warship:
+		case troop_category::light_transport_ship:
+		case troop_category::heavy_transport_ship:
+			return true;
+		default:
+			return false;
+	}
 }
 
 }
