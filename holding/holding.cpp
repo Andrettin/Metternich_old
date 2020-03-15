@@ -690,7 +690,10 @@ void holding::remove_building(building *building)
 void holding::apply_building_effects(const building *building, const int change)
 {
 	if (building->get_employment_type() != nullptr) {
-		this->change_employment_workforce(building->get_employment_type(), building->get_workforce() * change);
+		long long int workforce = building->get_workforce() * change;
+		workforce *= this->get_holding_size();
+		workforce /= holding_slot::default_holding_size;
+		this->change_employment_workforce(building->get_employment_type(), static_cast<int>(workforce));
 	}
 }
 
