@@ -26,6 +26,8 @@ public:
 public:
 	troop_type(const std::string &identifier);
 
+	virtual void check() const override;
+
 	troop_category get_category() const
 	{
 		return this->category;
