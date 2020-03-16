@@ -210,26 +210,28 @@ void population_unit::set_size(const int size)
 
 	const int size_change = this->get_size() - old_size;
 
-	if (size_change > 0) {
-		this->change_unemployed_size(size_change);
-	} else {
-		int total_employment_size_change = size_change;
-		if (this->get_unemployed_size() > 0) {
-			const int unemployed_size_change = -std::min(this->get_unemployed_size(), abs(total_employment_size_change));
-			this->change_unemployed_size(unemployed_size_change);
-			total_employment_size_change -= unemployed_size_change;
-		}
+	if (this->get_type()->is_employable()) {
+		if (size_change > 0) {
+			this->change_unemployed_size(size_change);
+		} else {
+			int total_employment_size_change = size_change;
+			if (this->get_unemployed_size() > 0) {
+				const int unemployed_size_change = -std::min(this->get_unemployed_size(), abs(total_employment_size_change));
+				this->change_unemployed_size(unemployed_size_change);
+				total_employment_size_change -= unemployed_size_change;
+			}
 
-		if (total_employment_size_change != 0) {
-			const std::set<employment *> employments = this->employments;
-			for (employment *employment : employments) {
-				int employment_size = employment->get_employee_size(this);
-				const int employment_size_change = -std::min(employment_size, abs(total_employment_size_change));
-				employment->change_employee_size(this, employment_size_change);
-				total_employment_size_change -= employment_size_change;
+			if (total_employment_size_change != 0) {
+				const std::set<employment *> employments = this->employments;
+				for (employment *employment : employments) {
+					int employment_size = employment->get_employee_size(this);
+					const int employment_size_change = -std::min(employment_size, abs(total_employment_size_change));
+					employment->change_employee_size(this, employment_size_change);
+					total_employment_size_change -= employment_size_change;
 
-				if (total_employment_size_change == 0) {
-					break;
+					if (total_employment_size_change == 0) {
+						break;
+					}
 				}
 			}
 		}

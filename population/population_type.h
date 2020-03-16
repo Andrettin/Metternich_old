@@ -21,6 +21,7 @@ class population_type final : public data_entry, public data_type<population_typ
 	Q_PROPERTY(QString icon_tag READ get_icon_tag_qstring WRITE set_icon_tag_qstring)
 	Q_PROPERTY(QVariantList equivalent_types READ get_equivalent_types_qvariant_list)
 	Q_PROPERTY(QVariantList holding_types READ get_holding_types_qvariant_list)
+	Q_PROPERTY(bool employable READ is_employable CONSTANT)
 
 public:
 	static constexpr const char *class_identifier = "population_type";
@@ -98,11 +99,26 @@ public:
 		this->holding_types.erase(holding_type);
 	}
 
+	bool is_employable() const
+	{
+		return this->employable;
+	}
+
+	void set_employable(const bool employable)
+	{
+		if (employable == this->is_employable()) {
+			return;
+		}
+
+		this->employable = employable;
+	}
+
 private:
 	QColor color;
 	std::string icon_tag;
 	std::set<population_type *> equivalent_types; //the population types which are equivalent to this one
 	std::set<holding_type *> holding_types; //the holding types where this population type can live
+	bool employable = false; //whether the population type is employable, i.e. whether any employment type has it designated as an employee
 };
 
 }
