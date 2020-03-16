@@ -188,6 +188,7 @@ HEADERS += \
     script/condition/alive_condition.h \
     script/condition/and_condition.h \
     script/condition/borders_water_condition.h \
+    script/condition/coastal_condition.h \
     script/condition/commodity_condition.h \
     script/condition/condition.h \
     script/condition/condition_check.h \
