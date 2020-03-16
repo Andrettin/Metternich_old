@@ -6,6 +6,7 @@
 #include "economy/employee.h"
 #include "economy/employment_owner.h"
 #include "script/modifier.h"
+#include "util/string_util.h"
 
 namespace metternich {
 
@@ -132,6 +133,44 @@ bool employment_type::can_employ_population_type(const population_type *populati
 	}
 
 	return false;
+}
+
+std::string employment_type::get_string() const
+{
+	std::string str;
+
+	if (!this->input_commodities.empty()) {
+		str += "Input: ";
+		bool first = true;
+		for (const auto &kv_pair : this->input_commodities) {
+			if (first) {
+				first = false;
+			} else {
+				str += ", ";
+			}
+			str += kv_pair.first->get_name();
+		}
+	}
+
+	if (this->get_output_commodity() != nullptr) {
+		str += "Output: " + this->get_output_commodity()->get_name();
+	}
+
+	if (this->get_modifier() != nullptr) {
+		if (this->get_workforce() == 1) {
+			str += "For every employee:\n";
+		} else {
+			QLocale english_locale(QLocale::English);
+			str += "For every " + english_locale.toString(this->get_workforce()).toStdString() + " employees:\n";
+		}
+		str += this->get_modifier()->get_string(1);
+	}
+	return str;
+}
+
+QString employment_type::get_string_qstring() const
+{
+	return string::to_tooltip(this->get_string());
 }
 
 }

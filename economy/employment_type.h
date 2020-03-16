@@ -26,6 +26,7 @@ class employment_type final : public data_entry, public data_type<employment_typ
 	Q_PROPERTY(metternich::commodity* output_commodity MEMBER output_commodity READ get_output_commodity)
 	Q_PROPERTY(int output_value MEMBER output_value READ get_output_value)
 	Q_PROPERTY(metternich::troop_type* troop_type MEMBER troop_type READ get_troop_type)
+	Q_PROPERTY(QString string READ get_string_qstring CONSTANT)
 
 public:
 	static constexpr const char *class_identifier = "employment_type";
@@ -66,6 +67,9 @@ public:
 	{
 		return this->modifier;
 	}
+
+	std::string get_string() const;
+	QString get_string_qstring() const;
 
 private:
 	employment_type *template_type = nullptr;

@@ -68,9 +68,9 @@ void building_slot::set_built(const bool built)
 	this->built = built;
 	emit built_changed();
 
-	if (this->get_building()->get_employment_type() != nullptr) {
+	if (this->get_employment_type() != nullptr) {
 		if (built) {
-			this->employment = std::make_unique<metternich::employment>(this->get_building()->get_employment_type(), this);
+			this->employment = std::make_unique<metternich::employment>(this->get_employment_type(), this);
 
 			long long int workforce_capacity = this->get_building()->get_workforce();
 			workforce_capacity *= this->holding->get_holding_size();
@@ -113,11 +113,14 @@ QString building_slot::get_effects_string() const
 {
 	std::string effects_str;
 
-	if (this->get_building()->get_employment_type() != nullptr) {
+	if (this->get_employment_type() != nullptr) {
+		QLocale english_locale(QLocale::English);
+
 		long long int workforce = this->get_building()->get_workforce();
 		workforce *= this->holding->get_holding_size();
 		workforce /= holding_slot::default_holding_size;
-		effects_str += this->get_building()->get_employment_type()->get_name() + " Employment Capacity: " + number::to_signed_string(static_cast<int>(workforce));
+		effects_str += "Employment Capacity: " + english_locale.toString(static_cast<int>(workforce)).toStdString() + "\n";
+		effects_str += this->get_employment_type()->get_string();
 	}
 
 	if (!effects_str.empty()) {
@@ -125,6 +128,11 @@ QString building_slot::get_effects_string() const
 	}
 
 	return QString();
+}
+
+employment_type *building_slot::get_employment_type() const
+{
+	return this->get_building()->get_employment_type();
 }
 
 }

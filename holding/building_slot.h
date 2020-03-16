@@ -6,6 +6,7 @@ namespace metternich {
 
 class building;
 class employment;
+class employment_type;
 class holding;
 
 template <typename T>
@@ -26,6 +27,7 @@ class building_slot final : public QObject
 	Q_PROPERTY(int workforce READ get_workforce NOTIFY workforce_changed)
 	Q_PROPERTY(int workforce_capacity READ get_workforce_capacity NOTIFY workforce_capacity_changed)
 	Q_PROPERTY(QString effects_string READ get_effects_string CONSTANT)
+	Q_PROPERTY(metternich::employment_type* employment_type READ get_employment_type CONSTANT)
 
 public:
 	building_slot(building *building, holding *holding);
@@ -85,6 +87,8 @@ public:
 	void create_condition_checks();
 
 	QString get_effects_string() const;
+
+	employment_type *get_employment_type() const;
 
 signals:
 	void available_changed();
