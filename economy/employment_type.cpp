@@ -5,6 +5,7 @@
 #include "economy/commodity.h"
 #include "economy/employee.h"
 #include "economy/employment_owner.h"
+#include "population/population_type.h"
 #include "script/modifier.h"
 #include "util/string_util.h"
 
@@ -139,8 +140,29 @@ std::string employment_type::get_string() const
 {
 	std::string str;
 
+	if (!this->owners.empty()) {
+		str += "Owners:\n";
+
+		for (const qunique_ptr<employment_owner> &owner : this->owners) {
+			str += "\t" + owner->get_population_type()->get_name() + "\n";
+		}
+	}
+
+	str += "Employees:";
+	for (const qunique_ptr<employee> &employee : this->employees) {
+		str += "\n\t" + employee->get_population_type()->get_name();
+
+		if (employee->get_efficiency() != 100) {
+			str += " (" + std::to_string(employee->get_efficiency()) + "% Efficiency)";
+		}
+
+		if (employee->get_workforce_proportion() != 100) {
+			str += " (" + std::to_string(employee->get_workforce_proportion()) + "% of Workforce)";
+		}
+	}
+
 	if (!this->input_commodities.empty()) {
-		str += "Input: ";
+		str += "\nInput: ";
 		bool first = true;
 		for (const auto &kv_pair : this->input_commodities) {
 			if (first) {
@@ -153,15 +175,15 @@ std::string employment_type::get_string() const
 	}
 
 	if (this->get_output_commodity() != nullptr) {
-		str += "Output: " + this->get_output_commodity()->get_name();
+		str += "\nOutput: " + this->get_output_commodity()->get_name();
 	}
 
 	if (this->get_modifier() != nullptr) {
 		if (this->get_workforce() == 1) {
-			str += "For every employee:\n";
+			str += "\nFor every employee:\n";
 		} else {
 			QLocale english_locale(QLocale::English);
-			str += "For every " + english_locale.toString(this->get_workforce()).toStdString() + " employees:\n";
+			str += "\nFor every " + english_locale.toString(this->get_workforce()).toStdString() + " employees:\n";
 		}
 		str += this->get_modifier()->get_string(1);
 	}
