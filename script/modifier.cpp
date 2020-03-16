@@ -39,13 +39,18 @@ void modifier<T>::remove(T *scope, const int multiplier) const
 }
 
 template <typename T>
-std::string modifier<T>::get_string() const
+std::string modifier<T>::get_string(const size_t indent) const
 {
 	std::string str;
 	for (size_t i = 0; i < this->modifier_effects.size(); ++i) {
 		if (i > 0) {
 			str += "\n";
 		}
+
+		if (indent > 0) {
+			str += std::string(indent, '\t');
+		}
+
 		str += this->modifier_effects[i]->get_string();
 	}
 	return str;
