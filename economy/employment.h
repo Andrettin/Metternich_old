@@ -2,6 +2,7 @@
 
 namespace metternich {
 
+class building_slot;
 class employment_type;
 class holding;
 class population_unit;
@@ -9,8 +10,8 @@ class population_unit;
 class employment
 {
 public:
-	employment(const employment_type *type, holding *holding)
-		: type(type), holding(holding)
+	employment(const employment_type *type, building_slot *building_slot)
+		: type(type), building_slot(building_slot)
 	{
 	}
 
@@ -23,17 +24,26 @@ public:
 		return type;
 	}
 
+	holding *get_holding() const;
+
+	int get_workforce() const
+	{
+		return this->workforce;
+	}
+
+	void set_workforce(const int workforce);
+
+	void change_workforce(const int change)
+	{
+		this->set_workforce(this->get_workforce() + change);
+	}
+
 	int get_workforce_capacity() const
 	{
 		return this->workforce_capacity;
 	}
 
 	void set_workforce_capacity(const int capacity);
-
-	int get_workforce() const
-	{
-		return this->workforce;
-	}
 
 	int get_unused_workforce_capacity() const
 	{
@@ -65,9 +75,9 @@ public:
 
 private:
 	const employment_type *type = nullptr; //the employment type
+	building_slot *building_slot = nullptr; //the building slot to which the employment pertains
 	int workforce = 0; //the current workforce for the employment
 	int workforce_capacity = 0; //the maximum workforce for the employment
-	holding *holding = nullptr; //the holding where the employment is located
 	std::map<population_unit *, int> employee_sizes; //the employed population units, mapped to the quantity of people each of them has assigned for this employment
 	int modifier_multiplier = 0;
 };

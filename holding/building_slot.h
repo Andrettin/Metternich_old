@@ -5,6 +5,7 @@
 namespace metternich {
 
 class building;
+class employment;
 class holding;
 
 template <typename T>
@@ -22,6 +23,8 @@ class building_slot final : public QObject
 	Q_PROPERTY(bool available READ is_available NOTIFY available_changed)
 	Q_PROPERTY(bool buildable READ is_buildable NOTIFY buildable_changed)
 	Q_PROPERTY(bool built READ is_built NOTIFY built_changed)
+	Q_PROPERTY(int workforce READ get_workforce NOTIFY workforce_changed)
+	Q_PROPERTY(int workforce_capacity READ get_workforce_capacity NOTIFY workforce_capacity_changed)
 	Q_PROPERTY(QString effects_string READ get_effects_string CONSTANT)
 
 public:
@@ -33,6 +36,11 @@ public:
 	building *get_building() const
 	{
 		return this->building;
+	}
+
+	holding *get_holding() const
+	{
+		return this->holding;
 	}
 
 	const std::filesystem::path &get_icon_path() const;
@@ -71,6 +79,9 @@ public:
 
 	void set_built(const bool built);
 
+	int get_workforce() const;
+	int get_workforce_capacity() const;
+
 	void create_condition_checks();
 
 	QString get_effects_string() const;
@@ -79,6 +90,8 @@ signals:
 	void available_changed();
 	void buildable_changed();
 	void built_changed();
+	void workforce_changed();
+	void workforce_capacity_changed();
 
 private:
 	building *building = nullptr;
@@ -88,6 +101,7 @@ private:
 	bool built = false;
 	std::unique_ptr<condition_check<metternich::holding>> precondition_check;
 	std::unique_ptr<condition_check<metternich::holding>> condition_check;
+	std::unique_ptr<employment> employment;
 };
 
 }

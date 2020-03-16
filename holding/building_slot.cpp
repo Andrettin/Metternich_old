@@ -1,5 +1,6 @@
 #include "holding/building_slot.h"
 
+#include "economy/employment.h"
 #include "economy/employment_type.h"
 #include "holding/building.h"
 #include "holding/holding.h"
@@ -65,9 +66,40 @@ void building_slot::set_built(const bool built)
 	}
 
 	this->built = built;
-
-	this->holding->apply_building_effects(this->get_building(), built ? 1 : -1);
 	emit built_changed();
+
+	if (this->get_building()->get_employment_type() != nullptr) {
+		if (built) {
+			this->employment = std::make_unique<metternich::employment>(this->get_building()->get_employment_type(), this);
+
+			long long int workforce_capacity = this->get_building()->get_workforce();
+			workforce_capacity *= this->holding->get_holding_size();
+			workforce_capacity /= holding_slot::default_holding_size;
+			this->employment->set_workforce_capacity(static_cast<int>(workforce_capacity));
+			this->holding->add_employment(this->employment.get());
+		} else {
+			this->holding->remove_employment(this->employment.get());
+			this->employment.reset();
+		}
+	}
+}
+
+int building_slot::get_workforce() const
+{
+	if (this->employment != nullptr) {
+		return this->employment->get_workforce();
+	}
+
+	return 0;
+}
+
+int building_slot::get_workforce_capacity() const
+{
+	if (this->employment != nullptr) {
+		return this->employment->get_workforce_capacity();
+	}
+
+	return 0;
 }
 
 void building_slot::create_condition_checks()

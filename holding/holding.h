@@ -331,7 +331,6 @@ public:
 	bool has_building(building *building) const;
 	Q_INVOKABLE void add_building(building *building);
 	Q_INVOKABLE void remove_building(building *building);
-	void apply_building_effects(const building *building, const int change);
 	void calculate_building_slots();
 
 	building *get_under_construction_building() const
@@ -408,17 +407,19 @@ public:
 
 	int get_holding_size() const;
 
-	const std::map<const employment_type *, std::unique_ptr<employment>> &get_employments() const
+	const std::set<employment *> &get_employments() const
 	{
 		return this->employments;
 	}
 
-	int get_employment_workforce(const employment_type *employment_type) const;
-	void set_employment_workforce(const employment_type *employment_type, const int workforce);
-
-	void change_employment_workforce(const employment_type *employment_type, const int change)
+	void add_employment(employment *employment)
 	{
-		this->set_employment_workforce(employment_type, this->get_employment_workforce(employment_type) + change);
+		this->employments.insert(employment);
+	}
+
+	void remove_employment(employment *employment)
+	{
+		this->employments.erase(employment);
 	}
 
 	bool has_any_trade_route() const;
@@ -489,7 +490,7 @@ private:
 	metternich::religion *religion = nullptr; //the holding's religion
 	std::set<holding_modifier *> modifiers; //modifiers applied to the holding
 	bool selected = false;
-	std::map<const employment_type *, std::unique_ptr<employment>> employments; //employments, mapped to their respective employment types
+	std::set<employment *> employments;
 	std::map<population_type *, int> population_per_type; //the population for each population type
 	std::map<metternich::culture *, int> population_per_culture; //the population for each culture
 	std::map<metternich::religion *, int> population_per_religion; //the population for each religion

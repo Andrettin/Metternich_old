@@ -147,8 +147,7 @@ void holding::do_day()
 		}
 	}
 
-	for (auto &kv_pair : this->get_employments()) {
-		const std::unique_ptr<employment> &employment = kv_pair.second;
+	for (employment *employment : this->get_employments()) {
 		employment->do_day();
 	}
 }
@@ -687,16 +686,6 @@ void holding::remove_building(building *building)
 	building_slot->set_built(false);
 }
 
-void holding::apply_building_effects(const building *building, const int change)
-{
-	if (building->get_employment_type() != nullptr) {
-		long long int workforce = building->get_workforce() * change;
-		workforce *= this->get_holding_size();
-		workforce /= holding_slot::default_holding_size;
-		this->change_employment_workforce(building->get_employment_type(), static_cast<int>(workforce));
-	}
-}
-
 void holding::calculate_building_slots()
 {
 	bool changed = false;
@@ -758,48 +747,6 @@ void holding::set_under_construction_building(building *building)
 int holding::get_holding_size() const
 {
 	return this->get_slot()->get_holding_size();
-}
-
-/**
-**	@brief	Get the employment workforce for a particular employment type
-**
-**	@return	The workforce
-*/
-int holding::get_employment_workforce(const employment_type *employment_type) const
-{
-	auto find_iterator = this->employments.find(employment_type);
-	if (find_iterator == this->employments.end()) {
-		return 0;
-	}
-
-	return find_iterator->second->get_workforce_capacity();
-}
-
-/**
-**	@brief	Set the employment workforce for a particular employment type
-**
-**	@param	employment_type	The employment type
-**	@param	workforce		The new workforce value
-*/
-void holding::set_employment_workforce(const employment_type *employment_type, const int workforce)
-{
-	if (workforce == this->get_employment_workforce(employment_type)) {
-		return;
-	}
-
-	if (workforce < 0) {
-		throw std::runtime_error("Tried to set a negative employment workforce for employment type \"" + employment_type->get_identifier() + "\" for a holding.");
-	}
-
-	if (workforce == 0) {
-		this->employments.erase(employment_type);
-	} else {
-		if (this->employments.find(employment_type) == this->employments.end()) {
-			this->employments[employment_type] = std::make_unique<employment>(employment_type, this);
-		}
-
-		this->employments[employment_type]->set_workforce_capacity(workforce);
-	}
 }
 
 bool holding::has_any_trade_route() const

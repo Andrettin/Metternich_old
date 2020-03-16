@@ -2,6 +2,7 @@
 
 #include "economy/commodity.h"
 #include "economy/employment_type.h"
+#include "holding/building_slot.h"
 #include "population/population_type.h"
 #include "population/population_unit.h"
 #include "script/modifier.h"
@@ -11,7 +12,7 @@ namespace metternich {
 employment::~employment()
 {
 	if (this->modifier_multiplier != 0) {
-		this->get_type()->get_modifier()->remove(this->holding, this->modifier_multiplier);
+		this->get_type()->get_modifier()->remove(this->get_holding(), this->modifier_multiplier);
 	}
 }
 
@@ -39,6 +40,21 @@ void employment::do_day()
 	}
 }
 
+holding *employment::get_holding() const
+{
+	return this->building_slot->get_holding();
+}
+
+void employment::set_workforce(const int workforce)
+{
+	if (workforce == this->get_workforce()) {
+		return;
+	}
+
+	this->workforce = workforce;
+	emit this->building_slot->workforce_changed();
+}
+
 void employment::set_workforce_capacity(const int capacity)
 {
 	if (capacity == this->get_workforce_capacity()) {
@@ -47,6 +63,7 @@ void employment::set_workforce_capacity(const int capacity)
 
 	const int old_capacity = this->get_workforce_capacity();
 	this->workforce_capacity = capacity;
+	emit this->building_slot->workforce_capacity_changed();
 
 	if (old_capacity > capacity) {
 		//the workforce capacity has decreased, so we have to remove excess employment for the employment type
@@ -84,7 +101,7 @@ void employment::set_employee_size(population_unit *employee, const int size)
 	}
 
 	const int diff = size - old_size;
-	this->workforce += diff;
+	this->change_workforce(diff);
 	this->calculate_modifier_multiplier();
 }
 
@@ -118,7 +135,7 @@ void employment::remove_excess_employees()
 		population_unit *population_unit = kv_pair.first;
 		int &pop_current_employment = kv_pair.second;
 		const int pop_employment_change = -std::min(pop_current_employment, excess_employment);
-		this->workforce += pop_employment_change;
+		this->change_workforce(pop_employment_change);
 		population_unit->change_unemployed_size(-pop_employment_change);
 		pop_current_employment += pop_employment_change;
 		excess_employment += pop_employment_change;
@@ -141,13 +158,13 @@ void employment::set_modifier_multiplier(const int multiplier)
 	}
 
 	if (this->modifier_multiplier != 0) {
-		this->get_type()->get_modifier()->remove(this->holding, this->modifier_multiplier);
+		this->get_type()->get_modifier()->remove(this->get_holding(), this->modifier_multiplier);
 	}
 
 	this->modifier_multiplier = multiplier;
 
 	if (this->modifier_multiplier != 0) {
-		this->get_type()->get_modifier()->apply(this->holding, this->modifier_multiplier);
+		this->get_type()->get_modifier()->apply(this->get_holding(), this->modifier_multiplier);
 	}
 }
 

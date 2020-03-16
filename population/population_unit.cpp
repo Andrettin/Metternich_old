@@ -461,9 +461,7 @@ void population_unit::distribute_to_holdings(const std::vector<metternich::holdi
 
 void population_unit::seek_employment()
 {
-	for (auto &kv_pair : this->get_holding()->get_employments()) {
-		employment *employment = kv_pair.second.get();
-
+	for (employment *employment : this->get_holding()->get_employments()) {
 		if (employment->can_employ_population_unit(this)) {
 			const int unused_employment_capacity = employment->get_unused_workforce_capacity();
 			const int employee_size_change = std::min(this->get_unemployed_size(), unused_employment_capacity);
