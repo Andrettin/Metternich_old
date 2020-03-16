@@ -6,7 +6,11 @@ namespace metternich {
 
 bool troop_type_compare::operator()(troop_type *a, troop_type *b) const
 {
-	return a->get_category() < b->get_category();
+	if (a->get_category() != b->get_category()) {
+		return a->get_category() < b->get_category();
+	}
+
+	return a->get_identifier() < b->get_identifier();
 }
 
 }
