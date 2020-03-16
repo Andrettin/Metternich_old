@@ -18,6 +18,7 @@ class troop_type final : public data_entry, public data_type<troop_type>
 
 	Q_PROPERTY(metternich::troop_category category MEMBER category READ get_category)
 	Q_PROPERTY(QString icon_tag READ get_icon_tag_qstring WRITE set_icon_tag_qstring)
+	Q_PROPERTY(QString icon_path READ get_icon_path_qstring CONSTANT)
 
 public:
 	static constexpr const char *class_identifier = "troop_type";
@@ -59,6 +60,13 @@ public:
 	void set_icon_tag_qstring(const QString &icon_tag)
 	{
 		this->set_icon_tag(icon_tag.toStdString());
+	}
+
+	const std::filesystem::path &get_icon_path() const;
+
+	QString get_icon_path_qstring() const
+	{
+		return "file:///" + QString::fromStdString(this->get_icon_path().string());
 	}
 
 private:

@@ -3,6 +3,7 @@
 #include "economy/commodity.h"
 #include "economy/employment_type.h"
 #include "holding/building_slot.h"
+#include "holding/holding.h"
 #include "population/population_type.h"
 #include "population/population_unit.h"
 #include "script/modifier.h"
@@ -12,7 +13,13 @@ namespace metternich {
 employment::~employment()
 {
 	if (this->modifier_multiplier != 0) {
-		this->get_type()->get_modifier()->remove(this->get_holding(), this->modifier_multiplier);
+		if (this->get_type()->get_modifier() != nullptr) {
+			this->get_type()->get_modifier()->remove(this->get_holding(), this->modifier_multiplier);
+		}
+
+		if (this->get_type()->get_troop_type() != nullptr) {
+			this->get_holding()->change_levy(this->get_type()->get_troop_type(), -this->modifier_multiplier);
+		}
 	}
 }
 
@@ -158,19 +165,31 @@ void employment::set_modifier_multiplier(const int multiplier)
 	}
 
 	if (this->modifier_multiplier != 0) {
-		this->get_type()->get_modifier()->remove(this->get_holding(), this->modifier_multiplier);
+		if (this->get_type()->get_modifier() != nullptr) {
+			this->get_type()->get_modifier()->remove(this->get_holding(), this->modifier_multiplier);
+		}
+
+		if (this->get_type()->get_troop_type() != nullptr) {
+			this->get_holding()->change_levy(this->get_type()->get_troop_type(), -this->modifier_multiplier);
+		}
 	}
 
 	this->modifier_multiplier = multiplier;
 
 	if (this->modifier_multiplier != 0) {
-		this->get_type()->get_modifier()->apply(this->get_holding(), this->modifier_multiplier);
+		if (this->get_type()->get_modifier() != nullptr) {
+			this->get_type()->get_modifier()->apply(this->get_holding(), this->modifier_multiplier);
+		}
+
+		if (this->get_type()->get_troop_type() != nullptr) {
+			this->get_holding()->change_levy(this->get_type()->get_troop_type(), this->modifier_multiplier);
+		}
 	}
 }
 
 void employment::calculate_modifier_multiplier()
 {
-	if (this->get_type()->get_modifier() == nullptr) {
+	if (this->get_type()->get_modifier() == nullptr && this->get_type()->get_troop_type() == nullptr) {
 		return;
 	}
 

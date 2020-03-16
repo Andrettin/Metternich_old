@@ -33,6 +33,7 @@
 #include "util/random.h"
 #include "util/translator.h"
 #include "util/vector_random_util.h"
+#include "warfare/troop_type.h"
 
 #include <utility>
 
@@ -762,6 +763,20 @@ bool holding::has_any_active_trade_route() const
 bool holding::has_any_trade_route_land_connection() const
 {
 	return this->get_slot()->has_any_trade_route_land_connection();
+}
+
+QVariantList holding::get_levies_qvariant_list() const
+{
+	QVariantList levies;
+
+	for (const auto &kv_pair : this->levies) {
+		QVariantMap levy;
+		levy["type"] = QVariant::fromValue(kv_pair.first);
+		levy["size"] = QVariant::fromValue(kv_pair.second);
+		levies.append(levy);
+	}
+
+	return levies;
 }
 
 void holding::set_selected(const bool selected, const bool notify_engine_interface)

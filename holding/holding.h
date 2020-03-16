@@ -30,6 +30,7 @@ class province;
 class religion;
 class terrain_type;
 class territory;
+class troop_type;
 class world;
 
 class holding final : public data_entry
@@ -55,6 +56,7 @@ class holding final : public data_entry
 	Q_PROPERTY(metternich::commodity* commodity READ get_commodity WRITE set_commodity NOTIFY commodity_changed)
 	Q_PROPERTY(metternich::culture* culture READ get_culture WRITE set_culture NOTIFY culture_changed)
 	Q_PROPERTY(metternich::religion* religion READ get_religion WRITE set_religion NOTIFY religion_changed)
+	Q_PROPERTY(QVariantList levies READ get_levies_qvariant_list NOTIFY levies_changed)
 	Q_PROPERTY(bool selected READ is_selected WRITE set_selected NOTIFY selected_changed)
 
 public:
@@ -426,6 +428,38 @@ public:
 	bool has_any_active_trade_route() const;
 	bool has_any_trade_route_land_connection() const;
 
+	QVariantList get_levies_qvariant_list() const;
+
+	int get_levy(troop_type *troop_type) const
+	{
+		auto find_iterator = this->levies.find(troop_type);
+		if (find_iterator == this->levies.end()) {
+			return 0;
+		}
+
+		return find_iterator->second;
+	}
+
+	void set_levy(troop_type *troop_type, const int levy)
+	{
+		if (levy == this->get_levy(troop_type)) {
+			return;
+		}
+
+		if (levy == 0) {
+			this->levies.erase(troop_type);
+		} else {
+			this->levies[troop_type] = levy;
+		}
+
+		emit levies_changed();
+	}
+
+	void change_levy(troop_type *troop_type, const int change)
+	{
+		this->set_levy(troop_type, this->get_levy(troop_type) + change);
+	}
+
 	bool is_selected() const
 	{
 		return this->selected;
@@ -469,6 +503,7 @@ signals:
 	void culture_changed();
 	void religion_changed();
 	void active_trade_routes_changed();
+	void levies_changed();
 	void selected_changed();
 
 private:
@@ -489,12 +524,13 @@ private:
 	metternich::culture *culture = nullptr; //the holding's culture
 	metternich::religion *religion = nullptr; //the holding's religion
 	std::set<holding_modifier *> modifiers; //modifiers applied to the holding
-	bool selected = false;
 	std::set<employment *> employments;
 	std::map<population_type *, int> population_per_type; //the population for each population type
 	std::map<metternich::culture *, int> population_per_culture; //the population for each culture
 	std::map<metternich::religion *, int> population_per_religion; //the population for each religion
 	mutable std::shared_mutex population_groups_mutex;
+	std::map<troop_type *, int> levies; //levies per troop type
+	bool selected = false;
 };
 
 }
