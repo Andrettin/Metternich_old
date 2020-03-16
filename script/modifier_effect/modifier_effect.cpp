@@ -4,11 +4,13 @@
 #include "database/gsml_property.h"
 #include "holding/holding.h"
 #include "map/province.h"
+#include "script/modifier_effect/levy_modifier_effect.h"
 #include "script/modifier_effect/population_capacity_modifier_effect.h"
 #include "script/modifier_effect/population_capacity_modifier_modifier_effect.h"
 #include "script/modifier_effect/population_growth_modifier_effect.h"
 #include "script/modifier_effect/prowess_modifier_effect.h"
 #include "util/parse_util.h"
+#include "warfare/troop_type.h"
 
 namespace metternich {
 
@@ -24,6 +26,13 @@ std::unique_ptr<modifier_effect<T>> modifier_effect<T>::from_gsml_property(const
 			return std::make_unique<population_capacity_modifier_modifier_effect<T>>(parse::centesimal_number_string_to_int(property.get_value()));
 		} else if (identifier == "population_growth") {
 			return std::make_unique<population_growth_modifier_effect<T>>(parse::fractional_number_string_to_int<4>(property.get_value()));
+		}
+	}
+
+	if constexpr (std::is_same_v<T, holding>) {
+		if (troop_type::try_get(identifier) != nullptr) {
+			troop_type *troop_type = troop_type::get(identifier);
+			return std::make_unique<levy_modifier_effect<T>>(troop_type, std::stoi(property.get_value()));
 		}
 	}
 

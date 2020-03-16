@@ -246,6 +246,7 @@ HEADERS += \
     script/flag/scoped_flag.h \
     script/holding_modifier.h \
     script/modifier.h \
+    script/modifier_effect/levy_modifier_effect.h \
     script/modifier_effect/modifier_effect.h \
     script/modifier_effect/population_capacity_modifier_effect.h \
     script/modifier_effect/population_capacity_modifier_modifier_effect.h \
