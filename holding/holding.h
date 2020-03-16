@@ -2,6 +2,7 @@
 
 #include "database/data_entry.h"
 #include "util/qunique_ptr.h"
+#include "warfare/troop_type_map.h"
 
 #include <QVariant>
 
@@ -529,7 +530,7 @@ private:
 	std::map<metternich::culture *, int> population_per_culture; //the population for each culture
 	std::map<metternich::religion *, int> population_per_religion; //the population for each religion
 	mutable std::shared_mutex population_groups_mutex;
-	std::map<troop_type *, int> levies; //levies per troop type
+	troop_type_map<int> levies; //levies per troop type
 	bool selected = false;
 };
 
