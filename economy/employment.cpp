@@ -17,6 +17,12 @@ employment::~employment()
 			this->get_type()->get_modifier()->remove(this->get_holding(), this->modifier_multiplier);
 		}
 	}
+
+	for (const auto &kv_pair : this->employee_sizes) {
+		population_unit *employee = kv_pair.first;
+		employee->remove_employment(this);
+		employee->change_unemployed_size(kv_pair.second);
+	}
 }
 
 void employment::do_day()
