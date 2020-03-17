@@ -483,6 +483,7 @@ void territory::create_holding(holding_slot *holding_slot, holding_type *type)
 	auto new_holding = make_qunique<holding>(holding_slot, type);
 	new_holding->moveToThread(QApplication::instance()->thread());
 	holding_slot->set_holding(std::move(new_holding));
+	this->holdings.push_back(holding_slot->get_holding());
 	switch (holding_slot->get_type()) {
 		case holding_slot_type::settlement:
 			this->settlement_holdings.push_back(holding_slot->get_holding());
@@ -508,6 +509,7 @@ void territory::create_holding(holding_slot *holding_slot, holding_type *type)
 void territory::destroy_holding(holding_slot *holding_slot)
 {
 	holding *holding = holding_slot->get_holding();
+	vector::remove(this->holdings, holding);
 
 	if (holding_slot->get_type() == holding_slot_type::settlement) {
 		vector::remove(this->settlement_holdings, holding);

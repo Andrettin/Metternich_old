@@ -315,6 +315,7 @@ private:
 	landed_title *county = nullptr;
 	metternich::culture *culture = nullptr;
 	metternich::religion *religion = nullptr;
+	std::vector<holding *> holdings; //a list with all holdings pertaining to this territory
 	std::vector<holding_slot *> settlement_holding_slots;
 	std::vector<holding *> settlement_holdings;
 	std::vector<holding_slot *> palace_holding_slots;
