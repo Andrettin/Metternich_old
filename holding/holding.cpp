@@ -779,6 +779,32 @@ QVariantList holding::get_levies_qvariant_list() const
 	return levies;
 }
 
+QVariantList holding::get_troop_stats_qvariant_list() const
+{
+	QVariantList troop_stats;
+
+	for (const auto &kv_pair : this->levies) {
+		QVariantMap troop_stat;
+		troop_type *troop_type = kv_pair.first;
+		troop_stat["type"] = QVariant::fromValue(troop_type);
+		troop_stat["attack"] = QVariant::fromValue(this->get_troop_attack(troop_type));
+		troop_stat["defense"] = QVariant::fromValue(this->get_troop_defense(troop_type));
+		troop_stats.append(troop_stat);
+	}
+
+	return troop_stats;
+}
+
+int holding::get_troop_attack(troop_type *troop_type) const
+{
+	return troop_type->get_attack() + this->get_troop_attack_modifier(troop_type);
+}
+
+int holding::get_troop_defense(troop_type *troop_type) const
+{
+	return troop_type->get_defense() + this->get_troop_defense_modifier(troop_type);
+}
+
 void holding::set_selected(const bool selected, const bool notify_engine_interface)
 {
 	if (selected == this->is_selected()) {

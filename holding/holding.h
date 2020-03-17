@@ -58,6 +58,7 @@ class holding final : public data_entry
 	Q_PROPERTY(metternich::culture* culture READ get_culture WRITE set_culture NOTIFY culture_changed)
 	Q_PROPERTY(metternich::religion* religion READ get_religion WRITE set_religion NOTIFY religion_changed)
 	Q_PROPERTY(QVariantList levies READ get_levies_qvariant_list NOTIFY levies_changed)
+	Q_PROPERTY(QVariantList troop_stats READ get_troop_stats_qvariant_list NOTIFY troop_stats_changed)
 	Q_PROPERTY(bool selected READ is_selected WRITE set_selected NOTIFY selected_changed)
 
 public:
@@ -461,6 +462,72 @@ public:
 		this->set_levy(troop_type, this->get_levy(troop_type) + change);
 	}
 
+	QVariantList get_troop_stats_qvariant_list() const;
+
+	int get_troop_attack(troop_type *troop_type) const;
+
+	int get_troop_attack_modifier(troop_type *troop_type) const
+	{
+		auto find_iterator = this->troop_attack_modifiers.find(troop_type);
+		if (find_iterator == this->troop_attack_modifiers.end()) {
+			return 0;
+		}
+
+		return find_iterator->second;
+	}
+
+	void set_troop_attack_modifier(troop_type *troop_type, const int modifier)
+	{
+		if (modifier == this->get_troop_attack_modifier(troop_type)) {
+			return;
+		}
+
+		if (modifier == 0) {
+			this->troop_attack_modifiers.erase(troop_type);
+		} else {
+			this->troop_attack_modifiers[troop_type] = modifier;
+		}
+
+		emit troop_stats_changed();
+	}
+
+	void change_troop_attack_modifier(troop_type *troop_type, const int change)
+	{
+		this->set_troop_attack_modifier(troop_type, this->get_troop_attack_modifier(troop_type) + change);
+	}
+
+	int get_troop_defense(troop_type *troop_type) const;
+
+	int get_troop_defense_modifier(troop_type *troop_type) const
+	{
+		auto find_iterator = this->troop_defense_modifiers.find(troop_type);
+		if (find_iterator == this->troop_defense_modifiers.end()) {
+			return 0;
+		}
+
+		return find_iterator->second;
+	}
+
+	void set_troop_defense_modifier(troop_type *troop_type, const int modifier)
+	{
+		if (modifier == this->get_troop_defense_modifier(troop_type)) {
+			return;
+		}
+
+		if (modifier == 0) {
+			this->troop_defense_modifiers.erase(troop_type);
+		} else {
+			this->troop_defense_modifiers[troop_type] = modifier;
+		}
+
+		emit troop_stats_changed();
+	}
+
+	void change_troop_defense_modifier(troop_type *troop_type, const int change)
+	{
+		this->set_troop_defense_modifier(troop_type, this->get_troop_defense_modifier(troop_type) + change);
+	}
+
 	bool is_selected() const
 	{
 		return this->selected;
@@ -505,6 +572,7 @@ signals:
 	void religion_changed();
 	void active_trade_routes_changed();
 	void levies_changed();
+	void troop_stats_changed();
 	void selected_changed();
 
 private:
@@ -531,6 +599,8 @@ private:
 	std::map<metternich::religion *, int> population_per_religion; //the population for each religion
 	mutable std::shared_mutex population_groups_mutex;
 	troop_type_map<int> levies; //levies per troop type
+	troop_type_map<int> troop_attack_modifiers;
+	troop_type_map<int> troop_defense_modifiers;
 	bool selected = false;
 };
 
