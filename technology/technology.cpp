@@ -1,8 +1,33 @@
 #include "technology/technology.h"
 
+#include "script/modifier.h"
 #include "util/container_util.h"
 
 namespace metternich {
+
+technology::technology(const std::string &identifier)
+	: data_entry(identifier)
+{
+}
+
+technology::~technology()
+{
+}
+
+void technology::process_gsml_scope(const gsml_data &scope)
+{
+	const std::string &tag = scope.get_tag();
+
+	if (tag == "holding_modifier") {
+		this->holding_modifier = std::make_unique<modifier<holding>>();
+		database::process_gsml_data(this->holding_modifier, scope);
+	} else if (tag == "territory_modifier") {
+		this->territory_modifier = std::make_unique<modifier<territory>>();
+		database::process_gsml_data(this->territory_modifier, scope);
+	} else {
+		data_entry_base::process_gsml_scope(scope);
+	}
+}
 
 const std::filesystem::path &technology::get_icon_path() const
 {

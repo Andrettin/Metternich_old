@@ -57,5 +57,6 @@ std::unique_ptr<modifier_effect<T>> modifier_effect<T>::from_gsml_property(const
 template class modifier_effect<character>;
 template class modifier_effect<holding>;
 template class modifier_effect<province>;
+template class modifier_effect<territory>;
 
 }

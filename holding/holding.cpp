@@ -29,6 +29,7 @@
 #include "religion/religion_group.h"
 #include "script/holding_modifier.h"
 #include "script/modifier.h"
+#include "technology/technology.h"
 #include "util/container_util.h"
 #include "util/random.h"
 #include "util/translator.h"
@@ -50,6 +51,12 @@ holding::holding(metternich::holding_slot *slot, holding_type *type) : data_entr
 
 	if (this->get_terrain() != nullptr && this->get_terrain()->get_holding_modifier() != nullptr) {
 		this->get_terrain()->get_holding_modifier()->apply(this);
+	}
+
+	for (technology *technology : this->get_territory()->get_technologies()) {
+		if (technology->get_holding_modifier() != nullptr) {
+			technology->get_holding_modifier()->apply(this);
+		}
 	}
 
 	this->change_base_population_capacity(this->get_territory()->get_population_capacity_additive_modifier());

@@ -5,7 +5,12 @@
 
 namespace metternich {
 
+class holding;
 class technology_category;
+class territory;
+
+template <typename T>
+class modifier;
 
 class technology final : public data_entry, public data_type<technology>
 {
@@ -17,10 +22,13 @@ class technology final : public data_entry, public data_type<technology>
 	Q_PROPERTY(QVariantList required_technologies READ get_required_technologies_qvariant_list)
 
 public:
-	technology(const std::string &identifier) : data_entry(identifier) {}
-
 	static constexpr const char *class_identifier = "technology";
 	static constexpr const char *database_folder = "technologies";
+
+	technology(const std::string &identifier);
+	virtual ~technology() override;
+
+	virtual void process_gsml_scope(const gsml_data &scope) override;
 
 	virtual void check() const override
 	{
@@ -99,10 +107,22 @@ public:
 		this->required_technologies.erase(technology);
 	}
 
+	const std::unique_ptr<modifier<holding>> &get_holding_modifier() const
+	{
+		return this->holding_modifier;
+	}
+
+	const std::unique_ptr<modifier<territory>> &get_territory_modifier() const
+	{
+		return this->territory_modifier;
+	}
+
 private:
 	technology_category *category = nullptr;
 	std::string icon_tag;
 	std::set<technology *> required_technologies;
+	std::unique_ptr<modifier<holding>> holding_modifier; //the modifier applied to holdings in territories with this technology
+	std::unique_ptr<modifier<territory>> territory_modifier; //the modifier applied to territories with this technology
 };
 
 }

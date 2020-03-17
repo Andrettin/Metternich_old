@@ -18,6 +18,7 @@
 #include "population/population_unit.h"
 #include "religion/religion.h"
 #include "religion/religion_group.h"
+#include "script/modifier.h"
 #include "technology/technology.h"
 #include "util/container_util.h"
 #include "util/translator.h"
@@ -885,12 +886,32 @@ void territory::add_technology(technology *technology)
 
 	this->technologies.insert(technology);
 	emit technologies_changed();
+
+	if (technology->get_territory_modifier() != nullptr) {
+		technology->get_territory_modifier()->apply(this);
+	}
+
+	if (technology->get_holding_modifier() != nullptr) {
+		for (holding *holding : this->holdings) {
+			technology->get_holding_modifier()->apply(holding);
+		}
+	}
 }
 
 void territory::remove_technology(technology *technology)
 {
 	this->technologies.erase(technology);
 	emit technologies_changed();
+
+	if (technology->get_territory_modifier() != nullptr) {
+		technology->get_territory_modifier()->remove(this);
+	}
+
+	if (technology->get_holding_modifier() != nullptr) {
+		for (holding *holding : this->holdings) {
+			technology->get_holding_modifier()->remove(holding);
+		}
+	}
 }
 
 bool territory::is_selectable() const

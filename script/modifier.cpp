@@ -65,5 +65,6 @@ void modifier<T>::add_modifier_effect(std::unique_ptr<modifier_effect<T>> &&modi
 template class modifier<character>;
 template class modifier<holding>;
 template class modifier<province>;
+template class modifier<territory>;
 
 }
