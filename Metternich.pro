@@ -253,6 +253,8 @@ HEADERS += \
     script/modifier_effect/population_capacity_modifier_modifier_effect.h \
     script/modifier_effect/population_growth_modifier_effect.h \
     script/modifier_effect/prowess_modifier_effect.h \
+    script/modifier_effect/troop_attack_modifier_effect.h \
+    script/modifier_effect/troop_defense_modifier_effect.h \
     script/province_modifier.h \
     script/scope_util.h \
     species/phenotype.h \
