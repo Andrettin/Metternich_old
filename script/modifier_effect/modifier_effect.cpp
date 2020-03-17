@@ -37,10 +37,10 @@ std::unique_ptr<modifier_effect<T>> modifier_effect<T>::from_gsml_property(const
 			return std::make_unique<levy_modifier_effect<T>>(troop_type, std::stoi(property.get_value()));
 		} else if (identifier.ends_with("_attack") && troop_type::try_get(identifier.substr(0, identifier.size() - 7)) != nullptr) {
 			troop_type *troop_type = troop_type::get(identifier.substr(0, identifier.size() - 7));
-			return std::make_unique<troop_attack_modifier_effect<T>>(troop_type, std::stoi(property.get_value()));
+			return std::make_unique<troop_attack_modifier_effect<T>>(troop_type, parse::centesimal_number_string_to_int(property.get_value()));
 		} else if (identifier.ends_with("_defense") && troop_type::try_get(identifier.substr(0, identifier.size() - 8)) != nullptr) {
 			troop_type *troop_type = troop_type::get(identifier.substr(0, identifier.size() - 8));
-			return std::make_unique<troop_defense_modifier_effect<T>>(troop_type, std::stoi(property.get_value()));
+			return std::make_unique<troop_defense_modifier_effect<T>>(troop_type, parse::centesimal_number_string_to_int(property.get_value()));
 		}
 	}
 
