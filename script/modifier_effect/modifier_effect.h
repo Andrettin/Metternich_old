@@ -6,6 +6,7 @@ class character;
 class gsml_property;
 class holding;
 class province;
+class territory;
 
 template <typename T>
 class modifier_effect
@@ -23,5 +24,6 @@ public:
 extern template class modifier_effect<character>;
 extern template class modifier_effect<holding>;
 extern template class modifier_effect<province>;
+extern template class modifier_effect<territory>;
 
 }
