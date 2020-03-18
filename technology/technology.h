@@ -20,6 +20,7 @@ class technology final : public data_entry, public data_type<technology>
 	Q_PROPERTY(QString icon_tag READ get_icon_tag_qstring WRITE set_icon_tag_qstring)
 	Q_PROPERTY(QString icon_path READ get_icon_path_qstring CONSTANT)
 	Q_PROPERTY(QVariantList required_technologies READ get_required_technologies_qvariant_list)
+	Q_PROPERTY(QVariantList allowed_technologies READ get_allowed_technologies_qvariant_list)
 
 public:
 	static constexpr const char *class_identifier = "technology";
@@ -100,12 +101,12 @@ public:
 	Q_INVOKABLE void add_required_technology(technology *technology)
 	{
 		this->required_technologies.insert(technology);
+		technology->allowed_technologies.push_back(this);
 	}
 
-	Q_INVOKABLE void remove_required_technology(technology *technology)
-	{
-		this->required_technologies.erase(technology);
-	}
+	Q_INVOKABLE void remove_required_technology(technology *technology);
+
+	QVariantList get_allowed_technologies_qvariant_list() const;
 
 	const std::unique_ptr<modifier<holding>> &get_holding_modifier() const
 	{
@@ -121,6 +122,7 @@ private:
 	technology_category *category = nullptr;
 	std::string icon_tag;
 	std::set<technology *> required_technologies;
+	std::vector<technology *> allowed_technologies; //technologies allowed by this one
 	std::unique_ptr<modifier<holding>> holding_modifier; //the modifier applied to holdings in territories with this technology
 	std::unique_ptr<modifier<territory>> territory_modifier; //the modifier applied to territories with this technology
 };

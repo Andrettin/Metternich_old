@@ -2,6 +2,7 @@
 
 #include "script/modifier.h"
 #include "util/container_util.h"
+#include "util/vector_util.h"
 
 namespace metternich {
 
@@ -40,6 +41,17 @@ const std::filesystem::path &technology::get_icon_path() const
 QVariantList technology::get_required_technologies_qvariant_list() const
 {
 	return container::to_qvariant_list(this->get_required_technologies());
+}
+
+void technology::remove_required_technology(technology *technology)
+{
+	this->required_technologies.erase(technology);
+	vector::remove(technology->allowed_technologies, this);
+}
+
+QVariantList technology::get_allowed_technologies_qvariant_list() const
+{
+	return container::to_qvariant_list(this->allowed_technologies);
 }
 
 }
