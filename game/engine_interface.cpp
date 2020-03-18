@@ -10,6 +10,7 @@
 #include "map/star_system.h"
 #include "map/world.h"
 #include "script/event/event_instance.h"
+#include "technology/technology.h"
 #include "util/container_util.h"
 
 #include <QList>
@@ -28,6 +29,11 @@ engine_interface::~engine_interface()
 game *engine_interface::get_game() const
 {
 	return game::get();
+}
+
+QVariantList engine_interface::get_technologies() const
+{
+	return container::to_qvariant_list(technology::get_all());
 }
 
 QVariantList engine_interface::get_star_systems() const
