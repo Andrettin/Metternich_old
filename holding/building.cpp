@@ -32,13 +32,13 @@ void building::process_gsml_scope(const gsml_data &scope)
 void building::initialize()
 {
 	if (!this->get_required_technologies().empty()) {
-		if (this->conditions == nullptr) {
-			this->conditions = std::make_unique<and_condition<holding>>();
+		if (this->preconditions == nullptr) {
+			this->preconditions = std::make_unique<and_condition<holding>>();
 		}
 
 		for (technology *required_technology : this->get_required_technologies()) {
 			auto condition = std::make_unique<has_technology_condition<holding>>(required_technology);
-			this->conditions->add_condition(std::move(condition));
+			this->preconditions->add_condition(std::move(condition));
 		}
 	}
 }
@@ -73,9 +73,9 @@ QVariantList building::get_required_technologies_qvariant_list() const
 	return container::to_qvariant_list(this->get_required_technologies());
 }
 
-const condition<holding> *building::get_conditions() const
+const condition<holding> *building::get_preconditions() const
 {
-	return this->conditions.get();
+	return this->preconditions.get();
 }
 
 }

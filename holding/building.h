@@ -121,12 +121,12 @@ public:
 		this->required_technologies.erase(technology);
 	}
 
-	const condition<holding> *get_preconditions() const
-	{
-		return this->preconditions.get();
-	}
+	const condition<holding> *get_preconditions() const;
 
-	const condition<holding> *get_conditions() const;
+	const condition<holding> *get_conditions() const
+	{
+		return this->conditions.get();
+	}
 
 private:
 	std::string icon_tag;
@@ -135,8 +135,8 @@ private:
 	metternich::employment_type *employment_type = nullptr;
 	int workforce = 0; //how many workers does this building allow for its employment type
 	std::set<technology *> required_technologies;
-	std::unique_ptr<condition<holding>> preconditions;
-	std::unique_ptr<and_condition<holding>> conditions;
+	std::unique_ptr<and_condition<holding>> preconditions;
+	std::unique_ptr<condition<holding>> conditions;
 };
 
 }
