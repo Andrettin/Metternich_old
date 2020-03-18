@@ -42,7 +42,7 @@ world::~world()
 void world::initialize()
 {
 	if (this->terrain_image.size() != this->province_image.size()) {
-		throw std::runtime_error("The terrain and province images of world \"" + this->get_identifier() + "\" have different sizes.");
+		throw std::runtime_error("The terrain image of world \"" + this->get_identifier() + "\" has a different size (" + std::to_string(this->terrain_image.width()) + "x" + std::to_string(this->terrain_image.height()) + ") than its province image (" + std::to_string(this->province_image.width()) + "x" + std::to_string(this->province_image.height()) + ").");
 	}
 
 	//clear the terrain and province images, as there is no need to keep them in memory
