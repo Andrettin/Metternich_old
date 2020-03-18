@@ -12,7 +12,7 @@ bool technology_compare::operator()(technology *a, technology *b) const
 		return true;
 	}
 
-	return a < b;
+	return a->get_identifier() < b->get_identifier();
 }
 
 }
