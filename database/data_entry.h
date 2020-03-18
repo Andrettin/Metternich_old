@@ -51,10 +51,7 @@ public:
 
 	virtual void check() const {}
 
-	virtual void check_history() const
-	{
-		this->check();
-	}
+	virtual void check_history() const {}
 
 	bool is_initialized() const
 	{

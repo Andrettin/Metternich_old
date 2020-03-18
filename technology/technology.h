@@ -21,19 +21,47 @@ class technology final : public data_entry, public data_type<technology>
 	Q_PROPERTY(QString icon_path READ get_icon_path_qstring CONSTANT)
 	Q_PROPERTY(QVariantList required_technologies READ get_required_technologies_qvariant_list)
 	Q_PROPERTY(QVariantList allowed_technologies READ get_allowed_technologies_qvariant_list)
+	Q_PROPERTY(int row READ get_row CONSTANT)
+	Q_PROPERTY(int column MEMBER column READ get_column NOTIFY column_changed)
 
 public:
 	static constexpr const char *class_identifier = "technology";
 	static constexpr const char *database_folder = "technologies";
+	static constexpr int max_column = 7; //8 columns
 
 	technology(const std::string &identifier);
 	virtual ~technology() override;
 
 	virtual void process_gsml_scope(const gsml_data &scope) override;
 
+	virtual void initialize() override
+	{
+		//assign a valid column to the technology if its column is already occupied (giving priority to technologies in order of addition to the database)
+		bool column_used = true;
+		while (column_used) {
+			column_used = false;
+
+			for (technology *technology : technology::get_all()) {
+				if (technology == this) {
+					break;
+				}
+
+				if (technology->get_row() == this->get_row() && technology->get_column() == this->get_column()) {
+					column_used = true;
+					this->column++;
+					break;
+				}
+			}
+		}
+	}
+
 	virtual void check() const override
 	{
 		this->get_icon_path(); //throws an exception if the icon isn't found
+
+		if (this->get_column() > technology::max_column) {
+			qWarning() << ("Technology \"" + this->get_identifier_qstring() + "\" has its column set to " + QString::number(this->get_column()) + " (row " + QString::number(this->get_row()) + "), but the maximum column for a technology is " + QString::number(technology::max_column) + ".");
+		}
 	}
 
 	technology_category *get_category() const
@@ -118,6 +146,25 @@ public:
 		return this->territory_modifier;
 	}
 
+	int get_row() const
+	{
+		int row = 0;
+
+		for (technology *technology : this->get_required_technologies()) {
+			row = std::max(row, technology->get_row() + 1);
+		}
+
+		return row;
+	}
+
+	int get_column() const
+	{
+		return this->column;
+	}
+
+signals:
+	void column_changed();
+
 private:
 	technology_category *category = nullptr;
 	std::string icon_tag;
@@ -125,6 +172,7 @@ private:
 	std::vector<technology *> allowed_technologies; //technologies allowed by this one
 	std::unique_ptr<modifier<holding>> holding_modifier; //the modifier applied to holdings in territories with this technology
 	std::unique_ptr<modifier<territory>> territory_modifier; //the modifier applied to territories with this technology
+	int column = 0; //the technology's column in the tech tree
 };
 
 }
