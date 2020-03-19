@@ -430,7 +430,7 @@ void database::load()
 		const module *module = kv_pair.second;
 
 		if (module != nullptr) {
-			engine_interface::get()->set_loading_message("Parsing Database for the \"" + QString::fromStdString(module->get_identifier()) + "\" Module...");
+			engine_interface::get()->set_loading_message("Parsing Database for the " + QString::fromStdString(module->get_name()) + " Module...");
 		} else {
 			engine_interface::get()->set_loading_message("Parsing Database...");
 		}
@@ -441,7 +441,7 @@ void database::load()
 		}
 
 		if (module != nullptr) {
-			engine_interface::get()->set_loading_message("Processing Database for the \"" + QString::fromStdString(module->get_identifier()) + "\" Module...");
+			engine_interface::get()->set_loading_message("Processing Database for the " + QString::fromStdString(module->get_name()) + " Module...");
 		} else {
 			engine_interface::get()->set_loading_message("Processing Database...");
 		}
@@ -508,11 +508,16 @@ void database::process_modules()
 	}
 
 	for (const qunique_ptr<module> &module : this->modules) {
-		std::filesystem::path module_file = module->get_path() / "module.txt";
+		const std::filesystem::path module_filepath = module->get_path() / "module.txt";
 
-		if (std::filesystem::exists(module_file)) {
-			gsml_parser parser(module_file);
+		if (std::filesystem::exists(module_filepath)) {
+			gsml_parser parser(module_filepath);
 			database::process_gsml_data(module, parser.parse());
+		}
+
+		const std::filesystem::path module_localization_filepath = module->get_path() / "localization" / translator::get()->get_locale() / "module.txt";
+		if (std::filesystem::exists(module_localization_filepath)) {
+			translator::get()->load_file(module_localization_filepath);
 		}
 	}
 

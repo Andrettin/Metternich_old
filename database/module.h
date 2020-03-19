@@ -32,6 +32,8 @@ public:
 		return this->identifier;
 	}
 
+	std::string get_name() const;
+
 	const std::filesystem::path &get_path() const
 	{
 		return this->path;

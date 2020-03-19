@@ -35,12 +35,12 @@ QString translator::translate(const char *context, const char *source_text, cons
 	return QString::fromStdString(this->translate(source_text));
 }
 
-void translator::load_locale(const std::string &language)
+void translator::load()
 {
 	this->translations.clear();
 
 	for (const std::filesystem::path &path : database::get()->get_localization_paths()) {
-		std::filesystem::path localization_path(path / language);
+		std::filesystem::path localization_path(path / this->get_locale());
 
 		if (!std::filesystem::exists(localization_path)) {
 			continue;
@@ -53,18 +53,23 @@ void translator::load_locale(const std::string &language)
 				continue;
 			}
 
-			gsml_parser parser(dir_entry.path());
-			const gsml_data gsml_data = parser.parse();
-
-			gsml_data.for_each_property([&](const gsml_property &property) {
-				if (property.get_operator() != gsml_operator::assignment) {
-					throw std::runtime_error("Only the assignment operator is allowed for translation files.");
-				}
-
-				this->add_translation(property.get_key(), property.get_value());
-			});
+			this->load_file(dir_entry.path());
 		}
 	}
+}
+
+void translator::load_file(const std::filesystem::path &filepath)
+{
+	gsml_parser parser(filepath);
+	const gsml_data gsml_data = parser.parse();
+
+	gsml_data.for_each_property([&](const gsml_property &property) {
+		if (property.get_operator() != gsml_operator::assignment) {
+			throw std::runtime_error("Only the assignment operator is allowed for translation files.");
+		}
+
+		this->add_translation(property.get_key(), property.get_value());
+	});
 }
 
 }

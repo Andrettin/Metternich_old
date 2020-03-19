@@ -2,8 +2,14 @@
 
 #include "database/database.h"
 #include "util/container_util.h"
+#include "util/translator.h"
 
 namespace metternich {
+
+std::string module::get_name() const
+{
+	return translator::get()->translate(this->get_identifier());
+}
 
 void module::process_gsml_property(const gsml_property &property)
 {
