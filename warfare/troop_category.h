@@ -53,6 +53,42 @@ inline troop_category string_to_troop_category(const std::string &str)
 	throw std::runtime_error("Invalid troop category: \"" + str + "\".");
 }
 
+inline std::string troop_category_to_string(const troop_category category)
+{
+	switch (category) {
+		case troop_category::militia:
+			return "militia";
+		case troop_category::light_infantry:
+			return "light_infantry";
+		case troop_category::regular_infantry:
+			return "regular_infantry";
+		case troop_category::heavy_infantry:
+			return "heavy_infantry";
+		case troop_category::light_cavalry:
+			return "light_cavalry";
+		case troop_category::heavy_cavalry:
+			return "heavy_cavalry";
+		case troop_category::light_artillery:
+			return "light_artillery";
+		case troop_category::heavy_artillery:
+			return "heavy_artillery";
+		case troop_category::combat_engineers:
+			return "combat_engineers";
+		case troop_category::light_warship:
+			return "light_warship";
+		case troop_category::heavy_warship:
+			return "heavy_warship";
+		case troop_category::light_transport_ship:
+			return "light_transport_ship";
+		case troop_category::heavy_transport_ship:
+			return "heavy_transport_ship";
+		default:
+			break;
+	}
+
+	throw std::runtime_error("Invalid troop category: \"" + std::to_string(static_cast<int>(category)) + "\".");
+}
+
 inline bool is_ship_troop_category(const troop_category category)
 {
 	switch (category) {

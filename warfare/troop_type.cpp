@@ -1,5 +1,6 @@
 #include "warfare/troop_type.h"
 
+#include "util/translator.h"
 #include "warfare/troop_category.h"
 
 namespace metternich {
@@ -16,6 +17,11 @@ void troop_type::check() const
 	}
 
 	this->get_icon_path(); //throws an exception if the icon isn't found
+}
+
+std::string troop_type::get_category_name() const
+{
+	return translator::get()->translate(troop_category_to_string(this->get_category()));
 }
 
 const std::filesystem::path &troop_type::get_icon_path() const

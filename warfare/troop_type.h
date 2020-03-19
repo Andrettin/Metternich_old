@@ -17,6 +17,7 @@ class troop_type final : public data_entry, public data_type<troop_type>
 	Q_OBJECT
 
 	Q_PROPERTY(metternich::troop_category category MEMBER category READ get_category)
+	Q_PROPERTY(QString category_name READ get_category_name_qstring CONSTANT)
 	Q_PROPERTY(QString icon_tag READ get_icon_tag_qstring WRITE set_icon_tag_qstring)
 	Q_PROPERTY(QString icon_path READ get_icon_path_qstring CONSTANT)
 	Q_PROPERTY(int attack MEMBER attack READ get_attack)
@@ -34,6 +35,13 @@ public:
 	troop_category get_category() const
 	{
 		return this->category;
+	}
+
+	std::string get_category_name() const;
+
+	QString get_category_name_qstring() const
+	{
+		return QString::fromStdString(this->get_category_name());
 	}
 
 	const std::string &get_icon_tag() const
