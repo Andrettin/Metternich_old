@@ -782,6 +782,13 @@ void world::amalgamate()
 	std::map<holding_type *, int> factory_holding_type_counts;
 
 	for (province *province : this->get_provinces()) {
+		//add any technology present in one of its provinces to the world itself
+		for (technology *technology : province->get_technologies()) {
+			if (!this->has_technology(technology)) {
+				this->add_technology(technology);
+			}
+		}
+
 		for (holding *settlement_holding : province->get_settlement_holdings()) {
 			realm_counts[settlement_holding->get_barony()->get_realm()]++;
 		}
