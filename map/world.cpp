@@ -449,6 +449,10 @@ void world::load_province_map()
 
 	this->province_image = QImage(QString::fromStdString(province_image_path.string()));
 
+	if (this->province_image.isNull()) {
+		throw std::runtime_error("Failed to load province map image.");
+	}
+
 	const int pixel_count = this->province_image.width() * this->province_image.height();
 
 	std::map<province *, std::map<terrain_type *, int>> province_terrain_counts;
@@ -557,6 +561,11 @@ void world::load_terrain_map()
 
 	engine_interface::get()->set_loading_message("Loading " + this->get_loading_message_name() + " Terrain...");
 	this->terrain_image = QImage(QString::fromStdString(terrain_image_path.string()));
+
+	if (this->terrain_image.isNull()) {
+		throw std::runtime_error("Failed to load terrain map image.");
+	}
+
 	this->map_size = this->terrain_image.size(); //set the world's pixel size to that of its terrain map
 }
 

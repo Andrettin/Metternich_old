@@ -6,8 +6,8 @@
 namespace metternich {
 
 class holding;
-class technology_category;
 class territory;
+enum class technology_category;
 
 template <typename T>
 class modifier;
@@ -16,7 +16,8 @@ class technology final : public data_entry, public data_type<technology>
 {
 	Q_OBJECT
 
-	Q_PROPERTY(metternich::technology_category* category MEMBER category READ get_category)
+	Q_PROPERTY(metternich::technology_category category MEMBER category READ get_category)
+	Q_PROPERTY(QString category_name READ get_category_name_qstring CONSTANT)
 	Q_PROPERTY(QString icon_tag READ get_icon_tag_qstring WRITE set_icon_tag_qstring)
 	Q_PROPERTY(QString icon_path READ get_icon_path_qstring CONSTANT)
 	Q_PROPERTY(QVariantList required_technologies READ get_required_technologies_qvariant_list)
@@ -55,18 +56,18 @@ public:
 		}
 	}
 
-	virtual void check() const override
-	{
-		this->get_icon_path(); //throws an exception if the icon isn't found
+	virtual void check() const override;
 
-		if (this->get_column() > technology::max_column) {
-			qWarning() << ("Technology \"" + this->get_identifier_qstring() + "\" has its column set to " + QString::number(this->get_column()) + " (row " + QString::number(this->get_row()) + "), but the maximum column for a technology is " + QString::number(technology::max_column) + ".");
-		}
-	}
-
-	technology_category *get_category() const
+	technology_category get_category() const
 	{
 		return this->category;
+	}
+
+	std::string get_category_name() const;
+
+	QString get_category_name_qstring() const
+	{
+		return QString::fromStdString(this->get_category_name());
 	}
 
 	const std::string &get_icon_tag() const
@@ -166,7 +167,7 @@ signals:
 	void column_changed();
 
 private:
-	technology_category *category = nullptr;
+	technology_category category;
 	std::string icon_tag;
 	std::set<technology *> required_technologies;
 	std::vector<technology *> allowed_technologies; //technologies allowed by this one

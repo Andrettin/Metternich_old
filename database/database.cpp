@@ -224,9 +224,7 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 			throw std::runtime_error("Only the assignment operator is available for object reference properties.");
 		}
 
-		if (property.get_key() == "category" && class_name == "metternich::technology") {
-			new_property_value = QVariant::fromValue(technology_category::get_or_add(property.get_value()));
-		} else if ((property.get_key() == "group" && class_name == "metternich::law") || property.get_key() == "succession_law_group") {
+		if ((property.get_key() == "group" && class_name == "metternich::law") || property.get_key() == "succession_law_group") {
 			new_property_value = QVariant::fromValue(law_group::get_or_add(property.get_value()));
 		} else if (property_class_name == "metternich::calendar*") {
 			new_property_value = QVariant::fromValue(calendar::get(property.get_value()));
@@ -291,6 +289,8 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 			new_property_value = QVariant::fromValue(star_system::get(property.get_value()));
 		} else if (property_class_name == "metternich::technology*") {
 			new_property_value = QVariant::fromValue(technology::get(property.get_value()));
+		} else if (property_class_name == "metternich::technology_category") {
+			new_property_value = QVariant::fromValue(string_to_technology_category(property.get_value()));
 		} else if (property_class_name == "metternich::terrain_type*") {
 			new_property_value = QVariant::fromValue(terrain_type::get(property.get_value()));
 		} else if (property_class_name == "metternich::timeline*") {
