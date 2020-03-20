@@ -32,8 +32,12 @@ void technology_area::remove_technology(technology *technology)
 
 int technology_area::get_min_level() const
 {
+	if (this->technologies.empty()) {
+		return 0;
+	}
+
 	//get the lowest level amongst the technologies for the area
-	int level = 0;
+	int level = std::numeric_limits<int>::max();
 
 	for (technology *technology : this->technologies) {
 		level = std::min(level, technology->get_level());
