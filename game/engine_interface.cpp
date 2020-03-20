@@ -33,7 +33,7 @@ game *engine_interface::get_game() const
 
 QVariantList engine_interface::get_technologies() const
 {
-	return container::to_qvariant_list(technology::get_all());
+	return container::to_qvariant_list(technology::get_all_sorted());
 }
 
 QVariantList engine_interface::get_star_systems() const

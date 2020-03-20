@@ -2,10 +2,18 @@
 
 #include "script/modifier.h"
 #include "technology/technology_area.h"
+#include "technology/technology_set.h"
 #include "util/container_util.h"
 #include "util/vector_util.h"
 
 namespace metternich {
+
+std::vector<technology *> technology::get_all_sorted()
+{
+	std::vector<technology *> technologies = technology::get_all();
+	std::sort(technologies.begin(), technologies.end(), technology_compare());
+	return technologies;
+}
 
 technology::technology(const std::string &identifier)
 	: data_entry(identifier)

@@ -27,6 +27,8 @@ public:
 	static constexpr const char *class_identifier = "technology";
 	static constexpr const char *database_folder = "technologies";
 
+	static std::vector<technology *> get_all_sorted();
+
 	technology(const std::string &identifier);
 	virtual ~technology() override;
 
