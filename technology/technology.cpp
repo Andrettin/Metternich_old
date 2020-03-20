@@ -1,15 +1,14 @@
 #include "technology/technology.h"
 
 #include "script/modifier.h"
-#include "technology/technology_category.h"
+#include "technology/technology_area.h"
 #include "util/container_util.h"
-#include "util/translator.h"
 #include "util/vector_util.h"
 
 namespace metternich {
 
 technology::technology(const std::string &identifier)
-	: data_entry(identifier), category(technology_category::none)
+	: data_entry(identifier)
 {
 }
 
@@ -36,18 +35,32 @@ void technology::check() const
 {
 	this->get_icon_path(); //throws an exception if the icon isn't found
 
-	if (this->get_column() > technology::max_column) {
-		qWarning() << ("Technology \"" + this->get_identifier_qstring() + "\" has its column set to " + QString::number(this->get_column()) + " (row " + QString::number(this->get_row()) + "), but the maximum column for a technology is " + QString::number(technology::max_column) + ".");
-	}
-
-	if (this->get_category() == technology_category::none) {
-		throw std::runtime_error("Technology \"" + this->get_identifier() + "\" has no category.");
+	if (this->get_area() == nullptr) {
+		throw std::runtime_error("Technology \"" + this->get_identifier() + "\" has no area.");
 	}
 }
 
-std::string technology::get_category_name() const
+technology_category technology::get_category() const
 {
-	return translator::get()->translate(technology_category_to_string(this->get_category()));
+	return this->get_area()->get_category();
+}
+
+void technology::set_area(technology_area *area)
+{
+	if (area == this->get_area()) {
+		return;
+	}
+
+	if (this->get_area() != nullptr) {
+		this->get_area()->remove_technology(this);
+	}
+
+	this->area = area;
+	emit area_changed();
+
+	if (this->get_area() != nullptr) {
+		this->get_area()->add_technology(this);
+	}
 }
 
 const std::filesystem::path &technology::get_icon_path() const

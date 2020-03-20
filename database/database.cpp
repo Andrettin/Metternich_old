@@ -44,6 +44,7 @@
 #include "species/phenotype.h"
 #include "species/species.h"
 #include "technology/technology.h"
+#include "technology/technology_area.h"
 #include "technology/technology_category.h"
 #include "util/parse_util.h"
 #include "util/qunique_ptr.h"
@@ -289,6 +290,8 @@ QVariant database::process_gsml_property_value(const gsml_property &property, co
 			new_property_value = QVariant::fromValue(star_system::get(property.get_value()));
 		} else if (property_class_name == "metternich::technology*") {
 			new_property_value = QVariant::fromValue(technology::get(property.get_value()));
+		} else if (property_class_name == "metternich::technology_area*") {
+			new_property_value = QVariant::fromValue(technology_area::get(property.get_value()));
 		} else if (property_class_name == "metternich::technology_category") {
 			new_property_value = QVariant::fromValue(string_to_technology_category(property.get_value()));
 		} else if (property_class_name == "metternich::terrain_type*") {
