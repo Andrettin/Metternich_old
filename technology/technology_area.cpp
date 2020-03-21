@@ -3,6 +3,7 @@
 #include "technology/technology.h"
 #include "technology/technology_area_compare.h"
 #include "technology/technology_category.h"
+#include "technology/technology_compare.h"
 #include "util/container_util.h"
 #include "util/translator.h"
 #include "util/vector_util.h"
@@ -35,7 +36,9 @@ std::string technology_area::get_category_name() const
 
 QVariantList technology_area::get_technologies_qvariant_list() const
 {
-	return container::to_qvariant_list(this->technologies);
+	std::vector<technology *> technologies = this->technologies;
+	std::sort(technologies.begin(), technologies.end(), technology_compare());
+	return container::to_qvariant_list(technologies);
 }
 
 void technology_area::remove_technology(technology *technology)
