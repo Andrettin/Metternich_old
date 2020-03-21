@@ -1,11 +1,20 @@
 #include "technology/technology_area.h"
 
 #include "technology/technology.h"
+#include "technology/technology_area_compare.h"
 #include "technology/technology_category.h"
+#include "util/container_util.h"
 #include "util/translator.h"
 #include "util/vector_util.h"
 
 namespace metternich {
+
+std::vector<technology_area *> technology_area::get_all_sorted()
+{
+	std::vector<technology_area *> technology_areas = technology_area::get_all();
+	std::sort(technology_areas.begin(), technology_areas.end(), technology_area_compare());
+	return technology_areas;
+}
 
 technology_area::technology_area(const std::string &identifier)
 	: data_entry(identifier), category(technology_category::none)
@@ -22,6 +31,11 @@ void technology_area::check() const
 std::string technology_area::get_category_name() const
 {
 	return translator::get()->translate(technology_category_to_string(this->get_category()));
+}
+
+QVariantList technology_area::get_technologies_qvariant_list() const
+{
+	return container::to_qvariant_list(this->technologies);
 }
 
 void technology_area::remove_technology(technology *technology)

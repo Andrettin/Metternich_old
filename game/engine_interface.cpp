@@ -11,6 +11,7 @@
 #include "map/world.h"
 #include "script/event/event_instance.h"
 #include "technology/technology.h"
+#include "technology/technology_area.h"
 #include "util/container_util.h"
 
 #include <QList>
@@ -34,6 +35,11 @@ game *engine_interface::get_game() const
 QVariantList engine_interface::get_technologies() const
 {
 	return container::to_qvariant_list(technology::get_all_sorted());
+}
+
+QVariantList engine_interface::get_technology_areas() const
+{
+	return container::to_qvariant_list(technology_area::get_all_sorted());
 }
 
 QVariantList engine_interface::get_star_systems() const

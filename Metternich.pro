@@ -82,7 +82,8 @@ SOURCES += \
         species/wildlife_unit.cpp \
         technology/technology.cpp \
         technology/technology_area.cpp \
-        technology/technology_set.cpp \
+        technology/technology_area_compare.cpp \
+        technology/technology_compare.cpp \
         third_party/maskedmousearea/maskedmousearea.cpp \
         util/geocoordinate_util.cpp \
         util/image_util.cpp \
@@ -263,7 +264,9 @@ HEADERS += \
     species/wildlife_unit.h \
     technology/technology.h \
     technology/technology_area.h \
+    technology/technology_area_compare.h \
     technology/technology_category.h \
+    technology/technology_compare.h \
     technology/technology_set.h \
     third_party/maskedmousearea/maskedmousearea.h \
     util/container_util.h \

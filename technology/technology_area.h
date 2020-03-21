@@ -14,10 +14,13 @@ class technology_area final : public data_entry, public data_type<technology_are
 
 	Q_PROPERTY(metternich::technology_category category MEMBER category READ get_category)
 	Q_PROPERTY(QString category_name READ get_category_name_qstring CONSTANT)
+	Q_PROPERTY(QVariantList technologies READ get_technologies_qvariant_list CONSTANT)
 
 public:
 	static constexpr const char *class_identifier = "technology_area";
 	static constexpr const char *database_folder = "technology_areas";
+
+	static std::vector<technology_area *> get_all_sorted();
 
 	technology_area(const std::string &identifier);
 
@@ -34,6 +37,8 @@ public:
 	{
 		return QString::fromStdString(this->get_category_name());
 	}
+
+	QVariantList get_technologies_qvariant_list() const;
 
 	void add_technology(technology *technology)
 	{

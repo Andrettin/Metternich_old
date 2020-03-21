@@ -29,6 +29,7 @@ class engine_interface final : public QObject, public singleton<engine_interface
 
 	Q_PROPERTY(metternich::game* game READ get_game CONSTANT)
 	Q_PROPERTY(QVariantList technologies READ get_technologies CONSTANT)
+	Q_PROPERTY(QVariantList technology_areas READ get_technology_areas CONSTANT)
 	Q_PROPERTY(QVariantList star_systems READ get_star_systems CONSTANT)
 	Q_PROPERTY(QVariantList worlds READ get_worlds CONSTANT)
 	Q_PROPERTY(QVariantList map_worlds READ get_map_worlds CONSTANT)
@@ -52,6 +53,7 @@ public:
 
 	game *get_game() const;
 	QVariantList get_technologies() const;
+	QVariantList get_technology_areas() const;
 	QVariantList get_star_systems() const;
 	QVariantList get_worlds() const;
 	QVariantList get_map_worlds() const;
