@@ -4,6 +4,7 @@
 #include "technology/technology_area.h"
 #include "technology/technology_set.h"
 #include "util/container_util.h"
+#include "util/string_util.h"
 #include "util/vector_util.h"
 
 namespace metternich {
@@ -93,6 +94,21 @@ void technology::remove_required_technology(technology *technology)
 QVariantList technology::get_allowed_technologies_qvariant_list() const
 {
 	return container::to_qvariant_list(this->allowed_technologies);
+}
+
+QString technology::get_required_technologies_string() const
+{
+	std::string str;
+
+	if (!this->get_required_technologies().empty()) {
+		str += "Required Technologies:";
+
+		for (const technology *technology : this->get_required_technologies()) {
+			str += "\n\t" + technology->get_name();
+		}
+	}
+
+	return string::to_tooltip(str);
 }
 
 }

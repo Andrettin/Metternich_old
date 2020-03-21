@@ -23,6 +23,7 @@ class technology final : public data_entry, public data_type<technology>
 	Q_PROPERTY(QString icon_path READ get_icon_path_qstring CONSTANT)
 	Q_PROPERTY(QVariantList required_technologies READ get_required_technologies_qvariant_list)
 	Q_PROPERTY(QVariantList allowed_technologies READ get_allowed_technologies_qvariant_list)
+	Q_PROPERTY(QString required_technologies_string READ get_required_technologies_string CONSTANT)
 
 public:
 	static constexpr const char *class_identifier = "technology";
@@ -134,6 +135,8 @@ public:
 
 		return level;
 	}
+
+	QString get_required_technologies_string() const;
 
 signals:
 	void area_changed();
