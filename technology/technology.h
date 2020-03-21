@@ -18,6 +18,7 @@ class technology final : public data_entry, public data_type<technology>
 	Q_OBJECT
 
 	Q_PROPERTY(metternich::technology_area* area READ get_area WRITE set_area NOTIFY area_changed)
+	Q_PROPERTY(int level READ get_level CONSTANT)
 	Q_PROPERTY(QString icon_tag READ get_icon_tag_qstring WRITE set_icon_tag_qstring)
 	Q_PROPERTY(QString icon_path READ get_icon_path_qstring CONSTANT)
 	Q_PROPERTY(QVariantList required_technologies READ get_required_technologies_qvariant_list)
