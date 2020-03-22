@@ -26,6 +26,7 @@
 #include "script/condition/has_law_condition.h"
 #include "script/condition/has_technology_condition.h"
 #include "script/condition/has_trait_condition.h"
+#include "script/condition/hidden_condition.h"
 #include "script/condition/holding_type_condition.h"
 #include "script/condition/location_condition.h"
 #include "script/condition/not_condition.h"
@@ -136,6 +137,8 @@ std::unique_ptr<condition<T>> condition<T>::from_gsml_scope(const gsml_data &sco
 		database::process_gsml_data(and_condition, scope);
 		condition = std::make_unique<not_condition<T>>(std::move(and_condition), scope.get_operator());
 		return condition;
+	} else if (condition_identifier == "hidden") {
+		condition = std::make_unique<hidden_condition<T>>(scope.get_operator());
 	} else {
 		if constexpr (std::is_same_v<T, character>) {
 			if (condition_identifier == "location") {

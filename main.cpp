@@ -22,6 +22,7 @@
 #include "population/population_type.h"
 #include "population/population_unit.h"
 #include "religion/religion.h"
+#include "technology/technology.h"
 #include "util/empty_image_provider.h"
 #include "util/exception_util.h"
 #include "util/translator.h"
@@ -84,6 +85,7 @@ int main(int argc, char *argv[])
 		qmlRegisterType<population_unit>();
 		qmlRegisterType<province>();
 		qmlRegisterType<religion>();
+		qmlRegisterType<technology>();
 		qmlRegisterType<terrain_type>();
 		qmlRegisterType<territory>();
 		qmlRegisterType<trade_node>();
