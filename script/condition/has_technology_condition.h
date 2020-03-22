@@ -42,5 +42,6 @@ extern template class has_technology_condition<holding>;
 extern template class has_technology_condition<holding_slot>;
 extern template class has_technology_condition<population_unit>;
 extern template class has_technology_condition<province>;
+extern template class has_technology_condition<territory>;
 
 }

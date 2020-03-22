@@ -10,6 +10,7 @@ class holding;
 class holding_slot;
 class population_unit;
 class province;
+class territory;
 enum class gsml_operator;
 struct read_only_context;
 
@@ -154,5 +155,6 @@ extern template class condition<holding>;
 extern template class condition<holding_slot>;
 extern template class condition<population_unit>;
 extern template class condition<province>;
+extern template class condition<territory>;
 
 }

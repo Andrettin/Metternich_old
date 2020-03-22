@@ -48,5 +48,6 @@ template class has_technology_condition<holding>;
 template class has_technology_condition<holding_slot>;
 template class has_technology_condition<population_unit>;
 template class has_technology_condition<province>;
+template class has_technology_condition<territory>;
 
 }

@@ -52,7 +52,7 @@ template <typename T>
 const landed_title *get_scope_landed_title(const T *scope)
 {
 	const landed_title *title = nullptr;
-	if constexpr (std::is_same_v<T, metternich::province>) {
+	if constexpr (std::is_same_v<T, metternich::territory> || std::is_base_of_v<metternich::territory, T>) {
 		title = scope->get_county();
 	} else if constexpr (std::is_same_v<T, metternich::holding> || std::is_same_v<T, metternich::holding_slot>) {
 		title = scope->get_barony();

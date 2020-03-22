@@ -64,11 +64,7 @@ std::unique_ptr<condition<T>> condition<T>::from_gsml_property(const gsml_proper
 			return std::make_unique<wealth_condition<T>>(property.get_value(), property.get_operator());
 		}
 	} else {
-		if (condition_identifier == "borders_water") {
-			return std::make_unique<borders_water_condition<T>>(string::to_bool(property.get_value()), property.get_operator());
-		} else if (condition_identifier == "coastal") {
-			return std::make_unique<coastal_condition<T>>(string::to_bool(property.get_value()), property.get_operator());
-		} else if (condition_identifier == "de_jure_duchy") {
+		if (condition_identifier == "de_jure_duchy") {
 			return std::make_unique<tier_de_jure_title_condition<T, landed_title_tier::duchy>>(property.get_value(), property.get_operator());
 		} else if (condition_identifier == "de_jure_kingdom") {
 			return std::make_unique<tier_de_jure_title_condition<T, landed_title_tier::kingdom>>(property.get_value(), property.get_operator());
@@ -78,10 +74,6 @@ std::unique_ptr<condition<T>> condition<T>::from_gsml_property(const gsml_proper
 			return std::make_unique<has_technology_condition<T>>(property.get_value(), property.get_operator());
 		} else if (condition_identifier == "region") {
 			return std::make_unique<region_condition<T>>(property.get_value(), property.get_operator());
-		} else if (condition_identifier == "terrain") {
-			return std::make_unique<terrain_condition<T>>(property.get_value(), property.get_operator());
-		} else if (condition_identifier == "world") {
-			return std::make_unique<world_condition<T>>(property.get_value(), property.get_operator());
 		}
 	}
 
@@ -108,6 +100,18 @@ std::unique_ptr<condition<T>> condition<T>::from_gsml_property(const gsml_proper
 			return std::make_unique<has_any_trade_route_condition<T>>(string::to_bool(property.get_value()), property.get_operator());
 		} else if (condition_identifier == "has_any_trade_route_land_connection") {
 			return std::make_unique<has_any_trade_route_land_connection_condition<T>>(string::to_bool(property.get_value()), property.get_operator());
+		}
+	}
+
+	if constexpr (std::is_same_v<T, holding> || std::is_same_v<T, holding_slot> || std::is_same_v<T, population_unit> || std::is_same_v<T, province>) {
+		if (condition_identifier == "borders_water") {
+			return std::make_unique<borders_water_condition<T>>(string::to_bool(property.get_value()), property.get_operator());
+		} else if (condition_identifier == "coastal") {
+			return std::make_unique<coastal_condition<T>>(string::to_bool(property.get_value()), property.get_operator());
+		} else if (condition_identifier == "terrain") {
+			return std::make_unique<terrain_condition<T>>(property.get_value(), property.get_operator());
+		} else if (condition_identifier == "world") {
+			return std::make_unique<world_condition<T>>(property.get_value(), property.get_operator());
 		}
 	}
 
@@ -239,5 +243,6 @@ template class condition<holding>;
 template class condition<holding_slot>;
 template class condition<population_unit>;
 template class condition<province>;
+template class condition<territory>;
 
 }
