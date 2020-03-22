@@ -37,7 +37,9 @@ void region::initialize_history()
 
 	for (technology *technology : this->technologies) {
 		for (territory *territory : this->territories) {
-			territory->add_technology(technology);
+			if (territory->get_county() != nullptr) {
+				territory->add_technology(technology);
+			}
 		}
 	}
 	this->technologies.clear();
