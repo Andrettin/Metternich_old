@@ -205,6 +205,7 @@ HEADERS += \
     script/condition/has_law_condition.h \
     script/condition/has_technology_condition.h \
     script/condition/has_trait_condition.h \
+    script/condition/hidden_condition.h \
     script/condition/holding_type_condition.h \
     script/condition/location_condition.h \
     script/condition/not_condition.h \
