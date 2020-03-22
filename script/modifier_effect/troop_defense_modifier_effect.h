@@ -30,7 +30,7 @@ public:
 
 	virtual std::string get_string() const override
 	{
-		return this->troop_type->get_name() + " Defense: " + number::to_signed_string(this->defense);
+		return this->troop_type->get_name() + " Defense: " + number::to_signed_centesimal_string(this->defense);
 	}
 
 private:
