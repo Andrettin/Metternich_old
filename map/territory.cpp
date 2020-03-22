@@ -903,6 +903,10 @@ QVariantList territory::get_technology_slots_qvariant_list() const
 		area_technology_slot_list.append(QVariant::fromValue(technology_slot.get()));
 	}
 
+	if (!area_technology_slot_list.isEmpty()) {
+		technology_slot_list.push_back(area_technology_slot_list);
+	}
+
 	return technology_slot_list;
 }
 
