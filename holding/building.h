@@ -110,16 +110,8 @@ public:
 	}
 
 	QVariantList get_required_technologies_qvariant_list() const;
-
-	Q_INVOKABLE void add_required_technology(technology *technology)
-	{
-		this->required_technologies.insert(technology);
-	}
-
-	Q_INVOKABLE void remove_technology(technology *technology)
-	{
-		this->required_technologies.erase(technology);
-	}
+	Q_INVOKABLE void add_required_technology(technology *technology);
+	Q_INVOKABLE void remove_technology(technology *technology);
 
 	const condition<holding> *get_preconditions() const;
 

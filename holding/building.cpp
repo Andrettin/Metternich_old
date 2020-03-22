@@ -73,6 +73,18 @@ QVariantList building::get_required_technologies_qvariant_list() const
 	return container::to_qvariant_list(this->get_required_technologies());
 }
 
+Q_INVOKABLE void building::add_required_technology(technology *technology)
+{
+	this->required_technologies.insert(technology);
+	technology->add_allowed_building(this);
+}
+
+Q_INVOKABLE void building::remove_technology(technology *technology)
+{
+	this->required_technologies.erase(technology);
+	technology->remove_allowed_building(this);
+}
+
 const condition<holding> *building::get_preconditions() const
 {
 	return this->preconditions.get();

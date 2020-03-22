@@ -1,5 +1,6 @@
 #include "technology/technology_slot.h"
 
+#include "holding/building.h"
 #include "map/territory.h"
 #include "script/condition/condition_check.h"
 #include "script/modifier.h"
@@ -132,6 +133,17 @@ QString technology_slot::get_effects_string() const
 		}
 
 		effects_str += "Holding Modifier:\n" + this->get_technology()->get_holding_modifier()->get_string(1);
+	}
+
+	if (!this->get_technology()->get_allowed_buildings().empty()) {
+		if (!effects_str.empty()) {
+			effects_str += "\n";
+		}
+
+		effects_str += "Allowed Buildings:";
+		for (const building *building : this->get_technology()->get_allowed_buildings()) {
+			effects_str += "\n\t" + building->get_name();
+		}
 	}
 
 	if (!effects_str.empty()) {

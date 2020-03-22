@@ -1,5 +1,6 @@
 #include "technology/technology.h"
 
+#include "holding/building.h"
 #include "script/condition/and_condition.h"
 #include "script/condition/has_technology_condition.h"
 #include "script/condition/hidden_condition.h"
@@ -63,6 +64,10 @@ void technology::initialize()
 		}
 		this->conditions->add_condition(std::move(hidden_condition));
 	}
+
+	std::sort(this->allowed_buildings.begin(), this->allowed_buildings.end(), [](const building *a, const building *b) {
+		return a->get_identifier() < b->get_identifier();
+	});
 }
 
 void technology::check() const
@@ -116,9 +121,9 @@ void technology::remove_required_technology(technology *technology)
 	vector::remove(technology->allowed_technologies, this);
 }
 
-QVariantList technology::get_allowed_technologies_qvariant_list() const
+void technology::remove_allowed_building(const building *building)
 {
-	return container::to_qvariant_list(this->allowed_technologies);
+	vector::remove(this->allowed_buildings, building);
 }
 
 const condition<territory> *technology::get_conditions() const

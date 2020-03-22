@@ -5,6 +5,7 @@
 
 namespace metternich {
 
+class building;
 class holding;
 class technology_area;
 class territory;
@@ -28,7 +29,6 @@ class technology final : public data_entry, public data_type<technology>
 	Q_PROPERTY(QString icon_tag READ get_icon_tag_qstring WRITE set_icon_tag_qstring)
 	Q_PROPERTY(QString icon_path READ get_icon_path_qstring CONSTANT)
 	Q_PROPERTY(QVariantList required_technologies READ get_required_technologies_qvariant_list)
-	Q_PROPERTY(QVariantList allowed_technologies READ get_allowed_technologies_qvariant_list)
 
 public:
 	static constexpr const char *class_identifier = "technology";
@@ -117,7 +117,17 @@ public:
 
 	Q_INVOKABLE void remove_required_technology(technology *technology);
 
-	QVariantList get_allowed_technologies_qvariant_list() const;
+	const std::vector<const building *> &get_allowed_buildings() const
+	{
+		return this->allowed_buildings;
+	}
+
+	void add_allowed_building(const building *building)
+	{
+		this->allowed_buildings.push_back(building);
+	}
+
+	void remove_allowed_building(const building *building);
 
 	int get_level() const
 	{
@@ -156,6 +166,7 @@ private:
 	std::string icon_tag;
 	std::set<technology *> required_technologies;
 	std::vector<technology *> allowed_technologies; //technologies allowed by this one
+	std::vector<const building *> allowed_buildings; //buildings allowed by this technology
 	std::unique_ptr<condition<territory>> preconditions;
 	std::unique_ptr<and_condition<territory>> conditions;
 	std::unique_ptr<modifier<holding>> holding_modifier; //the modifier applied to holdings in territories with this technology
