@@ -1,5 +1,8 @@
 #include "technology/technology.h"
 
+#include "script/condition/and_condition.h"
+#include "script/condition/has_technology_condition.h"
+#include "script/condition/hidden_condition.h"
 #include "script/modifier.h"
 #include "technology/technology_area.h"
 #include "technology/technology_set.h"
@@ -29,7 +32,13 @@ void technology::process_gsml_scope(const gsml_data &scope)
 {
 	const std::string &tag = scope.get_tag();
 
-	if (tag == "holding_modifier") {
+	if (scope.get_tag() == "preconditions") {
+		this->preconditions = std::make_unique<and_condition<territory>>();
+		database::process_gsml_data(this->preconditions.get(), scope);
+	} else if (scope.get_tag() == "conditions") {
+		this->conditions = std::make_unique<and_condition<territory>>();
+		database::process_gsml_data(this->conditions.get(), scope);
+	} else if (tag == "holding_modifier") {
 		this->holding_modifier = std::make_unique<modifier<holding>>();
 		database::process_gsml_data(this->holding_modifier, scope);
 	} else if (tag == "territory_modifier") {
@@ -37,6 +46,22 @@ void technology::process_gsml_scope(const gsml_data &scope)
 		database::process_gsml_data(this->territory_modifier, scope);
 	} else {
 		data_entry_base::process_gsml_scope(scope);
+	}
+}
+
+void technology::initialize()
+{
+	if (!this->get_required_technologies().empty()) {
+		if (this->conditions == nullptr) {
+			this->conditions = std::make_unique<and_condition<territory>>();
+		}
+
+		auto hidden_condition = std::make_unique<metternich::hidden_condition<territory>>();
+		for (technology *required_technology : this->get_required_technologies()) {
+			auto condition = std::make_unique<has_technology_condition<territory>>(required_technology);
+			hidden_condition->add_condition(std::move(condition));
+		}
+		this->conditions->add_condition(std::move(hidden_condition));
 	}
 }
 
@@ -96,19 +121,9 @@ QVariantList technology::get_allowed_technologies_qvariant_list() const
 	return container::to_qvariant_list(this->allowed_technologies);
 }
 
-QString technology::get_required_technologies_string() const
+const condition<territory> *technology::get_conditions() const
 {
-	std::string str;
-
-	if (!this->get_required_technologies().empty()) {
-		str += "Required Technologies:";
-
-		for (const technology *technology : this->get_required_technologies()) {
-			str += "\n\t" + technology->get_name();
-		}
-	}
-
-	return string::to_tooltip(str);
+	return this->conditions.get();
 }
 
 }

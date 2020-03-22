@@ -84,6 +84,7 @@ SOURCES += \
         technology/technology_area.cpp \
         technology/technology_area_compare.cpp \
         technology/technology_compare.cpp \
+        technology/technology_slot.cpp \
         third_party/maskedmousearea/maskedmousearea.cpp \
         util/geocoordinate_util.cpp \
         util/image_util.cpp \

@@ -11,6 +11,12 @@ class territory;
 enum class technology_category;
 
 template <typename T>
+class and_condition;
+
+template <typename T>
+class condition;
+
+template <typename T>
 class modifier;
 
 class technology final : public data_entry, public data_type<technology>
@@ -23,7 +29,6 @@ class technology final : public data_entry, public data_type<technology>
 	Q_PROPERTY(QString icon_path READ get_icon_path_qstring CONSTANT)
 	Q_PROPERTY(QVariantList required_technologies READ get_required_technologies_qvariant_list)
 	Q_PROPERTY(QVariantList allowed_technologies READ get_allowed_technologies_qvariant_list)
-	Q_PROPERTY(QString required_technologies_string READ get_required_technologies_string CONSTANT)
 
 public:
 	static constexpr const char *class_identifier = "technology";
@@ -35,7 +40,7 @@ public:
 	virtual ~technology() override;
 
 	virtual void process_gsml_scope(const gsml_data &scope) override;
-
+	virtual void initialize() override;
 	virtual void check() const override;
 
 	technology_category get_category() const;
@@ -114,16 +119,6 @@ public:
 
 	QVariantList get_allowed_technologies_qvariant_list() const;
 
-	const std::unique_ptr<modifier<holding>> &get_holding_modifier() const
-	{
-		return this->holding_modifier;
-	}
-
-	const std::unique_ptr<modifier<territory>> &get_territory_modifier() const
-	{
-		return this->territory_modifier;
-	}
-
 	int get_level() const
 	{
 		//get the technology's level, i.e. 0 if it has no prerequisites, 1 if it has only prerequisites with no prerequisites and so forth
@@ -136,7 +131,22 @@ public:
 		return level;
 	}
 
-	QString get_required_technologies_string() const;
+	const condition<territory> *get_preconditions() const
+	{
+		return this->preconditions.get();
+	}
+
+	const condition<territory> *get_conditions() const;
+
+	const std::unique_ptr<modifier<holding>> &get_holding_modifier() const
+	{
+		return this->holding_modifier;
+	}
+
+	const std::unique_ptr<modifier<territory>> &get_territory_modifier() const
+	{
+		return this->territory_modifier;
+	}
 
 signals:
 	void area_changed();
@@ -146,6 +156,8 @@ private:
 	std::string icon_tag;
 	std::set<technology *> required_technologies;
 	std::vector<technology *> allowed_technologies; //technologies allowed by this one
+	std::unique_ptr<condition<territory>> preconditions;
+	std::unique_ptr<and_condition<territory>> conditions;
 	std::unique_ptr<modifier<holding>> holding_modifier; //the modifier applied to holdings in territories with this technology
 	std::unique_ptr<modifier<territory>> territory_modifier; //the modifier applied to territories with this technology
 };

@@ -100,7 +100,7 @@ signals:
 private:
 	building *building = nullptr;
 	holding *holding = nullptr; //the building slot's holding
-	bool available = false; //whether building is at all available
+	bool available = false; //whether the building is at all available
 	bool buildable = false; //whether the building is buildable
 	bool built = false;
 	std::unique_ptr<condition_check<metternich::holding>> precondition_check;

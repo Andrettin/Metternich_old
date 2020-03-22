@@ -1,6 +1,7 @@
 #pragma once
 
 #include "database/data_entry.h"
+#include "technology/technology_map.h"
 #include "technology/technology_set.h"
 #include "util/qunique_ptr.h"
 
@@ -17,6 +18,7 @@ class population_unit;
 class region;
 class religion;
 class technology;
+class technology_slot;
 
 //the base class for territories that have holdings, i.e. provinces and worlds
 class territory : public data_entry
@@ -44,6 +46,7 @@ class territory : public data_entry
 	Q_PROPERTY(metternich::holding_slot* trading_post_holding_slot READ get_trading_post_holding_slot NOTIFY trading_post_holding_slot_changed)
 	Q_PROPERTY(metternich::holding_slot* factory_holding_slot READ get_factory_holding_slot CONSTANT)
 	Q_PROPERTY(int population READ get_population WRITE set_population NOTIFY population_changed)
+	Q_PROPERTY(QVariantList technology_slots READ get_technology_slots_qvariant_list NOTIFY technology_slots_changed)
 	Q_PROPERTY(QVariantList technologies READ get_technologies_qvariant_list NOTIFY technologies_changed)
 	Q_PROPERTY(bool selectable READ is_selectable CONSTANT)
 
@@ -100,6 +103,11 @@ public:
 	holding_slot *get_holding_slot(const std::string &holding_slot_str) const;
 	bool has_holding_slot(const holding_slot *holding_slot) const;
 	virtual void add_holding_slot(holding_slot *holding_slot);
+
+	const std::vector<holding *> &get_holdings() const
+	{
+		return this->holdings;
+	}
 
 	void create_holding(holding_slot *holding_slot, holding_type *type);
 	void destroy_holding(holding_slot *holding_slot);
@@ -268,20 +276,13 @@ public:
 
 	Q_INVOKABLE QVariantList get_population_per_religion_qvariant_list() const;
 
-	const technology_set &get_technologies() const
-	{
-		return this->technologies;
-	}
-
+	QVariantList get_technology_slots_qvariant_list() const;
+	technology_set get_technologies() const;
 	QVariantList get_technologies_qvariant_list() const;
-
-	bool has_technology(technology *technology) const
-	{
-		return this->technologies.contains(technology);
-	}
-
+	bool has_technology(technology *technology) const;
 	Q_INVOKABLE void add_technology(technology *technology);
 	Q_INVOKABLE void remove_technology(technology *technology);
+	void create_technology_slots();
 
 	bool is_selectable() const;
 
@@ -291,6 +292,17 @@ public:
 	}
 
 	void add_population_unit(qunique_ptr<population_unit> &&population_unit);
+
+private:
+	technology_slot *get_technology_slot(technology *technology) const
+	{
+		auto find_iterator = this->technology_slots.find(technology);
+		if (find_iterator == this->technology_slots.end()) {
+			return nullptr;
+		}
+
+		return find_iterator->second.get();
+	}
 
 signals:
 	void county_changed();
@@ -309,6 +321,7 @@ signals:
 	void trading_post_holding_slot_changed();
 	void population_changed();
 	void population_groups_changed();
+	void technology_slots_changed();
 	void technologies_changed();
 
 private:
@@ -326,7 +339,7 @@ private:
 	holding_slot *factory_holding_slot = nullptr;
 	holding_slot *capital_holding_slot = nullptr;
 	std::set<region *> regions; //the regions to which this territory belongs
-	technology_set technologies; //the technologies acquired for the territory
+	technology_map<qunique_ptr<technology_slot>> technology_slots; //the technology slots for each technology
 	int population = 0; //the sum of the population of all of the territory's settlement holdings
 	int population_capacity_additive_modifier = 0; //the population capacity additive modifier which the territory provides to its holdings
 	int population_capacity_modifier = 0; //the population capacity modifier which the territory provides to its holdings

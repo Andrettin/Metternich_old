@@ -20,7 +20,9 @@
 #include "religion/religion_group.h"
 #include "script/modifier.h"
 #include "technology/technology.h"
+#include "technology/technology_slot.h"
 #include "util/container_util.h"
+#include "util/map_util.h"
 #include "util/translator.h"
 #include "util/vector_util.h"
 
@@ -34,6 +36,7 @@ territory::territory(const std::string &identifier) : data_entry(identifier)
 
 territory::~territory()
 {
+	this->technology_slots.clear();
 }
 
 void territory::process_gsml_scope(const gsml_data &scope)
@@ -179,6 +182,8 @@ void territory::initialize()
 		if (this->get_trading_post_holding_slot() == nullptr) {
 			this->create_trading_post_holding_slot();
 		}
+
+		this->create_technology_slots();
 	}
 
 	data_entry_base::initialize();
@@ -203,6 +208,11 @@ void territory::initialize_history()
 			//destroy the created trading post holding slot if the territory can't currently have a trading post
 			this->destroy_trading_post_holding_slot();
 		}
+	}
+
+	for (const auto &kv_pair : this->technology_slots) {
+		const qunique_ptr<technology_slot> &technology_slot = kv_pair.second;
+		technology_slot->initialize_history();
 	}
 
 	data_entry_base::initialize_history();
@@ -868,9 +878,56 @@ QVariantList territory::get_population_per_religion_qvariant_list() const
 	return population_per_religion;
 }
 
+QVariantList territory::get_technology_slots_qvariant_list() const
+{
+	QVariantList technology_slot_list;
+
+	QVariantList area_technology_slot_list;
+	technology_area *previous_area = nullptr;
+	for (const auto &kv_pair : this->technology_slots) {
+		const qunique_ptr<technology_slot> &technology_slot = kv_pair.second;
+		if (!technology_slot->is_available()) {
+			continue;
+		}
+
+		const technology *technology = kv_pair.first;
+		if (technology->get_area() != previous_area) {
+			previous_area = technology->get_area();
+
+			if (!area_technology_slot_list.isEmpty()) {
+				technology_slot_list.push_back(area_technology_slot_list);
+				area_technology_slot_list.clear();
+			}
+		}
+
+		area_technology_slot_list.append(QVariant::fromValue(technology_slot.get()));
+	}
+
+	return technology_slot_list;
+}
+
+technology_set territory::get_technologies() const
+{
+	technology_set technologies;
+
+	for (const auto &kv_pair : this->technology_slots) {
+		if (kv_pair.second->is_acquired()) {
+			technologies.insert(kv_pair.first);
+		}
+	}
+
+	return technologies;
+}
+
 QVariantList territory::get_technologies_qvariant_list() const
 {
 	return container::to_qvariant_list(this->get_technologies());
+}
+
+bool territory::has_technology(technology *technology) const
+{
+	technology_slot *technology_slot = this->get_technology_slot(technology);
+	return technology_slot != nullptr && technology_slot->is_acquired();
 }
 
 void territory::add_technology(technology *technology)
@@ -884,33 +941,28 @@ void territory::add_technology(technology *technology)
 		}
 	}
 
-	this->technologies.insert(technology);
-	emit technologies_changed();
-
-	if (technology->get_territory_modifier() != nullptr) {
-		technology->get_territory_modifier()->apply(this);
-	}
-
-	if (technology->get_holding_modifier() != nullptr) {
-		for (holding *holding : this->holdings) {
-			technology->get_holding_modifier()->apply(holding);
-		}
-	}
+	technology_slot *technology_slot = this->get_technology_slot(technology);
+	technology_slot->set_acquired(true);
 }
 
 void territory::remove_technology(technology *technology)
 {
-	this->technologies.erase(technology);
-	emit technologies_changed();
+	technology_slot *technology_slot = this->get_technology_slot(technology);
+	technology_slot->set_acquired(false);
+}
 
-	if (technology->get_territory_modifier() != nullptr) {
-		technology->get_territory_modifier()->remove(this);
-	}
+void territory::create_technology_slots()
+{
+	for (technology *technology : technology::get_all()) {
+		auto new_technology_slot = make_qunique<technology_slot>(technology, this);
+		new_technology_slot->moveToThread(QApplication::instance()->thread());
 
-	if (technology->get_holding_modifier() != nullptr) {
-		for (holding *holding : this->holdings) {
-			technology->get_holding_modifier()->remove(holding);
-		}
+		connect(new_technology_slot.get(), &technology_slot::acquired_changed, this, &territory::technologies_changed);
+
+		//to update the visible technology slots
+		connect(new_technology_slot.get(), &technology_slot::available_changed, this, &territory::technology_slots_changed);
+
+		this->technology_slots[technology] = std::move(new_technology_slot);
 	}
 }
 
