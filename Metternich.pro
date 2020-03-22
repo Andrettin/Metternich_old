@@ -268,7 +268,9 @@ HEADERS += \
     technology/technology_area_compare.h \
     technology/technology_category.h \
     technology/technology_compare.h \
+    technology/technology_map.h \
     technology/technology_set.h \
+    technology/technology_slot.h \
     third_party/maskedmousearea/maskedmousearea.h \
     util/container_util.h \
     util/empty_image_provider.h \
