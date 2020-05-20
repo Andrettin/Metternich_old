@@ -1,5 +1,11 @@
 #pragma once
 
+#include <type_traits>
+namespace std {
+	template <typename T>
+	using result_of = invoke_result<T>;
+}
+
 #include "maskedmousearea/maskedmousearea.h"
 
 #include <QApplication>

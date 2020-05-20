@@ -42,18 +42,20 @@ inline number_type latitude_to_y(const double latitude, const double lat_per_pix
 	}
 }
 
-template <typename point_type = QPoint>
-inline point_type to_point(const QGeoCoordinate &coordinate, const double lon_per_pixel, const double lat_per_pixel)
+inline QPoint to_point(const QGeoCoordinate &coordinate, const double lon_per_pixel, const double lat_per_pixel)
 {
-	using underlying_type = std::result_of_t<decltype(&point_type::x)(point_type)>;
+	using underlying_type = int;
 	const underlying_type x = geocoordinate::longitude_to_x<underlying_type>(coordinate.longitude(), lon_per_pixel);
 	const underlying_type y = geocoordinate::latitude_to_y<underlying_type>(coordinate.latitude(), lat_per_pixel);
-	return point_type(x, y);
+	return QPoint(x, y);
 }
 
 inline QPointF to_pointf(const QGeoCoordinate &coordinate, const double lon_per_pixel, const double lat_per_pixel)
 {
-	return geocoordinate::to_point<QPointF>(coordinate, lon_per_pixel, lat_per_pixel);
+	using underlying_type = double;
+	const underlying_type x = geocoordinate::longitude_to_x<underlying_type>(coordinate.longitude(), lon_per_pixel);
+	const underlying_type y = geocoordinate::latitude_to_y<underlying_type>(coordinate.latitude(), lat_per_pixel);
+	return QPointF(x, y);
 }
 
 inline QPointF to_circle_point(const QGeoCoordinate &coordinate)
